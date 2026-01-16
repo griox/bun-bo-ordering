@@ -1,0 +1,15 @@
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/bin/Debug/net8.0/BunBo.Application.deps.json
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/bin/Debug/net8.0/BunBo.Application.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/bin/Debug/net8.0/BunBo.Application.pdb
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/bin/Debug/net8.0/BunBo.Domain.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/bin/Debug/net8.0/BunBo.Domain.pdb
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.csproj.AssemblyReference.cache
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.GeneratedMSBuildEditorConfig.editorconfig
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.AssemblyInfoInputs.cache
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.AssemblyInfo.cs
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.csproj.CoreCompileInputs.cache
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Ap.44BA73F7.Up2Date
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/refint/BunBo.Application.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.pdb
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/ref/BunBo.Application.dll

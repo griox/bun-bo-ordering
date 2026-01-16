@@ -1,0 +1,11 @@
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/bin/Debug/net8.0/BunBo.Domain.deps.json
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/bin/Debug/net8.0/BunBo.Domain.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/bin/Debug/net8.0/BunBo.Domain.pdb
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.AssemblyInfoInputs.cache
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.AssemblyInfo.cs
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.csproj.CoreCompileInputs.cache
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/refint/BunBo.Domain.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.pdb
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/ref/BunBo.Domain.dll

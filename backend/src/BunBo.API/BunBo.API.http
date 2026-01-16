@@ -1,0 +1,6 @@
+@BunBo.API_HostAddress = http://localhost:5215
+
+GET {{BunBo.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
