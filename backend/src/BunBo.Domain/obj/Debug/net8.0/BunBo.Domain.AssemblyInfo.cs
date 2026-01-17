@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BunBo.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9df2aa005c04b537fcd0b3b9b2965fa51603e43e")]
 [assembly: System.Reflection.AssemblyProductAttribute("BunBo.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BunBo.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

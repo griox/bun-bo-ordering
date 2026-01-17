@@ -1,15 +1,16 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Coiny, Quicksand } from "next/font/google"; // Retro Fonts
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const coiny = Coiny({
+  weight: "400",
+  variable: "--font-coiny",
+  subsets: ["vietnamese"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const quicksand = Quicksand({
+  variable: "--font-quicksand",
+  subsets: ["vietnamese"],
 });
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${coiny.variable} ${quicksand.variable} antialiased font-main`}
       >
         {children}
       </body>

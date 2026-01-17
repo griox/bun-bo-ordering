@@ -14,6 +14,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddScoped<BunBo.Application.Interfaces.IUnitOfWork, BunBo.Infrastructure.Data.UnitOfWork>();
+builder.Services.AddScoped<BunBo.Application.Interfaces.ITableService, BunBo.Application.Services.TableService>();
+builder.Services.AddScoped<BunBo.Application.Interfaces.IOrderService, BunBo.Application.Services.OrderService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

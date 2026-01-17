@@ -9,3 +9,4 @@
 /Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/refint/BunBo.Domain.dll
 /Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.pdb
 /Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/ref/BunBo.Domain.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Domain/obj/Debug/net8.0/BunBo.Domain.sourcelink.json

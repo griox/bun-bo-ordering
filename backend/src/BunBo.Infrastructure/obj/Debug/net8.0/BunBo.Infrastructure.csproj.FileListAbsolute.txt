@@ -15,3 +15,4 @@
 /Users/huyngo/bunbo-system/backend/src/BunBo.Infrastructure/obj/Debug/net8.0/refint/BunBo.Infrastructure.dll
 /Users/huyngo/bunbo-system/backend/src/BunBo.Infrastructure/obj/Debug/net8.0/BunBo.Infrastructure.pdb
 /Users/huyngo/bunbo-system/backend/src/BunBo.Infrastructure/obj/Debug/net8.0/ref/BunBo.Infrastructure.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Infrastructure/obj/Debug/net8.0/BunBo.Infrastructure.sourcelink.json

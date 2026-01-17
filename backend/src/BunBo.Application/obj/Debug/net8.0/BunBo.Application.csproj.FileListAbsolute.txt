@@ -13,3 +13,4 @@
 /Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/refint/BunBo.Application.dll
 /Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.pdb
 /Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/ref/BunBo.Application.dll
+/Users/huyngo/bunbo-system/backend/src/BunBo.Application/obj/Debug/net8.0/BunBo.Application.sourcelink.json
