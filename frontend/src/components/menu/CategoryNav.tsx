@@ -14,10 +14,10 @@ export function CategoryNav({ categories, activeCategory, onSelect }: CategoryNa
                     key={cat.id}
                     onClick={() => onSelect(cat.id)}
                     className={`
-                        whitespace-nowrap px-4 py-2 rounded-full text-base font-display transition-all border-2
+                         px-4 py-2 rounded-full text-base font-display transition-all border-2
                         ${activeCategory === cat.id
-                            ? 'bg-primary text-white border-text shadow-[2px_2px_0px_#2D2D2D] translate-y-[-2px]'
-                            : 'bg-white text-text border-transparent hover:border-text hover:bg-gray-50'}
+                            ? 'bg-gray-800 text-white border-text shadow-[2px_2px_0px_#2D2D2D] translate-y-[-2px]'
+                            : 'bg-black text  border-primary/30 hover:border-solid hover:border-text hover:text-text hover:shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[-2px]'}
                     `}
                 >
                     {cat.name}
