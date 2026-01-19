@@ -9,7 +9,7 @@ export default {
     theme: {
         extend: {
             colors: {
-                background: "#FFCC33", // Vivid Yellow
+                background: "#FFCC99", // Vivid Yellow
                 paper: "#FFFFFF", // White for cards
                 primary: "#000000", // Black for strong contrast buttons
                 secondary: "#2D2D2D", // Dark Gray
