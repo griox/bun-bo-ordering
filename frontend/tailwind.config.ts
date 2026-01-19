@@ -9,18 +9,19 @@ export default {
     theme: {
         extend: {
             colors: {
-                background: "#7CA590", // Sage Green
-                paper: "#E6D7B9", // Beige Texture
-                primary: "#D9381E", // Retro Red
-                secondary: "#F2C94C", // Mustard Yellow
-                text: "#2D2D2D", // Dark Charcoal
+                background: "#FFCC33", // Vivid Yellow
+                paper: "#FFFFFF", // White for cards
+                primary: "#000000", // Black for strong contrast buttons
+                secondary: "#2D2D2D", // Dark Gray
+                text: "#000000", // Black Text
             },
             fontFamily: {
-                display: ["var(--font-coiny)", "cursive"],
-                main: ["var(--font-quicksand)", "sans-serif"],
+                display: ["var(--font-edu-sa)", "cursive"],
+                main: ["var(--font-edu-sa)", "cursive"],
             },
             backgroundImage: {
                 'paper-pattern': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",
+                'retro-paper': "url('/images/retro-paper-texture.png')",
             },
             animation: {
                 blob: "blob 7s infinite",

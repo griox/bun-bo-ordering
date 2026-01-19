@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 
 export function StorySection() {
@@ -22,8 +22,17 @@ export function StorySection() {
     const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
     const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
 
+    // Auto-slide effect
+    useEffect(() => {
+        const interval = setInterval(() => {
+            nextSlide();
+        }, 5000); // Change slide every 5 seconds
+
+        return () => clearInterval(interval);
+    }, []);
+
     return (
-        <section className="py-20 bg-background text-paper relative" id="story">
+        <section className="py-20 text-paper relative" id="story">
             <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
                 <div className="w-full md:w-1/2 relative group">
                     <div className="aspect-[4/5] bg-paper rounded-lg rotate-2 border-4 border-white shadow-2xl p-4 transform transition-transform hover:rotate-0 relative overflow-hidden">
@@ -41,10 +50,6 @@ export function StorySection() {
                                     width="100%"
                                     height="100%"
                                     src={slides[currentSlide].content}
-                                    frameBorder="0"
-                                    scrolling="no"
-                                    marginHeight={0}
-                                    marginWidth={0}
                                     title="Google Maps"
                                     className="w-full h-full filter grayscale hover:grayscale-0 transition-all duration-700"
                                 ></iframe>
@@ -54,13 +59,13 @@ export function StorySection() {
                         {/* Navigation Buttons */}
                         <button
                             onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-text p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-text p-2 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
                         >
                             <ChevronLeft size={24} />
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-text p-2 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-text p-2 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
                         >
                             <ChevronRight size={24} />
                         </button>
@@ -82,12 +87,12 @@ export function StorySection() {
                         KHÔNG CHỈ LÀ <br />
                         <span className="text-secondary">BÚN BÒ...</span>
                     </h2>
-                    <div className="space-y-6 font-main text-lg leading-relaxed text-white/90">
+                    <div className="space-y-6 font-main text-lg leading-relaxed text-text/90 font-large">
                         <p>
-                            Tại <b>Bún Bò & Cà Phê Phố</b>, chúng tôi không "công nghiệp hóa" món ăn. Nước dùng được ninh 24h từ xương ống, thịt bò được tuyển chọn kỹ lượng mỗi sáng sớm.
+                            Dưới chân một tòa chung cư cũ, <strong>Bún Bò & Cà Phê Phố</strong> đã lặng lẽ gắn bó với thực khách suốt hơn 8 năm qua. Ở đây, mỗi tô bún bò được nấu bằng sự chỉn chu và kiên nhẫn: nước dùng ninh từ xương ống suốt nhiều giờ, thịt bò tươi được chọn mỗi sáng, nêm nếm vừa miệng để ai ăn cũng thấy quen, thấy dễ thương.
                         </p>
                         <p>
-                            Đến đây, bạn không chỉ ăn ngon, mà còn là sống lại những ký ức đẹp đẽ của một thời "Ông Bà Anh".
+                            Bên cạnh bún bò, quán còn có cà phê pha trộn Robusta và Arabica, cho vị đậm vừa, hậu thơm nhẹ — rất hợp để nhâm nhi trong buổi sáng nhiều gió biển hay một chiều ngồi chậm lại. Một quán nhỏ, giá cả phải chăng, mang cảm giác thân quen và bình dị đúng kiểu thành phố biển: không ồn ào, nhưng đủ để người ta muốn quay lại.
                         </p>
                     </div>
 

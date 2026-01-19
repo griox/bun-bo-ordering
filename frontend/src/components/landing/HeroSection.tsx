@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export function HeroSection() {
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-background">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-10 pointer-events-none"
                 style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }}>
@@ -25,7 +25,7 @@ export function HeroSection() {
                     <span className="text-secondary drop-shadow-[4px_4px_0px_#2D2D2D]">& CÀ PHÊ</span>
                 </h1>
 
-                <p className="font-main text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-black drop-shadow-md">
+                <p className="font-main text-xl text-text/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-white drop-shadow-sm font-medium">
                     Sự kết hợp hoàn hảo giữa nước dùng đậm đà, thịt bò mềm tan và ly cà phê sữa đá Nha Trang.
                     Một trải nghiệm ẩm thực "Retro" ngay giữa lòng thành phố.
                 </p>
@@ -35,11 +35,11 @@ export function HeroSection() {
                         href="/menu"
                         className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all border-2 border-[#2D2D2D]"
                     >
-                        <span>ĐẶT MÓN NGAY</span>
-                        <span className="group-hover:translate-x-1 transition-transform">→</span>
+                        <span className='font-bold text-black'>ĐẶT MÓN NGAY</span>
+                        <span className="group-hover:translate-x-1 text-black transition-transform">→</span>
                     </Link>
 
-                    
+
                 </div>
             </div>
 

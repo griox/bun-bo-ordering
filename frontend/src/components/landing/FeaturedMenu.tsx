@@ -9,7 +9,7 @@ export function FeaturedMenu() {
     const featuredItems = MOCK_FOODS.slice(0, 3);
 
     return (
-        <section className="py-20 bg-paper relative overflow-hidden">
+        <section className="py-20 bg-background relative overflow-hidden">
             {/* Background Ticket Edge Top */}
             <div className="absolute top-0 left-0 right-0 h-4 bg-background" style={{ clipPath: "polygon(0% 0%, 0% 100%, 2% 0%, 4% 100%, 6% 0%, 8% 100%, 10% 0%, 12% 100%, 14% 0%, 16% 100%, 18% 0%, 20% 100%, 22% 0%, 24% 100%, 26% 0%, 28% 100%, 30% 0%, 32% 100%, 34% 0%, 36% 100%, 38% 0%, 40% 100%, 42% 0%, 44% 100%, 46% 0%, 48% 100%, 50% 0%, 52% 100%, 54% 0%, 56% 100%, 58% 0%, 60% 100%, 62% 0%, 64% 100%, 66% 0%, 68% 100%, 70% 0%, 72% 100%, 74% 0%, 76% 100%, 78% 0%, 80% 100%, 82% 0%, 84% 100%, 86% 0%, 88% 100%, 90% 0%, 92% 100%, 94% 0%, 96% 100%, 98% 0%, 100% 100%, 100% 0%)" }}></div>
 
@@ -19,7 +19,7 @@ export function FeaturedMenu() {
                     <h2 className="font-display text-4xl md:text-5xl text-text relative inline-block">
                         MÓN "RUỘT" CỦA QUÁN
                         <span className="absolute -right-8 -top-8 text-secondary transform rotate-12">
-                            <Star size={40} fill="#F2C94C" stroke="#2D2D2D" strokeWidth={2} />
+                            <Star size={40} fill="#FFCC33" stroke="#2D2D2D" strokeWidth={2} />
                         </span>
                     </h2>
                 </div>
@@ -33,9 +33,6 @@ export function FeaturedMenu() {
                                     alt={item.name}
                                     className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-500"
                                 />
-                                <div className="absolute top-2 right-2 bg-secondary text-text font-display px-3 py-1 rounded-full border-2 border-text text-sm shadow-sm">
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                </div>
                             </div>
 
                             <h3 className="font-display text-black font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
