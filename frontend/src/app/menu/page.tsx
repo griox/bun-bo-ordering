@@ -22,13 +22,12 @@ export default function MenuPage() {
             <div className="flex-grow p-4 md:p-8">
                 <div className="max-w-7xl mx-auto relative">
 
-                    {/* Content Header - Clean & Friendly */}
-                    <div className="text-center mb-8 md:mb-12">
-                        <span className="text-secondary font-display text-lg tracking-wider uppercase mb-2 block">Thực Đơn Hôm Nay</span>
-                        <h1 className="text-4xl md:text-5xl font-display text-primary drop-shadow-sm">
-                            HƯƠNG VỊ CỐ ĐÔ
+                    <div className="text-center mb-10 md:mb-16">
+                
+                        <h1 className="text-6xl md:text-6xl font-display text-paper drop-shadow-[4px_4px_0px_#D9381E] leading-tight mb-2">
+                            THỰC ĐƠN QUÁN
                         </h1>
-                        <div className="w-24 h-1 bg-primary/20 mx-auto mt-4 rounded-full"></div>
+                        <div className="w-32 h-2 bg-paper/20 mx-auto mt-6 rounded-full"></div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-8 min-h-[500px]">

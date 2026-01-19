@@ -38,7 +38,7 @@ export function FeaturedMenu() {
                                 </div>
                             </div>
 
-                            <h3 className="font-display text-2xl text-text mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
+                            <h3 className="font-display text-black font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
                             <p className="font-main text-gray-600 line-clamp-2 mb-4 h-12">{item.description}</p>
 
                             <div className="flex justify-between items-center">

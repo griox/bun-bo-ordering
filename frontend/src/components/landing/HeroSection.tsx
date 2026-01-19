@@ -26,7 +26,7 @@ export function HeroSection() {
                 </h1>
 
                 <p className="font-main text-xl text-white/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-black drop-shadow-md">
-                    Sự kết hợp hoàn hảo giữa nước dùng đậm đà, thịt bò mềm tan và ly cà phê sữa đá Sài Gòn.
+                    Sự kết hợp hoàn hảo giữa nước dùng đậm đà, thịt bò mềm tan và ly cà phê sữa đá Nha Trang.
                     Một trải nghiệm ẩm thực "Retro" ngay giữa lòng thành phố.
                 </p>
 
@@ -39,9 +39,7 @@ export function HeroSection() {
                         <span className="group-hover:translate-x-1 transition-transform">→</span>
                     </Link>
 
-                    <button className="font-display text-paper underline decoration-2 underline-offset-4 hover:text-secondary transition-colors">
-                        XEM MENU TRƯỚC
-                    </button>
+                    
                 </div>
             </div>
 

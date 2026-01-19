@@ -21,11 +21,11 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
 
             <div className="flex-1 md:order-2 flex flex-col justify-between">
                 <div>
-                    <h3 className="font-display text-xl text-text mb-1">{item.name}</h3>
+                    <h3 className="font-display text-black font-bold text-xl mb-1">{item.name}</h3>
                     <p className="text-gray-500 text-sm font-main line-clamp-2 mb-2">{item.description}</p>
                 </div>
                 <div className="flex items-center justify-between mt-2">
-                    <span className="font-display text-xl text-primary">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</span>
+                    <span className="font-display text-primary text-2xl font-bold">{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}</span>
                 </div>
             </div>
         </div>
