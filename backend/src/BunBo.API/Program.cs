@@ -1,5 +1,8 @@
 using BunBo.Infrastructure.Data;
+using BunBo.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using BunBo.API.Middleware;
+using FluentValidation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +21,8 @@ builder.Services.AddScoped<BunBo.Application.Interfaces.IUnitOfWork, BunBo.Infra
 builder.Services.AddScoped<BunBo.Application.Interfaces.ITableService, BunBo.Application.Services.TableService>();
 builder.Services.AddScoped<BunBo.Application.Interfaces.IOrderService, BunBo.Application.Services.OrderService>();
 
+builder.Services.AddValidatorsFromAssemblyContaining<BunBo.Application.DTOs.Order.CreateOrderRequestDtoValidator>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -28,6 +33,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseAuthorization();
 

@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BunBo.Infrastructure.Data
 {
+    using BunBo.Domain.Common;
+    using Microsoft.EntityFrameworkCore.Query;
+
     public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
@@ -23,6 +26,20 @@ namespace BunBo.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Soft Delete Filter
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
+                {
+                    modelBuilder.Entity(entityType.ClrType).HasQueryFilter(ConvertFilterExpression<ISoftDelete>(e => !e.IsDeleted, entityType.ClrType));
+                }
+            }
+            
+            // Indexes
+            modelBuilder.Entity<Food>().HasIndex(f => f.IsAvailable);
+            modelBuilder.Entity<Order>().HasIndex(o => o.Status);
+            modelBuilder.Entity<Order>().HasIndex(o => o.CreatedAt);
 
             // Configure Decimals
             modelBuilder.Entity<Food>()
@@ -84,6 +101,42 @@ namespace BunBo.Infrastructure.Data
                 .WithMany(r => r.Users)
                 .HasForeignKey(u => u.RoleId)
                 .OnDelete(DeleteBehavior.Restrict);
+        }
+        
+        public override int SaveChanges()
+        {
+            HandleSoftDelete();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            HandleSoftDelete();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void HandleSoftDelete()
+        {
+            foreach (var entry in ChangeTracker.Entries<ISoftDelete>())
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Modified;
+                        entry.Entity.IsDeleted = true;
+                        entry.Entity.DeletedAt = DateTime.UtcNow;
+                        break;
+                }
+            }
+        }
+        
+        private static System.Linq.Expressions.LambdaExpression ConvertFilterExpression<TInterface>(
+            System.Linq.Expressions.Expression<Func<TInterface, bool>> filterExpression,
+            Type entityType)
+        {
+            var newParam = System.Linq.Expressions.Expression.Parameter(entityType);
+            var newBody = ReplacingExpressionVisitor.Replace(filterExpression.Parameters.Single(), newParam, filterExpression.Body);
+            return System.Linq.Expressions.Expression.Lambda(newBody, newParam);
         }
     }
 }
