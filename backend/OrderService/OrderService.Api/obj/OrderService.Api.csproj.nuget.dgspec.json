@@ -4,14 +4,14 @@
     "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj": {}
   },
   "projects": {
-    "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj": {
+    "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj",
-        "projectName": "OrderService.Api",
-        "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj",
+        "projectUniqueName": "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj",
+        "projectName": "BunBo.SharedKernel",
+        "projectPath": "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj",
         "packagesPath": "/Users/huyngo/.nuget/packages/",
-        "outputPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/obj/",
+        "outputPath": "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/Users/huyngo/.nuget/NuGet/NuGet.Config"
@@ -42,10 +42,81 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj",
+        "projectName": "OrderService.Api",
+        "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/OrderService.Api.csproj",
+        "packagesPath": "/Users/huyngo/.nuget/packages/",
+        "outputPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/huyngo/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj": {
+                "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj"
+              },
+              "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj": {
+                "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
           "dependencies": {
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
               "version": "[8.0.22, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[8.0.11, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",
@@ -67,6 +138,208 @@
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
             },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj",
+        "projectName": "OrderService.Application",
+        "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj",
+        "packagesPath": "/Users/huyngo/.nuget/packages/",
+        "outputPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/huyngo/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Domain/OrderService.Domain.csproj": {
+                "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Domain/OrderService.Domain.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Domain/OrderService.Domain.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Domain/OrderService.Domain.csproj",
+        "projectName": "OrderService.Domain",
+        "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Domain/OrderService.Domain.csproj",
+        "packagesPath": "/Users/huyngo/.nuget/packages/",
+        "outputPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Domain/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/huyngo/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj": {
+                "projectPath": "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/8.0.416/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj",
+        "projectName": "OrderService.Infrastructure",
+        "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj",
+        "packagesPath": "/Users/huyngo/.nuget/packages/",
+        "outputPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/huyngo/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {
+              "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj": {
+                "projectPath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Application/OrderService.Application.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[8.0.11, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }

@@ -1,11 +1,30 @@
 {
   "version": 3,
   "targets": {
-    "net8.0": {}
+    "net8.0": {
+      "BunBo.SharedKernel/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/BunBo.SharedKernel.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BunBo.SharedKernel.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "BunBo.SharedKernel/1.0.0": {
+      "type": "project",
+      "path": "../../BunBo.SharedKernel/BunBo.SharedKernel.csproj",
+      "msbuildProject": "../../BunBo.SharedKernel/BunBo.SharedKernel.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net8.0": []
+    "net8.0": [
+      "BunBo.SharedKernel >= 1.0.0"
+    ]
   },
   "packageFolders": {
     "/Users/huyngo/.nuget/packages/": {}
@@ -31,7 +50,11 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj": {
+              "projectPath": "/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/BunBo.SharedKernel.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
