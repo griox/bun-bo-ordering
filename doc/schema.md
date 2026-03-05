@@ -105,7 +105,8 @@ Bàn ăn trong nhà hàng, mỗi bàn có mã QR riêng để khách scan đặt
 
 ## 7. TableSession
 
-Phiên sử dụng bàn — bắt đầu khi khách scan QR, kết thúc khi thanh toán xong.
+Phiên sử dụng bàn — Mỗi khách hàng quét QR tại bàn sẽ tạo ra một `TableSession` ĐỘC LẬP.
+Bàn chỉ đóng vai trò định danh vị trí để phục vụ mang món tới. Tiền ai nấy trả, giỏ hàng ai nấy giữ.
 
 | Thuộc tính  | Kiểu                    | Mô tả                                  |
 |-------------|-------------------------|----------------------------------------|
@@ -114,7 +115,7 @@ Phiên sử dụng bàn — bắt đầu khi khách scan QR, kết thúc khi tha
 | `StartTime` | `DateTime`              | Thời điểm bắt đầu phiên (UTC)          |
 | `EndTime`   | `DateTime?`             | Thời điểm kết thúc phiên               |
 | `IsClosed`  | `bool`                  | Phiên đã đóng hay chưa (default: `false`) |
-| `Orders`    | `ICollection<Order>`    | Danh sách đơn hàng trong phiên         |
+| `Orders`    | `ICollection<Order>`    | Khách có thể đặt nhiều Order trong 1 Session |
 
 ---
 
@@ -157,7 +158,7 @@ Chi tiết một dòng món ăn trong đơn hàng.
 
 ## 10. Payment
 
-Giao dịch thanh toán cho một đơn hàng, hỗ trợ nhiều cổng thanh toán (MoMo, ZaloPay…).
+Giao dịch thanh toán cho một đơn hàng, hỗ trợ nhiều cổng thanh toán (MoMo, ZaloPay…). Hiện tại chỉ cần sePay là được
 
 | Thuộc tính      | Kiểu            | Mô tả                                        |
 |-----------------|-----------------|----------------------------------------------|
