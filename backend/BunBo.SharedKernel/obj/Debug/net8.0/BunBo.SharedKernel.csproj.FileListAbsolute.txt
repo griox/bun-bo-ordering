@@ -9,3 +9,4 @@
 /Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/obj/Debug/net8.0/refint/BunBo.SharedKernel.dll
 /Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/obj/Debug/net8.0/BunBo.SharedKernel.pdb
 /Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/obj/Debug/net8.0/ref/BunBo.SharedKernel.dll
+/Users/huyngo/bunbo-system-datn/backend/BunBo.SharedKernel/obj/Debug/net8.0/BunBo.SharedKernel.sourcelink.json

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "CatalogService.Api.Protos";
+
+package catalog;
+
+service CatalogGrpc {
+  rpc GetFoodPrice (GetFoodPriceRequest) returns (GetFoodPriceResponse);
+}
+
+message GetFoodPriceRequest {
+  string foodId = 1;
+}
+
+message GetFoodPriceResponse {
+  double price = 1;
+  bool isAvailable = 2;
+  string name = 3;
+}
