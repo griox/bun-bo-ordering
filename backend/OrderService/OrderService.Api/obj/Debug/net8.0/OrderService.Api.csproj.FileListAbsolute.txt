@@ -118,3 +118,10 @@
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/obj/Debug/net8.0/OrderService.Api.pdb
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/obj/Debug/net8.0/OrderService.Api.genruntimeconfig.cache
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/obj/Debug/net8.0/ref/OrderService.Api.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/MediatR.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/MediatR.Contracts.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/System.Diagnostics.DiagnosticSource.dll

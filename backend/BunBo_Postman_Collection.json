@@ -310,6 +310,73 @@
                     "response": []
                 }
             ]
+        },
+        {
+            "name": "Sprint 3: Order Service",
+            "item": [
+                {
+                    "name": "Scan QR To Open Table",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.sessionId) {",
+                                    "    pm.environment.set(\"TableSessionId\", jsonData.sessionId);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/orders/tables/{{MockTableId}}/scan",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "orders",
+                                "tables",
+                                "{{MockTableId}}",
+                                "scan"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Add Items to Cart Using Session",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"cart\": {\n    \"customerUsername\": \"{{TableSessionId}}\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"foodName\": \"Fake name to test gRPC update\",\n        \"unitPrice\": 10,\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
+                        },
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/cart",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "cart"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
         }
     ],
     "event": [
@@ -350,6 +417,16 @@
         },
         {
             "key": "FoodId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "MockTableId",
+            "value": "REPLACE_WITH_UUID_FROM_DB",
+            "type": "string"
+        },
+        {
+            "key": "TableSessionId",
             "value": "",
             "type": "string"
         }

@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "X2BhPRb9ji4=",
+  "dgSpecHash": "3HhpJ4aC8WI=",
   "success": true,
   "projectFilePath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj",
   "expectedPackageFiles": [
+    "/Users/huyngo/.nuget/packages/mediatr/14.1.0/mediatr.14.1.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/mediatr.contracts/2.0.1/mediatr.contracts.2.0.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.entityframeworkcore/8.0.11/microsoft.entityframeworkcore.8.0.11.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.entityframeworkcore.abstractions/8.0.11/microsoft.entityframeworkcore.abstractions.8.0.11.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.entityframeworkcore.analyzers/8.0.11/microsoft.entityframeworkcore.analyzers.8.0.11.nupkg.sha512",
@@ -12,13 +14,18 @@
     "/Users/huyngo/.nuget/packages/microsoft.extensions.caching.memory/8.0.1/microsoft.extensions.caching.memory.8.0.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.1/microsoft.extensions.dependencyinjection.8.0.1.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.2/microsoft.extensions.dependencyinjection.abstractions.8.0.2.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.logging/8.0.1/microsoft.extensions.logging.8.0.1.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.2/microsoft.extensions.logging.abstractions.8.0.2.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.options/8.0.2/microsoft.extensions.options.8.0.2.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.identitymodel.abstractions/8.14.0/microsoft.identitymodel.abstractions.8.14.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.identitymodel.jsonwebtokens/8.14.0/microsoft.identitymodel.jsonwebtokens.8.14.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.identitymodel.logging/8.14.0/microsoft.identitymodel.logging.8.14.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.identitymodel.tokens/8.14.0/microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/npgsql/8.0.6/npgsql.8.0.6.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.11/npgsql.entityframeworkcore.postgresql.8.0.11.nupkg.sha512"
+    "/Users/huyngo/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.11/npgsql.entityframeworkcore.postgresql.8.0.11.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/system.diagnostics.diagnosticsource/10.0.0/system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512"
   ],
   "logs": []
 }
