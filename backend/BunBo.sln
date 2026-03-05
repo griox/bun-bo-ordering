@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BunBo.SharedKernel", "BunBo.SharedKernel\BunBo.SharedKernel.csproj", "{B7DE494E-E579-490A-B8E3-840AD9DFE09B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{8CB0F120-D912-4143-8E0C-68E2C3E04733}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IdentityService", "IdentityService", "{30BA623E-989F-4D0D-B115-F77853C7B030}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Api", "IdentityService\IdentityService.Api\IdentityService.Api.csproj", "{BD99ECA9-FD3C-4E2B-B417-04344976C83F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Application", "IdentityService\IdentityService.Application\IdentityService.Application.csproj", "{2FD39A4A-30B2-49FE-82BB-C937218CD636}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Domain", "IdentityService\IdentityService.Domain\IdentityService.Domain.csproj", "{8CA07FEB-23EC-401D-9CFF-9AF52EDF03F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.Infrastructure", "IdentityService\IdentityService.Infrastructure\IdentityService.Infrastructure.csproj", "{16C885E6-EF4A-4306-BD91-B4C60980E8AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B7DE494E-E579-490A-B8E3-840AD9DFE09B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B7DE494E-E579-490A-B8E3-840AD9DFE09B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B7DE494E-E579-490A-B8E3-840AD9DFE09B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B7DE494E-E579-490A-B8E3-840AD9DFE09B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CB0F120-D912-4143-8E0C-68E2C3E04733}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CB0F120-D912-4143-8E0C-68E2C3E04733}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CB0F120-D912-4143-8E0C-68E2C3E04733}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CB0F120-D912-4143-8E0C-68E2C3E04733}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD99ECA9-FD3C-4E2B-B417-04344976C83F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD99ECA9-FD3C-4E2B-B417-04344976C83F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD99ECA9-FD3C-4E2B-B417-04344976C83F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD99ECA9-FD3C-4E2B-B417-04344976C83F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FD39A4A-30B2-49FE-82BB-C937218CD636}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FD39A4A-30B2-49FE-82BB-C937218CD636}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FD39A4A-30B2-49FE-82BB-C937218CD636}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FD39A4A-30B2-49FE-82BB-C937218CD636}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CA07FEB-23EC-401D-9CFF-9AF52EDF03F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CA07FEB-23EC-401D-9CFF-9AF52EDF03F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CA07FEB-23EC-401D-9CFF-9AF52EDF03F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CA07FEB-23EC-401D-9CFF-9AF52EDF03F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16C885E6-EF4A-4306-BD91-B4C60980E8AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16C885E6-EF4A-4306-BD91-B4C60980E8AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16C885E6-EF4A-4306-BD91-B4C60980E8AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16C885E6-EF4A-4306-BD91-B4C60980E8AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{BD99ECA9-FD3C-4E2B-B417-04344976C83F} = {30BA623E-989F-4D0D-B115-F77853C7B030}
+		{2FD39A4A-30B2-49FE-82BB-C937218CD636} = {30BA623E-989F-4D0D-B115-F77853C7B030}
+		{8CA07FEB-23EC-401D-9CFF-9AF52EDF03F0} = {30BA623E-989F-4D0D-B115-F77853C7B030}
+		{16C885E6-EF4A-4306-BD91-B4C60980E8AD} = {30BA623E-989F-4D0D-B115-F77853C7B030}
+	EndGlobalSection
+EndGlobal

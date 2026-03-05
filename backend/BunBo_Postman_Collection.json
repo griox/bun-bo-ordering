@@ -1,0 +1,145 @@
+{
+    "info": {
+        "_postman_id": "b0a2f4c3-1d57-4b72-a1b7-9e7b23c8f1a1",
+        "name": "BunBo Microservices K8s",
+        "description": "Collection for testing BunBo Realtime Food Ordering System API endpoints.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Sprint 1: Identity Service",
+            "item": [
+                {
+                    "name": "Register User (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123\",\n    \"role\": \"Admin\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/identity/register",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "identity",
+                                "register"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Register User (Kitchen)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"chef_01\",\n    \"password\": \"123\",\n    \"role\": \"Kitchen\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/identity/register",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "identity",
+                                "register"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.token) {",
+                                    "    pm.environment.set(\"AuthToken\", jsonData.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/identity/login",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "identity",
+                                "login"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "GatewayUrl",
+            "value": "http://localhost:5000",
+            "type": "string"
+        },
+        {
+            "key": "AuthToken",
+            "value": "",
+            "type": "string"
+        }
+    ]
+}
