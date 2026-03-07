@@ -109,6 +109,83 @@
                                 }
                             },
                             "response": []
+                        },
+                        {
+                            "name": "Google Login",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.token) {",
+                                            "    pm.environment.set(\"AuthToken\", jsonData.token);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"idToken\": \"eyJhbGciOiJSUzI1NiIs... (Paste JSON Web Token returned by Google API here)\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/identity/google-login",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "identity",
+                                        "google-login"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Logout (Client side Clear Token)",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "pm.environment.set(\"AuthToken\", \"\");"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/identity/logout",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "identity",
+                                        "logout"
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
                     ]
                 }

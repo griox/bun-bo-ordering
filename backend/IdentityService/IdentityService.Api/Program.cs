@@ -76,6 +76,25 @@ authGroup.MapPost("/login", async (MediatR.IMediator mediator, IdentityService.A
     }
 });
 
+authGroup.MapPost("/google-login", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.GoogleLoginCommand cmd) =>
+{
+    try
+    {
+        var token = await mediator.Send(cmd);
+        return Results.Ok(new { Token = token, Message = "Google login successful" });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
+});
+
+authGroup.MapPost("/logout", () =>
+{
+    // Client-side logout strategy
+    return Results.Ok(new { Message = "Logged out successfully. Please remove the token from your client storage." });
+});
+
 app.MapGet("/", () => "Identity Service is running.");
 
 // Auto migrate database on startup

@@ -34,11 +34,14 @@ namespace IdentityService.Infrastructure.Data.Migrations
                     b.Property<DateTime?>("DeletedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("GoogleId")
+                        .HasMaxLength(150)
+                        .HasColumnType("character varying(150)");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Role")
@@ -55,6 +58,9 @@ namespace IdentityService.Infrastructure.Data.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GoogleId")
+                        .IsUnique();
 
                     b.HasIndex("Username")
                         .IsUnique();
