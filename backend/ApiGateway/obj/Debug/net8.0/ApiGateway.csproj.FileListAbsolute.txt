@@ -27,3 +27,4 @@
 /Users/huyngo/bunbo-system-datn/backend/ApiGateway/obj/Debug/net8.0/ApiGateway.pdb
 /Users/huyngo/bunbo-system-datn/backend/ApiGateway/obj/Debug/net8.0/ApiGateway.genruntimeconfig.cache
 /Users/huyngo/bunbo-system-datn/backend/ApiGateway/obj/Debug/net8.0/ref/ApiGateway.dll
+/Users/huyngo/bunbo-system-datn/backend/ApiGateway/obj/Debug/net8.0/ApiGateway.sourcelink.json

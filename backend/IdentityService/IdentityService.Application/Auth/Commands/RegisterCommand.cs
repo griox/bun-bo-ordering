@@ -23,6 +23,11 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
 
     public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
+        var allowedRoles = new[] { "Admin", "Client" };
+        if (!allowedRoles.Contains(request.Role))
+        {
+            throw new Exception("Invalid role. Only 'Admin' and 'Client' are allowed.");
+        }
         if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username, cancellationToken))
         {
             throw new Exception("User already exists");

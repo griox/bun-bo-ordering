@@ -1,46 +1,53 @@
-# 🍽️ Realtime Food Ordering System (Microservices Architecture)
+# � ĐỒ ÁN: Hệ Thống Thương Mại Điện Tử (Food Ordering System)
+> **Kiến trúc Microservices trên nền tảng Kubernetes**
 
-> **A production-grade, realtime restaurant ordering platform rebuilt with Microservices on Kubernetes.**
+Dự án này là sản phẩm đồ án tốt nghiệp, áp dụng kiến trúc **Microservices** cho miền nghiệp vụ đặt đồ ăn/nhà hàng (Food Ordering), được triển khai trên cụm **Kubernetes** với đầy đủ các cấu hình về auto-scaling, monitoring (giám sát metrics) và đảm bảo tính sẵn sàng cao (High Availability).
 
-This project is a comprehensive solution for restaurants and cafes, enabling customers to order via QR codes at their tables while Kitchen and Admin staff receive updates instantly. It is built to be robust, secure, and highly scalable using modern distributed system patterns.
+---
+
+## 🎯 Mục Tiêu Đồ Án
+- **Mục tiêu học thuật:** Nắm vững và phân tích chuyên sâu kiến trúc **Microservices** so với Monolithic. Nắm bắt các nguyên tắc thiết kế ứng dụng phân tán hiện đại và nền tảng **Kubernetes (K8s)**.
+- **Mục tiêu kỹ thuật:** Chuyển đổi từ hệ thống nguyên khối sang Microservices; Container hóa; Cấu hình HPA (Horizontal Pod Autoscaler), Service Mesh/Ingress, và tích hợp các công cụ giám sát (Prometheus, Grafana), logging (ELK/Loki).
+- **Mục tiêu đánh giá:** Thực hiện Load Testing (JMeter/K6) và Chaos Testing để đánh giá mức độ chịu tải, độ trễ và khả năng phục hồi của hệ thống.
 
 ---
 
 ## 🚀 Key Features
 
-- **📱 QR Code Ordering**: Customers scan a QR code to access the menu tied to their specific table (No app download required).
-- **⚡ Realtime Updates**: Instant notifications for Order Status (Kitchen -> Customer) and New Orders (Customer -> Kitchen) using **SignalR** & **RabbitMQ**.
-- **💳 Integrated Payments**: Seamless support for MoMo, ZaloPay, VNPay, and **SePay** for automated webhook reconciliation.
-- **🛡️ Secure Architecture**: API Gateway routing, strict separation of concerns, and JWT authentication.
-- **🧑‍🍳 Kitchen Dashboard**: Live pipeline of orders (Pending -> Cooking -> Served).
-- **📈 High Availability & Scale**: Deployed on **Kubernetes** with Auto-scaling (HPA), separated databases per service, and Redis caching.
+- **📱 QR Code Ordering**: Khách hàng quét mã QR để gọi món tại bàn (Không cần cài app).
+- **⚡ Realtime Notifications**: Thông báo trạng thái đơn tức thời qua **SignalR** & **RabbitMQ** (đáp ứng module Notification).
+- **💳 Integrated Payments**: Hỗ trợ thanh toán tự động qua **SePay**, MoMo, VNPay (Module Payment).
+- **🛡️ Secure Architecture**: API Gateway phân giải request, xác thực qua JWT Authentication.
+- **🧑‍🍳 Kitchen Dashboard**: Màn hình quản lý realtime cho nhà bếp.
+- **📈 K8s & Auto-scaling**: Triển khai hoàn toàn trên **Kubernetes** với cấu hình ReplicaSet, HPA, ConfigMaps, Secrets và Deploy bằng Helm Charts.
 
 ---
 
-## 🛠️ Technology Stack
+## 🛠️ Technology Stack & Ánh xạ Microservices
 
-We use a **Microservices Architecture** approach combined with **Clean Architecture** principles inside each service to ensure maintainability and independent scalability.
+Hệ thống tuân thủ pattern **Database per Service**, giao tiếp qua REST API (Đồng bộ) và RabbitMQ (Bất đồng bộ).
 
-### **Backend (.NET 8 & Microservices)**
-- **Framework**: ASP.NET Core Web API 8.0
-- **API Gateway**: Ocelot / YARP (or NGINX Ingress on K8s)
-- **Service Communication**: REST API (Synchronous) & RabbitMQ (Asynchronous Event-Driven)
-- **Databases (Physical Isolation)**: PostgreSQL (Separate DB instance/schema per service)
-- **Caching**: Redis (for Cart Service and SignalR backplane)
-- **Realtime**: SignalR
-- **Architecture**: Microservices & Domain-Driven Design (DDD)
+### **Backend (Microservices - .NET 8)**
+*Theo yêu cầu nghiệp vụ, hệ thống chia thành 6 modules chính:*
+- **API Gateway**: Ocelot / YARP (hoặc NGINX Ingress trên K8s) (Định tuyến, JWT).
+- **Identity Service** *(User Service)*: Đăng nhập, phân quyền, quản lý tài khoản.
+- **Catalog Service** *(Product Service)*: Quản lý thực đơn, món ăn, danh mục.
+- **Cart Service** *(Cart Module)*: Quản lý giỏ hàng nhanh bằng **Redis**.
+- **Order Service**: Xử lý tạo và quản lý luồng đơn hàng.
+- **Payment Service**: Xử lý thanh toán webhook và đối soát.
+- **Realtime Service** *(Notification Service)*: Gửi thông báo WebSocket / Push Notification xuống Client và Nhà bếp.
 
 ### **Frontend (Next.js 15)**
-- **Framework**: Next.js App Router
-- **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **State Management**: Zustand
-- **Realtime Client**: @microsoft/signalr
+- **Framework**: Next.js App Router (TypeScript, TailwindCSS, Zustand).
+- **Realtime Client**: `@microsoft/signalr`.
 
-### **DevOps & Infrastructure**
-- **Containerization**: Docker & Docker Compose
-- **Orchestration**: Kubernetes (Minikube / EKS / GKE)
-- **Monitoring**: Prometheus & Grafana
+### **DevOps, Kubernetes & Monitoring**
+- **Containerization**: Docker & Docker Compose.
+- **Orchestration**: Kubernetes (K8s) (Deployment, Service, HPA, Ingress).
+- **Package Manager**: Helm Charts.
+- **Monitoring & Alerting**: Prometheus & Grafana.
+- **Logging**: ELK Stack / Loki.
+- **Testing**: K6 / JMeter (Load Testing).
 
 ---
 
@@ -48,10 +55,10 @@ We use a **Microservices Architecture** approach combined with **Clean Architect
 
 ```mermaid
 graph TD
-    Client[📱 Customer Mobile / Frontend] -->|HTTPS| Gateway(API Gateway)
+    Client[📱 Customer Mobile / Frontend] -->|HTTPS| Gateway(API Gateway / Ingress)
     Admin[💻 Admin / Kitchen] -->|HTTPS| Gateway
     
-    subgraph Backend Microservices
+    subgraph K8s Cluster - Backend Microservices
         Gateway -->|REST| ID[Identity Service]
         Gateway -->|REST| Cat[Catalog Service]
         Gateway -->|REST| Cart[Cart Service]
@@ -65,12 +72,12 @@ graph TD
         MQ -.->|Consume| Ord
         MQ -.->|Consume| RT
         
-        %% Databases
+        %% Databases isolated implicitly
         ID --- DB1[(PostgreSQL: Identity)]
         Cat --- DB2[(PostgreSQL: Catalog)]
         Ord --- DB3[(PostgreSQL: Order)]
         Pay --- DB4[(PostgreSQL: Payment)]
-        Cart --- Cache1[(Redis)]
+        Cart --- Cache1[(Redis: Cart)]
         RT --- Cache2[(Redis Backplane)]
     end
     
@@ -80,93 +87,67 @@ graph TD
 
 ---
 
-## � Project Structure
+## 🗺️ Checklist Tiến Độ (Bám sát yêu cầu đồ án)
 
-```bash
-bunbo-system/
-├── backend/                # Microservices Backend (.NET 8)
-│   ├── ApiGateway/              # API Gateway (Ocelot/YARP)
-│   ├── BunBo.SharedKernel/      # Shared components (Exceptions, CQRS, Base Entities)
-│   ├── IdentityService/         # Auth, Users, Roles
-│   ├── CatalogService/          # Products, Menus, Options
-│   ├── CartService/             # Shopping Cart (Redis)
-│   ├── OrderService/            # Order Management & Processing
-│   ├── PaymentService/          # SePay / VNPay Integration
-│   ├── RealtimeService/         # SignalR Hubs
-│   ├── docker-compose.yml       # Local Infrastructure (DBs, MQ, Redis)
-│   └── sprint_schedule.md       # Detailed Sprint Planning
-│
-├── frontend/               # Next.js Application
-│   ├── src/
-│   │   ├── app/            # App Router Pages
-│   │   ├── store/          # Zustand State
-│   │   └── services/       # API & SignalR services
-│   └── tailwind.config.ts
-└── kubernetes/             # K8s Manifests (Deployments, Services, ConfigMaps)
-```
+Tiến độ phát triển dự án được chia thành 5 giai đoạn cốt lõi:
 
----
+### 📖 Giai đoạn 1 – Nghiên cứu lý thuyết & Kiến trúc sơ bộ
+- [x] Phân tích sự kiện Microservices vs Monolithic.
+- [x] Nghiên cứu Containerization với Docker.
+- [x] Khảo sát Kubernetes core components (Service, Pod, ConfigMap, Ingress).
+- [ ] Nghiên cứu Auto-scaling (HPA) và Monitoring (Prometheus/Grafana).
 
-## 🗺️ Sprint Roadmap & Task Breakdown
+### � Giai đoạn 2 – Phân tích & Thiết kế Microservices
+- [x] Khảo sát miền nghiệp vụ Food Ordering (QR Code ra món).
+- [x] Thiết kế chia nhỏ 6 services độc lập: Identity, Catalog, Cart, Order, Payment, Realtime.
+- [x] Thiết kế mô hình dữ liệu **Database per Service**.
+- [x] Khởi tạo các repository Backend, Frontend, SharedKernels.
+- [ ] Cấu trúc sơ đồ Giao tiếp liên services bằng RabbitMQ.
 
-Quá trình chuyển đổi từ Monolithic sang Microservices được chia thành 5 Sprint cụ thể để code lại từ đầu một cách có hệ thống.
+### 💻 Giai đoạn 3 – Triển khai Source Code (Các Sprints)
 
-### 🚀 Sprint 1: Nền tảng Core & Infrastructure (Tuần 1-2)
-**Mục tiêu:** Thiết lập khung sườn chung, cấu trúc các thư mục Microservice nền tảng và dịch vụ phân quyền (Identity Service).
-- [ ] Tạo dự án thư viện dùng chung `BunBo.SharedKernel`.
-- [ ] Cấu hình API Gateway dự án mới (`ApiGateway`).
-- [ ] Tạo khung sườn cho **Identity Service** (`API`, `Application`, `Domain`, `Infrastructure`).
-- [ ] Cấu hình Solution references cho các project trên.
-- [ ] Di chuyển các Base Entity, Exceptions, Interfaces cơ sở sang `BunBo.SharedKernel`.
-- [ ] Setup `docker-compose.yml` gốc chứa: PostgreSQL, RabbitMQ, Redis.
-- [ ] Xây dựng Database schema & Migration cho **Identity Service**.
-- [ ] Xây dựng logic Authentication/Authorization (JWT) vào Identity Service.
-- [ ] Cấu hình Ocelot (hoặc YARP) trong API Gateway để định tuyến request Authentication vào Identity Service.
-- [ ] Chạy kiểm thử xác nhận việc đăng nhập qua Gateway.
+🔹 **Sprint 1: Nền tảng Core, API Gateway & Identity Service**
+- [x] Thiết lập `docker-compose.yml` gốc (PostgreSQL, RabbitMQ, Redis).
+- [x] Tạo dự án thư viện dùng chung `BunBo.SharedKernel` (Exceptions, CQRS, Base Entities).
+- [x] Thiết lập `API Gateway` cơ bản.
+- [x] Xây dựng `Identity Service` (Authentication/Authorization với JWT, Database độc lập).
 
-### 🛒 Sprint 2: Core Business - Catalog & Cart (Tuần 3)
-**Mục tiêu:** Quản lý dữ liệu tĩnh (Menu) và dữ liệu tạm thời (Cart).
-- [ ] Tạo module cho **Catalog Service**.
-  - [ ] Cấu hình DbContext & Migration (PostgreSQL - Catalog Schema).
-  - [ ] Xây dựng logic CRUD Món ăn, Tuỳ chọn, Danh mục.
-  - [ ] Cấu hình route trên API Gateway cho Product/Menu.
-- [ ] Tạo module cho **Cart Service**.
-  - [ ] Tích hợp Redis làm Storage chính qua `StackExchange.Redis`.
-  - [ ] Xây dựng logic Thêm/Bớt/Sửa giỏ hàng.
-  - [ ] Cấu hình route trên API Gateway cho Cart.
-- [ ] Thiết lập giao tiếp đồng bộ (REST qua HttpClient/gRPC) để Cart Service lấy giá mới nhất từ Catalog Service khi checkout.
+🔹 **Sprint 2: Core Business - Catalog & Cart**
+- [x] Xây dựng `Catalog Service` (CRUD Món ăn, Danh mục, Database độc lập).
+- [x] Xây dựng `Cart Service` (Sử dụng Redis làm Storage).
+- [x] Cấu hình route trên API Gateway cho Catalog và Cart.
+- [x] Tích hợp giao tiếp REST (gRPC/HttpClient) giữa Cart và Catalog để đồng bộ giá.
 
-### 📦 Sprint 3: Core Business - Order & Realtime (Tuần 4)
-**Mục tiêu:** Hoàn thiện luồng đặt món phức tạp nhất bằng RabbitMQ và SignalR.
-- [ ] Tạo module cho **Order Service**.
-  - [ ] Cấu hình DbContext & Migration (PostgreSQL - Order Schema).
-  - [ ] Xây dựng API Checkout nhận dữ liệu từ Cart.
-  - [ ] Tích hợp `MassTransit` để xuất bản (Publish) event `OrderCreatedEvent` vào RabbitMQ.
-- [ ] Tạo module cho **Realtime Service**.
-  - [ ] Di chuyển/Xây dựng toàn bộ SignalR Hubs sang service này.
-  - [ ] Sử dụng Redis Backplane cho SignalR (để scale multiple instances).
-  - [ ] Cấu hình RabbitMQ Consumer để nhận `OrderCreatedEvent` và bắn WebSocket cho nhà bếp (Kitchen Dashboard).
+🔹 **Sprint 3: Core Business - Order & Realtime (Message Queue)**
+- [ ] Xây dựng `Order Service` (Xử lý đặt hàng, Database độc lập).
+- [ ] Tích hợp RabbitMQ để Publish sự kiện `OrderCreatedEvent`.
+- [ ] Xây dựng `Realtime Service` (Sử dụng SignalR & Redis Backplane).
+- [ ] Cấu hình Consume RabbitMQ trong Realtime Service để nhận event và đẩy WebSockets xuống Kitchen Dashboard/Client.
 
-### � Sprint 4: Payment & Notification (Tuần 5)
-**Mục tiêu:** Xử lý thanh toán và đối soát với SePay.
-- [ ] Tạo module cho **Payment Service**.
-  - [ ] Tích hợp API của **SePay** để tạo link thanh toán/QR Code.
-  - [ ] Xây dựng endpoint nhận Webhook từ SePay.
-  - [ ] Publish `PaymentCompletedEvent` vào RabbitMQ khi Webhook xác nhận thành công.
-- [ ] Cập nhật **Order Service**:
-  - [ ] Tạo Consumer nhận `PaymentCompletedEvent` từ RabbitMQ.
-  - [ ] Tự động cập nhật trạng thái Order thành `Paid` / Đẩy vào bếp nấu.
-- [ ] Cập nhật **Realtime Service**:
-  - [ ] Nhận event `OrderUpdated` từ RabbitMQ để báo cho khách hàng đã thanh toán thành công.
+🔹 **Sprint 4: Payment & Tích hợp Webhook**
+- [ ] Xây dựng `Payment Service` (Database độc lập).
+- [ ] Tích hợp API tạo mã QR thanh toán (SePay / MoMo / VNPay).
+- [ ] Cấu hình Endpoint nhận Webhook xác nhận thanh toán.
+- [ ] Publish sự kiện `PaymentCompletedEvent` lên RabbitMQ để Order Service tự động cập nhật trạng thái đơn hàng.
 
-### 🚢 Sprint 5: Kubernetes & Scale (Tuần 6)
-**Mục tiêu:** Container hoá toàn bộ và triển khai lên K8s, tích hợp Auto-scaling.
-- [ ] Dockerize: Viết `Dockerfile` tối ưu (multi-stage) cho tất cả 6 services.
-- [ ] Viết Kubernetes Manifests (`Deployments`, `Services`, `Ingress`, `ConfigMaps/Secrets`) cho từng Service.
-- [ ] Triển khai NGINX Ingress Controller làm external Gateway thay thế Ocelot local (nếu cần).
-- [ ] Cấu hình Horizontal Pod Autoscaler (HPA) cho `OrderService` và `RealtimeService` dựa trên CPU metrics.
-- [ ] Triển khai hệ thống Monitoring (Prometheus, Grafana).
-- [ ] Đóng và test toàn bộ luồng nghiệp vụ trên môi trường K8s giả lập (Minikube).
+🔹 **Sprint 5: Container hóa toàn bộ hệ thống**
+- [ ] Viết `Dockerfile` tối ưu (multi-stage) cho tất cả Microservices và API Gateway.
+- [ ] Test toàn bộ luồng request qua các container bằng `docker-compose` trên môi trường Local.
+- [ ] Đẩy (Push) Docker Images lên Registry (Docker Hub / GitHub Packages).
+
+### � Giai đoạn 4 – Triển khai K8s & Kiểm thử (Trọng tâm Đồ án)
+- [ ] Viết toàn bộ K8s manifest files (`Deployments`, `Ingress`, `Secrets`, v.v.).
+- [ ] Áp dụng **Helm Charts** để đóng gói và triển khai lên Minikube/Cluster.
+- [ ] Cài đặt **Prometheus + Grafana**, cấu hình Alerting cơ bản.
+- [ ] Cấu hình **HPA (Horizontal Pod Autoscaler)** scaling dựa trên tài nguyên CPU.
+- [ ] Thực hiện **Load Testing** bằng JMeter/K6, phân tích metrics từ Grafana.
+- [ ] Thử nghiệm **Chaos Testing** (mô phỏng node/pod failure) để kiểm chứng HA.
+
+### 🎓 Giai đoạn 5 – Tổng kết
+- [ ] Rà soát Code Quality, Refactoring.
+- [ ] Viết Báo cáo Đồ án tốt nghiệp chi tiết.
+- [ ] Chuẩn bị Slides bảo vệ.
+- [ ] Record video Demo, nộp sản phẩm hoàn thiện.
 
 ---
 
@@ -176,36 +157,34 @@ Quá trình chuyển đổi từ Monolithic sang Microservices được chia th�
 - [Docker & Docker Compose](https://www.docker.com/)
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - [Node.js 18+](https://nodejs.org/)
+- K8s local (Minikube / Docker Desktop k8s) đang thiết lập - *để test Phase 4.*
 
-### Installation & Run
+### Chạy hệ thống môi trường Local (Với Docker Compose)
 
-1.  **Clone the repository**
+1.  **Clone repository**
     ```bash
     git clone https://github.com/griox/bun-bo-ordering.git
     cd bun-bo-ordering
     ```
 
-2.  **Start the Infrastructure (Databases, RabbitMQ, Redis)**
+2.  **Khởi động Infrastructure (PostgreSQL, RabbitMQ, Redis)**
     ```bash
     cd backend
     docker-compose up -d
     ```
 
-3.  **Run the Microservices** (Will be updated as sprints progress)
-    *   Start API Gateway
-    *   Start Identity Service
-    *   *...Other services*
+3.  **Khởi động các Microservices**
+    - Mở IDE (Visual Studio / Rider) và chạy các dịch vụ `ApiGateway`, `IdentityService`, v.v. hoặc lệnh `dotnet run`.
 
-4.  **Run the Frontend Client**
+4.  **Khởi động Frontend Next.js**
     ```bash
     cd ../frontend
     npm install
     npm run dev
     ```
-    *App will start at `http://localhost:3000`*
+    *App sẽ khả dụng tại: `http://localhost:3000`*
 
 ---
 
 ## 📜 License
-
-This project is open-source and available under the [MIT License](LICENSE).
+Dự án được triển khai dưới dạng Open-Source phục vụ mục đích Đồ án Tốt nghiệp. Cấp phép theo [MIT License](LICENSE).

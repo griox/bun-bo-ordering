@@ -13,7 +13,7 @@ public class Food : BaseEntity
 
     public Category? Category { get; private set; }
 
-    protected Food() { } // For EF Core
+    protected Food() { Name = null!; } // For EF Core
 
     public Food(string name, string? description, string? imageUrl, decimal price, Guid categoryId)
     {

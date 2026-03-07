@@ -6,7 +6,7 @@ public class User : BaseEntity
 {
     public string Username { get; private set; }
     public string PasswordHash { get; private set; }
-    public string Role { get; private set; } // "Admin", "Kitchen", etc.
+    public string Role { get; private set; } // "Admin" or "Client"
 
     // For EF Core
     protected User() { }

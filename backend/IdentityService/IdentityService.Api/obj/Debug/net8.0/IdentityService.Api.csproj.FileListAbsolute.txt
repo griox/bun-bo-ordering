@@ -131,3 +131,4 @@
 /Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.Internal.dll
 /Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Api/bin/Debug/net8.0/Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
 /Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Api/bin/Debug/net8.0/Microsoft.Extensions.Identity.Core.dll
+/Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Api/obj/Debug/net8.0/IdentityService.Api.sourcelink.json

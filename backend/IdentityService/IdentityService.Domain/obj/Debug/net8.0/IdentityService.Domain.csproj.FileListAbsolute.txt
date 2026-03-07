@@ -13,3 +13,4 @@
 /Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Domain/obj/Debug/net8.0/refint/IdentityService.Domain.dll
 /Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Domain/obj/Debug/net8.0/IdentityService.Domain.pdb
 /Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Domain/obj/Debug/net8.0/ref/IdentityService.Domain.dll
+/Users/huyngo/bunbo-system-datn/backend/IdentityService/IdentityService.Domain/obj/Debug/net8.0/IdentityService.Domain.sourcelink.json

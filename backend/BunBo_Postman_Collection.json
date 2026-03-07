@@ -183,6 +183,64 @@
                     "response": []
                 },
                 {
+                    "name": "Update Category",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{AuthToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id\": \"{{CategoryId}}\",\n  \"name\": \"Món Chính (Updated)\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/catalog/categories/{{CategoryId}}",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "catalog",
+                                "categories",
+                                "{{CategoryId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Category",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{AuthToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/catalog/categories/{{CategoryId}}",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "catalog",
+                                "categories",
+                                "{{CategoryId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
                     "name": "Create Food",
                     "event": [
                         {
@@ -249,6 +307,64 @@
                                 "foods",
                                 "category",
                                 "{{CategoryId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Food",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{AuthToken}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"id\": \"{{FoodId}}\",\n  \"name\": \"Bún Bò Giò Heo\",\n  \"description\": \"Thêm topping giò\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 60000,\n  \"categoryId\": \"{{CategoryId}}\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "catalog",
+                                "foods",
+                                "{{FoodId}}"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete Food",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{AuthToken}}"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
+                            "host": [
+                                "{{GatewayUrl}}"
+                            ],
+                            "path": [
+                                "api",
+                                "catalog",
+                                "foods",
+                                "{{FoodId}}"
                             ]
                         }
                     },

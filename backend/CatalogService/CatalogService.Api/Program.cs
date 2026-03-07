@@ -3,7 +3,35 @@ using Microsoft.EntityFrameworkCore;
 using CatalogService.Application;
 using CatalogService.Application.Interfaces;
 
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var secretKey = jwtSettings["Key"] ?? "super_secret_key_for_bunbo_system_that_is_long_enough"; // Fallback to same default as IdentityService
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
+            ValidAudience = jwtSettings["Audience"] ?? "BunBoClients",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,6 +56,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/", () => "Catalog Service is running.");
 
 var catalogGroup = app.MapGroup("/api/catalog");
@@ -37,13 +68,26 @@ catalogGroup.MapPost("/categories", async (MediatR.IMediator mediator, CatalogSe
 {
     var id = await mediator.Send(cmd);
     return Results.Created($"/api/catalog/categories/{id}", new { Id = id });
-});
+}).RequireAuthorization("Admin");
 
 catalogGroup.MapGet("/categories", async (MediatR.IMediator mediator) =>
 {
     var categories = await mediator.Send(new CatalogService.Application.Categories.Queries.GetAllCategoriesQuery());
     return Results.Ok(categories);
 });
+
+catalogGroup.MapPut("/categories/{id}", async (MediatR.IMediator mediator, Guid id, CatalogService.Application.Categories.Commands.UpdateCategoryCommand cmd) =>
+{
+    if (id != cmd.Id) return Results.BadRequest("ID mismatch");
+    var success = await mediator.Send(cmd);
+    return success ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization("Admin");
+
+catalogGroup.MapDelete("/categories/{id}", async (MediatR.IMediator mediator, Guid id) =>
+{
+    var success = await mediator.Send(new CatalogService.Application.Categories.Commands.DeleteCategoryCommand(id));
+    return success ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization("Admin");
 
 // Food Endpoints
 catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, CatalogService.Application.Foods.Commands.CreateFoodCommand cmd) =>
@@ -57,13 +101,33 @@ catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, CatalogService
     {
         return Results.BadRequest(new { Message = ex.Message });
     }
-});
+}).RequireAuthorization("Admin");
 
 catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator mediator, Guid categoryId) =>
 {
     var foods = await mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsByCategoryQuery(categoryId));
     return Results.Ok(foods);
 });
+
+catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, CatalogService.Application.Foods.Commands.UpdateFoodCommand cmd) =>
+{
+    if (id != cmd.Id) return Results.BadRequest("ID mismatch");
+    try
+    {
+        var success = await mediator.Send(cmd);
+        return success ? Results.NoContent() : Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+}).RequireAuthorization("Admin");
+
+catalogGroup.MapDelete("/foods/{id}", async (MediatR.IMediator mediator, Guid id) =>
+{
+    var success = await mediator.Send(new CatalogService.Application.Foods.Commands.DeleteFoodCommand(id));
+    return success ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization("Admin");
 
 // Auto migrate database on startup
 using (var scope = app.Services.CreateScope())

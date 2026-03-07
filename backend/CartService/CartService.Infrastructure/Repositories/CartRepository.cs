@@ -42,9 +42,9 @@ public class CartRepository : ICartRepository
 
         if (!created)
         {
-            return null!;
+            throw new Exception("Could not update cart in Redis");
         }
 
-        return await GetCartAsync(cart.CustomerUsername);
+        return await GetCartAsync(cart.CustomerUsername) ?? cart;
     }
 }

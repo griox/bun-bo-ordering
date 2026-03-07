@@ -8,7 +8,7 @@ public class Category : BaseEntity
 
     public ICollection<Food> Foods { get; private set; } = new List<Food>();
 
-    protected Category() { } // For EF Core
+    protected Category() { Name = null!; } // For EF Core
 
     public Category(string name)
     {
