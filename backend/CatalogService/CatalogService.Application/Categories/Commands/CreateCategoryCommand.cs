@@ -4,9 +4,9 @@ using MediatR;
 
 namespace CatalogService.Application.Categories.Commands;
 
-public record CreateCategoryCommand(string Name) : IRequest<Guid>;
+public record CreateCategoryCommand(string Name) : IRequest<int>;
 
-public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, Guid>
+public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>
 {
     private readonly IAppDbContext _context;
 
@@ -15,7 +15,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         _context = context;
     }
 
-    public async Task<Guid> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
+    public async Task<int> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
         var category = new Category(request.Name);
         

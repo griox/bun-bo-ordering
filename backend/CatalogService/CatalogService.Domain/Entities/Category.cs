@@ -2,7 +2,7 @@ using BunBo.SharedKernel;
 
 namespace CatalogService.Domain.Entities;
 
-public class Category : BaseEntity
+public class Category : BaseEntity<int>
 {
     public string Name { get; private set; }
 

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.Categories.Queries;
 
-public record CategoryDto(Guid Id, string Name);
+public record CategoryDto(int Id, string Name);
 
 public record GetAllCategoriesQuery : IRequest<List<CategoryDto>>;
 

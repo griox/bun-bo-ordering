@@ -10,8 +10,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Configure JWT Authentication
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-var secretKey = jwtSettings["Key"] ?? "super_secret_key_for_bunbo_system_that_is_long_enough"; // Fallback to same default as IdentityService
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890"; // Fallback to same default as IdentityService
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -23,7 +23,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
-            ValidAudience = jwtSettings["Audience"] ?? "BunBoClients",
+            ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
         };
     });
@@ -76,14 +76,14 @@ catalogGroup.MapGet("/categories", async (MediatR.IMediator mediator) =>
     return Results.Ok(categories);
 });
 
-catalogGroup.MapPut("/categories/{id}", async (MediatR.IMediator mediator, Guid id, CatalogService.Application.Categories.Commands.UpdateCategoryCommand cmd) =>
+catalogGroup.MapPut("/categories/{id}", async (MediatR.IMediator mediator, int id, CatalogService.Application.Categories.Commands.UpdateCategoryCommand cmd) =>
 {
     if (id != cmd.Id) return Results.BadRequest("ID mismatch");
     var success = await mediator.Send(cmd);
     return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin");
 
-catalogGroup.MapDelete("/categories/{id}", async (MediatR.IMediator mediator, Guid id) =>
+catalogGroup.MapDelete("/categories/{id}", async (MediatR.IMediator mediator, int id) =>
 {
     var success = await mediator.Send(new CatalogService.Application.Categories.Commands.DeleteCategoryCommand(id));
     return success ? Results.NoContent() : Results.NotFound();
@@ -103,7 +103,7 @@ catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, CatalogService
     }
 }).RequireAuthorization("Admin");
 
-catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator mediator, Guid categoryId) =>
+catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator mediator, int categoryId) =>
 {
     var foods = await mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsByCategoryQuery(categoryId));
     return Results.Ok(foods);

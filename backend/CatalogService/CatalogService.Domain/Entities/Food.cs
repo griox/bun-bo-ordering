@@ -9,13 +9,13 @@ public class Food : BaseEntity
     public string? ImageUrl { get; private set; }
     public decimal Price { get; private set; }
     public bool IsAvailable { get; private set; }
-    public Guid CategoryId { get; private set; }
+    public int CategoryId { get; private set; }
 
     public Category? Category { get; private set; }
 
     protected Food() { Name = null!; } // For EF Core
 
-    public Food(string name, string? description, string? imageUrl, decimal price, Guid categoryId)
+    public Food(string name, string? description, string? imageUrl, decimal price, int categoryId)
     {
         Name = name;
         Description = description;
@@ -25,7 +25,7 @@ public class Food : BaseEntity
         CategoryId = categoryId;
     }
 
-    public void Update(string name, string? description, string? imageUrl, decimal price, Guid categoryId)
+    public void Update(string name, string? description, string? imageUrl, decimal price, int categoryId)
     {
         Name = name;
         Description = description;

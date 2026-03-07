@@ -8,21 +8,26 @@ using Microsoft.AspNetCore.Identity;
 // For simplicity in this microservice, using the DbContext interface/class directly is common.
 namespace IdentityService.Application.Auth.Commands;
 
-public record RegisterCommand(string Username, string Password, string Role) : IRequest<string>;
+public record RegisterCommand(string Username, string Password, string Role) : IRequest<Guid>;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
 {
     private readonly IAppDbContext _dbContext;
-    private readonly ITokenService _tokenService;
 
-    public RegisterCommandHandler(IAppDbContext dbContext, ITokenService tokenService)
+    public RegisterCommandHandler(IAppDbContext dbContext)
     {
         _dbContext = dbContext;
-        _tokenService = tokenService;
     }
 
-    public async Task<string> Handle(RegisterCommand request, CancellationToken cancellationToken)
+    public async Task<Guid> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
+        // Password Validation: At least 8 characters, 1 uppercase, 1 special character
+        var passwordRegex = new System.Text.RegularExpressions.Regex(@"^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$");
+        if (!passwordRegex.IsMatch(request.Password))
+        {
+            throw new Exception("Password must be at least 8 characters long, contain at least one uppercase letter, and at least one special character.");
+        }
+
         var allowedRoles = new[] { "Admin", "Client" };
         if (!allowedRoles.Contains(request.Role))
         {
@@ -41,6 +46,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, string>
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
 
-        return _tokenService.GenerateToken(user);
+        return user.Id;
     }
 }

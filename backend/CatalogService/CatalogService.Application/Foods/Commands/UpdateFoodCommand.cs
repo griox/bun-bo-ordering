@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.Foods.Commands;
 
-public record UpdateFoodCommand(Guid Id, string Name, string? Description, string? ImageUrl, decimal Price, Guid CategoryId) : IRequest<bool>;
+public record UpdateFoodCommand(Guid Id, string Name, string? Description, string? ImageUrl, decimal Price, int CategoryId) : IRequest<bool>;
 
 public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
 {

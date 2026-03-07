@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CatalogService.Application.Foods.Commands;
 
-public record CreateFoodCommand(string Name, string? Description, string? ImageUrl, decimal Price, Guid CategoryId) : IRequest<Guid>;
+public record CreateFoodCommand(string Name, string? Description, string? ImageUrl, decimal Price, int CategoryId) : IRequest<Guid>;
 
 public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Guid>
 {

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.Categories.Commands;
 
-public record UpdateCategoryCommand(Guid Id, string Name) : IRequest<bool>;
+public record UpdateCategoryCommand(int Id, string Name) : IRequest<bool>;
 
 public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, bool>
 {

@@ -10,102 +10,107 @@
             "name": "Sprint 1: Identity Service",
             "item": [
                 {
-                    "name": "Register User (Admin)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123\",\n    \"role\": \"Admin\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/identity/register",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "identity",
-                                "register"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Register User (Kitchen)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"username\": \"chef_01\",\n    \"password\": \"123\",\n    \"role\": \"Kitchen\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/identity/register",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "identity",
-                                "register"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Login",
-                    "event": [
+                    "name": "Auth",
+                    "item": [
                         {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.token) {",
-                                    "    pm.environment.set(\"AuthToken\", jsonData.token);",
-                                    "}"
+                            "name": "Register User (Admin)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
                                 ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"123\"\n}"
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Admin@123\",\n    \"role\": \"Admin\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/identity/register",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "identity",
+                                        "register"
+                                    ]
+                                }
+                            },
+                            "response": []
                         },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/identity/login",
-                            "host": [
-                                "{{GatewayUrl}}"
+                        {
+                            "name": "Register User (Kitchen)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"client_01\",\n    \"password\": \"Client@123\",\n    \"role\": \"Client\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/identity/register",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "identity",
+                                        "register"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Login",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.token) {",
+                                            "    pm.environment.set(\"AuthToken\", jsonData.token);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
                             ],
-                            "path": [
-                                "api",
-                                "identity",
-                                "login"
-                            ]
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Admin@123\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/identity/login",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "identity",
+                                        "login"
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
-                    },
-                    "response": []
+                    ]
                 }
             ]
         },
@@ -113,317 +118,332 @@
             "name": "Sprint 2: Catalog & Cart",
             "item": [
                 {
-                    "name": "Create Category",
-                    "event": [
+                    "name": "Categories",
+                    "item": [
                         {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.id) {",
-                                    "    pm.environment.set(\"CategoryId\", jsonData.id);",
-                                    "}"
+                            "name": "Create Category",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.id) {",
+                                            "    pm.environment.set(\"CategoryId\", jsonData.id);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
                                 ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Món Chính\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/categories",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "categories"
+                                    ]
+                                }
                             },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"Món Chính\"\n}"
+                            "response": []
                         },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/categories",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "categories"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Categories",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/categories",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "categories"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Category",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"id\": \"{{CategoryId}}\",\n  \"name\": \"Món Chính (Updated)\"\n}"
-                        },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/categories/{{CategoryId}}",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "categories",
-                                "{{CategoryId}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Category",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/categories/{{CategoryId}}",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "categories",
-                                "{{CategoryId}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Create Food",
-                    "event": [
                         {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.id) {",
-                                    "    pm.environment.set(\"FoodId\", jsonData.id);",
-                                    "}"
+                            "name": "Get Categories",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    }
                                 ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/categories",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "categories"
+                                    ]
+                                }
                             },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"name\": \"Bún Bò Huế\",\n  \"description\": \"Đặc sản siêu cay\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 50000,\n  \"categoryId\": \"{{CategoryId}}\"\n}"
+                            "response": []
                         },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/foods",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "foods"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Get Foods By Category",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/foods/category/{{CategoryId}}",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "foods",
-                                "category",
-                                "{{CategoryId}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Food",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
+                        {
+                            "name": "Update Category",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"id\": {{CategoryId}},\n  \"name\": \"Món Chính (Updated)\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/categories/{{CategoryId}}",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "categories",
+                                        "{{CategoryId}}"
+                                    ]
+                                }
                             },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"id\": \"{{FoodId}}\",\n  \"name\": \"Bún Bò Giò Heo\",\n  \"description\": \"Thêm topping giò\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 60000,\n  \"categoryId\": \"{{CategoryId}}\"\n}"
+                            "response": []
                         },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "foods",
-                                "{{FoodId}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Delete Food",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "catalog",
-                                "foods",
-                                "{{FoodId}}"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Update Cart (Redis + gRPC Check)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
+                        {
+                            "name": "Delete Category",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/categories/{{CategoryId}}",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "categories",
+                                        "{{CategoryId}}"
+                                    ]
+                                }
                             },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"cart\": {\n    \"customerUsername\": \"admin\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"foodName\": \"Fake name to test gRPC update\",\n        \"unitPrice\": 10,\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
-                        },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/cart",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "cart"
-                            ]
+                            "response": []
                         }
-                    },
-                    "response": []
+                    ]
                 },
                 {
-                    "name": "Get Cart",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{AuthToken}}"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/cart/admin",
-                            "host": [
-                                "{{GatewayUrl}}"
+                    "name": "Foods",
+                    "item": [
+                        {
+                            "name": "Create Food",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.id) {",
+                                            "    pm.environment.set(\"FoodId\", jsonData.id);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
                             ],
-                            "path": [
-                                "api",
-                                "cart",
-                                "admin"
-                            ]
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"name\": \"Bún Bò Huế\",\n  \"description\": \"Đặc sản siêu cay\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 50000,\n  \"categoryId\": {{CategoryId}}\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/foods",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "foods"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Foods By Category",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/foods/category/{{CategoryId}}",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "foods",
+                                        "category",
+                                        "{{CategoryId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Food",
+                            "request": {
+                                "method": "PUT",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"id\": \"{{FoodId}}\",\n  \"name\": \"Bún Bò Giò Heo\",\n  \"description\": \"Thêm topping giò\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 60000,\n  \"categoryId\": {{CategoryId}}\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "foods",
+                                        "{{FoodId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Delete Food",
+                            "request": {
+                                "method": "DELETE",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "catalog",
+                                        "foods",
+                                        "{{FoodId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
-                    },
-                    "response": []
+                    ]
+                },
+                {
+                    "name": "Cart",
+                    "item": [
+                        {
+                            "name": "Update Cart (Redis + gRPC Check)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"cart\": {\n    \"customerUsername\": \"admin\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"foodName\": \"Fake name to test gRPC update\",\n        \"unitPrice\": 10,\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/cart",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "cart"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Cart",
+                            "request": {
+                                "method": "GET",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer {{AuthToken}}"
+                                    }
+                                ],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/cart/admin",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "cart",
+                                        "admin"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
                 }
             ]
         },
@@ -431,66 +451,71 @@
             "name": "Sprint 3: Order Service",
             "item": [
                 {
-                    "name": "Scan QR To Open Table",
-                    "event": [
+                    "name": "Orders",
+                    "item": [
                         {
-                            "listen": "test",
-                            "script": {
-                                "exec": [
-                                    "var jsonData = pm.response.json();",
-                                    "if (jsonData.sessionId) {",
-                                    "    pm.environment.set(\"TableSessionId\", jsonData.sessionId);",
-                                    "}"
-                                ],
-                                "type": "text/javascript"
-                            }
-                        }
-                    ],
-                    "request": {
-                        "method": "POST",
-                        "header": [],
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/orders/tables/{{MockTableId}}/scan",
-                            "host": [
-                                "{{GatewayUrl}}"
+                            "name": "Scan QR To Open Table",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.sessionId) {",
+                                            "    pm.environment.set(\"TableSessionId\", jsonData.sessionId);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
                             ],
-                            "path": [
-                                "api",
-                                "orders",
-                                "tables",
-                                "{{MockTableId}}",
-                                "scan"
-                            ]
-                        }
-                    },
-                    "response": []
-                },
-                {
-                    "name": "Add Items to Cart Using Session",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n  \"cart\": {\n    \"customerUsername\": \"{{TableSessionId}}\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"foodName\": \"Fake name to test gRPC update\",\n        \"unitPrice\": 10,\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
+                            "request": {
+                                "method": "POST",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/orders/tables/{{MockTableId}}/scan",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "orders",
+                                        "tables",
+                                        "{{MockTableId}}",
+                                        "scan"
+                                    ]
+                                }
+                            },
+                            "response": []
                         },
-                        "url": {
-                            "raw": "{{GatewayUrl}}/api/cart",
-                            "host": [
-                                "{{GatewayUrl}}"
-                            ],
-                            "path": [
-                                "api",
-                                "cart"
-                            ]
+                        {
+                            "name": "Add Items to Cart Using Session",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"cart\": {\n    \"customerUsername\": \"{{TableSessionId}}\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"foodName\": \"Fake name to test gRPC update\",\n        \"unitPrice\": 10,\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/cart",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "cart"
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
-                    },
-                    "response": []
+                    ]
                 }
             ]
         }
@@ -528,7 +553,7 @@
         },
         {
             "key": "CategoryId",
-            "value": "",
+            "value": "0",
             "type": "string"
         },
         {

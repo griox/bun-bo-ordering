@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CatalogService.Application.Categories.Commands;
 
-public record DeleteCategoryCommand(Guid Id) : IRequest<bool>;
+public record DeleteCategoryCommand(int Id) : IRequest<bool>;
 
 public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
 {

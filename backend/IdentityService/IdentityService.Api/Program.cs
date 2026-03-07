@@ -54,8 +54,8 @@ authGroup.MapPost("/register", async (MediatR.IMediator mediator, IdentityServic
 {
     try
     {
-        var token = await mediator.Send(cmd);
-        return Results.Ok(new { Token = token });
+        var userId = await mediator.Send(cmd);
+        return Results.Ok(new { UserId = userId, Message = "Registration successful. Please login to get your token." });
     }
     catch (Exception ex)
     {
