@@ -23,4 +23,10 @@ public class RestaurantTable : BaseEntity
     public void MarkAsOccupied() => Status = TableStatus.Occupied;
     public void MarkAsAvailable() => Status = TableStatus.Available;
     public void MarkAsReserved() => Status = TableStatus.Reserved;
+
+    public void UpdateDetails(string tableCode, string name)
+    {
+        TableCode = tableCode;
+        Name = name;
+    }
 }

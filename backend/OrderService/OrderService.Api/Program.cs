@@ -3,11 +3,40 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Application;
 using OrderService.Application.Interfaces;
 using OrderService.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure JWT Authentication
+var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890";
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
+            ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+        };
+    });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
+
 
 // Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -40,6 +69,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/", () => "Order Service is running.");
 
 var orderGroup = app.MapGroup("/api/orders");
@@ -58,6 +90,46 @@ orderGroup.MapGet("/tables/{tableId}", async (Guid tableId, MediatR.IMediator me
     var result = await mediator.Send(query);
     return result != null ? Results.Ok(result) : Results.NotFound();
 });
+
+// Admin Table Management
+orderGroup.MapPost("/tables", async (MediatR.IMediator mediator, OrderService.Application.Tables.Commands.CreateTableCommand cmd) =>
+{
+    try
+    {
+        var id = await mediator.Send(cmd);
+        return Results.Created($"/api/orders/tables/{id}", new { Id = id });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+}).RequireAuthorization("Admin");
+
+orderGroup.MapGet("/tables", async (MediatR.IMediator mediator) =>
+{
+    var tables = await mediator.Send(new OrderService.Application.Tables.Queries.GetAllTablesQuery());
+    return Results.Ok(tables);
+}).RequireAuthorization("Admin");
+
+orderGroup.MapPut("/tables/{id}", async (MediatR.IMediator mediator, Guid id, string tableCode, string name) =>
+{
+    try
+    {
+        var success = await mediator.Send(new OrderService.Application.Tables.Commands.UpdateTableCommand(id, tableCode, name));
+        return success ? Results.NoContent() : Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+}).RequireAuthorization("Admin");
+
+orderGroup.MapDelete("/tables/{id}", async (MediatR.IMediator mediator, Guid id) =>
+{
+    var success = await mediator.Send(new OrderService.Application.Tables.Commands.DeleteTableCommand(id));
+    return success ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization("Admin");
+
 
 orderGroup.MapPost("/", async (MediatR.IMediator mediator, OrderService.Application.Orders.Commands.CreateOrderCommand cmd) =>
 {
