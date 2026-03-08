@@ -1,6 +1,6 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Application;
-using OrderService.Application.Interfaces;
 using OrderService.Application.Interfaces;
 using OrderService.Infrastructure.Data;
 
@@ -17,6 +17,20 @@ builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredServic
 
 // Add MediatR
 builder.Services.AddApplicationServices();
+
+// Configure MassTransit with RabbitMQ
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitMqHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
+        cfg.Host(rabbitMqHost, "/", h =>
+        {
+            h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
+            h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
+        });
+    });
+});
 
 var app = builder.Build();
 
@@ -43,6 +57,38 @@ orderGroup.MapGet("/tables/{tableId}", async (Guid tableId, MediatR.IMediator me
     var query = new OrderService.Application.TableSessions.Queries.GetTableQuery { TableId = tableId };
     var result = await mediator.Send(query);
     return result != null ? Results.Ok(result) : Results.NotFound();
+});
+
+orderGroup.MapPost("/", async (MediatR.IMediator mediator, OrderService.Application.Orders.Commands.CreateOrderCommand cmd) =>
+{
+    try
+    {
+        var id = await mediator.Send(cmd);
+        return Results.Created($"/api/orders/{id}", new { Id = id });
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+});
+
+orderGroup.MapGet("/{id}", async (Guid id, MediatR.IMediator mediator) =>
+{
+    var order = await mediator.Send(new OrderService.Application.Orders.Queries.GetOrderByIdQuery(id));
+    return order != null ? Results.Ok(order) : Results.NotFound();
+});
+
+orderGroup.MapGet("/tablesession/{sessionId}", async (Guid sessionId, MediatR.IMediator mediator) =>
+{
+    var orders = await mediator.Send(new OrderService.Application.Orders.Queries.GetTableSessionOrdersQuery(sessionId));
+    return Results.Ok(orders);
+});
+
+orderGroup.MapPut("/{id}/status", async (Guid id, OrderService.Domain.Enums.OrderStatus status, MediatR.IMediator mediator) =>
+{
+    var cmd = new OrderService.Application.Orders.Commands.UpdateOrderStatusCommand(id, status);
+    var success = await mediator.Send(cmd);
+    return success ? Results.NoContent() : Results.NotFound();
 });
 
 // Auto migrate database on startup and seed data

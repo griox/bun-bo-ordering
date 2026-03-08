@@ -125,3 +125,7 @@
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/System.Diagnostics.DiagnosticSource.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/MassTransit.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/MassTransit.Abstractions.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/MassTransit.RabbitMqTransport.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/RabbitMQ.Client.dll

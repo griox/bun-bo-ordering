@@ -105,6 +105,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "MassTransit.Abstractions": {
+              "target": "Package",
+              "version": "[9.0.1, )"
+            },
             "MediatR": {
               "target": "Package",
               "version": "[14.1.0, )"

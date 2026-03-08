@@ -1,0 +1,11 @@
+{
+  "Version": 1,
+  "Hash": "MpkbzJhrG6SrHD09+T55gI7F/abknmxcqvmercYtRLk=",
+  "Source": "RealtimeService.Api",
+  "BasePath": "_content/RealtimeService.Api",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": []
+}
