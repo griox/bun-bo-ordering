@@ -591,6 +591,93 @@
                                 }
                             },
                             "response": []
+                        },
+                        {
+                            "name": "Create Order",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var jsonData = pm.response.json();",
+                                            "if (jsonData.id) {",
+                                            "    pm.environment.set(\"OrderId\", jsonData.id);",
+                                            "}"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n  \"tableSessionId\": \"{{TableSessionId}}\",\n  \"items\": [\n    {\n      \"foodId\": \"{{FoodId}}\",\n      \"quantity\": 2,\n      \"unitPrice\": 45000\n    }\n  ]\n}"
+                                },
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/orders",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "orders"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Get Orders By TableSession",
+                            "request": {
+                                "method": "GET",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/orders/tablesession/{{TableSessionId}}",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "orders",
+                                        "tablesession",
+                                        "{{TableSessionId}}"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        },
+                        {
+                            "name": "Update Order Status",
+                            "request": {
+                                "method": "PUT",
+                                "header": [],
+                                "url": {
+                                    "raw": "{{GatewayUrl}}/api/orders/{{OrderId}}/status?status=Preparing",
+                                    "host": [
+                                        "{{GatewayUrl}}"
+                                    ],
+                                    "path": [
+                                        "api",
+                                        "orders",
+                                        "{{OrderId}}",
+                                        "status"
+                                    ],
+                                    "query": [
+                                        {
+                                            "key": "status",
+                                            "value": "Preparing"
+                                        }
+                                    ]
+                                }
+                            },
+                            "response": []
                         }
                     ]
                 }
