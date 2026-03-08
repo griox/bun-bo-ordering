@@ -119,10 +119,10 @@ Tiến độ phát triển dự án được chia thành 5 giai đoạn cốt l�
 - [x] Tích hợp giao tiếp REST (gRPC/HttpClient) giữa Cart và Catalog để đồng bộ giá.
 
 🔹 **Sprint 3: Core Business - Order & Realtime (Message Queue)**
-- [ ] Xây dựng `Order Service` (Xử lý đặt hàng, Database độc lập).
-- [ ] Tích hợp RabbitMQ để Publish sự kiện `OrderCreatedEvent`.
-- [ ] Xây dựng `Realtime Service` (Sử dụng SignalR & Redis Backplane).
-- [ ] Cấu hình Consume RabbitMQ trong Realtime Service để nhận event và đẩy WebSockets xuống Kitchen Dashboard/Client.
+- [x] Xây dựng `Order Service` (Xử lý đặt hàng, Database độc lập).
+- [x] Tích hợp RabbitMQ để Publish sự kiện `OrderCreatedEvent`.
+- [x] Xây dựng `Realtime Service` (Sử dụng SignalR & Redis Backplane).
+- [x] Cấu hình Consume RabbitMQ trong Realtime Service để nhận event và đẩy WebSockets xuống Kitchen Dashboard/Client.
 
 🔹 **Sprint 4: Payment & Tích hợp Webhook**
 - [ ] Xây dựng `Payment Service` (Database độc lập).
