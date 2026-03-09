@@ -1,12 +1,5 @@
 namespace OrderService.Domain.Enums;
 
-public enum TableStatus
-{
-    Available,
-    Occupied,
-    Reserved
-}
-
 public enum OrderStatus
 {
     Created,

@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "tmnxVJ4oV6w=",
+  "dgSpecHash": "ZPfsSbtIGe8=",
   "success": true,
   "projectFilePath": "/Users/huyngo/bunbo-system-datn/backend/RealtimeService/RealtimeService.Api/RealtimeService.Api.csproj",
   "expectedPackageFiles": [
-    "/Users/huyngo/.nuget/packages/masstransit/9.0.1/masstransit.9.0.1.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/masstransit.abstractions/9.0.1/masstransit.abstractions.9.0.1.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/masstransit.rabbitmq/9.0.1/masstransit.rabbitmq.9.0.1.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/masstransit/8.2.0/masstransit.8.2.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/masstransit.abstractions/8.2.0/masstransit.abstractions.8.2.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/masstransit.rabbitmq/8.2.0/masstransit.rabbitmq.8.2.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/messagepack/2.5.108/messagepack.2.5.108.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/messagepack.annotations/2.5.108/messagepack.annotations.2.5.108.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.aspnetcore.signalr.stackexchangeredis/8.0.11/microsoft.aspnetcore.signalr.stackexchangeredis.8.0.11.nupkg.sha512",
@@ -22,13 +22,15 @@
     "/Users/huyngo/.nuget/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.net.stringtools/17.4.0/microsoft.net.stringtools.17.4.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/pipelines.sockets.unofficial/2.2.8/pipelines.sockets.unofficial.2.2.8.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/rabbitmq.client/7.2.0/rabbitmq.client.7.2.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/rabbitmq.client/6.8.1/rabbitmq.client.6.8.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/stackexchange.redis/2.7.27/stackexchange.redis.2.7.27.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/system.diagnostics.diagnosticsource/8.0.0/system.diagnostics.diagnosticsource.8.0.0.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/system.io.pipelines/8.0.0/system.io.pipelines.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/system.io.pipelines/5.0.1/system.io.pipelines.5.0.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/system.memory/4.5.5/system.memory.4.5.5.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/system.runtime.compilerservices.unsafe/6.0.0/system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/system.threading.ratelimiting/8.0.0/system.threading.ratelimiting.8.0.0.nupkg.sha512"
+    "/Users/huyngo/.nuget/packages/system.text.encodings.web/8.0.0/system.text.encodings.web.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/system.text.json/8.0.0/system.text.json.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/system.threading.channels/8.0.0/system.threading.channels.8.0.0.nupkg.sha512"
   ],
   "logs": []
 }

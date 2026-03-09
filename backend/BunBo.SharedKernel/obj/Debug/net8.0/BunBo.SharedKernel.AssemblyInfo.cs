@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BunBo.SharedKernel")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7d1f0a461b467518ac64b8d2979ac969ae3eb8c7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+296d4eb3550a863421a308d2e9b30259978c9a96")]
 [assembly: System.Reflection.AssemblyProductAttribute("BunBo.SharedKernel")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BunBo.SharedKernel")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

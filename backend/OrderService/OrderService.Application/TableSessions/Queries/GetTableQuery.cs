@@ -14,7 +14,6 @@ public class GetTableResponse
     public Guid Id { get; set; }
     public string TableCode { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string Status { get; set; } = string.Empty;
 }
 
 public class GetTableQueryHandler : IRequestHandler<GetTableQuery, GetTableResponse>
@@ -37,8 +36,7 @@ public class GetTableQueryHandler : IRequestHandler<GetTableQuery, GetTableRespo
         {
             Id = table.Id,
             TableCode = table.TableCode,
-            Name = table.Name,
-            Status = table.Status.ToString()
+            Name = table.Name
         };
     }
 }

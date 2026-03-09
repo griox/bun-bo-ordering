@@ -25,7 +25,6 @@ public class AppDbContext : DbContext, IAppDbContext
         builder.Entity<RestaurantTable>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Status).HasConversion(v => v.ToString(), v => (TableStatus)Enum.Parse(typeof(TableStatus), v));
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
 

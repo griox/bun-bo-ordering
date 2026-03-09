@@ -131,10 +131,19 @@ orderGroup.MapDelete("/tables/{id}", async (MediatR.IMediator mediator, Guid id)
 }).RequireAuthorization("Admin");
 
 
-orderGroup.MapPost("/", async (MediatR.IMediator mediator, OrderService.Application.Orders.Commands.CreateOrderCommand cmd) =>
+orderGroup.MapPost("/", async (Microsoft.AspNetCore.Http.HttpContext httpContext, MediatR.IMediator mediator, OrderService.Application.Orders.Commands.CreateOrderCommand cmd) =>
 {
     try
     {
+        // Try to identify if the customer is logged in
+        // In JWT, the user's ID is typically stored in the NameIdentifier claim
+        var userIdString = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        
+        if (Guid.TryParse(userIdString, out Guid customerId))
+        {
+            cmd = cmd with { CustomerId = customerId };
+        }
+
         var id = await mediator.Send(cmd);
         return Results.Created($"/api/orders/{id}", new { Id = id });
     }

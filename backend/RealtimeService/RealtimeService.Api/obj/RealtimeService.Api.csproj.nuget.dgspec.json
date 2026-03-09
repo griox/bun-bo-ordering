@@ -107,7 +107,7 @@
           "dependencies": {
             "MassTransit.RabbitMQ": {
               "target": "Package",
-              "version": "[9.0.1, )"
+              "version": "[8.2.0, )"
             },
             "Microsoft.AspNetCore.SignalR.StackExchangeRedis": {
               "target": "Package",

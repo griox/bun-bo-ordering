@@ -39,7 +39,6 @@ public class OpenSessionCommandHandler : IRequestHandler<OpenSessionCommand, Ope
         string newGroupCode = new Random().Next(1000, 9999).ToString();
         var newSession = new TableSession(table.Id, newGroupCode);
         
-        table.MarkAsOccupied();
         _context.TableSessions.Add(newSession);
         
         await _context.SaveChangesAsync(cancellationToken);
