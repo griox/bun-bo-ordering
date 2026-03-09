@@ -24,14 +24,22 @@ public class OpenSessionCommandHandler : IRequestHandler<OpenSessionCommand, Ope
         if (table == null)
             throw new DomainException("Bàn không tồn tại.");
 
-        // Luôn luôn tạo một TableSession mới tinh cho mỗi người quét QR.
-        // Dù rủ bạn bè hay là người lạ ngồi chung bàn to (như foodcourt),
-        // mỗi người quét mã đều sẽ cầm 1 cái điện thoại với 1 SessionId riêng để tự build Giỏ hàng và Bill riêng.
-        
+        var activeSession = table.Sessions.FirstOrDefault(s => !s.IsClosed);
+
+        if (activeSession != null)
+        {
+            return new OpenSessionResponse
+            {
+                SessionId = activeSession.Id,
+                GroupCode = activeSession.GroupCode,
+                Message = "Bàn đang có người ăn. Bạn đã tham gia vào bàn thành công! (Dùng chung giỏ hàng)"
+            };
+        }
+
         string newGroupCode = new Random().Next(1000, 9999).ToString();
         var newSession = new TableSession(table.Id, newGroupCode);
         
-        table.MarkAsOccupied(); // Đánh dấu bàn đã có người ngồi (dù 1 hay nhiều người)
+        table.MarkAsOccupied();
         _context.TableSessions.Add(newSession);
         
         await _context.SaveChangesAsync(cancellationToken);
@@ -40,7 +48,7 @@ public class OpenSessionCommandHandler : IRequestHandler<OpenSessionCommand, Ope
         {
             SessionId = newSession.Id,
             GroupCode = newSession.GroupCode,
-            Message = "Mở bàn thành công! Bạn có thể bắt đầu gọi món. (Giỏ hàng và hoá đơn của bạn hoàn toàn độc lập với những người khác cùng bàn)."
+            Message = "Bàn trống. Đã mở phiên mới thành công!"
         };
     }
 }

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace CartService.Application.Cart.Queries;
 
-public record GetCartQuery(string CustomerUsername) : IRequest<ShoppingCart?>;
+public record GetCartQuery(string CartOwnerId) : IRequest<ShoppingCart?>;
 
 public class GetCartQueryHandler : IRequestHandler<GetCartQuery, ShoppingCart?>
 {
@@ -17,6 +17,6 @@ public class GetCartQueryHandler : IRequestHandler<GetCartQuery, ShoppingCart?>
 
     public async Task<ShoppingCart?> Handle(GetCartQuery request, CancellationToken cancellationToken)
     {
-        return await _repository.GetCartAsync(request.CustomerUsername);
+        return await _repository.GetCartAsync(request.CartOwnerId);
     }
 }

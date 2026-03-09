@@ -13,11 +13,11 @@ public class CartItem
 
 public class ShoppingCart
 {
-    public string CustomerUsername { get; set; } = string.Empty;
+    public string CartOwnerId { get; set; } = string.Empty;
     public List<CartItem> Items { get; set; } = new List<CartItem>();
 
-    public ShoppingCart(string customerUsername)
+    public ShoppingCart(string cartOwnerId)
     {
-        CustomerUsername = customerUsername;
+        CartOwnerId = cartOwnerId;
     }
 }

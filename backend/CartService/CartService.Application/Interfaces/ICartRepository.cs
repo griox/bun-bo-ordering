@@ -4,7 +4,7 @@ namespace CartService.Application.Interfaces;
 
 public interface ICartRepository
 {
-    Task<ShoppingCart?> GetCartAsync(string customerUsername);
+    Task<ShoppingCart?> GetCartAsync(string cartOwnerId);
     Task<ShoppingCart> UpdateCartAsync(ShoppingCart cart);
-    Task<bool> DeleteCartAsync(string customerUsername);
+    Task<bool> DeleteCartAsync(string cartOwnerId);
 }

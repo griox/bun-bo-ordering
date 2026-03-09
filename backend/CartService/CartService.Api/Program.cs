@@ -37,10 +37,10 @@ app.MapGet("/", () => "Cart Service is running.");
 
 var cartGroup = app.MapGroup("/api/cart");
 
-cartGroup.MapGet("/{username}", async (MediatR.IMediator mediator, string username) =>
+cartGroup.MapGet("/{cartOwnerId}", async (MediatR.IMediator mediator, string cartOwnerId) =>
 {
-    var cart = await mediator.Send(new CartService.Application.Cart.Queries.GetCartQuery(username));
-    return Results.Ok(cart ?? new CartService.Domain.Entities.ShoppingCart(username));
+    var cart = await mediator.Send(new CartService.Application.Cart.Queries.GetCartQuery(cartOwnerId));
+    return Results.Ok(cart ?? new CartService.Domain.Entities.ShoppingCart(cartOwnerId));
 });
 
 cartGroup.MapPost("/", async (MediatR.IMediator mediator, CartService.Application.Cart.Commands.UpdateCartCommand cmd) =>

@@ -112,7 +112,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
-      - Grpc__CatalogServiceUrl=http://catalog-service:8080
+      - GrpcSettings__CatalogUrl=http://catalog-service:8080
       - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
       - Jwt__Issuer=BunBoIdentityService
       - Jwt__Audience=BunBoClients
