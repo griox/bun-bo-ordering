@@ -7,19 +7,19 @@ using BunBo.SharedKernel.Messaging;
 
 namespace OrderService.Application.Orders.Commands;
 
-public record OrderItemDto(Guid FoodId, int Quantity, decimal UnitPrice, string? Note);
-
-public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note, List<OrderItemDto> Items) : IRequest<Guid>;
+public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note) : IRequest<Guid>;
 
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
 {
     private readonly IAppDbContext _context;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly ICartDataClient _cartDataClient;
 
-    public CreateOrderCommandHandler(IAppDbContext context, IPublishEndpoint publishEndpoint)
+    public CreateOrderCommandHandler(IAppDbContext context, IPublishEndpoint publishEndpoint, ICartDataClient cartDataClient)
     {
         _context = context;
         _publishEndpoint = publishEndpoint;
+        _cartDataClient = cartDataClient;
     }
 
     public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -34,11 +34,19 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             throw new Exception("Session is closed. Cannot place new orders.");
         }
 
+        var cartOwnerId = request.TableSessionId.ToString();
+        var cart = await _cartDataClient.GetCartAsync(cartOwnerId);
+
+        if (cart == null || !cart.Items.Any())
+        {
+            throw new Exception("Giỏ hàng đang trống. Không thể tạo đơn.");
+        }
+
         var order = new Order(request.TableSessionId, request.CustomerId, request.Note);
 
-        foreach (var itemDto in request.Items)
+        foreach (var itemDto in cart.Items)
         {
-            var orderItem = new OrderItem(order.Id, itemDto.FoodId, itemDto.Quantity, itemDto.UnitPrice, itemDto.Note);
+            var orderItem = new OrderItem(order.Id, itemDto.FoodId, itemDto.Quantity, itemDto.UnitPrice, null);
             order.AddItem(orderItem);
         }
 
@@ -54,6 +62,9 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             Note = order.Note,
             CreatedAt = order.CreatedAt
         }, cancellationToken);
+
+        // Clear the cart after successful order creation
+        await _cartDataClient.ClearCartAsync(cartOwnerId);
 
         return order.Id;
     }

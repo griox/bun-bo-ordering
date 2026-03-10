@@ -47,6 +47,9 @@ builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredServic
 // Add MediatR
 builder.Services.AddApplicationServices();
 
+// Add Http Clients for external sync
+builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.SyncDataServices.Http.CartDataClient>();
+
 // Configure MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {

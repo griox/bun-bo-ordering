@@ -705,7 +705,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"cart\": {\n    \"cartOwnerId\": \"{{TableSessionId}}\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"foodName\": \"Fake name to test gRPC update\",\n        \"unitPrice\": 10,\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
+                                    "raw": "{\n  \"cart\": {\n    \"cartOwnerId\": \"{{TableSessionId}}\",\n    \"items\": [\n      {\n        \"foodId\": \"{{FoodId}}\",\n        \"quantity\": 2\n      }\n    ]\n  }\n}"
                                 },
                                 "url": {
                                     "raw": "{{GatewayUrl}}/api/cart",
@@ -746,7 +746,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n  \"tableSessionId\": \"{{TableSessionId}}\",\n  \"items\": [\n    {\n      \"foodId\": \"{{FoodId}}\",\n      \"quantity\": 2,\n      \"unitPrice\": 45000\n    }\n  ]\n}"
+                                    "raw": "{\n  \"tableSessionId\": \"{{TableSessionId}}\",\n  \"note\": \"Không hành, thêm sa tế\"\n}"
                                 },
                                 "url": {
                                     "raw": "{{GatewayUrl}}/api/orders",
