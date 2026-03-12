@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axiosInstance from '@/lib/axios';
+import axiosInstance from '@/lib/axiosInstance';
 import { TableResponseDto, TableSessionResponseDto } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/store/useOrderStore';

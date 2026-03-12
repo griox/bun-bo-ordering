@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/useAuthStore';
-import axiosInstance from '@/lib/axios';
+import axiosInstance from '@/lib/axiosInstance';
 import toast from 'react-hot-toast';
 import { useGoogleLogin } from '@react-oauth/google';
 

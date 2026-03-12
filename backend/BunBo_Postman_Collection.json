@@ -24,7 +24,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Admin@123\",\n    \"role\": \"Admin\"\n}"
+                                    "raw": "{\n    \"username\": \"admin\",\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"Admin@123\"\n}"
                                 },
                                 "url": {
                                     "raw": "{{GatewayUrl}}/api/identity/register",
@@ -52,7 +52,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"username\": \"client_01\",\n    \"password\": \"Client@123\",\n    \"role\": \"Client\"\n}"
+                                    "raw": "{\n    \"username\": \"client_01\",\n    \"email\": \"client@gmail.com\",\n    \"password\": \"Client@123\"\n}"
                                 },
                                 "url": {
                                     "raw": "{{GatewayUrl}}/api/identity/register",
@@ -94,7 +94,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"Admin@123\"\n}"
+                                    "raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"Admin@123\"\n}"
                                 },
                                 "url": {
                                     "raw": "{{GatewayUrl}}/api/identity/login",
@@ -136,7 +136,7 @@
                                 ],
                                 "body": {
                                     "mode": "raw",
-                                    "raw": "{\n    \"idToken\": \"eyJhbGciOiJSUzI1NiIs... (Paste JSON Web Token returned by Google API here)\"\n}"
+                                    "raw": "{\n    \"accessToken\": \"ya29.a0AfH6S... (Paste Access Token returned by Google API here)\"\n}"
                                 },
                                 "url": {
                                     "raw": "{{GatewayUrl}}/api/identity/google-login",
