@@ -16,6 +16,9 @@ builder.Services.AddScoped<IdentityService.Application.Interfaces.IAppDbContext>
 // Configure MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
+builder.Services.AddHttpClient<IdentityService.Infrastructure.Services.GoogleAuthService>();
+builder.Services.AddScoped<IdentityService.Application.Interfaces.IGoogleAuthService, IdentityService.Infrastructure.Services.GoogleAuthService>();
+
 builder.Services.AddScoped<IdentityService.Application.Interfaces.ITokenService, IdentityService.Infrastructure.Services.TokenService>();
 
 // Configure Authentication & Authorization
@@ -80,8 +83,8 @@ authGroup.MapPost("/google-login", async (MediatR.IMediator mediator, IdentitySe
 {
     try
     {
-        var token = await mediator.Send(cmd);
-        return Results.Ok(new { Token = token, Message = "Google login successful" });
+        var result = await mediator.Send(cmd);
+        return Results.Ok(result);
     }
     catch (Exception ex)
     {
