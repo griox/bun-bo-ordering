@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
+import Image from 'next/image';
 
 export function StorySection() {
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -24,7 +25,7 @@ export function StorySection() {
         },
         {
             type: 'map',
-            content: "https://maps.google.com/maps?q=Chung%20c%C6%B0%20V%C4%A9nh%20Ph%C6%B0%E1%BB%9Bc%20khu%20B%2C%20Nha%20Trang%2C%20Kh%C3%A1nh%20H%C3%B2a&t=&z=17&ie=UTF8&iwloc=&output=embed",
+            content: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3899.208107931326!2d109.19532187584102!3d12.274404087983804!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31706700617a79cf%3A0xc7be36136df2332c!2zQsO6biBCw7IgJiBDw6AgUGjDqiBQaOG7kQ!5e0!3m2!1svi!2s!4v1710226456000!5m2!1svi!2s",
             alt: "Location Map"
         }
     ];
@@ -36,7 +37,7 @@ export function StorySection() {
     useEffect(() => {
         const interval = setInterval(() => {
             nextSlide();
-        }, 5000); // Change slide every 5 seconds
+        }, 9000); // Change slide every 5 seconds
 
         return () => clearInterval(interval);
     }, []);
@@ -50,10 +51,14 @@ export function StorySection() {
                         {/* Carousel Content */}
                         <div className="w-full h-full relative bg-gray-200 overflow-hidden">
                             {slides[currentSlide].type === 'image' ? (
-                                <img
+                                <Image
                                     src={slides[currentSlide].content}
                                     alt={slides[currentSlide].alt}
-                                    className="object-cover w-full h-full transition-all duration-700"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover transition-all duration-700"
+                                    loading={currentSlide === 0 ? "eager" : "lazy"}
+                                    priority={currentSlide === 0}
                                 />
                             ) : (
                                 <iframe
@@ -61,6 +66,7 @@ export function StorySection() {
                                     height="100%"
                                     src={slides[currentSlide].content}
                                     title="Google Maps"
+                                    loading="lazy"
                                     className="w-full h-full transition-all duration-700"
                                 ></iframe>
                             )}
@@ -99,7 +105,7 @@ export function StorySection() {
                     </h2>
                     <div className="space-y-6 font-main text-lg leading-relaxed text-text/90 font-large">
                         <p>
-                            Dưới chân một tòa chung cư cũ, <strong>Bún Bò & Cà Phê Phố</strong> đã lặng lẽ gắn bó với thực khách suốt hơn 8 năm qua. Ở đây, mỗi tô bún bò được nấu bằng sự chỉn chu và kiên nhẫn: nước dùng ninh từ xương ống suốt nhiều giờ, thịt bò tươi được chọn mỗi sáng, nêm nếm vừa miệng để ai ăn cũng thấy quen, thấy dễ thương.
+                            Tọa lạc dưới tòa chung cư cũ, <strong>Bún Bò & Cà Phê Phố</strong> đã lặng lẽ gắn bó với thực khách suốt hơn 8 năm qua. Ở đây, mỗi tô bún bò được nấu bằng sự chỉn chu và kiên nhẫn: nước dùng ninh từ xương ống suốt nhiều giờ, thịt bò tươi được chọn mỗi sáng, nêm nếm vừa miệng để ai ăn cũng thấy quen, thấy dễ thương.
                         </p>
                         <p>
                             Bên cạnh bún bò, quán còn có cà phê pha trộn Robusta và Arabica, cho vị đậm vừa, hậu thơm nhẹ — rất hợp để nhâm nhi trong buổi sáng nhiều gió biển hay một chiều ngồi chậm lại. Một quán nhỏ, giá cả phải chăng, mang cảm giác thân quen và bình dị đúng kiểu thành phố biển: không ồn ào, nhưng đủ để người ta muốn quay lại.
@@ -124,7 +130,7 @@ export function StorySection() {
                             <div className="font-display text-4xl text-secondary flex justify-center items-center gap-1">
                                 <MapPin size={32} />
                             </div>
-                            <div className="text-sm opacity-80 underline decoration-dashed">Xem Bản Đồ</div>
+                            <div className="text-sm opacity-80 underline decoration-dashed"><a href="https://www.google.com/maps?q=Bún+Bò+%26+Cà+Phê+Phố,+634+Đ.2/4+Chung+Cư,+khu+B,+Nha+Trang,+Khánh+Hòa+57000&ftid=0x31706700617a79cf:0xc7be36136df2332c&entry=gps&lucs=,94286594,94284511,94231188,47071704,94218641,94282134,94286869&g_ep=CAISEjI1LjI5LjEuNzgyOTg1OTc1MBgAIIgnKj8sOTQyODY1OTQsOTQyODQ1MTEsOTQyMzExODgsNDcwNzE3MDQsOTQyMTg2NDEsOTQyODIxMzQsOTQyODY4NjlCAlZO&skid=5746e2ca-adcd-4a56-924d-58a70eca6f68&g_st=ia" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>Xem bản đồ</a></div>
                         </div>
                     </div>
                 </div>
