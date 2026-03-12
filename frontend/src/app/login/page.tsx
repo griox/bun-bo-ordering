@@ -10,6 +10,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 export default function LoginPage() {
     const [isLogin, setIsLogin] = useState(true);
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -22,20 +23,28 @@ export default function LoginPage() {
 
         try {
             if (isLogin) {
+                // Login uses Email + Password
                 const response = await axiosInstance.post('/api/identity/login', {
-                    username,
+                    email,
                     password,
                 });
 
-                const { token, userId, username: resUsername, role } = response.data;
-                login(token, { userId, username: resUsername, role });
+                const { token, userId, username: resUsername, email: resEmail, role } = response.data;
+                login(token, { userId, username: resUsername, email: resEmail, role });
                 toast.success(`Chào mừng, ${resUsername}!`);
                 router.push('/');
             } else {
-                toast.error('Tính năng đăng ký đang được bảo trì. Vui lòng đăng nhập!');
+                // Register uses Username + Email + Password
+                await axiosInstance.post('/api/identity/register', {
+                    username,
+                    email,
+                    password,
+                });
+                toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
+                setIsLogin(true);
             }
         } catch (err: any) {
-            toast.error(err.response?.data?.message || 'Tài khoản hoặc mật khẩu không chính xác!');
+            toast.error(err.response?.data || err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại!');
         } finally {
             setLoading(false);
         }
@@ -43,31 +52,13 @@ export default function LoginPage() {
 
     const handleGoogleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
-            // Google trả về access_token, cần đổi sang id_token qua userinfo endpoint
-            // Tuy nhiên backend dùng ID Token nên ta dùng flow: authorization_code
-            // hoặc gọi Google userinfo rồi lấy sub, email
-            // Cách đơn giản nhất: dùng flow='implicit' để lấy access_token, 
-            // rồi fetch user info, hoặc dùng CredentialResponse (id_token) từ GoogleLogin button
             try {
-                // Lấy thông tin user từ Google bằng access_token
-                const userInfoRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                    headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-                });
-                const userInfo = await userInfoRes.json();
-
-                // Gửi id_token lên backend — nhưng useGoogleLogin chỉ cho access_token
-                // Nên ta gửi sub + email trực tiếp thay thế (hoặc đổi sang GoogleLogin component)
-                // Hiện tại: backend nhận IdToken nên ta cần dùng GoogleLogin component (credential flow)
-                // Đây là fallback thông báo để biết đăng nhập Google đã hoạt động
-                toast.success(`Google xác thực thành công cho ${userInfo.email}! Đang kết nối...`);
-
-                // Gọi backend với sub làm IdToken (không chuẩn — xem ghi chú bên dưới)
                 const response = await axiosInstance.post('/api/identity/google-login', {
                     accessToken: tokenResponse.access_token,
                 });
 
-                const { token, userId, username: resUsername, role } = response.data;
-                login(token, { userId, username: resUsername, role });
+                const { token, userId, username: resUsername, email: resEmail, role } = response.data;
+                login(token, { userId, username: resUsername, email: resEmail, role });
                 toast.success(`Chào mừng, ${resUsername}!`);
                 router.push('/');
             } catch (err: any) {
@@ -116,15 +107,29 @@ export default function LoginPage() {
 
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="space-y-4">
+                    {!isLogin && (
+                        <div>
+                            <label className="block font-display text-sm mb-2">TÊN ĐĂNG NHẬP</label>
+                            <input
+                                type="text"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required
+                                className="w-full bg-white border-2 border-text p-3 rounded focus:outline-none focus:ring-2 focus:ring-primary/50 font-main"
+                                placeholder="Tên hiển thị của bạn..."
+                            />
+                        </div>
+                    )}
+
                     <div>
-                        <label className="block font-display text-sm mb-2">TÀI KHOẢN</label>
+                        <label className="block font-display text-sm mb-2">GMAIL</label>
                         <input
-                            type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             required
                             className="w-full bg-white border-2 border-text p-3 rounded focus:outline-none focus:ring-2 focus:ring-primary/50 font-main"
-                            placeholder="Nhập tên đăng nhập..."
+                            placeholder="example@gmail.com"
                         />
                     </div>
 

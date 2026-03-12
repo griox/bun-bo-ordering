@@ -4,11 +4,9 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
-// Since we don't have a shared repository yet, we reference DbContext directly or via an interface.
-// For simplicity in this microservice, using the DbContext interface/class directly is common.
 namespace IdentityService.Application.Auth.Commands;
 
-public record RegisterCommand(string Username, string Password, string Role) : IRequest<Guid>;
+public record RegisterCommand(string Username, string Email, string Password) : IRequest<Guid>;
 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
 {
@@ -21,25 +19,23 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
 
     public async Task<Guid> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        // Password Validation: At least 8 characters, 1 uppercase, 1 special character
+        // Validate email format
+        if (!System.Net.Mail.MailAddress.TryCreate(request.Email, out _))
+            throw new Exception("Email không hợp lệ.");
+
+        // Password validation
         var passwordRegex = new System.Text.RegularExpressions.Regex(@"^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$");
         if (!passwordRegex.IsMatch(request.Password))
-        {
-            throw new Exception("Password must be at least 8 characters long, contain at least one uppercase letter, and at least one special character.");
-        }
+            throw new Exception("Mật khẩu phải ít nhất 8 ký tự, có 1 chữ hoa và 1 ký tự đặc biệt.");
 
-        var allowedRoles = new[] { "Admin", "Client" };
-        if (!allowedRoles.Contains(request.Role))
-        {
-            throw new Exception("Invalid role. Only 'Admin' and 'Client' are allowed.");
-        }
         if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username, cancellationToken))
-        {
-            throw new Exception("User already exists");
-        }
+            throw new Exception("Tên đăng nhập đã được sử dụng.");
+
+        if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken))
+            throw new Exception("Email đã được đăng ký.");
 
         var passwordHasher = new PasswordHasher<User>();
-        var user = new User(request.Username, "", request.Role);
+        var user = new User(request.Username, request.Email, "", "Client");
         var hash = passwordHasher.HashPassword(user, request.Password);
         user.UpdatePassword(hash);
 

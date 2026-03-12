@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import api from '@/services/api';
+import axiosInstance from '@/lib/axios';
 import { TableResponseDto, TableSessionResponseDto } from '@/types';
 import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/store/useOrderStore';
@@ -19,7 +19,7 @@ export function useTableSession(tableCode: string) {
             try {
                 setIsLoading(true);
                 // 1. Verify Table
-                const tableRes = await api.get<TableResponseDto>(`/table/verify/${tableCode}`);
+                const tableRes = await axiosInstance.get<TableResponseDto>(`/table/verify/${tableCode}`);
                 const tableData = tableRes.data;
                 setTable(tableData);
 
@@ -29,7 +29,7 @@ export function useTableSession(tableCode: string) {
                 if (storedSessionId) {
                     try {
                         // Check if session is valid
-                        const sessionRes = await api.get<TableSessionResponseDto>(`/table/session/${storedSessionId}`);
+                        const sessionRes = await axiosInstance.get<TableSessionResponseDto>(`/table/session/${storedSessionId}`);
                         const sessionData = sessionRes.data;
 
                         // 3. Mismatch Logic
@@ -65,7 +65,7 @@ export function useTableSession(tableCode: string) {
     }, [tableCode]);
 
     const openNewSession = async (tableId: string) => {
-        const res = await api.post<TableSessionResponseDto>('/table/session', { tableId });
+        const res = await axiosInstance.post<TableSessionResponseDto>('/table/session', { tableId });
         const newSession = res.data;
         localStorage.setItem('bunbo_session_id', newSession.id);
         setSession(newSession);

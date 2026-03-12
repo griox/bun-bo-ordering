@@ -29,7 +29,7 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
 
         if (user == null)
         {
-            user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Username == googleUser.Email, cancellationToken);
+            user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == googleUser.Email, cancellationToken);
             if (user != null)
             {
                 throw new Exception("Tài khoản với email này đã tồn tại. Vui lòng đăng nhập bằng mật khẩu.");
@@ -41,6 +41,6 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
         }
 
         var token = _tokenService.GenerateToken(user);
-        return new LoginResult(token, user.Id.ToString(), user.Username, user.Role);
+        return new LoginResult(token, user.Id.ToString(), user.Username, user.Email, user.Role);
     }
 }

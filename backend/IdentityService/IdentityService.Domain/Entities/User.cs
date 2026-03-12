@@ -5,17 +5,19 @@ namespace IdentityService.Domain.Entities;
 public class User : BaseEntity
 {
     public string Username { get; private set; }
+    public string Email { get; private set; }
     public string? PasswordHash { get; private set; } // Nullable for Google users
-    public string Role { get; private set; } // "Admin" or "Client"
+    public string Role { get; private set; }
     public string? GoogleId { get; private set; } // Nullable for normal users
 
     // For EF Core
     protected User() { }
 
     // Constructor for normal registration
-    public User(string username, string passwordHash, string role)
+    public User(string username, string email, string passwordHash, string role)
     {
         Username = username;
+        Email = email;
         PasswordHash = passwordHash;
         Role = role;
     }
@@ -24,9 +26,11 @@ public class User : BaseEntity
     public static User CreateGoogleUser(string email, string googleId)
     {
         var user = new User();
-        user.Username = email; // Using email as username for Google login
+        // Use the part before @ as the display username
+        user.Username = email.Split('@')[0];
+        user.Email = email;
         user.PasswordHash = null;
-        user.Role = "Client"; // Specific requirement
+        user.Role = "Client";
         user.GoogleId = googleId;
         return user;
     }
