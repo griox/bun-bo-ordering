@@ -5,9 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 namespace IdentityService.Application.Auth.Commands;
 
-public record LoginCommand(string Username, string Password) : IRequest<string>;
+public record LoginCommand(string Username, string Password) : IRequest<LoginResult>;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
+public record LoginResult(string token, string userId, string username, string role);
+
+public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 {
     private readonly IAppDbContext _dbContext;
     private readonly ITokenService _tokenService;
@@ -18,7 +20,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
         _tokenService = tokenService;
     }
 
-    public async Task<string> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
         if (user == null)
@@ -34,6 +36,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, string>
             throw new Exception("Invalid username or password");
         }
 
-        return _tokenService.GenerateToken(user);
+        var token = _tokenService.GenerateToken(user);
+        return new LoginResult(token, user.Id.ToString(), user.Username, user.Role);
     }
 }

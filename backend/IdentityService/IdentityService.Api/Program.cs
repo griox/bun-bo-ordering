@@ -67,8 +67,8 @@ authGroup.MapPost("/login", async (MediatR.IMediator mediator, IdentityService.A
 {
     try
     {
-        var token = await mediator.Send(cmd);
-        return Results.Ok(new { Token = token });
+        var result = await mediator.Send(cmd);
+        return Results.Ok(result);
     }
     catch (Exception ex)
     {

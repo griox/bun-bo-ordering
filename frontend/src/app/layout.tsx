@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Edu_SA_Beginner } from "next/font/google"; // Retro Fonts
+import { Toaster } from "react-hot-toast";
 import "./globals.css";
 
 const eduSA = Edu_SA_Beginner({
@@ -25,8 +26,28 @@ export default function RootLayout({
         className={`${eduSA.variable} antialiased font-main bg-cover bg-fixed bg-center text-text`}
         style={{ backgroundImage: "url('/images/retro-paper-texture.png')", fontFamily: "var(--font-edu-sa)" }}
       >
+        <Toaster
+          position="top-right"
+          toastOptions={{
+            duration: 3500,
+            style: {
+              fontFamily: "var(--font-edu-sa)",
+              border: "2px solid #2D2D2D",
+              borderRadius: "8px",
+              boxShadow: "4px 4px 0px #2D2D2D",
+              padding: "12px 16px",
+            },
+            success: {
+              iconTheme: { primary: "#D4A853", secondary: "#fff" },
+            },
+            error: {
+              iconTheme: { primary: "#dc2626", secondary: "#fff" },
+            },
+          }}
+        />
         {children}
       </body>
     </html>
   );
 }
+

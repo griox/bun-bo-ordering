@@ -2,8 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X, User } from 'lucide-react';
+import { useAuthStore } from '@/store/useAuthStore';
+import toast from 'react-hot-toast';
 
 export function Header() {
     const pathname = usePathname();
@@ -11,6 +13,14 @@ export function Header() {
 
     const isActive = (path: string) => pathname === path;
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+    // Xử lý Hydration mismatch với local storage state của Zustand
+    const [mounted, setMounted] = useState(false);
+    const { user, logout } = useAuthStore();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const menuItems = [
         { name: 'TRANG CHỦ', path: '/' },
@@ -45,10 +55,30 @@ export function Header() {
                         </Link>
                     ))}
 
-                    {/* CTA Button */}
-                    <Link href="/menu" className="bg-primary text-black font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
-                        ĐẶT MÓN
-                    </Link>
+                    {/* Member CTA Button */}
+                    {mounted && user ? (
+                        <div className="relative group cursor-pointer">
+                            <div className="flex items-center gap-2 bg-primary text-black font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                                <User size={16} />
+                                <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
+                            </div>
+                            
+                            {/* Dropdown Menu */}
+                            <div className="absolute top-full right-0 mt-2 w-48 bg-paper border-2 border-text rounded-lg shadow-[4px_4px_0px_#2D2D2D] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col overflow-hidden">
+                                <button
+                                    onClick={() => { logout(); toast.success('Đã đăng xuất!'); }}
+                                    className="px-4 py-3 text-left font-display text-sm hover:bg-black/5 hover:text-red-600 transition-colors"
+                                >
+                                    ĐĂNG XUẤT
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <Link href="/login" className="flex items-center gap-2 bg-primary text-black font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                            <User size={16} />
+                            <span>THÀNH VIÊN</span>
+                        </Link>
+                    )}
                 </nav>
 
                 {/* Mobile Menu Button */}
@@ -71,13 +101,29 @@ export function Header() {
                             {link.name}
                         </Link>
                     ))}
-                    <Link
-                        href="/menu"
-                        onClick={() => setIsMenuOpen(false)}
-                        className="bg-primary text-black font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all mt-4"
-                    >
-                        ĐẶT MÓN NGAY
-                    </Link>
+                    {mounted && user ? (
+                        <div className="flex flex-col items-center gap-4 mt-4">
+                            <div className="flex items-center gap-2 bg-primary text-black font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D]">
+                                <User size={24} />
+                                <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
+                            </div>
+                            <button
+                                onClick={() => { logout(); toast.success('Đã đăng xuất!'); setIsMenuOpen(false); }}
+                                className="text-secondary font-display text-lg tracking-widest underline decoration-dashed"
+                            >
+                                ĐĂNG XUẤT
+                            </button>
+                        </div>
+                    ) : (
+                        <Link
+                            href="/login"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="flex items-center gap-2 bg-primary text-black font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all mt-4"
+                        >
+                            <User size={24} />
+                            <span>THÀNH VIÊN</span>
+                        </Link>
+                    )}
                 </div>
             </div>
         </header>
