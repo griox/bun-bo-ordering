@@ -5,14 +5,13 @@ export function HeroSection() {
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10 pointer-events-none"
-                style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/cubes.png')" }}>
+            <div className="absolute inset-0 opacity-5 pointer-events-none"
+                style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
             </div>
 
-            {/* Decorative Floating Elements (Warm Glows) */}
-            <div className="absolute top-10 left-10 w-64 h-64 bg-primary/20 rounded-full filter blur-3xl animate-blob"></div>
-            <div className="absolute top-1/4 right-0 w-80 h-80 bg-yellow-400/20 rounded-full filter blur-3xl animate-blob animation-delay-2000"></div>
-            <div className="absolute -bottom-20 left-1/4 w-96 h-96 bg-red-400/10 rounded-full filter blur-3xl animate-blob animation-delay-4000"></div>
+            {/* Decorative Floating Elements (Subtle Soft Glows) */}
+            <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-white/30 rounded-full filter blur-[120px] pointer-events-none"></div>
+            <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-yellow-200/20 rounded-full filter blur-[150px] pointer-events-none"></div>
 
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
                 <div className="inline-block mb-4 px-6 py-2 bg-paper rounded-full border-2 border-primary transform -rotate-2 shadow-lg hover:rotate-0 transition-transform cursor-default">
