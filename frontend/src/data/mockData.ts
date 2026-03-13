@@ -23,7 +23,7 @@ export const MOCK_FOODS: FoodItem[] = [
         name: 'Tái Nạm',
         description: 'Bò tái mềm và nạm gân giòn.',
         price: 35000,
-        image: 'https://images.unsplash.com/photo-1599020792689-9fdeef53ea4c?w=800&q=60&fit=crop',
+        image: 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=800&q=60&fit=crop',
         categoryId: 'cat_bunbo'
     },
     {

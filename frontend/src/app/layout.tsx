@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Edu_SA_Beginner } from "next/font/google"; // Retro Fonts
+import { Edu_SA_Beginner, Geist } from "next/font/google"; // Retro Fonts
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Providers";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const eduSA = Edu_SA_Beginner({
   weight: ["400", "700"], // Edu SA supports specific weights
@@ -22,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={cn("font-sans", geist.variable)}>
       <body
         className={`${eduSA.variable} antialiased font-main bg-cover bg-fixed bg-center text-text`}
         style={{ backgroundImage: "url('/images/retro-paper-texture.png')", fontFamily: "var(--font-edu-sa)" }}
