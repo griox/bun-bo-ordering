@@ -49,7 +49,7 @@ export function Header() {
                         <Link
                             key={link.path}
                             href={link.path}
-                            className={`font-display text-sm tracking-wider transition-colors hover:text-red-700 ${isActive(link.path) ? 'text-red-700 border-b-2 border-none' : 'text-text/80'}`}
+                            className={`font-display text-sm tracking-wider transition-colors hover:text-primary ${isActive(link.path) ? 'text-primary border-b-2 border-none' : 'text-text/80'}`}
                         >
                             {link.name}
                         </Link>
@@ -58,7 +58,7 @@ export function Header() {
                     {/* Member CTA Button */}
                     {mounted && user ? (
                         <div className="relative group cursor-pointer">
-                            <div className="flex items-center gap-2 bg-primary text-black font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                            <div className="flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
                                 <User size={16} />
                                 <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
                             </div>
@@ -74,7 +74,7 @@ export function Header() {
                             </div>
                         </div>
                     ) : (
-                        <Link href="/login" className="flex items-center gap-2 bg-primary text-black font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                        <Link href="/login" className="flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
                             <User size={16} />
                             <span>THÀNH VIÊN</span>
                         </Link>

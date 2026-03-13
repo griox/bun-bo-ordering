@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useKitchenStore, KitchenOrder } from '@/store/useKitchenStore';
 import { toast } from 'sonner';
 
-const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:6000/hub/notifications';
+const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:8000/hub/notifications';
 
 export const useRealtime = () => {
     const connectionRef = useRef<signalR.HubConnection | null>(null);
@@ -40,6 +40,8 @@ export const useRealtime = () => {
         });
 
         const startConnection = async () => {
+            if (connection.state === signalR.HubConnectionState.Connected) return;
+            
             try {
                 await connection.start();
                 console.log("Connected to SignalR Hub");
@@ -49,7 +51,11 @@ export const useRealtime = () => {
                     await connection.invoke("JoinKitchenGroup");
                     console.log("Joined Kitchen Group");
                 }
-            } catch (err) {
+            } catch (err: any) {
+                // Ignore errors if the connection was intentionally closed
+                if (err.message?.includes("stopped during negotiation")) {
+                    return;
+                }
                 console.error("SignalR Connection Error: ", err);
                 setTimeout(startConnection, 5000);
             }
@@ -59,7 +65,9 @@ export const useRealtime = () => {
         connectionRef.current = connection;
 
         return () => {
-            connection.stop();
+            if (connection.state !== signalR.HubConnectionState.Disconnected) {
+                connection.stop().catch(err => console.error("Error stopping connection:", err));
+            }
         };
     }, [token, user, addOrder]);
 

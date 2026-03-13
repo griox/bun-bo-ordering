@@ -9,9 +9,9 @@ export default {
     theme: {
         extend: {
             colors: {
-                background: "#FFCC99", // Vivid Yellow
+                background: "#FFD700", // Vibrant Yellow
                 paper: "#FFFFFF", // White for cards
-                primary: "#000000", // Black for strong contrast buttons
+                primary: "#D9381E", // Vibrant Red
                 secondary: "#2D2D2D", // Dark Gray
                 text: "#000000", // Black Text
             },

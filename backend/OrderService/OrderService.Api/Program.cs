@@ -168,6 +168,19 @@ orderGroup.MapGet("/tablesession/{sessionId}", async (Guid sessionId, MediatR.IM
     return Results.Ok(orders);
 });
 
+// Admin Dashboard & History
+orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
+{
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take));
+    return Results.Ok(result);
+}).RequireAuthorization("Admin");
+
+orderGroup.MapGet("/stats", async (MediatR.IMediator mediator) =>
+{
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetDashboardStatsQuery());
+    return Results.Ok(result);
+}).RequireAuthorization("Admin");
+
 orderGroup.MapPut("/{id}/status", async (Guid id, OrderService.Domain.Enums.OrderStatus status, MediatR.IMediator mediator) =>
 {
     var cmd = new OrderService.Application.Orders.Commands.UpdateOrderStatusCommand(id, status);

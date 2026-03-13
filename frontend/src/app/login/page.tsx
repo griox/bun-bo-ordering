@@ -32,7 +32,12 @@ export default function LoginPage() {
                 const { token, userId, username: resUsername, email: resEmail, role } = response.data;
                 login(token, { userId, username: resUsername, email: resEmail, role });
                 toast.success(`Chào mừng, ${resUsername}!`);
-                router.push('/');
+                
+                if (role === 'Admin') {
+                    router.push('/admin');
+                } else {
+                    router.push('/');
+                }
             } else {
                 // Register uses Username + Email + Password
                 await axiosInstance.post('/api/identity/register', {
@@ -60,7 +65,12 @@ export default function LoginPage() {
                 const { token, userId, username: resUsername, email: resEmail, role } = response.data;
                 login(token, { userId, username: resUsername, email: resEmail, role });
                 toast.success(`Chào mừng, ${resUsername}!`);
-                router.push('/');
+                
+                if (role === 'Admin') {
+                    router.push('/admin');
+                } else {
+                    router.push('/');
+                }
             } catch (err: any) {
                 toast.error(err.response?.data || 'Đăng nhập Google thất bại!');
             }
@@ -148,7 +158,7 @@ export default function LoginPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-primary text-black font-display text-xl py-4 rounded border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                        className="w-full bg-primary text-white font-display text-xl py-4 rounded border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all mt-4 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
                         {loading ? 'ĐANG XỬ LÝ...' : isLogin ? 'ĐĂNG NHẬP NGAY' : 'TẠO TÀI KHOẢN'}
                     </button>

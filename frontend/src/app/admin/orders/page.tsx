@@ -1,6 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axiosInstance from '@/lib/axiosInstance';
+import { format } from 'date-fns';
+import { Loader2 } from 'lucide-react';
 import { 
     Search, 
     Calendar,
@@ -24,20 +27,39 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 // Backend OrderStatus: Created, PendingPayment, Paid, Cooking, Served, Closed, Cancelled
 
-const mockOrders = [
-    { id: '11111111', table: '05', total: 145000, status: 'Served', time: '10:24 AM', date: '13/03/2026' },
-    { id: '22222222', table: '01', total: 65000, status: 'Cooking', time: '10:30 AM', date: '13/03/2026' },
-    { id: '33333333', table: '08', total: 220000, status: 'Created', time: '10:45 AM', date: '13/03/2026' },
-    { id: '44444444', table: '03', total: 85000, status: 'Cancelled', time: '09:15 AM', date: '13/03/2026' },
-    { id: '55555555', table: '02', total: 110000, status: 'Served', time: '08:40 AM', date: '13/03/2026' },
-];
+interface OrderSummary {
+    id: string;
+    tableCode: string;
+    tableName: string;
+    createdAt: string;
+    totalAmount: number;
+    status: string;
+    note: string | null;
+}
 
 export default function OrdersPage() {
     const [statusFilter, setStatusFilter] = useState('All');
+    const [orders, setOrders] = useState<OrderSummary[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await axiosInstance.get('/api/orders');
+                setOrders(response.data);
+            } catch (error) {
+                console.error('Failed to fetch orders', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchOrders();
+    }, []);
 
     const filteredOrders = statusFilter === 'All' 
-        ? mockOrders 
-        : mockOrders.filter(o => o.status === statusFilter);
+        ? orders 
+        : orders.filter(o => o.status === statusFilter);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -103,7 +125,16 @@ export default function OrdersPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {filteredOrders.length === 0 ? (
+                        {loading ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="h-40 text-center">
+                                    <div className="flex flex-col items-center gap-2 text-neutral-400">
+                                        <Loader2 className="w-8 h-8 animate-spin" />
+                                        <span>Đang tải danh sách...</span>
+                                    </div>
+                                </TableCell>
+                            </TableRow>
+                        ) : filteredOrders.length === 0 ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="h-40 text-center text-neutral-400">
                                     Không tìm thấy hóa đơn nào
@@ -116,14 +147,15 @@ export default function OrdersPage() {
                                         {order.id.slice(0, 8)}
                                     </TableCell>
                                     <TableCell className="font-bold">
-                                        Bàn #{order.table}
+                                        Bàn #{order.tableCode}
+                                        <div className="text-[10px] text-neutral-400 font-normal">{order.tableName}</div>
                                     </TableCell>
                                     <TableCell>
-                                        <div className="text-sm font-medium">{order.time}</div>
-                                        <div className="text-[10px] text-neutral-400">{order.date}</div>
+                                        <div className="text-sm font-medium">{format(new Date(order.createdAt), 'HH:mm')}</div>
+                                        <div className="text-[10px] text-neutral-400">{format(new Date(order.createdAt), 'dd/MM/yyyy')}</div>
                                     </TableCell>
                                     <TableCell className="font-bold text-primary">
-                                        {order.total.toLocaleString()}đ
+                                        {order.totalAmount.toLocaleString()}đ
                                     </TableCell>
                                     <TableCell>
                                         {getStatusBadge(order.status)}
