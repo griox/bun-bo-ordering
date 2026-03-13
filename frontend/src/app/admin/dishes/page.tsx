@@ -195,7 +195,7 @@ export default function DishesPage() {
                                         <label className="text-sm font-bold">Danh mục</label>
                                         <Select 
                                             value={formData.categoryId} 
-                                            onValueChange={val => setFormData({...formData, categoryId: val})}
+                                            onValueChange={val => setFormData({...formData, categoryId: val || ''})}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Chọn danh mục" />
