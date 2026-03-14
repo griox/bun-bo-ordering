@@ -1,0 +1,13 @@
+**/.git
+**/.vs
+**/.vscode
+**/bin
+**/obj
+**/*.user
+**/*.lock.json
+**/*.suo
+**/node_modules
+.DS_Store
+.env
+Dockerfile
+docker-compose.yml

@@ -1,7 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import axiosInstance from '@/lib/axiosInstance';
+import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
 import { 
@@ -24,8 +23,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-// Backend OrderStatus: Created, PendingPayment, Paid, Cooking, Served, Closed, Cancelled
+import { useOrders } from '@/hooks/useOrders';
 
 interface OrderSummary {
     id: string;
@@ -39,27 +37,11 @@ interface OrderSummary {
 
 export default function OrdersPage() {
     const [statusFilter, setStatusFilter] = useState('All');
-    const [orders, setOrders] = useState<OrderSummary[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchOrders = async () => {
-            try {
-                const response = await axiosInstance.get('/api/orders');
-                setOrders(response.data);
-            } catch (error) {
-                console.error('Failed to fetch orders', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchOrders();
-    }, []);
+    const { data: orders = [], isLoading } = useOrders();
 
     const filteredOrders = statusFilter === 'All' 
-        ? orders 
-        : orders.filter(o => o.status === statusFilter);
+        ? (orders as OrderSummary[]) 
+        : (orders as OrderSummary[]).filter(o => o.status === statusFilter);
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -125,7 +107,7 @@ export default function OrdersPage() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {loading ? (
+                        {isLoading ? (
                             <TableRow>
                                 <TableCell colSpan={6} className="h-40 text-center">
                                     <div className="flex flex-col items-center gap-2 text-neutral-400">
@@ -177,7 +159,7 @@ export default function OrdersPage() {
                 </Table>
                 
                 <div className="p-4 bg-white border-t border-neutral-100 flex items-center justify-between text-sm text-neutral-500">
-                    <p>Hiển thị <b>1-5</b> trong tổng số <b>{filteredOrders.length}</b> đơn hàng</p>
+                    <p>Hiển thị <b>{filteredOrders.length > 0 ? 1 : 0}-{filteredOrders.length}</b> trong tổng số <b>{filteredOrders.length}</b> đơn hàng</p>
                     <div className="flex gap-2">
                         <Button variant="outline" size="sm" disabled>Trước</Button>
                         <Button variant="outline" size="sm" disabled>Sau</Button>

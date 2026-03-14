@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useKitchenStore, KitchenOrder } from '@/store/useKitchenStore';
+import React from 'react';
+import { useKitchenStore } from '@/store/useKitchenStore';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,11 +9,9 @@ import { ChefHat, Timer, CheckCircle, XCircle, CookingPot, Loader2 } from 'lucid
 import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { motion, AnimatePresence } from 'framer-motion';
-import axiosInstance from '@/lib/axiosInstance';
 import { toast } from 'sonner';
+import { useUpdateOrderStatusMutation } from '@/hooks/useOrders';
 
-// Mapping Backend OrderStatus to UI
-// Created = 0, PendingPayment = 1, Paid = 2, Cooking = 3, Served = 4, Closed = 5, Cancelled = 6
 const STATUS_MAP = {
     'Created': 0,
     'Cooking': 3,
@@ -23,23 +21,17 @@ const STATUS_MAP = {
 
 export default function KitchenPage() {
     const { orders, updateOrderStatus } = useKitchenStore();
-    const [actionLoading, setActionLoading] = useState<string | null>(null);
+    const updateStatusMutation = useUpdateOrderStatusMutation();
 
-    const handleUpdateStatus = async (orderId: string, newStatus: string) => {
-        setActionLoading(orderId);
-        try {
-            const statusInt = (STATUS_MAP as any)[newStatus];
-            await axiosInstance.put(`/api/orders/${orderId}/status?status=${statusInt}`);
-            
-            // Update local state
-            updateOrderStatus(orderId, newStatus as any);
-            toast.success(`Đã cập nhật trạng thái đơn hàng`);
-        } catch (error) {
-            console.error("Error updating status:", error);
-            toast.error("Không thể cập nhật trạng thái đơn hàng");
-        } finally {
-            setActionLoading(null);
-        }
+    const handleUpdateStatus = (orderId: string, newStatus: string) => {
+        const statusInt = (STATUS_MAP as any)[newStatus];
+        
+        updateStatusMutation.mutate({ orderId, statusInt }, {
+            onSuccess: () => {
+                updateOrderStatus(orderId, newStatus as any);
+                toast.success(`Đã cập nhật trạng thái đơn hàng`);
+            }
+        });
     };
 
     const getStatusColor = (status: string) => {
@@ -140,20 +132,20 @@ export default function KitchenPage() {
                                             {order.status === 'Created' && (
                                                 <Button 
                                                     className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold gap-2"
-                                                    disabled={actionLoading === order.orderId}
+                                                    disabled={updateStatusMutation.isPending && updateStatusMutation.variables?.orderId === order.orderId}
                                                     onClick={() => handleUpdateStatus(order.orderId, 'Cooking')}
                                                 >
-                                                    {actionLoading === order.orderId ? <Loader2 className="w-4 h-4 animate-spin" /> : <CookingPot className="w-4 h-4" />}
+                                                    {updateStatusMutation.isPending && updateStatusMutation.variables?.orderId === order.orderId ? <Loader2 className="w-4 h-4 animate-spin" /> : <CookingPot className="w-4 h-4" />}
                                                     CHẾ BIẾN
                                                 </Button>
                                             )}
                                             {order.status === 'Cooking' && (
                                                 <Button 
                                                     className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold gap-2"
-                                                    disabled={actionLoading === order.orderId}
+                                                    disabled={updateStatusMutation.isPending && updateStatusMutation.variables?.orderId === order.orderId}
                                                     onClick={() => handleUpdateStatus(order.orderId, 'Served')}
                                                 >
-                                                    {actionLoading === order.orderId ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
+                                                    {updateStatusMutation.isPending && updateStatusMutation.variables?.orderId === order.orderId ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle className="w-4 h-4" />}
                                                     PHỤC VỤ
                                                 </Button>
                                             )}
@@ -161,10 +153,10 @@ export default function KitchenPage() {
                                                 variant="outline" 
                                                 size="icon" 
                                                 className="border-neutral-200 text-neutral-400 hover:text-red-500 hover:border-red-500"
-                                                disabled={actionLoading === order.orderId}
+                                                disabled={updateStatusMutation.isPending && updateStatusMutation.variables?.orderId === order.orderId}
                                                 onClick={() => handleUpdateStatus(order.orderId, 'Cancelled')}
                                             >
-                                                {actionLoading === order.orderId ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-5 h-5" />}
+                                                {updateStatusMutation.isPending && updateStatusMutation.variables?.orderId === order.orderId ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-5 h-5" />}
                                             </Button>
                                         </div>
                                     </CardFooter>

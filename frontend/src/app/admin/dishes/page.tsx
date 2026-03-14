@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
     Plus, 
     Search, 
@@ -8,8 +8,6 @@ import {
     Pencil, 
     Trash2, 
     Image as ImageIcon,
-    Check,
-    X,
     Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,33 +44,18 @@ import {
     SelectTrigger, 
     SelectValue 
 } from '@/components/ui/select';
-import axiosInstance from '@/lib/axiosInstance';
 import { toast } from 'sonner';
-
-interface Category {
-    id: number;
-    name: string;
-    description?: string;
-}
-
-interface Food {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    imageUrl?: string;
-    isAvailable: boolean;
-    categoryId: number;
-    categoryName?: string;
-}
+import { useCategories, useAllFoods, useCreateFoodMutation, useDeleteFoodMutation } from '@/hooks/useCatalog';
 
 export default function DishesPage() {
     const [searchTerm, setSearchTerm] = useState('');
-    const [foods, setFoods] = useState<Food[]>([]);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [loading, setLoading] = useState(true);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [submitting, setSubmitting] = useState(false);
+
+    // TanStack Query Hooks
+    const { data: categories = [], isLoading: catsLoading } = useCategories();
+    const { data: foods = [], isLoading: foodsLoading } = useAllFoods();
+    const createFoodMutation = useCreateFoodMutation();
+    const deleteFoodMutation = useDeleteFoodMutation();
 
     // Form State
     const [formData, setFormData] = useState({
@@ -83,38 +66,6 @@ export default function DishesPage() {
         categoryId: ''
     });
 
-    const fetchData = async () => {
-        setLoading(true);
-        try {
-            // 1. Fetch Categories
-            const catRes = await axiosInstance.get('/api/catalog/categories');
-            const cats: Category[] = catRes.data;
-            setCategories(cats);
-
-            // 2. Fetch Foods for each category and merge
-            // (Since there's no Get All Foods endpoint yet)
-            const allFoods: Food[] = [];
-            for (const cat of cats) {
-                const foodRes = await axiosInstance.get(`/api/catalog/foods/category/${cat.id}`);
-                const foodsWithCat = foodRes.data.map((f: any) => ({
-                    ...f,
-                    categoryName: cat.name
-                }));
-                allFoods.push(...foodsWithCat);
-            }
-            setFoods(allFoods);
-        } catch (error) {
-            console.error("Error fetching data:", error);
-            toast.error("Không thể tải danh sách món ăn");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     const handleCreateFood = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!formData.categoryId) {
@@ -122,43 +73,31 @@ export default function DishesPage() {
             return;
         }
 
-        setSubmitting(true);
-        try {
-            await axiosInstance.post('/api/catalog/foods', {
-                name: formData.name,
-                description: formData.description,
-                imageUrl: formData.imageUrl,
-                price: parseFloat(formData.price),
-                categoryId: parseInt(formData.categoryId)
-            });
-            
-            toast.success("Thêm món ăn thành công!");
-            setIsDialogOpen(false);
-            setFormData({ name: '', description: '', price: '', imageUrl: '', categoryId: '' });
-            fetchData();
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo món");
-        } finally {
-            setSubmitting(false);
-        }
+        createFoodMutation.mutate({
+            name: formData.name,
+            description: formData.description,
+            imageUrl: formData.imageUrl,
+            price: parseFloat(formData.price),
+            categoryId: parseInt(formData.categoryId)
+        }, {
+            onSuccess: () => {
+                setIsDialogOpen(false);
+                setFormData({ name: '', description: '', price: '', imageUrl: '', categoryId: '' });
+            }
+        });
     };
 
-    const handleDeleteFood = async (id: string) => {
+    const handleDeleteFood = (id: string) => {
         if (!confirm("Bạn có chắc chắn muốn xóa món này?")) return;
-        
-        try {
-            await axiosInstance.delete(`/api/catalog/foods/${id}`);
-            toast.success("Đã xóa món ăn");
-            setFoods(foods.filter(f => f.id !== id));
-        } catch (error) {
-            toast.error("Lỗi khi xóa món ăn");
-        }
+        deleteFoodMutation.mutate(id);
     };
 
     const filteredDishes = foods.filter(dish => 
         dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         dish.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const isLoading = catsLoading || foodsLoading;
 
     return (
         <div className="space-y-6">
@@ -239,8 +178,8 @@ export default function DishesPage() {
                             </div>
                             <DialogFooter>
                                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>HỦY</Button>
-                                <Button type="submit" disabled={submitting}>
-                                    {submitting ? (
+                                <Button type="submit" disabled={createFoodMutation.isPending}>
+                                    {createFoodMutation.isPending ? (
                                         <><Loader2 className="w-4 h-4 animate-spin mr-2" /> ĐANG LƯU...</>
                                     ) : 'LƯU MÓN ĂN'}
                                 </Button>
@@ -263,7 +202,7 @@ export default function DishesPage() {
                     </div>
                 </div>
                 
-                {loading ? (
+                {isLoading ? (
                     <div className="p-20 text-center flex flex-col items-center gap-4">
                         <Loader2 className="w-10 h-10 animate-spin text-primary" />
                         <p className="text-neutral-500">Đang tải dữ liệu...</p>

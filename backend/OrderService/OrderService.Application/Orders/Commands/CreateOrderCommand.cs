@@ -46,7 +46,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
 
         foreach (var itemDto in cart.Items)
         {
-            var orderItem = new OrderItem(order.Id, itemDto.FoodId, itemDto.Quantity, itemDto.UnitPrice, null);
+            var orderItem = new OrderItem(order.Id, itemDto.FoodId, itemDto.FoodName, itemDto.Quantity, itemDto.UnitPrice, null);
             order.AddItem(orderItem);
         }
 

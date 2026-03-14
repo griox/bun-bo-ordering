@@ -1,0 +1,261 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field"
+import { Input } from "@/components/ui/input"
+import { useGoogleLogin } from '@react-oauth/google';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { useLoginMutation, useRegisterMutation, useGoogleLoginMutation } from '@/hooks/useAuth';
+
+// Login Schema
+const loginSchema = z.object({
+  email: z.string().min(1, "Vui lòng nhập email").email("Email không hợp lệ"),
+  password: z.string().min(6, "Mật khẩu phải ít nhất 6 ký tự"),
+});
+
+// Register Schema
+const registerSchema = z.object({
+  username: z.string().min(3, "Tên hiển thị phải từ 3 ký tự"),
+  email: z.string().min(1, "Vui lòng nhập email").email("Email không hợp lệ"),
+  password: z.string().min(6, "Mật khẩu phải ít nhất 6 ký tự"),
+  confirmPassword: z.string().min(1, "Vui lòng xác nhận mật khẩu"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Mật khẩu nhập lại không khớp",
+  path: ["confirmPassword"],
+});
+
+type LoginValues = z.infer<typeof loginSchema>;
+type RegisterValues = z.infer<typeof registerSchema>;
+
+interface LoginFormProps extends React.ComponentProps<"div"> {
+  onSuccess?: () => void;
+}
+
+export function LoginForm({
+  className,
+  onSuccess,
+  ...props
+}: LoginFormProps) {
+  const [isLogin, setIsLogin] = useState(true);
+
+  // TanStack Query Mutations
+  const loginMutation = useLoginMutation(onSuccess);
+  const googleLoginMutation = useGoogleLoginMutation(onSuccess);
+  const registerMutation = useRegisterMutation(() => {
+    setIsLogin(true);
+    loginForm.setValue('email', registerForm.getValues('email'));
+  });
+
+  // Form for Login
+  const loginForm = useForm<LoginValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' }
+  });
+
+  // Form for Register
+  const registerForm = useForm<RegisterValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: { username: '', email: '', password: '', confirmPassword: '' }
+  });
+
+  const onLoginSubmit = (data: LoginValues) => {
+    loginMutation.mutate(data);
+  };
+
+  const onRegisterSubmit = (data: RegisterValues) => {
+    registerMutation.mutate(data);
+  };
+
+  const handleGoogleLogin = useGoogleLogin({
+    onSuccess: (tokenResponse) => {
+      googleLoginMutation.mutate(tokenResponse.access_token);
+    },
+    onError: () => {
+      // Toast error is handled inside the hook
+    },
+  });
+
+  // Reset forms when switching
+  useEffect(() => {
+    if (isLogin) registerForm.reset();
+    else loginForm.reset();
+  }, [isLogin, loginForm, registerForm]);
+
+  const loading = loginMutation.isPending || registerMutation.isPending || googleLoginMutation.isPending;
+
+  return (
+    <div className={cn("flex flex-col gap-6", className)} {...props}>
+      <div className="flex flex-col items-center gap-1.5 text-center">
+        <h1 className="text-2xl md:text-5xl font-display font-black text-primary drop-shadow-[1.5px_1.5px_0px_#2D2D2D] uppercase tracking-tight">
+          {isLogin ? 'Đăng nhập' : 'Tạo tài khoản'}
+        </h1>
+        <p className="text-sm md:text-base font-main text-text/70 italic font-bold">
+          {isLogin ? 'Chào mừng bạn quay lại với Bún Bò Phố!' : 'Gia nhập cộng đồng yêu Bún Bò ngay hôm nay'}
+        </p>
+      </div>
+
+      {isLogin ? (
+        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="flex flex-col gap-5">
+          <FieldGroup className="gap-4">
+            <Field className="space-y-1.5">
+              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary text-bold">Email liên hệ</FieldLabel>
+              <Input 
+                {...loginForm.register('email')}
+                placeholder="vi-du@gmail.com" 
+                className={cn(
+                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  loginForm.formState.errors.email ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
+                )}
+              />
+              {loginForm.formState.errors.email && (
+                <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{loginForm.formState.errors.email.message}</span>
+              )}
+            </Field>
+
+            <Field className="space-y-1.5">
+              <div className="flex items-center ml-1">
+                <FieldLabel className="font-display text-xs font-black uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
+                <a href="#" className="ml-auto text-[10px] font-main font-bold italic underline decoration-text/40 underline-offset-2 hover:text-primary transition-colors text-text/50">Quên mật khẩu?</a>
+              </div>
+              <Input 
+                {...loginForm.register('password')}
+                type="password" 
+                placeholder="••••••••"
+                className={cn(
+                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  loginForm.formState.errors.password ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
+                )}
+              />
+              {loginForm.formState.errors.password && (
+                <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{loginForm.formState.errors.password.message}</span>
+              )}
+            </Field>
+
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full h-12 bg-primary text-white font-display text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none mt-2"
+            >
+              {loading ? 'ĐANG XỬ LÝ...' : 'Đăng nhập ngay'}
+            </Button>
+          </FieldGroup>
+        </form>
+      ) : (
+        <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="flex flex-col gap-5">
+          <FieldGroup className="gap-4">
+            <Field className="space-y-1.5">
+              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên hiển thị</FieldLabel>
+              <Input 
+                {...registerForm.register('username')}
+                placeholder="Nhập tên của bạn..." 
+                className={cn(
+                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  registerForm.formState.errors.username ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
+                )}
+              />
+              {registerForm.formState.errors.username && (
+                <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.username.message}</span>
+              )}
+            </Field>
+
+            <Field className="space-y-1.5">
+              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Email liên hệ</FieldLabel>
+              <Input 
+                {...registerForm.register('email')}
+                placeholder="vi-du@gmail.com" 
+                className={cn(
+                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  registerForm.formState.errors.email ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
+                )}
+              />
+              {registerForm.formState.errors.email && (
+                <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.email.message}</span>
+              )}
+            </Field>
+
+            <Field className="space-y-1.5">
+              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
+              <Input 
+                {...registerForm.register('password')}
+                type="password" 
+                placeholder="••••••••"
+                className={cn(
+                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  registerForm.formState.errors.password ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
+                )}
+              />
+              {registerForm.formState.errors.password && (
+                <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.password.message}</span>
+              )}
+            </Field>
+
+            <Field className="space-y-1.5">
+              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Nhập lại mật khẩu</FieldLabel>
+              <Input 
+                {...registerForm.register('confirmPassword')}
+                type="password" 
+                placeholder="••••••••"
+                className={cn(
+                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  registerForm.formState.errors.confirmPassword ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
+                )}
+              />
+              {registerForm.formState.errors.confirmPassword && (
+                <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.confirmPassword.message}</span>
+              )}
+            </Field>
+
+            <Button 
+              type="submit" 
+              disabled={loading}
+              className="w-full h-12 bg-primary text-white font-display text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none mt-2"
+            >
+              {loading ? 'ĐANG XỬ LÝ...' : 'Tạo tài khoản ngay'}
+            </Button>
+          </FieldGroup>
+        </form>
+      )}
+
+      {isLogin && (
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-[2px] bg-text/10"></div>
+            <span className="font-display text-[10px] font-black text-text/30 tracking-widest">HOẶC</span>
+            <div className="flex-1 h-[2px] bg-text/10"></div>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            type="button" 
+            className="w-full h-11 bg-white text-text font-display text-sm font-black uppercase rounded-xl border-[3px] border-text shadow-[2.5px_2.5px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all"
+            onClick={() => handleGoogleLogin()}
+          >
+            <img src="https://www.google.com/favicon.ico" alt="G" className="mr-2 h-4 w-4" />
+            TIẾP TỤC VỚI GOOGLE
+          </Button>
+        </div>
+      )}
+
+      <div className="text-center">
+        <p className="font-main text-sm text-text/60">
+          {isLogin ? "Chưa có tài khoản? " : "Đã là thành viên? "}
+          <button 
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            className="font-display font-black text-primary hover:text-secondary hover:underline underline-offset-4 transition-all"
+          >
+            {isLogin ? "ĐĂNG KÝ NGAY" : "ĐĂNG NHẬP"}
+          </button>
+        </p>
+      </div>
+    </div>
+  )
+}

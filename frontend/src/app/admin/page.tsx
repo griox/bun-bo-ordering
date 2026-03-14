@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
     DollarSign, 
@@ -8,61 +8,16 @@ import {
     Users, 
     TrendingUp,
     UtensilsCrossed,
-    Calendar
+    Calendar,
+    Loader2
 } from 'lucide-react';
-import { 
-    ChartContainer, 
-    ChartTooltip, 
-    ChartTooltipContent 
-} from '@/components/ui/chart';
 import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import axiosInstance from '@/lib/axiosInstance';
-import { Loader2 } from 'lucide-react';
-
-interface WeeklyRevenue {
-    date: string;
-    dayOfWeek: string;
-    revenue: number;
-}
-
-interface DashboardStats {
-    dailyRevenue: number;
-    totalOrdersToday: number;
-    newCustomersToday: number;
-    bestSellingItem: string;
-    weeklyRevenue: WeeklyRevenue[];
-}
-
-const data = [
-  { name: 'Thứ 2', revenue: 4000 },
-  { name: 'Thứ 3', revenue: 3000 },
-  { name: 'Thứ 4', revenue: 2000 },
-  { name: 'Thứ 5', revenue: 2780 },
-  { name: 'Thứ 6', revenue: 1890 },
-  { name: 'Thứ 7', revenue: 2390 },
-  { name: 'Chủ Nhật', revenue: 3490 },
-];
+import { useDashboardStats } from '@/hooks/useDashboard';
 
 export default function AdminDashboard() {
-    const [data, setData] = useState<DashboardStats | null>(null);
-    const [loading, setLoading] = useState(true);
+    const { data: statsData, isLoading, error } = useDashboardStats();
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const response = await axiosInstance.get('/api/orders/stats');
-                setData(response.data);
-            } catch (error) {
-                console.error('Failed to fetch stats', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
-    if (loading) {
+    if (isLoading) {
         return (
             <div className="h-full w-full flex items-center justify-center">
                 <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -70,42 +25,51 @@ export default function AdminDashboard() {
         );
     }
 
+    if (error) {
+        return (
+            <div className="h-full w-full flex items-center justify-center text-red-500 font-bold">
+                Đã có lỗi xảy ra khi tải dữ liệu.
+            </div>
+        );
+    }
+
     const stats = [
         { 
             title: 'Doanh thu ngày', 
-            value: `${data?.dailyRevenue.toLocaleString()}đ`, 
+            value: `${statsData?.dailyRevenue.toLocaleString()}đ`, 
             icon: DollarSign, 
             color: 'text-green-600', 
             bg: 'bg-green-50' 
         },
         { 
             title: 'Tổng đơn hàng', 
-            value: data?.totalOrdersToday.toString() || '0', 
+            value: statsData?.totalOrdersToday.toString() || '0', 
             icon: ShoppingCart, 
             color: 'text-blue-600', 
             bg: 'bg-blue-50' 
         },
         { 
             title: 'Khách hàng mới', 
-            value: data?.newCustomersToday.toString() || '0', 
+            value: statsData?.newCustomersToday.toString() || '0', 
             icon: Users, 
             color: 'text-purple-600', 
             bg: 'bg-purple-50' 
         },
         { 
             title: 'Món bán chạy nhất', 
-            value: data?.bestSellingItem || 'N/A', 
+            value: statsData?.bestSellingItem || 'N/A', 
             icon: UtensilsCrossed, 
             color: 'text-orange-600', 
             bg: 'bg-orange-50' 
         },
     ];
 
-    const chartData = data?.weeklyRevenue.map(d => ({
+    const chartData = statsData?.weeklyRevenue.map(d => ({
         name: d.dayOfWeek,
         revenue: d.revenue,
         fullDate: d.date
     })) || [];
+
     return (
         <div className="space-y-8">
             <div className="flex justify-between items-center">

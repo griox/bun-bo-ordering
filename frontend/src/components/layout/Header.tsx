@@ -6,10 +6,17 @@ import { useState, useEffect } from 'react';
 import { Menu, X, User } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
+import {
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { LoginForm } from '@/components/login-form';
 
 export function Header() {
     const pathname = usePathname();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isLoginOpen, setIsLoginOpen] = useState(false);
 
     const isActive = (path: string) => pathname === path;
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
@@ -74,10 +81,20 @@ export function Header() {
                             </div>
                         </div>
                     ) : (
-                        <Link href="/login" className="flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
-                            <User size={16} />
-                            <span>THÀNH VIÊN</span>
-                        </Link>
+                        <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+                            <DialogTrigger render={<button className="flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all" />}>
+                                <User size={16} />
+                                <span>THÀNH VIÊN</span>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2rem]">
+                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                                    style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
+                                </div>
+                                <div className="relative p-6 md:p-10 overflow-y-auto max-h-[90vh]">
+                                    <LoginForm onSuccess={() => setIsLoginOpen(false)} />
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     )}
                 </nav>
 
@@ -103,26 +120,37 @@ export function Header() {
                     ))}
                     {mounted && user ? (
                         <div className="flex flex-col items-center gap-4 mt-4">
-                            <div className="flex items-center gap-2 bg-primary text-black font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D]">
+                            <div className="flex items-center gap-2 bg-primary text-white font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D]">
                                 <User size={24} />
                                 <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
                             </div>
                             <button
                                 onClick={() => { logout(); toast.success('Đã đăng xuất!'); setIsMenuOpen(false); }}
-                                className="text-secondary font-display text-lg tracking-widest underline decoration-dashed"
+                                className="text-secondary font-display text-lg tracking-widest underline decoration-dashed transition-all hover:text-primary"
                             >
                                 ĐĂNG XUẤT
                             </button>
                         </div>
                     ) : (
-                        <Link
-                            href="/login"
-                            onClick={() => setIsMenuOpen(false)}
-                            className="flex items-center gap-2 bg-primary text-black font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all mt-4"
-                        >
-                            <User size={24} />
-                            <span>THÀNH VIÊN</span>
-                        </Link>
+                        <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+                            <DialogTrigger render={
+                                <button
+                                    onClick={() => setIsMenuOpen(false)}
+                                    className="flex items-center gap-2 bg-primary text-white font-display text-xl px-8 py-3 rounded-full border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all mt-4"
+                                />
+                            }>
+                                <User size={24} />
+                                <span>THÀNH VIÊN</span>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2rem]">
+                                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                                    style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
+                                </div>
+                                <div className="relative p-6 md:p-10 overflow-y-auto max-h-[90vh]">
+                                    <LoginForm onSuccess={() => setIsLoginOpen(false)} />
+                                </div>
+                            </DialogContent>
+                        </Dialog>
                     )}
                 </div>
             </div>
