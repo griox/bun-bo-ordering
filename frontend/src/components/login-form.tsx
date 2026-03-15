@@ -92,26 +92,26 @@ export function LoginForm({
   const loading = loginMutation.isPending || registerMutation.isPending || googleLoginMutation.isPending;
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <div className="flex flex-col items-center gap-1.5 text-center">
-        <h1 className="text-2xl md:text-5xl font-display font-black text-primary drop-shadow-[1.5px_1.5px_0px_#2D2D2D] uppercase tracking-tight">
+    <div className={cn("flex flex-col gap-4 md:gap-6", className)} {...props}>
+      <div className="flex flex-col items-center gap-1 text-center">
+        <h1 className="text-3xl md:text-5xl font-display font-black text-primary drop-shadow-[1.5px_1.5px_0px_#2D2D2D] uppercase tracking-tight">
           {isLogin ? 'Đăng nhập' : 'Tạo tài khoản'}
         </h1>
-        <p className="text-sm md:text-base font-main text-text/70 italic font-bold">
+        <p className="text-xs md:text-base font-main text-text/70 italic font-bold max-w-[280px] md:max-w-none">
           {isLogin ? 'Chào mừng bạn quay lại với Bún Bò Phố!' : 'Gia nhập cộng đồng yêu Bún Bò ngay hôm nay'}
         </p>
       </div>
 
       {isLogin ? (
-        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="flex flex-col gap-5">
-          <FieldGroup className="gap-4">
-            <Field className="space-y-1.5">
-              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary text-bold">Email liên hệ</FieldLabel>
+        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="flex flex-col gap-4 md:gap-5">
+          <FieldGroup className="gap-3 md:gap-4">
+            <Field className="space-y-1">
+              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Email liên hệ</FieldLabel>
               <Input 
                 {...loginForm.register('email')}
                 placeholder="vi-du@gmail.com" 
                 className={cn(
-                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  "h-10 md:h-11 border-[3px] border-text bg-white font-main text-sm md:text-base px-3 md:px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
                   loginForm.formState.errors.email ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
                 )}
               />
@@ -120,17 +120,17 @@ export function LoginForm({
               )}
             </Field>
 
-            <Field className="space-y-1.5">
+            <Field className="space-y-1">
               <div className="flex items-center ml-1">
-                <FieldLabel className="font-display text-xs font-black uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
-                <a href="#" className="ml-auto text-[10px] font-main font-bold italic underline decoration-text/40 underline-offset-2 hover:text-primary transition-colors text-text/50">Quên mật khẩu?</a>
+                <FieldLabel className="font-display text-[10px] md:text-xs font-black uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
+                <a href="#" className="ml-auto text-[10px] font-main font-bold italic underline decoration-text/40 underline-offset-2 hover:text-primary transition-colors text-text/50">Quên?</a>
               </div>
               <Input 
                 {...loginForm.register('password')}
                 type="password" 
                 placeholder="••••••••"
                 className={cn(
-                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  "h-10 md:h-11 border-[3px] border-text bg-white font-main text-sm md:text-base px-3 md:px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
                   loginForm.formState.errors.password ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
                 )}
               />
@@ -142,22 +142,22 @@ export function LoginForm({
             <Button 
               type="submit" 
               disabled={loading}
-              className="w-full h-12 bg-primary text-white font-display text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none mt-2"
+              className="w-full h-11 md:h-12 bg-primary text-white font-display text-base md:text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none mt-1 md:mt-2"
             >
               {loading ? 'ĐANG XỬ LÝ...' : 'Đăng nhập ngay'}
             </Button>
           </FieldGroup>
         </form>
       ) : (
-        <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="flex flex-col gap-5">
-          <FieldGroup className="gap-4">
-            <Field className="space-y-1.5">
-              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên hiển thị</FieldLabel>
+        <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="flex flex-col gap-4 md:gap-5">
+          <FieldGroup className="gap-3 md:gap-4 overflow-y-auto max-h-[40vh] md:max-h-none pr-1">
+            <Field className="space-y-1">
+              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên hiển thị</FieldLabel>
               <Input 
                 {...registerForm.register('username')}
-                placeholder="Nhập tên của bạn..." 
+                placeholder="Tên của bạn..." 
                 className={cn(
-                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  "h-10 md:h-11 border-[3px] border-text bg-white font-main text-sm md:text-base px-3 md:px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
                   registerForm.formState.errors.username ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
                 )}
               />
@@ -166,13 +166,13 @@ export function LoginForm({
               )}
             </Field>
 
-            <Field className="space-y-1.5">
-              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Email liên hệ</FieldLabel>
+            <Field className="space-y-1">
+              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Email liên hệ</FieldLabel>
               <Input 
                 {...registerForm.register('email')}
                 placeholder="vi-du@gmail.com" 
                 className={cn(
-                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  "h-10 md:h-11 border-[3px] border-text bg-white font-main text-sm md:text-base px-3 md:px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
                   registerForm.formState.errors.email ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
                 )}
               />
@@ -181,14 +181,14 @@ export function LoginForm({
               )}
             </Field>
 
-            <Field className="space-y-1.5">
-              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
+            <Field className="space-y-1">
+              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
               <Input 
                 {...registerForm.register('password')}
                 type="password" 
                 placeholder="••••••••"
                 className={cn(
-                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  "h-10 md:h-11 border-[3px] border-text bg-white font-main text-sm md:text-base px-3 md:px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
                   registerForm.formState.errors.password ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
                 )}
               />
@@ -197,14 +197,14 @@ export function LoginForm({
               )}
             </Field>
 
-            <Field className="space-y-1.5">
-              <FieldLabel className="font-display text-xs font-black ml-1 uppercase tracking-wider text-secondary">Nhập lại mật khẩu</FieldLabel>
+            <Field className="space-y-1">
+              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Xác nhận</FieldLabel>
               <Input 
                 {...registerForm.register('confirmPassword')}
                 type="password" 
                 placeholder="••••••••"
                 className={cn(
-                  "h-11 border-[3px] border-text bg-white font-main text-base px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
+                  "h-10 md:h-11 border-[3px] border-text bg-white font-main text-sm md:text-base px-3 md:px-4 rounded-xl shadow-[2px_2px_0px_#2D2D2D] transition-all",
                   registerForm.formState.errors.confirmPassword ? "border-red-500 shadow-[2px_2px_0px_red]" : "focus:ring-primary focus:border-primary"
                 )}
               />
@@ -212,47 +212,46 @@ export function LoginForm({
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.confirmPassword.message}</span>
               )}
             </Field>
-
-            <Button 
-              type="submit" 
-              disabled={loading}
-              className="w-full h-12 bg-primary text-white font-display text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none mt-2"
-            >
-              {loading ? 'ĐANG XỬ LÝ...' : 'Tạo tài khoản ngay'}
-            </Button>
           </FieldGroup>
+          <Button 
+            type="submit" 
+            disabled={loading}
+            className="w-full h-11 md:h-12 bg-primary text-white font-display text-base md:text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none"
+          >
+            {loading ? 'ĐANG XỬ LÝ...' : 'Tạo tài khoản ngay'}
+          </Button>
         </form>
       )}
 
       {isLogin && (
-        <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-3">
             <div className="flex-1 h-[2px] bg-text/10"></div>
-            <span className="font-display text-[10px] font-black text-text/30 tracking-widest">HOẶC</span>
+            <span className="font-display text-[9px] md:text-[10px] font-black text-text/30 tracking-widest">HOẶC</span>
             <div className="flex-1 h-[2px] bg-text/10"></div>
           </div>
           
           <Button 
             variant="outline" 
             type="button" 
-            className="w-full h-11 bg-white text-text font-display text-sm font-black uppercase rounded-xl border-[3px] border-text shadow-[2.5px_2.5px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all"
+            className="w-full h-10 md:h-11 bg-white text-text font-display text-xs md:text-sm font-black uppercase rounded-xl border-[3px] border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all"
             onClick={() => handleGoogleLogin()}
           >
             <img src="https://www.google.com/favicon.ico" alt="G" className="mr-2 h-4 w-4" />
-            TIẾP TỤC VỚI GOOGLE
+            GOOGLE
           </Button>
         </div>
       )}
 
-      <div className="text-center">
-        <p className="font-main text-sm text-text/60">
+      <div className="text-center mt-auto">
+        <p className="font-main text-xs md:text-sm text-text/60">
           {isLogin ? "Chưa có tài khoản? " : "Đã là thành viên? "}
           <button 
             type="button"
             onClick={() => setIsLogin(!isLogin)}
             className="font-display font-black text-primary hover:text-secondary hover:underline underline-offset-4 transition-all"
           >
-            {isLogin ? "ĐĂNG KÝ NGAY" : "ĐĂNG NHẬP"}
+            {isLogin ? "ĐĂNG KÝ" : "ĐĂNG NHẬP"}
           </button>
         </p>
       </div>

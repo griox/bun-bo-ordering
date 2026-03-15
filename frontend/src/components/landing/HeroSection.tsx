@@ -18,9 +18,8 @@ export function HeroSection() {
                     <span className="font-display text-primary text-lg tracking-wider">HƯƠNG VỊ BIỂN x PHONG CÁCH PHỐ</span>
                 </div>
 
-                <h1 className="font-display text-6xl md:text-8xl text-paper drop-shadow-[4px_4px_0px_#D9381E] mb-6 leading-tight">
-                    BÚN BÒ <br />
-                    <span className="text-secondary drop-shadow-[4px_4px_0px_#2D2D2D]">& CÀ PHÊ</span>
+                <h1 className="font-display text-[2.75rem] md:text-8xl text-paper drop-shadow-[4px_4px_0px_#D9381E] mb-6 leading-tight whitespace-nowrap">
+                    BÚN BÒ <span className="text-secondary drop-shadow-[4px_4px_0px_#2D2D2D]">& CÀ PHÊ</span>
                 </h1>
 
                 <p className="font-main text-xl text-text/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-white drop-shadow-sm font-medium">
