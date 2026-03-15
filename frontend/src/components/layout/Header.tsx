@@ -12,6 +12,9 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog"
 import { LoginForm } from '@/components/login-form';
+import { useOrderStore } from '@/store/useOrderStore';
+import { Badge } from '@/components/ui/badge';
+import { Coffee } from 'lucide-react';
 
 export function Header() {
     const pathname = usePathname();
@@ -24,6 +27,7 @@ export function Header() {
     // Xử lý Hydration mismatch với local storage state của Zustand
     const [mounted, setMounted] = useState(false);
     const { user, logout } = useAuthStore();
+    const { table, session } = useOrderStore();
 
     useEffect(() => {
         setMounted(true);
@@ -48,6 +52,13 @@ export function Header() {
                         <span className="font-display text-lg text-paper leading-none">BÚN BÒ</span>
                         <span className="font-display text-xs text-secondary leading-none">& CÀ PHÊ PHỐ</span>
                     </div>
+
+                    {mounted && session && table && (
+                        <div className="ml-4 flex items-center gap-2 bg-secondary/10 text-secondary border-2 border-secondary/30 px-3 py-1 rounded-lg">
+                            <Coffee size={14} className="animate-pulse" />
+                            <span className="text-[10px] font-bold tracking-tighter">BÀN: {table.tableCode || table.name}</span>
+                        </div>
+                    )}
                 </Link>
 
                 {/* Navigation (Desktop) */}

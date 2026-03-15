@@ -136,3 +136,5 @@
 /Users/huyngo/bunbo-system-datn/backend/CatalogService/CatalogService.Api/obj/Debug/net8.0/CatalogService.Api.pdb
 /Users/huyngo/bunbo-system-datn/backend/CatalogService/CatalogService.Api/obj/Debug/net8.0/CatalogService.Api.genruntimeconfig.cache
 /Users/huyngo/bunbo-system-datn/backend/CatalogService/CatalogService.Api/obj/Debug/net8.0/ref/CatalogService.Api.dll
+/Users/huyngo/bunbo-system-datn/backend/CatalogService/CatalogService.Api/bin/Debug/net8.0/AWSSDK.Core.dll
+/Users/huyngo/bunbo-system-datn/backend/CatalogService/CatalogService.Api/bin/Debug/net8.0/AWSSDK.S3.dll

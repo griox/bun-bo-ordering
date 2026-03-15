@@ -44,6 +44,17 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
+// Add CORS to Order Service (as well as Gateway)
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Add MediatR
 builder.Services.AddApplicationServices();
 
@@ -72,6 +83,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -94,7 +106,20 @@ orderGroup.MapGet("/tables/{tableId}", async (Guid tableId, MediatR.IMediator me
     return result != null ? Results.Ok(result) : Results.NotFound();
 });
 
-// Admin Table Management
+// Admin Table Management - Move specific routes before generic {id}
+orderGroup.MapPost("/tables/positions", async (MediatR.IMediator mediator, OrderService.Application.Tables.Commands.UpdateTablePositionsCommand cmd) =>
+{
+    try 
+    {
+        var success = await mediator.Send(cmd);
+        return success ? Results.NoContent() : Results.NotFound();
+    }
+    catch (Exception ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+}).RequireAuthorization("Admin");
+
 orderGroup.MapPost("/tables", async (MediatR.IMediator mediator, OrderService.Application.Tables.Commands.CreateTableCommand cmd) =>
 {
     try
@@ -114,11 +139,12 @@ orderGroup.MapGet("/tables", async (MediatR.IMediator mediator) =>
     return Results.Ok(tables);
 }).RequireAuthorization("Admin");
 
-orderGroup.MapPut("/tables/{id}", async (MediatR.IMediator mediator, Guid id, string tableCode, string name) =>
+orderGroup.MapPut("/tables/{id:guid}", async (MediatR.IMediator mediator, Guid id, OrderService.Application.Tables.Commands.UpdateTableCommand cmd) =>
 {
+    if (id != cmd.Id) return Results.BadRequest("ID mismatch.");
     try
     {
-        var success = await mediator.Send(new OrderService.Application.Tables.Commands.UpdateTableCommand(id, tableCode, name));
+        var success = await mediator.Send(cmd);
         return success ? Results.NoContent() : Results.NotFound();
     }
     catch (Exception ex)
@@ -127,7 +153,13 @@ orderGroup.MapPut("/tables/{id}", async (MediatR.IMediator mediator, Guid id, st
     }
 }).RequireAuthorization("Admin");
 
-orderGroup.MapDelete("/tables/{id}", async (MediatR.IMediator mediator, Guid id) =>
+orderGroup.MapPatch("/tables/{id:guid}/position", async (MediatR.IMediator mediator, Guid id, [Microsoft.AspNetCore.Mvc.FromQuery] int posX, [Microsoft.AspNetCore.Mvc.FromQuery] int posY) =>
+{
+    var success = await mediator.Send(new OrderService.Application.Tables.Commands.UpdateTablePositionCommand(id, posX, posY));
+    return success ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization("Admin");
+
+orderGroup.MapDelete("/tables/{id:guid}", async (MediatR.IMediator mediator, Guid id) =>
 {
     var success = await mediator.Send(new OrderService.Application.Tables.Commands.DeleteTableCommand(id));
     return success ? Results.NoContent() : Results.NotFound();
@@ -200,9 +232,9 @@ using (var scope = app.Services.CreateScope())
         if (!db.RestaurantTables.Any())
         {
             db.RestaurantTables.AddRange(
-                new OrderService.Domain.Entities.RestaurantTable("T1", "Bàn VIP 1"),
-                new OrderService.Domain.Entities.RestaurantTable("T2", "Bàn VIP 2"),
-                new OrderService.Domain.Entities.RestaurantTable("T3", "Bàn Thường 3")
+                new OrderService.Domain.Entities.RestaurantTable("T1", "Bàn VIP 1", 50, 50),
+                new OrderService.Domain.Entities.RestaurantTable("T2", "Bàn VIP 2", 200, 50),
+                new OrderService.Domain.Entities.RestaurantTable("T3", "Bàn Thường 3", 50, 150)
             );
             db.SaveChanges();
             Console.WriteLine("Mock Tables seeded.");

@@ -19,6 +19,7 @@ const menuItems = [
     { title: 'Bảng điều khiển', icon: LayoutDashboard, href: '/admin' },
     { title: 'Nhà bếp', icon: ChefHat, href: '/admin/kitchen' },
     { title: 'Quản lý món ăn', icon: Utensils, href: '/admin/dishes' },
+    { title: 'Quản lý bàn', icon: Settings, href: '/admin/tables' }, // Changed icon to Settings or Grid
     { title: 'Đơn hàng', icon: ClipboardList, href: '/admin/orders' },
 ];
 

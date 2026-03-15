@@ -2,7 +2,8 @@ using CatalogService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using CatalogService.Application;
 using CatalogService.Application.Interfaces;
-
+using CatalogService.Infrastructure;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -14,9 +15,10 @@ builder.WebHost.ConfigureKestrel(options =>
 {
     options.ConfigureEndpointDefaults(o => o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2);
 });
+
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890"; // Fallback to same default as IdentityService
+var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890";
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -44,14 +46,11 @@ builder.Services.AddSwaggerGen();
 // Configure gRPC
 builder.Services.AddGrpc();
 
-// Configure Database
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+// Configure Infrastructure (DB, Storage, etc.)
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // Configure MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CatalogService.Application.DependencyInjection).Assembly));
 
 var app = builder.Build();
 
@@ -81,24 +80,19 @@ catalogGroup.MapGet("/categories", async (MediatR.IMediator mediator) =>
     return Results.Ok(categories);
 });
 
-catalogGroup.MapPut("/categories/{id}", async (MediatR.IMediator mediator, int id, CatalogService.Application.Categories.Commands.UpdateCategoryCommand cmd) =>
-{
-    if (id != cmd.Id) return Results.BadRequest("ID mismatch");
-    var success = await mediator.Send(cmd);
-    return success ? Results.NoContent() : Results.NotFound();
-}).RequireAuthorization("Admin");
-
-catalogGroup.MapDelete("/categories/{id}", async (MediatR.IMediator mediator, int id) =>
-{
-    var success = await mediator.Send(new CatalogService.Application.Categories.Commands.DeleteCategoryCommand(id));
-    return success ? Results.NoContent() : Results.NotFound();
-}).RequireAuthorization("Admin");
-
 // Food Endpoints
-catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, CatalogService.Application.Foods.Commands.CreateFoodCommand cmd) =>
+catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest request) =>
 {
     try
     {
+        var form = await request.ReadFormAsync();
+        var name = form["Name"].ToString();
+        var description = form["Description"].ToString();
+        var price = decimal.Parse(form["Price"].ToString());
+        var categoryId = int.Parse(form["CategoryId"].ToString());
+        var file = request.Form.Files.GetFile("ImageFile");
+
+        var cmd = new CatalogService.Application.Foods.Commands.CreateFoodCommand(name, description, price, categoryId, file);
         var id = await mediator.Send(cmd);
         return Results.Created($"/api/catalog/foods/{id}", new { Id = id });
     }
@@ -106,7 +100,7 @@ catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, CatalogService
     {
         return Results.BadRequest(new { Message = ex.Message });
     }
-}).RequireAuthorization("Admin");
+}).DisableAntiforgery().RequireAuthorization("Admin"); // Disable antiforgery for simplicity in Minimal APIs with multipart
 
 catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator mediator, int categoryId) =>
 {
@@ -114,11 +108,18 @@ catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator med
     return Results.Ok(foods);
 });
 
-catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, CatalogService.Application.Foods.Commands.UpdateFoodCommand cmd) =>
+catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, HttpRequest request) =>
 {
-    if (id != cmd.Id) return Results.BadRequest("ID mismatch");
     try
     {
+        var form = await request.ReadFormAsync();
+        var name = form["Name"].ToString();
+        var description = form["Description"].ToString();
+        var price = decimal.Parse(form["Price"].ToString());
+        var categoryId = int.Parse(form["CategoryId"].ToString());
+        var file = request.Form.Files.GetFile("ImageFile");
+
+        var cmd = new CatalogService.Application.Foods.Commands.UpdateFoodCommand(id, name, description, price, categoryId, file);
         var success = await mediator.Send(cmd);
         return success ? Results.NoContent() : Results.NotFound();
     }
@@ -126,7 +127,7 @@ catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, C
     {
         return Results.BadRequest(new { Message = ex.Message });
     }
-}).RequireAuthorization("Admin");
+}).DisableAntiforgery().RequireAuthorization("Admin");
 
 catalogGroup.MapDelete("/foods/{id}", async (MediatR.IMediator mediator, Guid id) =>
 {

@@ -330,111 +330,155 @@
                 {
                     "name": "Foods",
                     "item": [
-                        {
-                            "name": "Create Food",
-                            "event": [
-                                {
-                                    "listen": "test",
-                                    "script": {
-                                        "exec": [
-                                            "var jsonData = pm.response.json();",
-                                            "if (jsonData.id) {",
-                                            "    pm.environment.set(\"FoodId\", jsonData.id);",
-                                            "}"
-                                        ],
-                                        "type": "text/javascript"
-                                    }
-                                }
-                            ],
-                            "request": {
-                                "method": "POST",
-                                "header": [
-                                    {
-                                        "key": "Authorization",
-                                        "value": "Bearer {{AuthToken}}"
-                                    },
-                                    {
-                                        "key": "Content-Type",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "body": {
-                                    "mode": "raw",
-                                    "raw": "{\n  \"name\": \"Bún Bò Huế\",\n  \"description\": \"Đặc sản siêu cay\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 50000,\n  \"categoryId\": {{CategoryId}}\n}"
-                                },
-                                "url": {
-                                    "raw": "{{GatewayUrl}}/api/catalog/foods",
-                                    "host": [
-                                        "{{GatewayUrl}}"
-                                    ],
-                                    "path": [
-                                        "api",
-                                        "catalog",
-                                        "foods"
-                                    ]
-                                }
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Get Foods By Category",
-                            "request": {
-                                "method": "GET",
-                                "header": [
-                                    {
-                                        "key": "Authorization",
-                                        "value": "Bearer {{AuthToken}}"
-                                    }
-                                ],
-                                "url": {
-                                    "raw": "{{GatewayUrl}}/api/catalog/foods/category/{{CategoryId}}",
-                                    "host": [
-                                        "{{GatewayUrl}}"
-                                    ],
-                                    "path": [
-                                        "api",
-                                        "catalog",
-                                        "foods",
-                                        "category",
-                                        "{{CategoryId}}"
-                                    ]
-                                }
-                            },
-                            "response": []
-                        },
-                        {
-                            "name": "Update Food",
-                            "request": {
-                                "method": "PUT",
-                                "header": [
-                                    {
-                                        "key": "Authorization",
-                                        "value": "Bearer {{AuthToken}}"
-                                    },
-                                    {
-                                        "key": "Content-Type",
-                                        "value": "application/json"
-                                    }
-                                ],
-                                "body": {
-                                    "mode": "raw",
-                                    "raw": "{\n  \"id\": \"{{FoodId}}\",\n  \"name\": \"Bún Bò Giò Heo\",\n  \"description\": \"Thêm topping giò\",\n  \"imageUrl\": \"https://via.placeholder.com/150\",\n  \"price\": 60000,\n  \"categoryId\": {{CategoryId}}\n}"
-                                },
-                                "url": {
-                                    "raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
-                                    "host": [
-                                        "{{GatewayUrl}}"
-                                    ],
-                                    "path": [
-                                        "api",
-                                        "catalog",
-                                        "foods",
-                                        "{{FoodId}}"
-                                    ]
-                                }
-                            },
-                            "response": []
-                        },
+						{
+							"name": "Create Food",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"if (jsonData.id) {",
+											"    pm.environment.set(\"FoodId\", jsonData.id);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{AuthToken}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "Name",
+											"value": "Bún Bò Huế",
+											"type": "text"
+										},
+										{
+											"key": "Description",
+											"value": "Đặc sản siêu cay",
+											"type": "text"
+										},
+										{
+											"key": "Price",
+											"value": "50000",
+											"type": "text"
+										},
+										{
+											"key": "CategoryId",
+											"value": "{{CategoryId}}",
+											"type": "text"
+										},
+										{
+											"key": "ImageFile",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{GatewayUrl}}/api/catalog/foods",
+									"host": [
+										"{{GatewayUrl}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"foods"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Foods By Category",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{AuthToken}}"
+									}
+								],
+								"url": {
+									"raw": "{{GatewayUrl}}/api/catalog/foods/category/{{CategoryId}}",
+									"host": [
+										"{{GatewayUrl}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"foods",
+										"category",
+										"{{CategoryId}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Food",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "Bearer {{AuthToken}}"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "Name",
+											"value": "Bún Bò Giò Heo",
+											"type": "text"
+										},
+										{
+											"key": "Description",
+											"value": "Thêm topping giò",
+											"type": "text"
+										},
+										{
+											"key": "Price",
+											"value": "60000",
+											"type": "text"
+										},
+										{
+											"key": "CategoryId",
+											"value": "{{CategoryId}}",
+											"type": "text"
+										},
+										{
+											"key": "ImageFile",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{GatewayUrl}}/api/catalog/foods/{{FoodId}}",
+									"host": [
+										"{{GatewayUrl}}"
+									],
+									"path": [
+										"api",
+										"catalog",
+										"foods",
+										"{{FoodId}}"
+									]
+								}
+							},
+							"response": []
+						},
                         {
                             "name": "Delete Food",
                             "request": {

@@ -45,16 +45,20 @@ import {
     SelectValue 
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useCategories, useAllFoods, useCreateFoodMutation, useDeleteFoodMutation } from '@/hooks/useCatalog';
+import { useCategories, useAllFoods, useCreateFoodMutation, useUpdateFoodMutation, useDeleteFoodMutation, Food } from '@/hooks/useCatalog';
 
 export default function DishesPage() {
     const [searchTerm, setSearchTerm] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [editingFood, setEditingFood] = useState<Food | null>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [filePreview, setFilePreview] = useState<string>('');
 
     // TanStack Query Hooks
     const { data: categories = [], isLoading: catsLoading } = useCategories();
     const { data: foods = [], isLoading: foodsLoading } = useAllFoods();
     const createFoodMutation = useCreateFoodMutation();
+    const updateFoodMutation = useUpdateFoodMutation();
     const deleteFoodMutation = useDeleteFoodMutation();
 
     // Form State
@@ -62,9 +66,20 @@ export default function DishesPage() {
         name: '',
         description: '',
         price: '',
-        imageUrl: '',
         categoryId: ''
     });
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFilePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
 
     const handleCreateFood = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -73,18 +88,61 @@ export default function DishesPage() {
             return;
         }
 
-        createFoodMutation.mutate({
-            name: formData.name,
-            description: formData.description,
-            imageUrl: formData.imageUrl,
-            price: parseFloat(formData.price),
-            categoryId: parseInt(formData.categoryId)
-        }, {
+        const data = new FormData();
+        data.append('Name', formData.name);
+        data.append('Description', formData.description);
+        data.append('Price', formData.price);
+        data.append('CategoryId', formData.categoryId);
+        if (selectedFile) {
+            data.append('ImageFile', selectedFile);
+        }
+
+        createFoodMutation.mutate(data, {
             onSuccess: () => {
                 setIsDialogOpen(false);
-                setFormData({ name: '', description: '', price: '', imageUrl: '', categoryId: '' });
+                resetForm();
             }
         });
+    };
+
+    const handleUpdateFood = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingFood) return;
+
+        const data = new FormData();
+        data.append('Name', formData.name);
+        data.append('Description', formData.description);
+        data.append('Price', formData.price);
+        data.append('CategoryId', formData.categoryId);
+        if (selectedFile) {
+            data.append('ImageFile', selectedFile);
+        }
+
+        updateFoodMutation.mutate({ id: editingFood.id, data }, {
+            onSuccess: () => {
+                setIsDialogOpen(false);
+                resetForm();
+            }
+        });
+    };
+
+    const resetForm = () => {
+        setFormData({ name: '', description: '', price: '', categoryId: '' });
+        setSelectedFile(null);
+        setFilePreview('');
+        setEditingFood(null);
+    };
+
+    const openEditDialog = (food: Food) => {
+        setEditingFood(food);
+        setFormData({
+            name: food.name,
+            description: food.description || '',
+            price: food.price.toString(),
+            categoryId: food.categoryId.toString()
+        });
+        setFilePreview(food.imageUrl || '');
+        setIsDialogOpen(true);
     };
 
     const handleDeleteFood = (id: string) => {
@@ -106,17 +164,22 @@ export default function DishesPage() {
                     <h2 className="text-3xl font-bold text-neutral-800">Quản lý Thực đơn</h2>
                     <p className="text-neutral-500">Cập nhật danh sách món ăn và giá cả</p>
                 </div>
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                <Dialog open={isDialogOpen} onOpenChange={(open) => {
+                    setIsDialogOpen(open);
+                    if (!open) resetForm();
+                }}>
                     <DialogTrigger render={
-                        <Button className="font-bold gap-2">
+                        <Button className="font-bold gap-2" onClick={() => resetForm()}>
                             <Plus className="w-5 h-5" />
                             THÊM MÓN MỚI
                         </Button>
                     } />
                     <DialogContent className="max-w-xl">
-                        <form onSubmit={handleCreateFood}>
+                        <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood}>
                             <DialogHeader>
-                                <DialogTitle className="text-2xl font-bold">Thêm món ăn mới</DialogTitle>
+                                <DialogTitle className="text-2xl font-bold">
+                                    {editingFood ? 'Chỉnh sửa món ăn' : 'Thêm món ăn mới'}
+                                </DialogTitle>
                                 <DialogDescription>Nhập thông tin chi tiết cho món ăn của bạn.</DialogDescription>
                             </DialogHeader>
                             <div className="grid gap-6 py-4">
@@ -167,19 +230,32 @@ export default function DishesPage() {
                                         />
                                     </div>
                                     <div className="space-y-2 col-span-2">
-                                        <label className="text-sm font-bold">Hình ảnh (URL)</label>
-                                        <Input 
-                                            value={formData.imageUrl}
-                                            onChange={e => setFormData({...formData, imageUrl: e.target.value})}
-                                            placeholder="https://..." 
-                                        />
+                                        <label className="text-sm font-bold">Hình ảnh</label>
+                                        <div className="flex items-start gap-4">
+                                            <div className="flex-1 space-y-2">
+                                                <Input 
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                    className="cursor-pointer"
+                                                />
+                                                <p className="text-[10px] text-neutral-400 italic">
+                                                    Định dạng: JPG, PNG, WebP. Tối đa 5MB.
+                                                </p>
+                                            </div>
+                                            {filePreview && (
+                                                <div className="w-20 h-20 rounded-lg border border-neutral-200 overflow-hidden bg-neutral-50 flex-shrink-0">
+                                                    <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             <DialogFooter>
                                 <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>HỦY</Button>
-                                <Button type="submit" disabled={createFoodMutation.isPending}>
-                                    {createFoodMutation.isPending ? (
+                                <Button type="submit" disabled={createFoodMutation.isPending || updateFoodMutation.isPending}>
+                                    {createFoodMutation.isPending || updateFoodMutation.isPending ? (
                                         <><Loader2 className="w-4 h-4 animate-spin mr-2" /> ĐANG LƯU...</>
                                     ) : 'LƯU MÓN ĂN'}
                                 </Button>
@@ -266,7 +342,7 @@ export default function DishesPage() {
                                                     </Button>
                                                 } />
                                                 <DropdownMenuContent align="end" className="w-40">
-                                                    <DropdownMenuItem className="gap-2">
+                                                    <DropdownMenuItem className="gap-2" onClick={() => openEditDialog(dish)}>
                                                         <Pencil className="w-4 h-4 text-blue-500" /> Sửa món
                                                     </DropdownMenuItem>
                                                     <DropdownMenuItem 

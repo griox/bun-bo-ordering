@@ -70,8 +70,12 @@ export const useCreateFoodMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: any) => {
-      await axiosInstance.post('/api/catalog/foods', data);
+    mutationFn: async (data: FormData) => {
+      await axiosInstance.post('/api/catalog/foods', data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['all-foods'] });
@@ -80,6 +84,28 @@ export const useCreateFoodMutation = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo món");
+    }
+  });
+};
+
+export const useUpdateFoodMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: FormData }) => {
+      await axiosInstance.put(`/api/catalog/foods/${id}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-foods'] });
+      queryClient.invalidateQueries({ queryKey: ['foods-category'] });
+      toast.success("Cập nhật món ăn thành công!");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật món");
     }
   });
 };

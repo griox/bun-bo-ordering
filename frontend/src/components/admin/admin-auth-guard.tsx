@@ -8,16 +8,35 @@ import { Loader2 } from 'lucide-react';
 export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
     const { user, token } = useAuthStore();
     const router = useRouter();
+    const [isHydrated, setIsHydrated] = useState(false);
     const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {
-        // Check if user is logged in and is an Admin
-        if (!token || !user || user.role !== 'Admin') {
+        // Wait for hydration
+        const unsubHydrate = useAuthStore.persist.onFinishHydration(() => {
+            setIsHydrated(true);
+        });
+
+        // If already hydrated (e.g. navigation)
+        if (useAuthStore.persist.hasHydrated()) {
+            setIsHydrated(true);
+        }
+
+        return () => unsubHydrate();
+    }, []);
+
+    useEffect(() => {
+        if (!isHydrated) return;
+
+        const allowedRoles = ['Admin'];
+        
+        // Check if user is logged in and has allowed role
+        if (!token || !user || !allowedRoles.includes(user.role)) {
             router.push('/');
         } else {
             setIsAuthorized(true);
         }
-    }, [user, token, router]);
+    }, [user, token, router, isHydrated]);
 
     if (!isAuthorized) {
         return (

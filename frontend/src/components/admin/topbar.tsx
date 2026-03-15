@@ -8,6 +8,7 @@ import {
     DropdownMenuContent, 
     DropdownMenuItem, 
     DropdownMenuTrigger,
+    DropdownMenuGroup,
     DropdownMenuLabel,
     DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
@@ -46,10 +47,12 @@ export function Topbar() {
                         )}
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-80 p-0">
-                        <DropdownMenuLabel className="p-4 flex items-center justify-between">
-                            <span>Thông báo mới</span>
-                            {unreadCount > 0 && <span className="text-xs text-blue-500 font-normal">{unreadCount} đơn mới</span>}
-                        </DropdownMenuLabel>
+                        <DropdownMenuGroup>
+                            <DropdownMenuLabel className="p-4 flex items-center justify-between">
+                                <span>Thông báo mới</span>
+                                {unreadCount > 0 && <span className="text-xs text-blue-500 font-normal">{unreadCount} đơn mới</span>}
+                            </DropdownMenuLabel>
+                        </DropdownMenuGroup>
                         <DropdownMenuSeparator className="m-0" />
                         <ScrollArea className="h-80">
                             {notifications.length === 0 ? (

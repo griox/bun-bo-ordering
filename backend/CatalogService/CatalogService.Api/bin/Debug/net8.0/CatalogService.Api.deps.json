@@ -21,6 +21,25 @@
           "CatalogService.Api.dll": {}
         }
       },
+      "AWSSDK.Core/4.0.3.17": {
+        "runtime": {
+          "lib/net8.0/AWSSDK.Core.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.3.17"
+          }
+        }
+      },
+      "AWSSDK.S3/4.0.19": {
+        "dependencies": {
+          "AWSSDK.Core": "4.0.3.17"
+        },
+        "runtime": {
+          "lib/net8.0/AWSSDK.S3.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "4.0.19.0"
+          }
+        }
+      },
       "Google.Protobuf/3.31.1": {
         "runtime": {
           "lib/net5.0/Google.Protobuf.dll": {
@@ -142,6 +161,12 @@
             "assemblyVersion": "8.0.10.0",
             "fileVersion": "8.0.1024.46804"
           }
+        }
+      },
+      "Microsoft.AspNetCore.Http.Features/5.0.17": {
+        "dependencies": {
+          "Microsoft.Extensions.Primitives": "8.0.0",
+          "System.IO.Pipelines": "6.0.3"
         }
       },
       "Microsoft.AspNetCore.OpenApi/8.0.0": {
@@ -836,6 +861,7 @@
           "BunBo.SharedKernel": "1.0.0",
           "CatalogService.Domain": "1.0.0",
           "MediatR": "14.1.0",
+          "Microsoft.AspNetCore.Http.Features": "5.0.17",
           "Microsoft.EntityFrameworkCore": "8.0.11"
         },
         "runtime": {
@@ -858,6 +884,7 @@
       },
       "CatalogService.Infrastructure/1.0.0": {
         "dependencies": {
+          "AWSSDK.S3": "4.0.19",
           "BunBo.SharedKernel": "1.0.0",
           "CatalogService.Application": "1.0.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.11"
@@ -876,6 +903,20 @@
       "type": "project",
       "serviceable": false,
       "sha512": ""
+    },
+    "AWSSDK.Core/4.0.3.17": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ab24kVquQ8kvuQKNe5MK/SvaXR4uoxPkAlTPALDEImaHcwsBg+UWfRVcNzLEx4dRR2y1mDFFh+zZ9TVMXGY6Jg==",
+      "path": "awssdk.core/4.0.3.17",
+      "hashPath": "awssdk.core.4.0.3.17.nupkg.sha512"
+    },
+    "AWSSDK.S3/4.0.19": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-4MuPk4oADJImViC6jeNNWCrwY5/BNtuoHG2vzb5nBRPAdS8GTFIkDpIUbg+w82pZL8TEG+pN8ARTBxoD26FOzg==",
+      "path": "awssdk.s3/4.0.19",
+      "hashPath": "awssdk.s3.4.0.19.nupkg.sha512"
     },
     "Google.Protobuf/3.31.1": {
       "type": "package",
@@ -967,6 +1008,13 @@
       "sha512": "sha512-rcPXghZCc82IB9U2Px1Ln5Zn3vjV4p83H/Few5T/904hBddjSz03COQ2zOGWBBvdTBY+GciAUJwgBFNWaxLfqw==",
       "path": "microsoft.aspnetcore.authentication.jwtbearer/8.0.10",
       "hashPath": "microsoft.aspnetcore.authentication.jwtbearer.8.0.10.nupkg.sha512"
+    },
+    "Microsoft.AspNetCore.Http.Features/5.0.17": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-3jG2xS+dx8DDCGV/F+STdPTg89lX3ao3dF/VEPvJaz3wzBIjuadipTtYNEXDIVuOPZwb6jdmhrX9jkzOIBm5cw==",
+      "path": "microsoft.aspnetcore.http.features/5.0.17",
+      "hashPath": "microsoft.aspnetcore.http.features.5.0.17.nupkg.sha512"
     },
     "Microsoft.AspNetCore.OpenApi/8.0.0": {
       "type": "package",

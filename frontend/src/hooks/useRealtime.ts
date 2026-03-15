@@ -22,6 +22,8 @@ export const useRealtime = () => {
             audio.play().catch(e => console.error("Error playing sound:", e));
         };
 
+        let isStopped = false;
+
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(HUB_URL, {
                 accessTokenFactory: () => token
@@ -40,22 +42,31 @@ export const useRealtime = () => {
         });
 
         const startConnection = async () => {
-            if (connection.state === signalR.HubConnectionState.Connected) return;
+            if (isStopped) return;
+            if (connection.state !== signalR.HubConnectionState.Disconnected) return;
             
             try {
                 await connection.start();
+                if (isStopped) {
+                    await connection.stop();
+                    return;
+                }
                 console.log("Connected to SignalR Hub");
                 
-                // Join Kitchen group if user is Admin or Staff
-                if (user.role === 'Admin' || user.role === 'Staff' || user.role === 'Kitchen') {
+                // Join Kitchen group if user is Admin
+                if (user.role === 'Admin') {
                     await connection.invoke("JoinKitchenGroup");
                     console.log("Joined Kitchen Group");
                 }
             } catch (err: any) {
-                // Ignore errors if the connection was intentionally closed
-                if (err.message?.includes("stopped during negotiation")) {
+                if (isStopped) return;
+                
+                // SignalR standard error message for aborted connections
+                if (err.message?.includes("stopped during negotiation") || 
+                    err.message?.includes("aborted")) {
                     return;
                 }
+
                 console.error("SignalR Connection Error: ", err);
                 setTimeout(startConnection, 5000);
             }
@@ -65,8 +76,9 @@ export const useRealtime = () => {
         connectionRef.current = connection;
 
         return () => {
+            isStopped = true;
             if (connection.state !== signalR.HubConnectionState.Disconnected) {
-                connection.stop().catch(err => console.error("Error stopping connection:", err));
+                connection.stop().catch(() => {}); // Silence stop errors during unmount
             }
         };
     }, [token, user, addOrder]);

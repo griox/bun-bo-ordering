@@ -174,6 +174,12 @@ namespace OrderService.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("PosX")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PosY")
+                        .HasColumnType("integer");
+
                     b.Property<string>("TableCode")
                         .IsRequired()
                         .HasColumnType("text");
