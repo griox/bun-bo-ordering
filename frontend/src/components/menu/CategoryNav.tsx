@@ -42,13 +42,13 @@ export function CategoryNav({ categories, activeCategory, onSelect, variant = 'h
                     ref={activeCategory === cat.id ? activeRef : null}
                     onClick={() => onSelect(cat.id)}
                     className={`
-                         px-5 py-2.5 rounded-full text-sm font-bold font-main transition-all duration-200 border-2 whitespace-nowrap flex-shrink-0
+                         px-6 py-3 rounded-2xl text-sm font-black font-display transition-all duration-300 border-2 whitespace-nowrap flex-shrink-0 active:scale-90
                         ${activeCategory === cat.id
-                            ? 'bg-secondary text-red-700 border-secondary text-text shadow-md translate-y-0 opacity-100'
-                            : 'bg-secondary border-secondary text-text shadow-md translate-y-0 opacity-100'}
+                            ? 'bg-primary border-primary text-white shadow-[0_8px_20px_-6px_rgba(239,68,68,0.5)] translate-y-[-2px]'
+                            : 'bg-white border-neutral-100 text-neutral-500 hover:border-neutral-200'}
                     `}
                 >
-                    {cat.name}
+                    {cat.name.toUpperCase()}
                 </button>
             ))}
         </div>

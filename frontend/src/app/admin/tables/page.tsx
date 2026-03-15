@@ -99,13 +99,24 @@ export default function TablesPage() {
     };
 
     const handleDragEnd = (id: string, _: any, info: any) => {
-        // Use info.offset which is the displacement from the start of the drag
+        if (!floorPlanRef.current) return;
+        
+        const rect = floorPlanRef.current.getBoundingClientRect();
+        
+        // Calculate new X, Y based on mouse point relative to container
+        // Subtract 48 (half of table width 96) to make the drop point the center of the table
+        let x = Math.round(info.point.x - rect.left - 48);
+        let y = Math.round(info.point.y - rect.top - 48);
+
+        // Strict boundary clamping
+        const maxX = rect.width - 96;
+        const maxY = rect.height - 96;
+        
+        x = Math.max(0, Math.min(x, maxX));
+        y = Math.max(0, Math.min(y, maxY));
+
         setLocalTables(prev => prev.map(t => 
-            t.id === id ? { 
-                ...t, 
-                posX: t.posX + info.offset.x, 
-                posY: t.posY + info.offset.y 
-            } : t
+            t.id === id ? { ...t, posX: x, posY: y } : t
         ));
         setHasChanges(true);
     };
@@ -230,40 +241,46 @@ export default function TablesPage() {
                 </Card>
 
                 {/* Right: Floor Plan (Drag & Drop area) */}
-                <Card className="lg:col-span-3 h-[600px] relative overflow-hidden bg-neutral-50/50 border-2 border-dashed border-neutral-200 rounded-2xl">
-                    <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '30px 30px' }} />
+                <Card className="lg:col-span-3 h-[600px] relative overflow-hidden bg-white border-2 border-neutral-200 rounded-2xl shadow-inner">
+                    {/* Grid Background */}
+                    <div className="absolute inset-0 opacity-[0.05] pointer-events-none" 
+                         style={{ backgroundImage: 'radial-gradient(#000 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }} />
                     
-                    <div ref={floorPlanRef} className="absolute inset-0 w-full h-full p-10">
+                    {/* Visual Boundary Indicator */}
+                    <div className="absolute inset-4 border-2 border-dashed border-neutral-100 rounded-xl pointer-events-none" />
+
+                    <div ref={floorPlanRef} className="absolute inset-0 w-full h-full"> 
                         {localTables.map(table => (
                             <motion.div
                                 key={table.id}
                                 drag
                                 dragConstraints={floorPlanRef}
-                                dragElastic={0.1}
+                                dragElastic={0.05}
                                 dragMomentum={false}
                                 onDragEnd={(e, info) => handleDragEnd(table.id, e, info)}
                                 initial={{ x: table.posX, y: table.posY }}
                                 animate={{ x: table.posX, y: table.posY }}
-                                className="absolute left-0 top-0 cursor-move z-10"
+                                whileDrag={{ scale: 1.05, zIndex: 50, boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
+                                className="absolute left-0 top-0 cursor-move"
                             >
-                                <div className="w-24 h-24 bg-white rounded-2xl shadow-xl border-2 border-primary/20 flex flex-col items-center justify-center p-2 group hover:border-primary active:scale-95 transition-all">
-                                    <div className="bg-primary/10 text-primary w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs mb-1">
+                                <div className="w-24 h-24 bg-white rounded-3xl shadow-lg border-2 border-neutral-100 flex flex-col items-center justify-center p-2 group hover:border-primary hover:shadow-2xl transition-all duration-300">
+                                    <div className="bg-primary/10 text-primary w-12 h-12 rounded-2xl flex items-center justify-center font-bold text-sm mb-1 group-hover:bg-primary group-hover:text-white transition-colors">
                                         {table.tableCode}
                                     </div>
-                                    <p className="text-[10px] font-bold text-neutral-800 text-center truncate w-full">{table.name}</p>
+                                    <p className="text-[11px] font-bold text-neutral-600 text-center truncate w-full group-hover:text-primary transition-colors">{table.name}</p>
                                     
-                                    <div className="absolute -top-1 -right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-all scale-75 group-hover:scale-100">
                                         <Button 
                                             size="icon" 
                                             variant="secondary" 
-                                            className="h-6 w-6 rounded-full shadow-md bg-white border border-neutral-200"
+                                            className="h-8 w-8 rounded-full shadow-lg bg-white border border-neutral-200 hover:bg-neutral-50"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setSelectedTableForQR(table);
                                                 setIsQRModalOpen(true);
                                             }}
                                         >
-                                            <QrCode className="w-3 h-3 text-primary" />
+                                            <QrCode className="w-4 h-4 text-primary" />
                                         </Button>
                                     </div>
                                 </div>
@@ -272,24 +289,24 @@ export default function TablesPage() {
                     </div>
 
                     {hasChanges && (
-                        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
+                        <div className="absolute bottom-16 left-1/2 -translate-x-1/2 z-50">
                             <Button 
-                                className="bg-green-600 hover:bg-green-700 text-white font-bold gap-2 shadow-lg animate-bounce"
+                                className="bg-primary hover:bg-primary/90 text-white px-8 py-6 rounded-2xl font-bold gap-3 shadow-[0_10px_40px_-10px_rgba(239,68,68,0.5)] transition-all active:scale-95"
                                 onClick={handleBulkSave}
                                 disabled={updatePositionsMutation.isPending}
                             >
                                 {updatePositionsMutation.isPending ? (
-                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    <Loader2 className="w-5 h-5 animate-spin" />
                                 ) : (
-                                    <Save className="w-4 h-4" />
+                                    <Save className="w-5 h-5" />
                                 )}
-                                LƯU SƠ ĐỒ MỚI
+                                XÁC NHẬN LƯU VỊ TRÍ
                             </Button>
                         </div>
                     )}
 
-                    <div className="absolute bottom-4 right-4 bg-white/80 backdrop-blur px-4 py-2 rounded-full border border-neutral-200 text-xs font-medium text-neutral-500 flex items-center gap-2">
-                        <Move className="w-3 h-3" /> Kéo thả để sắp xếp vị trí
+                    <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur px-4 py-2 rounded-full border border-neutral-100 shadow-sm text-[10px] font-bold text-neutral-400 flex items-center gap-2">
+                        <Move className="w-3 h-3" /> NHẤN GIỮ VÀ KÉO ĐỂ THIẾT LẬP SƠ ĐỒ
                     </div>
                 </Card>
             </div>

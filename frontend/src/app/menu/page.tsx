@@ -7,6 +7,7 @@ import { Footer } from '@/components/landing/Footer';
 import { Header } from '@/components/layout/Header';
 import { Loader2 } from 'lucide-react';
 import { useCategories, useFoodsByCategory } from '@/hooks/useCatalog';
+import { OrderBar } from '@/components/order/OrderBar';
 
 export default function MenuPage() {
     const { data: categories = [], isLoading: catsLoading } = useCategories();
@@ -32,19 +33,18 @@ export default function MenuPage() {
         <div className="flex flex-col min-h-screen font-main text-text">
             <Header />
 
-            <div className="flex-grow p-4 md:p-8">
+            <div className="flex-grow p-4 md:p-8 pb-32 md:pb-8"> {/* Added pb-32 for OrderBar on mobile */}
                 <div className="max-w-7xl mx-auto relative">
 
-                    <div className="text-center mb-10 md:mb-16">
-                        <h1 className="font-display text-6xl md:text-8xl text-paper drop-shadow-[4px_4px_0px_#D9381E] mb-6 leading-tight">
-                            THỰC ĐƠN QUÁN
+                    <div className="text-center mb-8 md:mb-16">
+                        <h1 className="font-display text-5xl md:text-8xl text-paper drop-shadow-[3px_3px_0px_#D9381E] mb-4 leading-tight">
+                            THỰC ĐƠN
                         </h1>
-                        <span className="text-secondary font-display text-xl tracking-widest uppercase mb-4 block drop-shadow-md">Hôm nay bạn ăn gì ?</span>
-                        <div className="w-32 h-2 bg-paper/20 mx-auto mt-6 rounded-full"></div>
+                        <span className="text-secondary font-display text-sm md:text-xl tracking-[0.2em] uppercase mb-4 block drop-shadow-md">Hương vị chân thật từ đường phố</span>
                     </div>
 
                     {/* Mobile: Sticky Horizontal Nav */}
-                    <div className="md:hidden sticky top-16 z-40 -mx-4 px-4 py-3 bg-white/50 backdrop-blur-xl border-y border-white/50 shadow-sm overflow-x-auto no-scrollbar flex gap-3 mb-6">
+                    <div className="md:hidden sticky top-24 z-40 -mx-4 px-4 py-2 bg-background/80 backdrop-blur-md border-b border-neutral-100 shadow-sm overflow-x-auto no-scrollbar flex gap-3 mb-6">
                         <CategoryNav
                             categories={categories.map(c => ({ ...c, id: c.id.toString() }))}
                             activeCategory={activeCategoryId?.toString() || ''}

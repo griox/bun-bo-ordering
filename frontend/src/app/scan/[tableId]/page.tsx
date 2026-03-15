@@ -48,12 +48,12 @@ export default function ScanPage() {
                 toast.success("Quét mã thành công! Chào mừng bạn đến với BunBo.");
                 
                 // Redirect to menu/ordering page
-                router.push('/');
+                router.push('/menu');
             }
         } catch (error: any) {
             console.error("Scan error:", error);
             toast.error("Mã QR không hợp lệ hoặc đã hết hạn.");
-            router.push('/');
+            router.push('/menu');
         }
     };
 
