@@ -39,9 +39,7 @@ jobs:
       - name: Configure Kubeconfig
         run: |
           mkdir -p $HOME/.kube
-          # Assuming KUBE_CONFIG secret contains the base64 encoded kubeconfig or raw text. 
-          # We treat it as raw text here.
-          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
           chmod 600 $HOME/.kube/config
 
       - name: Verify Cluster Connection
