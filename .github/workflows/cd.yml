@@ -1,0 +1,104 @@
+name: DigitalOcean K3s Continuous Deployment
+
+on:
+  workflow_run:
+    workflows: ["BunBo System Microservices CI"]
+    types:
+      - completed
+    branches:
+      - main
+  push:
+    branches:
+      - main
+    paths:
+      - 'infra/k8s/**'
+
+jobs:
+  deploy:
+    name: Deploy to DigitalOcean K3s
+    runs-on: ubuntu-latest
+    # Only run if the triggering CI workflow succeeded, or if it's a direct push to infra/k8s
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    
+    env:
+      # Use the commit SHA that triggered the CI run, or current SHA for direct push
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
+
+      # 1. PREPARE Phase
+      - name: Set up Kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+
+      - name: Configure Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          # Assuming KUBE_CONFIG secret contains the base64 encoded kubeconfig or raw text. 
+          # We treat it as raw text here.
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: Verify Cluster Connection
+        run: kubectl cluster-info
+
+      # 2. UPDATE CONFIGURATION
+      - name: Prepare Image Tags
+        run: |
+          echo "Updating deployment manifests to use image tag: ${IMAGE_TAG}"
+          # Replace 'latest' tag with the specific commit SHA to force rolling updates
+          find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/:latest/:${IMAGE_TAG}/g" {} +
+          
+          # Optional: Update Docker username if different from default
+          if [ -n "${{ secrets.DOCKER_USERNAME }}" ]; then
+            find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/huynodev\//${{ secrets.DOCKER_USERNAME }}\//g" {} +
+          fi
+
+      # 3. DEPLOY Phase
+      - name: Apply Fundamentals
+        run: |
+          kubectl apply -f infra/k8s/config/
+        continue-on-error: true
+
+      - name: Apply Microservices
+        run: |
+          kubectl apply -f infra/k8s/identity/
+          kubectl apply -f infra/k8s/catalog/
+          kubectl apply -f infra/k8s/cart/
+          kubectl apply -f infra/k8s/order/
+          kubectl apply -f infra/k8s/gateway/
+
+      # 4. VERIFY Phase
+      - name: Verify Deployments Rollout
+        id: verify_rollout
+        run: |
+          # 5-Phase Deployment: Verify health check
+          services=("identity-service" "catalog-service" "cart-service" "order-service" "api-gateway")
+          
+          for service in "${services[@]}"; do
+            echo "Waiting for rollout of deployment/$service..."
+            if ! kubectl rollout status deployment/$service --timeout=120s; then
+              echo "::error::Rollout failed for $service"
+              exit 1
+            fi
+          done
+          echo "All deployments verified successfully."
+
+      # 5. CONFIRM or ROLLBACK Phase
+      - name: Automated Rollback on Failure
+        if: failure() && steps.verify_rollout.outcome == 'failure'
+        run: |
+          echo "::warning::Deployment verification failed, initiating automated rollback..."
+          services=("identity-service" "catalog-service" "cart-service" "order-service" "api-gateway")
+          
+          for service in "${services[@]}"; do
+            echo "Rolling back deployment/$service..."
+            kubectl rollout undo deployment/$service
+            kubectl rollout status deployment/$service --timeout=60s || echo "::error::Rollback confirmation failed for $service"
+          done
+          exit 1
