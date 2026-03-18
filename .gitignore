@@ -1,3 +1,5 @@
 .agent
 doc/
 dailylogs/
+do-secret.yaml
+provisioning-k3s-manual.md

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bunbo-config
+  namespace: default
+data:
+  # Các cấu hình dùng chung cho các service (sau này sẽ dùng)
+  ASPNETCORE_ENVIRONMENT: "Production"
+  Redis__Host: "redis-master.redis.svc.cluster.local:6379"
+  Postgres__Host: "postgresql.postgresql.svc.cluster.local"
+  Postgres__Port: "5432"
+  Postgres__Database: "bunbo_db"
+  Postgres__Username: "postgres"
