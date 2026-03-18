@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: identity-service
-        image: huynodev/bunbo-identity-service:latest
+        image: griox/bunbo-identity-service:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

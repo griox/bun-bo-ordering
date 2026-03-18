@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: order-service
-        image: huynodev/bunbo-order-service:latest
+        image: griox/bunbo-order-service:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

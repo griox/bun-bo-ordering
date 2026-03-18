@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: api-gateway
-        image: huynodev/bunbo-api-gateway:latest # Example image tag, will be updated by CI/CD
+        image: griox/bunbo-api-gateway:latest # Example image tag, will be updated by CI/CD
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

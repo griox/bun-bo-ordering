@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: catalog-service
-        image: huynodev/bunbo-catalog-service:latest
+        image: griox/bunbo-catalog-service:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
