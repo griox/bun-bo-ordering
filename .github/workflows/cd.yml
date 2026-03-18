@@ -21,8 +21,8 @@ jobs:
     if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     
     env:
-      # Use the commit SHA that triggered the CI run, or current SHA for direct push
-      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
+      # Use the commit SHA that triggered the CI run, or 'latest' for direct push
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}
 
     steps:
       - name: Checkout Code
@@ -70,6 +70,14 @@ jobs:
           kubectl apply -f infra/k8s/cart/
           kubectl apply -f infra/k8s/order/
           kubectl apply -f infra/k8s/gateway/
+
+      - name: Force Rollout Restart (Direct Push)
+        if: github.event_name == 'push'
+        run: |
+          services=("identity-service" "catalog-service" "cart-service" "order-service" "api-gateway")
+          for service in "${services[@]}"; do
+            kubectl rollout restart deployment/$service
+          done
 
       # 4. VERIFY Phase
       - name: Verify Deployments Rollout
