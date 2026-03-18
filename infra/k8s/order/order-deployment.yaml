@@ -24,11 +24,33 @@ spec:
         - configMapRef:
             name: bunbo-config
         env:
-        - name: Postgres__Password
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Host
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Port
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Database
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Username
+        - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
 ---
 apiVersion: v1
 kind: Service
