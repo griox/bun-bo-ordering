@@ -55,10 +55,10 @@ metadata:
 spec:
   tls:
   - hosts:
-    - api.143.198.87.6.nip.io
+    - api.bun-bo-chung-cu.io.vn
     secretName: bunbo-api-tls
   rules:
-  - host: api.143.198.87.6.nip.io
+  - host: api.bun-bo-chung-cu.io.vn
     http:
       paths:
       - path: /
