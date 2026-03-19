@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-    Plus, 
-    Search, 
-    MoreVertical, 
-    Pencil, 
-    Trash2, 
+import {
+    Plus,
+    Search,
+    MoreVertical,
+    Pencil,
+    Trash2,
     Image as ImageIcon,
     Loader2
 } from 'lucide-react';
@@ -27,22 +27,22 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Badge } from '@/components/ui/badge';
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogHeader, 
-    DialogTitle, 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
     DialogTrigger,
     DialogFooter,
     DialogDescription
 } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
-import { 
-    Select, 
-    SelectContent, 
-    SelectItem, 
-    SelectTrigger, 
-    SelectValue 
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
 } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { useCategories, useAllFoods, useCreateFoodMutation, useUpdateFoodMutation, useDeleteFoodMutation, Food } from '@/hooks/useCatalog';
@@ -150,7 +150,7 @@ export default function DishesPage() {
         deleteFoodMutation.mutate(id);
     };
 
-    const filteredDishes = foods.filter(dish => 
+    const filteredDishes = foods.filter(dish =>
         dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         dish.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -186,18 +186,18 @@ export default function DishesPage() {
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2 col-span-2">
                                         <label className="text-sm font-bold">Tên món ăn</label>
-                                        <Input 
+                                        <Input
                                             required
                                             value={formData.name}
-                                            onChange={e => setFormData({...formData, name: e.target.value})}
-                                            placeholder="Ví dụ: Bún Bò Huế Đặc Biệt" 
+                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                            placeholder="Ví dụ: Bún Bò Huế Đặc Biệt"
                                         />
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold">Danh mục</label>
-                                        <Select 
-                                            value={formData.categoryId} 
-                                            onValueChange={val => setFormData({...formData, categoryId: val || ''})}
+                                        <Select
+                                            value={formData.categoryId}
+                                            onValueChange={val => setFormData({ ...formData, categoryId: val || '' })}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue placeholder="Chọn danh mục" />
@@ -213,27 +213,27 @@ export default function DishesPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <label className="text-sm font-bold">Giá bán (VNĐ)</label>
-                                        <Input 
+                                        <Input
                                             required
-                                            type="number" 
+                                            type="number"
                                             value={formData.price}
-                                            onChange={e => setFormData({...formData, price: e.target.value})}
-                                            placeholder="65000" 
+                                            onChange={e => setFormData({ ...formData, price: e.target.value })}
+                                            placeholder="65000"
                                         />
                                     </div>
                                     <div className="space-y-2 col-span-2">
                                         <label className="text-sm font-bold">Mô tả</label>
-                                        <Input 
+                                        <Input
                                             value={formData.description}
-                                            onChange={e => setFormData({...formData, description: e.target.value})}
-                                            placeholder="Mô tả nguyên liệu, hương vị..." 
+                                            onChange={e => setFormData({ ...formData, description: e.target.value })}
+                                            placeholder="Mô tả nguyên liệu, hương vị..."
                                         />
                                     </div>
                                     <div className="space-y-2 col-span-2">
                                         <label className="text-sm font-bold">Hình ảnh</label>
                                         <div className="flex items-start gap-4">
                                             <div className="flex-1 space-y-2">
-                                                <Input 
+                                                <Input
                                                     type="file"
                                                     accept="image/*"
                                                     onChange={handleFileChange}
@@ -269,15 +269,15 @@ export default function DishesPage() {
                 <div className="p-4 bg-white border-b border-neutral-100 flex items-center gap-4">
                     <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                        <Input 
+                        <Input
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Tìm kiếm theo tên hoặc danh mục..." 
+                            placeholder="Tìm kiếm theo tên hoặc danh mục..."
                             className="pl-10 border-neutral-100 bg-neutral-50"
                         />
                     </div>
                 </div>
-                
+
                 {isLoading ? (
                     <div className="p-20 text-center flex flex-col items-center gap-4">
                         <Loader2 className="w-10 h-10 animate-spin text-primary" />
@@ -324,7 +324,7 @@ export default function DishesPage() {
                                             </Badge>
                                         </TableCell>
                                         <TableCell className="font-bold text-primary">
-                                            {dish.price.toLocaleString()}đ
+                                            {dish.price.toLocaleString('vi-VN')}đ
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
@@ -345,7 +345,7 @@ export default function DishesPage() {
                                                     <DropdownMenuItem className="gap-2" onClick={() => openEditDialog(dish)}>
                                                         <Pencil className="w-4 h-4 text-blue-500" /> Sửa món
                                                     </DropdownMenuItem>
-                                                    <DropdownMenuItem 
+                                                    <DropdownMenuItem
                                                         className="gap-2 text-red-600 focus:text-red-600 focus:bg-red-50"
                                                         onClick={() => handleDeleteFood(dish.id)}
                                                     >

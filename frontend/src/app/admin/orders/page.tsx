@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { Loader2 } from 'lucide-react';
-import { 
-    Search, 
+import {
+    Search,
     Calendar,
     Download,
     Eye,
@@ -39,8 +39,8 @@ export default function OrdersPage() {
     const [statusFilter, setStatusFilter] = useState('All');
     const { data: orders = [], isLoading } = useOrders();
 
-    const filteredOrders = statusFilter === 'All' 
-        ? (orders as OrderSummary[]) 
+    const filteredOrders = statusFilter === 'All'
+        ? (orders as OrderSummary[])
         : (orders as OrderSummary[]).filter(o => o.status === statusFilter);
 
     const getStatusBadge = (status: string) => {
@@ -88,8 +88,8 @@ export default function OrdersPage() {
                     </Tabs>
                     <div className="relative w-full md:w-64">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
-                        <Input 
-                            placeholder="Tìm mã đơn, số bàn..." 
+                        <Input
+                            placeholder="Tìm mã đơn, số bàn..."
                             className="pl-10 border-neutral-100 bg-neutral-50"
                         />
                     </div>
@@ -137,7 +137,7 @@ export default function OrdersPage() {
                                         <div className="text-[10px] text-neutral-400">{format(new Date(order.createdAt), 'dd/MM/yyyy')}</div>
                                     </TableCell>
                                     <TableCell className="font-bold text-primary">
-                                        {order.totalAmount.toLocaleString()}đ
+                                        {order.totalAmount.toLocaleString('vi-VN')}đ
                                     </TableCell>
                                     <TableCell>
                                         {getStatusBadge(order.status)}
@@ -157,7 +157,7 @@ export default function OrdersPage() {
                         )}
                     </TableBody>
                 </Table>
-                
+
                 <div className="p-4 bg-white border-t border-neutral-100 flex items-center justify-between text-sm text-neutral-500">
                     <p>Hiển thị <b>{filteredOrders.length > 0 ? 1 : 0}-{filteredOrders.length}</b> trong tổng số <b>{filteredOrders.length}</b> đơn hàng</p>
                     <div className="flex gap-2">

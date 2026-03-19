@@ -2,10 +2,10 @@
 
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { 
-    DollarSign, 
-    ShoppingCart, 
-    Users, 
+import {
+    DollarSign,
+    ShoppingCart,
+    Users,
     TrendingUp,
     UtensilsCrossed,
     Calendar,
@@ -34,33 +34,33 @@ export default function AdminDashboard() {
     }
 
     const stats = [
-        { 
-            title: 'Doanh thu ngày', 
-            value: `${statsData?.dailyRevenue.toLocaleString()}đ`, 
-            icon: DollarSign, 
-            color: 'text-green-600', 
-            bg: 'bg-green-50' 
+        {
+            title: 'Doanh thu ngày',
+            value: `${statsData?.dailyRevenue.toLocaleString('vi-VN')}đ`,
+            icon: DollarSign,
+            color: 'text-green-600',
+            bg: 'bg-green-50'
         },
-        { 
-            title: 'Tổng đơn hàng', 
-            value: statsData?.totalOrdersToday.toString() || '0', 
-            icon: ShoppingCart, 
-            color: 'text-blue-600', 
-            bg: 'bg-blue-50' 
+        {
+            title: 'Tổng đơn hàng',
+            value: statsData?.totalOrdersToday.toString() || '0',
+            icon: ShoppingCart,
+            color: 'text-blue-600',
+            bg: 'bg-blue-50'
         },
-        { 
-            title: 'Khách hàng mới', 
-            value: statsData?.newCustomersToday.toString() || '0', 
-            icon: Users, 
-            color: 'text-purple-600', 
-            bg: 'bg-purple-50' 
+        {
+            title: 'Khách hàng mới',
+            value: statsData?.newCustomersToday.toString() || '0',
+            icon: Users,
+            color: 'text-purple-600',
+            bg: 'bg-purple-50'
         },
-        { 
-            title: 'Món bán chạy nhất', 
-            value: statsData?.bestSellingItem || 'N/A', 
-            icon: UtensilsCrossed, 
-            color: 'text-orange-600', 
-            bg: 'bg-orange-50' 
+        {
+            title: 'Món bán chạy nhất',
+            value: statsData?.bestSellingItem || 'N/A',
+            icon: UtensilsCrossed,
+            color: 'text-orange-600',
+            bg: 'bg-orange-50'
         },
     ];
 
@@ -113,32 +113,32 @@ export default function AdminDashboard() {
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
-                                <XAxis 
-                                    dataKey="name" 
-                                    axisLine={false} 
-                                    tickLine={false} 
-                                    tick={{ fontSize: 12, fill: '#888' }} 
+                                <XAxis
+                                    dataKey="name"
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: '#888' }}
                                 />
-                                <YAxis 
-                                    axisLine={false} 
-                                    tickLine={false} 
-                                    tick={{ fontSize: 12, fill: '#888' }} 
+                                <YAxis
+                                    axisLine={false}
+                                    tickLine={false}
+                                    tick={{ fontSize: 12, fill: '#888' }}
                                 />
-                                <Tooltip 
+                                <Tooltip
                                     cursor={{ fill: '#f5f5f5' }}
                                     content={({ active, payload }) => {
-                                    if (active && payload && payload.length) {
-                                        const p = payload[0] as any;
-                                        return (
-                                            <div className="bg-white p-3 border border-neutral-100 shadow-lg rounded-lg">
-                                                <p className="text-sm font-bold">{p.payload?.name} ({p.payload?.fullDate})</p>
-                                                <p className="text-xs text-primary">{p.value?.toLocaleString()}đ</p>
-                                            </div>
-                                        );
-                                    }
-                                    return null;
-                                }}
-                            />
+                                        if (active && payload && payload.length) {
+                                            const p = payload[0] as any;
+                                            return (
+                                                <div className="bg-white p-3 border border-neutral-100 shadow-lg rounded-lg">
+                                                    <p className="text-sm font-bold">{p.payload?.name} ({p.payload?.fullDate})</p>
+                                                    <p className="text-xs text-primary">{p.value?.toLocaleString('vi-VN')}đ</p>
+                                                </div>
+                                            );
+                                        }
+                                        return null;
+                                    }}
+                                />
                                 <Bar dataKey="revenue" fill="#000000" radius={[4, 4, 0, 0]} barSize={40} />
                             </BarChart>
                         </ResponsiveContainer>

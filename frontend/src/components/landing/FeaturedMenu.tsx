@@ -6,7 +6,7 @@ import { useAllFoods } from "@/hooks/useCatalog";
 
 export function FeaturedMenu() {
     const { data: foods = [], isLoading } = useAllFoods();
-    
+
     // Select top 3 items or first 3
     const featuredItems = foods.slice(0, 3);
 
@@ -48,7 +48,7 @@ export function FeaturedMenu() {
 
                                 <div className="flex justify-between items-center">
                                     <div className="flex gap-1 text-yellow-500 text-lg font-bold">
-                                        {item.price.toLocaleString()}đ
+                                        {item.price.toLocaleString('vi-VN')}đ
                                     </div>
                                     <Link href="/menu" className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center border-2 border-text shadow-[2px_2px_0px_#2D2D2D] md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0 transition-all">
                                         <ArrowRight size={20} />
