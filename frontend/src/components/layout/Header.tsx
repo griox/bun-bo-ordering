@@ -69,6 +69,7 @@ export function Header() {
                             <Link
                                 key={link.path}
                                 href={link.path}
+                                id={link.path === '/' ? 'nav-home' : link.path === '/menu' ? 'nav-menu' : link.path === '/#story' ? 'nav-about' : undefined}
                                 className={`font-display text-sm tracking-wider transition-colors hover:text-primary ${isActive(link.path) ? 'text-primary border-b-2 border-none' : 'text-text/80'}`}
                             >
                                 {link.name}
@@ -80,11 +81,11 @@ export function Header() {
                     <div className="z-50">
                         {mounted && user ? (
                             <div className="relative group cursor-pointer">
-                                <div className="flex items-center gap-2 bg-primary text-white font-display text-xs md:text-sm px-3 md:px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                                <div id="nav-member" className="flex items-center gap-2 bg-primary text-white font-display text-xs md:text-sm px-3 md:px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
                                     <User size={14} className="md:w-4 md:h-4" />
                                     <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
                                 </div>
-                                
+
                                 <div className="absolute top-full right-0 mt-2 w-48 bg-paper border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col overflow-hidden">
                                     <button
                                         onClick={() => { logout(); toast.success('Đã đăng xuất!'); }}
@@ -96,7 +97,7 @@ export function Header() {
                             </div>
                         ) : (
                             <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                                <DialogTrigger render={
+                                <DialogTrigger id="nav-member" render={
                                     <button className="flex items-center gap-2 bg-primary text-white font-display text-xs md:text-sm px-4 md:px-6 py-2.5 md:py-3 rounded-full border-2 border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:scale-95" />
                                 }>
                                     <User size={16} />

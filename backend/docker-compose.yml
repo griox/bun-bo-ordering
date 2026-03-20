@@ -199,6 +199,11 @@ services:
       - Jwt__Audience=BunBoClients
       - Cors__AllowedOrigins__0=http://localhost:3000
       - Kestrel__Endpoints__Http__Url=http://+:8080
+      - ReverseProxy__Clusters__identity-cluster__Destinations__destination1__Address=http://identity-service:8080
+      - ReverseProxy__Clusters__catalog-cluster__Destinations__destination1__Address=http://catalog-service:8080
+      - ReverseProxy__Clusters__cart-cluster__Destinations__destination1__Address=http://cart-service:8080
+      - ReverseProxy__Clusters__order-cluster__Destinations__destination1__Address=http://order-service:8080
+      - ReverseProxy__Clusters__realtime-cluster__Destinations__destination1__Address=http://realtime-service:8080
     ports:
       - "8000:8080"
     depends_on:

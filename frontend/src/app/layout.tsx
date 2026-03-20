@@ -5,7 +5,7 @@ import { Providers } from "./Providers";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const eduSA = Edu_SA_Beginner({
   weight: ["400", "700"], // Edu SA supports specific weights
@@ -25,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)}>
+    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
       <body
         className={`${eduSA.variable} antialiased font-main bg-cover bg-fixed bg-center text-text`}
         style={{ backgroundImage: "url('/images/retro-paper-texture.png')", fontFamily: "var(--font-edu-sa)" }}
@@ -41,7 +41,7 @@ export default function RootLayout({
                 borderRadius: "8px",
                 boxShadow: "4px 4px 0px #2D2D2D",
                 padding: "12px 16px",
-              },
+              },  
               success: {
                 iconTheme: { primary: "#D4A853", secondary: "#fff" },
               },
