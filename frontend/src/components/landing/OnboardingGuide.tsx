@@ -55,10 +55,10 @@ export function OnboardingGuide() {
                     }
                 },
                 {
-                    element: '#nav-member',
+                    element: '.onboarding-member:not(.hidden)',
                     popover: {
                         title: 'Thành viên',
-                        description: 'Đăng ký/Đăng nhập để quản lý giỏ hàng của bạn và xem lịch sử mua hàng dễ dàng.',
+                        description: ' Đăng nhập để quản lý giỏ hàng của bạn và xem lịch sử mua hàng dễ dàng.',
                         side: "bottom",
                         align: 'end'
                     }
@@ -70,7 +70,7 @@ export function OnboardingGuide() {
                         description: `
                             <div class="flex flex-col items-center gap-3">
                                 <img src="/images/scanqr.jpg" alt="Quét mã QR" class="w-40 h-40 object-cover rounded-lg border-2 border-primary shadow-md" />
-                                <p class="text-sm font-medium text-center">Quét mã QR này để order món tại bàn một cách nhanh chóng!</p>
+                                <p class="text-sm font-medium text-center">Tiến hành quét mã QR để order món tại bàn một cách nhanh chóng!</p>
                             </div>
                         `,
                         side: "top",
