@@ -22,6 +22,7 @@ import { LoginForm } from '@/components/login-form';
 import { useOrderStore } from '@/store/useOrderStore';
 import { Badge } from '@/components/ui/badge';
 import { Coffee } from 'lucide-react';
+import { CartModal } from '@/components/menu/CartModal';
 
 export function Header() {
     const pathname = usePathname();
@@ -86,6 +87,8 @@ export function Header() {
 
                     {/* Member Section */}
                     <div className="z-50 flex items-center">
+                        <CartModal />
+
                         {/* Desktop Version */}
                         <div className="hidden md:block">
                             {mounted && user ? (
@@ -106,12 +109,12 @@ export function Header() {
                                 </div>
                             ) : (
                                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                                    <DialogTrigger id="nav-member-desktop" render={
-                                        <button className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:scale-95" />
-                                    }>
-                                        <User size={16} />
-                                        <span>THÀNH VIÊN</span>
-                                    </DialogTrigger>
+                                    <DialogTrigger id="nav-member-desktop" nativeButton={true} render={
+                                        <button className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:scale-95">
+                                            <User size={16} />
+                                            <span>THÀNH VIÊN</span>
+                                        </button>
+                                    } />
                                     <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
                                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                                             style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
@@ -127,15 +130,15 @@ export function Header() {
                         {/* Mobile Version (Dropdown) */}
                         <div className="md:hidden">
                             <DropdownMenu>
-                                <DropdownMenuTrigger render={
+                                <DropdownMenuTrigger nativeButton={true} render={
                                     <button
                                         id="nav-member-mobile"
                                         className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[3px_3px_0px_#2D2D2D] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all"
-                                    />
-                                }>
-                                    <User size={16} />
-                                    <span>{mounted && user ? (user.username ?? 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
-                                </DropdownMenuTrigger>
+                                    >
+                                        <User size={16} />
+                                        <span>{mounted && user ? (user.username ?? 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
+                                    </button>
+                                } />
                                 <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-sm border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
                                     <DropdownMenuItem render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
                                         TRANG CHỦ

@@ -12,16 +12,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
     useLayoutEffect(() => {
         if (process.env.NODE_ENV === 'development') {
             const suppressPattern = /SES Removing unpermitted intrinsics/;
-            const filter = (orig: any) => (...args: any[]) => {
-                if (args.some(arg => typeof arg === 'string' && suppressPattern.test(arg))) {
-                    return;
-                }
-                return orig.apply(console, args);
+
+            const wrap = (method: 'log' | 'warn' | 'error') => {
+                const orig = console[method];
+                // Prevent double wrapping or wrapping non-functions
+                if (typeof orig !== 'function' || (orig as any).__is_suppressed) return;
+
+                const wrapper = function suppressedConsole(...args: any[]) {
+                    if (args.some(arg => typeof arg === 'string' && suppressPattern.test(arg))) {
+                        return;
+                    }
+                    return (orig as Function).apply(console, args);
+                };
+                (wrapper as any).__is_suppressed = true;
+                console[method] = wrapper;
             };
 
-            console.error = filter(console.error);
-            console.log = filter(console.log);
-            console.warn = filter(console.warn);
+            wrap('error');
+            wrap('log');
+            wrap('warn');
         }
     }, []);
 

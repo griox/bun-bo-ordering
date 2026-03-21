@@ -1,6 +1,7 @@
 'use client';
 
-import Link from 'next/link';
+import { ScannerModal } from './ScannerModal';
+
 export function HeroSection() {
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -28,16 +29,15 @@ export function HeroSection() {
                 </p>
 
                 <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
-                    <Link
-                        href="/menu"
-                        id="btn-order"
-                        className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all border-2 border-[#2D2D2D]"
-                    >
-                        <span className='font-bold text-white'>ĐẶT MÓN NGAY</span>
-                        <span className="group-hover:translate-x-1 text-white transition-transform">→</span>
-                    </Link>
-
-
+                    <ScannerModal>
+                        <button
+                            id="btn-order"
+                            className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all border-2 border-[#2D2D2D]"
+                        >
+                            <span className='font-bold text-white'>ĐẶT MÓN NGAY</span>
+                            <span className="group-hover:translate-x-1 text-white transition-transform">→</span>
+                        </button>
+                    </ScannerModal>
                 </div>
             </div>
 

@@ -3,10 +3,10 @@
 import React from 'react';
 import { Bell, Search, User } from 'lucide-react';
 import { useKitchenStore } from '@/store/useKitchenStore';
-import { 
-    DropdownMenu, 
-    DropdownMenuContent, 
-    DropdownMenuItem, 
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
     DropdownMenuTrigger,
     DropdownMenuGroup,
     DropdownMenuLabel,
@@ -19,20 +19,37 @@ import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useAuthStore } from '@/store/useAuthStore';
 import Link from 'next/link';
+import { Menu } from 'lucide-react';
 
-export function Topbar() {
+interface TopbarProps {
+    onToggleSidebar?: () => void;
+}
+
+export function Topbar({ onToggleSidebar }: TopbarProps) {
     const { unreadCount, notifications, markAsRead } = useKitchenStore();
     const { user } = useAuthStore();
 
     return (
-        <header className="h-16 bg-white border-b border-neutral-200 px-6 flex items-center justify-between">
-            <div className="flex items-center gap-4 bg-neutral-100 px-4 py-2 rounded-full w-96">
-                <Search className="w-4 h-4 text-neutral-400" />
-                <input 
-                    type="text" 
-                    placeholder="Tìm kiếm..." 
-                    className="bg-transparent border-none outline-none text-sm w-full"
-                />
+        <header className="h-20 bg-paper/50 backdrop-blur-md border-b-2 border-text/10 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all">
+            <div className="flex items-center gap-4 flex-1">
+                {/* Mobile Menu Toggle */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    className="lg:hidden size-11 rounded-xl border-2 border-text shadow-[3px_3px_0px_#2D2D2D] bg-primary text-white hover:bg-primary/90"
+                    onClick={onToggleSidebar}
+                >
+                    <Menu className="size-6" />
+                </Button>
+
+                <div className="hidden sm:flex items-center gap-4 bg-text/5 px-6 py-2.5 rounded-full w-full max-w-md border border-text/10 focus-within:border-primary/50 transition-all">
+                    <Search className="size-4 text-text/40" />
+                    <input
+                        type="text"
+                        placeholder="Tìm kiếm nhanh..."
+                        className="bg-transparent border-none outline-none text-sm w-full font-medium"
+                    />
+                </div>
             </div>
 
             <div className="flex items-center gap-4">
@@ -70,7 +87,7 @@ export function Topbar() {
                                                 </span>
                                             </div>
                                             <p className="text-xs text-neutral-500 truncate w-full">
-                                                {order.items.map(i => `${i.quantity}x ${i.productName}`).join(', ')}
+                                                {order.items?.map((i: any) => `${i.quantity}x ${i.productName}`).join(', ') || 'Có đơn hàng mới'}
                                             </p>
                                         </DropdownMenuItem>
                                     </Link>
@@ -86,15 +103,15 @@ export function Topbar() {
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="h-8 w-px bg-neutral-200" />
+                <div className="h-10 w-0.5 bg-text/10 rounded-full mx-2" />
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 pl-2">
                     <div className="text-right hidden sm:block">
-                        <p className="text-sm font-bold text-neutral-700">{user?.username || 'Admin'}</p>
-                        <p className="text-[10px] text-neutral-500 uppercase tracking-wider">{user?.role || 'Quản trị viên'}</p>
+                        <p className="text-xs font-display font-bold text-text uppercase leading-none mb-1">{user?.username || 'Admin'}</p>
+                        <p className="text-[10px] font-bold text-primary uppercase tracking-[0.15em] leading-none opacity-80">{user?.role || 'Quản trị viên'}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-neutral-200 flex items-center justify-center border-2 border-neutral-100 overflow-hidden">
-                        <User className="w-6 h-6 text-neutral-400" />
+                    <div className="size-11 rounded-xl bg-primary text-white flex items-center justify-center border-2 border-text shadow-[3px_3px_0px_#2D2D2D] overflow-hidden group hover:translate-y-[-1px] transition-all cursor-pointer">
+                        <User className="size-6 group-hover:scale-110 transition-transform" />
                     </div>
                 </div>
             </div>

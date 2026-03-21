@@ -9,7 +9,7 @@ interface FoodItemCardProps {
 }
 
 export function FoodItemCard({ item }: FoodItemCardProps) {
-    const { cart, addToCart, updateQuantity } = useOrderStore();
+    const { cart, addToCart, updateQuantity, session } = useOrderStore();
     const cartItem = cart.find(x => x.foodId === item.id);
     const quantity = cartItem?.quantity || 0;
 
@@ -54,22 +54,22 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                         </span>
                     </div>
 
-                    {item.isAvailable && (
+                    {item.isAvailable && session && (
                         <div className="flex items-center">
                             {quantity > 0 ? (
                                 <div className="flex items-center bg-neutral-100 rounded-full p-1 border border-neutral-200 shadow-inner">
-                                    <Button 
-                                        size="icon" 
-                                        variant="ghost" 
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
                                         className="h-8 w-8 rounded-full hover:bg-white hover:text-red-500 transition-all"
                                         onClick={() => updateQuantity(item.id, quantity - 1)}
                                     >
                                         <Minus className="w-4 h-4" />
                                     </Button>
                                     <span className="w-8 text-center font-bold text-neutral-800">{quantity}</span>
-                                    <Button 
-                                        size="icon" 
-                                        variant="ghost" 
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
                                         className="h-8 w-8 rounded-full hover:bg-white hover:text-primary transition-all"
                                         onClick={() => updateQuantity(item.id, quantity + 1)}
                                     >
@@ -77,8 +77,8 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                                     </Button>
                                 </div>
                             ) : (
-                                <Button 
-                                    size="icon" 
+                                <Button
+                                    size="icon"
                                     className="h-12 w-12 rounded-2xl shadow-lg shadow-primary/20 hover:scale-110 transition-all duration-300"
                                     onClick={handleAdd}
                                 >

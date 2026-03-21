@@ -12,14 +12,16 @@ export const useRealtime = () => {
     const connectionRef = useRef<signalR.HubConnection | null>(null);
     const { token, user } = useAuthStore();
     const addOrder = useKitchenStore((state) => state.addOrder);
-    
+
     useEffect(() => {
         if (!token || !user) return;
 
         // Sound notification
         const playNotificationSound = () => {
             const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-            audio.play().catch(e => console.error("Error playing sound:", e));
+            // Browser autoplay policies might block this if user hasn't interacted
+            // Using console.warn instead of console.error to prevent Next.js dev overlay from crashing
+            audio.play().catch(e => console.warn("Browser autoplay blocked the notification sound.", e));
         };
 
         let isStopped = false;
@@ -44,7 +46,7 @@ export const useRealtime = () => {
         const startConnection = async () => {
             if (isStopped) return;
             if (connection.state !== signalR.HubConnectionState.Disconnected) return;
-            
+
             try {
                 await connection.start();
                 if (isStopped) {
@@ -52,7 +54,7 @@ export const useRealtime = () => {
                     return;
                 }
                 console.log("Connected to SignalR Hub");
-                
+
                 // Join Kitchen group if user is Admin
                 if (user.role === 'Admin') {
                     await connection.invoke("JoinKitchenGroup");
@@ -60,9 +62,9 @@ export const useRealtime = () => {
                 }
             } catch (err: any) {
                 if (isStopped) return;
-                
+
                 // SignalR standard error message for aborted connections
-                if (err.message?.includes("stopped during negotiation") || 
+                if (err.message?.includes("stopped during negotiation") ||
                     err.message?.includes("aborted")) {
                     return;
                 }
@@ -78,7 +80,7 @@ export const useRealtime = () => {
         return () => {
             isStopped = true;
             if (connection.state !== signalR.HubConnectionState.Disconnected) {
-                connection.stop().catch(() => {}); // Silence stop errors during unmount
+                connection.stop().catch(() => { }); // Silence stop errors during unmount
             }
         };
     }, [token, user, addOrder]);
