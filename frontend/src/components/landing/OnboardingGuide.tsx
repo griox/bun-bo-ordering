@@ -10,13 +10,74 @@ export function OnboardingGuide() {
     const hasRun = useRef(false);
 
     useEffect(() => {
-        // Chỉ chạy cho người dùng chưa đăng nhập
-        // Và chỉ chạy một lần duy nhất trong session này
         if (user || hasRun.current) return;
 
-        // Kiểm tra xem đã xem hướng dẫn chưa trong localStorage
         const isGuided = localStorage.getItem('onboarding-guided');
         if (isGuided) return;
+
+        const isMobile = window.innerWidth < 768;
+
+        const desktopSteps = [
+            {
+                element: '#nav-home',
+                popover: { title: 'Trang chủ', description: 'Chào mừng bạn đến với Bún Bò & Cà Phê Phố!', side: "bottom", align: 'start' }
+            },
+            {
+                element: '#nav-menu',
+                popover: { title: 'Thực đơn', description: 'Khám phá danh sách các món ăn đậm đà hương vị.', side: "bottom", align: 'start' }
+            },
+            {
+                element: '#nav-about',
+                popover: { title: 'Về chúng tôi', description: 'Tìm hiểu về câu chuyện và tâm huyết của chúng tôi.', side: "bottom", align: 'start' }
+            },
+            {
+                element: '#nav-member-desktop',
+                popover: { title: 'Thành viên', description: 'Đăng nhập để quản lý giỏ hàng và xem lịch sử mua hàng.', side: "bottom", align: 'end' }
+            }
+        ] as const;
+
+        const mobileSteps = [
+            {
+                element: '#nav-member-mobile',
+                popover: {
+                    title: 'Menu & Thành viên',
+                    description: 'Nhấn vào đây để xem các lựa chọn menu và đăng nhập thành viên.',
+                    side: "bottom",
+                    align: 'end'
+                }
+            },
+            {
+                element: '#mobile-menu',
+                popover: {
+                    title: 'Xem thực đơn',
+                    description: 'Bạn có thể truy cập nhanh vào thực đơn ngay tại đây.',
+                    side: "bottom",
+                    align: 'start'
+                },
+                onHighlightStarted: () => {
+                    // Tự động mở menu trên mobile nếu nó đang đóng
+                    const trigger = document.getElementById('nav-member-mobile');
+                    if (trigger) trigger.click();
+                }
+            }
+        ] as const;
+
+        const commonSteps = [
+            {
+                element: '#btn-order',
+                popover: {
+                    title: 'Đặt món ngay',
+                    description: `
+                        <div class="flex flex-col items-center gap-3">
+                            <img src="/images/scanqr.jpg" alt="Quét mã QR" class="w-40 h-40 object-cover rounded-lg border-2 border-primary shadow-md" />
+                            <p class="text-sm font-medium text-center">Tiến hành quét mã QR để order món tại bàn một cách nhanh chóng!</p>
+                        </div>
+                    `,
+                    side: "top",
+                    align: 'center'
+                }
+            }
+        ] as const;
 
         const driverObj = driver({
             showProgress: true,
@@ -26,68 +87,16 @@ export function OnboardingGuide() {
             nextBtnText: 'Tiếp theo',
             prevBtnText: 'Quay lại',
             doneBtnText: 'Hoàn tất',
-            steps: [
-                {
-                    element: '#nav-home',
-                    popover: {
-                        title: 'Trang chủ',
-                        description: 'Chào mừng bạn đến với Bún Bò & Cà Phê Phố! Nơi bắt đầu hành trình ẩm thực của bạn.',
-                        side: "bottom",
-                        align: 'start'
-                    }
-                },
-                {
-                    element: '#nav-menu',
-                    popover: {
-                        title: 'Thực đơn',
-                        description: 'Khám phá danh sách các món ăn đậm đà hương vị biển và phong cách phố.',
-                        side: "bottom",
-                        align: 'start'
-                    }
-                },
-                {
-                    element: '#nav-about',
-                    popover: {
-                        title: 'Về chúng tôi',
-                        description: 'Tìm hiểu về câu chuyện và tâm huyết đằng sau mỗi tô bún bò.',
-                        side: "bottom",
-                        align: 'start'
-                    }
-                },
-                {
-                    element: '.onboarding-member:not(.hidden)',
-                    popover: {
-                        title: 'Thành viên',
-                        description: ' Đăng nhập để quản lý giỏ hàng của bạn và xem lịch sử mua hàng dễ dàng.',
-                        side: "bottom",
-                        align: 'end'
-                    }
-                },
-                {
-                    element: '#btn-order',
-                    popover: {
-                        title: 'Đặt món ngay',
-                        description: `
-                            <div class="flex flex-col items-center gap-3">
-                                <img src="/images/scanqr.jpg" alt="Quét mã QR" class="w-40 h-40 object-cover rounded-lg border-2 border-primary shadow-md" />
-                                <p class="text-sm font-medium text-center">Tiến hành quét mã QR để order món tại bàn một cách nhanh chóng!</p>
-                            </div>
-                        `,
-                        side: "top",
-                        align: 'center'
-                    }
-                }
-            ],
+            steps: [...(isMobile ? mobileSteps : desktopSteps), ...commonSteps] as any,
             onDestroyed: () => {
                 localStorage.setItem('onboarding-guided', 'true');
             }
         });
 
-        // Đợi một chút để các phần tử DOM ổn định
         const timer = setTimeout(() => {
             driverObj.drive();
             hasRun.current = true;
-        }, 1000);
+        }, 1500);
 
         return () => clearTimeout(timer);
     }, [user]);

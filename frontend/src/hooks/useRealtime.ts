@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useAuthStore } from '@/store/useAuthStore';
-import { useKitchenStore, KitchenOrder } from '@/store/useKitchenStore';
+import { useOrderNotificationStore, OrderNotification } from '@/store/useOrderNotificationStore';
 import { toast } from 'sonner';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:8000/hub/notifications';
@@ -11,7 +11,7 @@ const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:8000/hub/no
 export const useRealtime = () => {
     const connectionRef = useRef<signalR.HubConnection | null>(null);
     const { token, user } = useAuthStore();
-    const addOrder = useKitchenStore((state) => state.addOrder);
+    const addOrder = useOrderNotificationStore((state) => state.addOrder);
 
     useEffect(() => {
         if (!token || !user) return;
@@ -33,7 +33,7 @@ export const useRealtime = () => {
             .withAutomaticReconnect()
             .build();
 
-        connection.on("ReceiveNewOrder", (order: KitchenOrder) => {
+        connection.on("ReceiveNewOrder", (order: OrderNotification) => {
             console.log("New order received:", order);
             addOrder(order);
             playNotificationSound();

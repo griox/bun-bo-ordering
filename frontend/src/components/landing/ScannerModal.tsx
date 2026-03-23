@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Html5Qrcode } from 'html5-qrcode';
 import { useRouter } from 'next/navigation';
 import {
@@ -23,7 +23,42 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
     const isTransitioningRef = useRef(false);
     const router = useRouter();
 
-    const startScanner = async () => {
+    const stopScanner = useCallback(async () => {
+        if (isTransitioningRef.current) return;
+
+        if (scannerRef.current && scannerRef.current.isScanning) {
+            try {
+                isTransitioningRef.current = true;
+                await scannerRef.current.stop();
+                setIsScanning(false);
+            } catch (err) {
+                console.error("Stop error:", err);
+            } finally {
+                isTransitioningRef.current = false;
+            }
+        }
+    }, []);
+
+    const handleScanSuccess = useCallback(async (decodedText: string) => {
+        try {
+            await stopScanner();
+            setIsOpen(false);
+
+            if (decodedText.includes('http') && decodedText.includes('/scan/')) {
+                const url = new URL(decodedText);
+                router.push(url.pathname);
+            } else if (decodedText.startsWith('/scan/')) {
+                router.push(decodedText);
+            } else {
+                router.push(`/scan/${decodedText}`);
+            }
+            toast.success("Quét mã thành công!");
+        } catch {
+            toast.error("Mã QR không hợp lệ!");
+        }
+    }, [stopScanner, router]);
+
+    const startScanner = useCallback(async () => {
         if (isTransitioningRef.current) return;
 
         const readerElement = document.getElementById("reader");
@@ -50,30 +85,14 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                 () => { }
             );
             setIsScanning(true);
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Camera error:", err);
             setCameraError("Hệ thống đã chặn quyền truy cập Camera. Bạn có thể sử dụng ảnh mã QR để thay thế.");
             setIsScanning(false);
         } finally {
             isTransitioningRef.current = false;
         }
-    };
-
-    const stopScanner = async () => {
-        if (isTransitioningRef.current) return;
-
-        if (scannerRef.current && scannerRef.current.isScanning) {
-            try {
-                isTransitioningRef.current = true;
-                await scannerRef.current.stop();
-                setIsScanning(false);
-            } catch (err) {
-                console.error("Stop error:", err);
-            } finally {
-                isTransitioningRef.current = false;
-            }
-        }
-    };
+    }, [handleScanSuccess]);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -84,28 +103,9 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
             try {
                 const decodedText = await scannerRef.current.scanFile(imageFile, true);
                 handleScanSuccess(decodedText);
-            } catch (err) {
+            } catch {
                 toast.error("Không tìm thấy mã QR trong ảnh này.");
             }
-        }
-    };
-
-    const handleScanSuccess = async (decodedText: string) => {
-        try {
-            await stopScanner();
-            setIsOpen(false);
-
-            if (decodedText.includes('http') && decodedText.includes('/scan/')) {
-                const url = new URL(decodedText);
-                router.push(url.pathname);
-            } else if (decodedText.startsWith('/scan/')) {
-                router.push(decodedText);
-            } else {
-                router.push(`/scan/${decodedText}`);
-            }
-            toast.success("Quét mã thành công!");
-        } catch (e) {
-            toast.error("Mã QR không hợp lệ!");
         }
     };
 
@@ -121,7 +121,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
         } else {
             stopScanner();
         }
-    }, [isOpen]);
+    }, [isOpen, startScanner, stopScanner]);
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>

@@ -8,7 +8,7 @@ export interface OrderItem {
     note?: string;
 }
 
-export interface KitchenOrder {
+export interface OrderNotification {
     orderId: string;
     tableNumber: string;
     items: OrderItem[];
@@ -16,18 +16,18 @@ export interface KitchenOrder {
     createdAt: string;
 }
 
-interface KitchenState {
-    orders: KitchenOrder[];
-    notifications: KitchenOrder[];
+interface OrderNotificationState {
+    orders: OrderNotification[];
+    notifications: OrderNotification[];
     unreadCount: number;
-    setOrders: (orders: KitchenOrder[]) => void;
-    addOrder: (order: KitchenOrder) => void;
-    updateOrderStatus: (orderId: string, status: KitchenOrder['status']) => void;
+    setOrders: (orders: OrderNotification[]) => void;
+    addOrder: (order: OrderNotification) => void;
+    updateOrderStatus: (orderId: string, status: OrderNotification['status']) => void;
     clearNotifications: () => void;
     markAsRead: () => void;
 }
 
-export const useKitchenStore = create<KitchenState>((set) => ({
+export const useOrderNotificationStore = create<OrderNotificationState>((set) => ({
     orders: [],
     notifications: [],
     unreadCount: 0,

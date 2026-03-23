@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Menu, X, User } from 'lucide-react';
+import { Menu, X, User, Coffee } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
 import {
@@ -20,8 +20,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LoginForm } from '@/components/login-form';
 import { useOrderStore } from '@/store/useOrderStore';
-import { Badge } from '@/components/ui/badge';
-import { Coffee } from 'lucide-react';
 import { CartModal } from '@/components/menu/CartModal';
 
 export function Header() {
@@ -30,7 +28,6 @@ export function Header() {
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
     const isActive = (path: string) => pathname === path;
-    const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
     // Xử lý Hydration mismatch với local storage state của Zustand
     const [mounted, setMounted] = useState(false);
@@ -78,7 +75,7 @@ export function Header() {
                                 key={link.path}
                                 href={link.path}
                                 id={link.path === '/' ? 'nav-home' : link.path === '/menu' ? 'nav-menu' : link.path === '/#story' ? 'nav-about' : undefined}
-                                className={`font-display text-sm tracking-wider transition-colors hover:text-primary ${isActive(link.path) ? 'text-primary border-b-2 border-none' : 'text-text/80'}`}
+                                className={`font-display text-sm tracking-wider transition-colors hover:text-primary ${isActive(link.path) ? 'text-primary' : 'text-text/80'}`}
                             >
                                 {link.name}
                             </Link>
@@ -140,13 +137,13 @@ export function Header() {
                                     </button>
                                 } />
                                 <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-sm border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
-                                    <DropdownMenuItem render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
+                                    <DropdownMenuItem id="mobile-home" render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
                                         TRANG CHỦ
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem render={<Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
+                                    <DropdownMenuItem id="mobile-menu" render={<Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
                                         THỰC ĐƠN
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem render={<Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
+                                    <DropdownMenuItem id="mobile-about" render={<Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
                                         VỀ CHÚNG TÔI
                                     </DropdownMenuItem>
 
@@ -192,14 +189,6 @@ export function Header() {
                             )}
                         </div>
                     </div>
-
-                    {/* Mobile Menu Button - Optional, keeping hidden as requested for now */}
-                    {/* <button
-                        onClick={toggleMenu}
-                        className="md:hidden text-paper p-2"
-                    >
-                        {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
-                    </button> */}
                 </div>
 
             </div>

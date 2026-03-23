@@ -19,11 +19,9 @@ export default function AdminLayout({
 
     return (
         <AdminAuthGuard>
-            <div className="flex h-screen bg-background overflow-hidden relative">
-                {/* Decorative background pattern like landing page */}
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                    style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
-                </div>
+            <div className="flex h-screen bg-white overflow-hidden relative font-sans">
+                {/* Clean B&W background */}
+                <div className="absolute inset-0 bg-black/[0.02] pointer-events-none"></div>
 
                 {/* Sidebar Overlay for Mobile */}
                 {isSidebarOpen && (

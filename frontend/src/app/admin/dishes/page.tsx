@@ -161,12 +161,12 @@ export default function DishesPage() {
         <div className="space-y-10 pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="size-14 bg-primary rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_#2D2D2D] border-2 border-text -rotate-3">
+                    <div className="size-14 bg-black rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,0.1)] border-2 border-black -rotate-3">
                         <Plus className="size-8 text-white rotate-3" />
                     </div>
                     <div>
-                        <h2 className="text-4xl font-display font-bold text-text mb-1 uppercase tracking-tight">THỰC ĐƠN</h2>
-                        <p className="text-text/60 font-medium">Quản lý danh sách các món ăn đang phục vụ.</p>
+                        <h2 className="text-4xl font-display font-bold text-black mb-1 uppercase tracking-tight">THỰC ĐƠN</h2>
+                        <p className="text-black/60 font-medium">Quản lý danh sách các món ăn đang phục vụ.</p>
                     </div>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
@@ -174,12 +174,12 @@ export default function DishesPage() {
                     if (!open) resetForm();
                 }}>
                     <DialogTrigger render={
-                        <Button className="h-14 px-8 bg-primary hover:bg-primary/95 text-white font-display font-bold text-sm gap-3 rounded-2xl border-2 border-text shadow-[4px_4px_0px_#2D2D2D] active:translate-y-[1px] active:shadow-[2px_2px_0px_#2D2D2D] transition-all" onClick={() => resetForm()}>
+                        <Button className="h-14 px-8 bg-black hover:bg-black/90 text-white font-display font-bold text-sm gap-3 rounded-2xl border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[2px_2px_0px_rgba(0,0,0,0.05)] transition-all" onClick={() => resetForm()}>
                             <Plus className="size-5" />
                             THÊM MÓN MỚI
                         </Button>
                     } />
-                    <DialogContent className="max-w-xl rounded-[2.5rem] border-4 border-text shadow-[12px_12px_0px_#2D2D2D] p-0 overflow-hidden">
+                    <DialogContent className="max-w-xl rounded-[2.5rem] border-4 border-black shadow-[12px_12px_0px_rgba(0,0,0,0.1)] p-0 overflow-hidden bg-white">
                         <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood} className="flex flex-col">
                             <div className="p-8 border-b-2 border-text/5 bg-background">
                                 <DialogHeader>
@@ -193,10 +193,10 @@ export default function DishesPage() {
                             <div className="p-8 space-y-6 bg-paper">
                                 <div className="grid grid-cols-2 gap-6">
                                     <div className="space-y-2 col-span-2">
-                                        <label className="text-xs font-display font-bold text-text/40 uppercase tracking-widest pl-1">Tên món ăn</label>
+                                        <label className="text-xs font-display font-bold text-black/40 uppercase tracking-widest pl-1">Tên món ăn</label>
                                         <Input
                                             required
-                                            className="h-12 border-2 border-text/10 rounded-xl font-bold bg-background/30 focus:bg-paper focus:border-primary transition-all"
+                                            className="h-12 border-2 border-black/10 rounded-xl font-bold bg-white focus:bg-white focus:border-black transition-all"
                                             value={formData.name}
                                             onChange={e => setFormData({ ...formData, name: e.target.value })}
                                             placeholder="Ví dụ: Bún Bò Huế Đặc Biệt"
@@ -273,9 +273,9 @@ export default function DishesPage() {
                                 </div>
                             </div>
 
-                            <div className="p-8 bg-background/50 border-t-2 border-text/5 flex gap-4">
-                                <Button type="button" variant="outline" className="flex-1 h-12 border-2 border-text font-display font-bold rounded-xl shadow-[4px_4px_0px_#2D2D2D] active:translate-y-[1px] active:shadow-[2px_2px_0px_#2D2D2D] transition-all uppercase" onClick={() => setIsDialogOpen(false)}>HỦY</Button>
-                                <Button type="submit" className="flex-[2] h-12 bg-primary hover:bg-primary/95 text-white font-display font-bold rounded-xl border-2 border-text shadow-[4px_4px_0px_#2D2D2D] active:translate-y-[1px] active:shadow-[2px_2px_0px_#2D2D2D] transition-all uppercase" disabled={createFoodMutation.isPending || updateFoodMutation.isPending}>
+                            <div className="p-8 bg-black/[0.02] border-t-2 border-black/5 flex gap-4">
+                                <Button type="button" variant="outline" className="flex-1 h-12 border-2 border-black font-display font-bold rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[2px_2px_0px_rgba(0,0,0,0.05)] transition-all uppercase hover:bg-black/5" onClick={() => setIsDialogOpen(false)}>HỦY</Button>
+                                <Button type="submit" className="flex-[2] h-12 bg-black hover:bg-black/90 text-white font-display font-bold rounded-xl border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[2px_2px_0px_rgba(0,0,0,0.05)] transition-all uppercase" disabled={createFoodMutation.isPending || updateFoodMutation.isPending}>
                                     {createFoodMutation.isPending || updateFoodMutation.isPending ? (
                                         <><Loader2 className="size-5 animate-spin mr-2" /> Đang lưu...</>
                                     ) : 'LƯU MÓN ĂN'}
@@ -286,15 +286,15 @@ export default function DishesPage() {
                 </Dialog>
             </div>
 
-            <Card className="border-4 border-text shadow-[12px_12px_0px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-paper">
-                <div className="p-6 bg-background/20 border-b-4 border-text flex items-center gap-6">
+            <Card className="border-4 border-black shadow-[12px_12px_0px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-white">
+                <div className="p-6 bg-black/[0.02] border-b-4 border-black/5 flex items-center gap-6">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-text/30" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-black/30" />
                         <Input
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="TÌM KIẾM MÓN ĂN HOẶC DANH MỤC..."
-                            className="h-14 pl-12 pr-6 border-2 border-text/10 rounded-2xl bg-paper font-bold focus:border-primary transition-all uppercase text-xs tracking-wider"
+                            className="h-14 pl-12 pr-6 border-2 border-black/10 rounded-2xl bg-white font-bold focus:border-black transition-all uppercase text-xs tracking-wider"
                         />
                     </div>
                 </div>
@@ -351,7 +351,7 @@ export default function DishesPage() {
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="p-6 text-center">
-                                                <div className="font-display font-bold text-primary text-xl tracking-tight">
+                                                <div className="font-display font-bold text-black text-xl tracking-tight">
                                                     {dish.price.toLocaleString('vi-VN')}
                                                     <span className="text-[10px] ml-1">đ</span>
                                                 </div>
@@ -367,22 +367,22 @@ export default function DishesPage() {
                                             <TableCell className="p-6 text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger render={
-                                                        <Button variant="ghost" className="size-10 rounded-xl hover:bg-primary hover:text-white border-2 border-transparent hover:border-text transition-all">
+                                                        <Button variant="ghost" className="size-10 rounded-xl hover:bg-black hover:text-white border-2 border-transparent hover:border-black transition-all">
                                                             <MoreVertical className="size-5" />
                                                         </Button>
                                                     } />
-                                                    <DropdownMenuContent align="end" className="w-48 rounded-2xl border-4 border-text shadow-[8px_8px_0px_#2D2D2D] p-2 bg-paper">
-                                                        <DropdownMenuItem className="gap-3 py-3 rounded-xl font-bold font-display text-xs uppercase cursor-pointer" onClick={() => openEditDialog(dish)}>
-                                                            <div className="size-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                                    <DropdownMenuContent align="end" className="w-48 rounded-2xl border-4 border-black shadow-[8px_8px_0px_rgba(0,0,0,0.1)] p-2 bg-white">
+                                                        <DropdownMenuItem className="gap-3 py-3 rounded-xl font-bold font-display text-xs uppercase cursor-pointer hover:bg-black/5" onClick={() => openEditDialog(dish)}>
+                                                            <div className="size-8 rounded-lg bg-black/5 flex items-center justify-center text-black">
                                                                 <Pencil className="size-4" />
                                                             </div>
                                                             Sửa thông tin
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            className="gap-3 py-3 rounded-xl font-bold font-display text-xs uppercase cursor-pointer text-red-600 focus:bg-red-500 focus:text-white"
+                                                            className="gap-3 py-3 rounded-xl font-bold font-display text-xs uppercase cursor-pointer text-black hover:bg-black hover:text-white transition-colors"
                                                             onClick={() => handleDeleteFood(dish.id)}
                                                         >
-                                                            <div className="size-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-500 group-hover:text-white">
+                                                            <div className="size-8 rounded-lg bg-black/5 flex items-center justify-center text-black group-hover:text-white">
                                                                 <Trash2 className="size-4" />
                                                             </div>
                                                             Xóa món ăn

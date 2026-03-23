@@ -1,16 +1,13 @@
 import type { Metadata } from "next";
-import { Edu_SA_Beginner, Geist } from "next/font/google"; // Retro Fonts
+import { Roboto_Mono } from "next/font/google"; // Updated to Roboto Mono
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Providers";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
-
-const eduSA = Edu_SA_Beginner({
-  weight: ["400", "700"], // Edu SA supports specific weights
-  variable: "--font-edu-sa",
-  subsets: ["latin"], // Edu SA likely supports vietnamese, checking docs or defaulting to latin + variable
+const robotoMono = Roboto_Mono({
+  subsets: ["latin", "vietnamese"], // Vietnamese support for Bún Bò system
+  variable: "--font-roboto-mono",
   display: "swap",
 });
 
@@ -25,10 +22,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", geist.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("font-sans", robotoMono.variable)} suppressHydrationWarning>
       <body
-        className={`${eduSA.variable} antialiased font-main bg-cover bg-fixed bg-center text-text`}
-        style={{ backgroundImage: "url('/images/retro-paper-texture.png')", fontFamily: "var(--font-edu-sa)" }}
+        className={`${robotoMono.variable} antialiased font-main bg-cover bg-fixed bg-center text-text`}
+        style={{ backgroundImage: "url('/images/retro-paper-texture.png')", fontFamily: "var(--font-roboto-mono)" }}
       >
         <Providers>
           <Toaster
@@ -36,12 +33,12 @@ export default function RootLayout({
             toastOptions={{
               duration: 3500,
               style: {
-                fontFamily: "var(--font-edu-sa)",
+                fontFamily: "var(--font-roboto-mono)",
                 border: "2px solid #2D2D2D",
                 borderRadius: "8px",
                 boxShadow: "4px 4px 0px #2D2D2D",
                 padding: "12px 16px",
-              },  
+              },
               success: {
                 iconTheme: { primary: "#D4A853", secondary: "#fff" },
               },
