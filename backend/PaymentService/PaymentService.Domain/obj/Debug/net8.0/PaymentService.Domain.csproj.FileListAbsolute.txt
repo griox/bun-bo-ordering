@@ -1,0 +1,16 @@
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/bin/Debug/net8.0/PaymentService.Domain.deps.json
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/bin/Debug/net8.0/PaymentService.Domain.dll
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/bin/Debug/net8.0/PaymentService.Domain.pdb
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/bin/Debug/net8.0/BunBo.SharedKernel.dll
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/bin/Debug/net8.0/BunBo.SharedKernel.pdb
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.csproj.AssemblyReference.cache
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.GeneratedMSBuildEditorConfig.editorconfig
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.AssemblyInfoInputs.cache
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.AssemblyInfo.cs
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.csproj.CoreCompileInputs.cache
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.sourcelink.json
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentS.6786DBE7.Up2Date
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.dll
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/refint/PaymentService.Domain.dll
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/PaymentService.Domain.pdb
+/Users/huyngo/bunbo-system-datn/backend/PaymentService/PaymentService.Domain/obj/Debug/net8.0/ref/PaymentService.Domain.dll
