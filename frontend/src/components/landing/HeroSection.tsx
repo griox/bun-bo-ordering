@@ -25,7 +25,7 @@ export function HeroSection() {
 
                 <p className="font-main text-xl text-text/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-white drop-shadow-sm font-medium">
                     Sự kết hợp hoàn hảo giữa nước dùng đậm đà, thịt bò mềm tan và ly cà phê sữa đá Nha Trang.
-                    Một trải nghiệm ẩm thực "Retro" ngay giữa lòng thành phố.
+                    Một trải nghiệm ẩm thực &quot;Retro&quot; ngay giữa lòng thành phố.
                 </p>
 
                 <div className="flex flex-col md:flex-row gap-4 justify-center items-center">

@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState } from 'react';
@@ -33,7 +34,6 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
     DialogDescription
 } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';

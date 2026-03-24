@@ -7,7 +7,6 @@ import {
     LayoutDashboard,
     Utensils,
     ClipboardList,
-    ChefHat,
     Settings,
     LogOut
 } from 'lucide-react';

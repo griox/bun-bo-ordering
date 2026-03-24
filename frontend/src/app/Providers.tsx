@@ -16,15 +16,15 @@ export function Providers({ children }: { children: React.ReactNode }) {
             const wrap = (method: 'log' | 'warn' | 'error') => {
                 const orig = console[method];
                 // Prevent double wrapping or wrapping non-functions
-                if (typeof orig !== 'function' || (orig as any).__is_suppressed) return;
+                if (typeof orig !== 'function' || (orig as { __is_suppressed?: boolean }).__is_suppressed) return;
 
-                const wrapper = function suppressedConsole(...args: any[]) {
+                const wrapper = function suppressedConsole(...args: unknown[]) {
                     if (args.some(arg => typeof arg === 'string' && suppressPattern.test(arg))) {
                         return;
                     }
-                    return (orig as Function).apply(console, args);
+                    return (orig as (...args: unknown[]) => void).apply(console, args);
                 };
-                (wrapper as any).__is_suppressed = true;
+                (wrapper as { __is_suppressed?: boolean }).__is_suppressed = true;
                 console[method] = wrapper;
             };
 

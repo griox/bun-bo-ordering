@@ -17,28 +17,29 @@ export default function ScanPage() {
         if (tableId) {
             handleScan(tableId as string);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tableId]);
 
     const handleScan = async (id: string) => {
         try {
             const result = await scanMutation.mutateAsync(id);
-            
+
             // Assuming the result contains sessionId and table info
             // If result only has sessionId, we might need another call to get table details
             // For now, let's assume result has { sessionId: '...', table: { id: '...', name: '...' } }
-            
+
             if (result.sessionId) {
                 // Clear old cart when switching tables/sessions maybe? 
                 // Or just keep it. Let's clear to be safe if it's a new session.
                 clearCart();
-                
-                setSession({ 
-                    id: result.sessionId, 
+
+                setSession({
+                    id: result.sessionId,
                     tableId: id,
                     startTime: new Date().toISOString(),
                     isActive: true
                 });
-                
+
                 setTable({
                     id: id,
                     tableCode: '', // Would be better if API returned these
@@ -46,11 +47,11 @@ export default function ScanPage() {
                 });
 
                 toast.success("Quét mã thành công! Chào mừng bạn đến với BunBo.");
-                
+
                 // Redirect to menu/ordering page
                 router.push('/menu');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Scan error:", error);
             toast.error("Mã QR không hợp lệ hoặc đã hết hạn.");
             router.push('/menu');
@@ -65,7 +66,7 @@ export default function ScanPage() {
                     <QrCode className="w-16 h-16 animate-bounce" />
                 </div>
             </div>
-            
+
             <div className="text-center space-y-2">
                 <h1 className="text-2xl font-bold text-neutral-800">Đang nhận diện bàn...</h1>
                 <p className="text-neutral-500 max-w-xs mx-auto text-sm">

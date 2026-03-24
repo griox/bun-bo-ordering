@@ -40,6 +40,7 @@ export function StorySection() {
         }, 9000); // Change slide every 5 seconds
 
         return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

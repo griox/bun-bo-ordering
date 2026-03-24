@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import * as signalR from '@microsoft/signalr';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useOrderNotificationStore, OrderNotification } from '@/store/useOrderNotificationStore';
+import { useOrderStore } from '@/store/useOrderStore';
 import { toast } from 'sonner';
 
 const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:8000/hub/notifications';
@@ -43,6 +44,15 @@ export const useRealtime = () => {
             });
         });
 
+        connection.on("PaymentSuccess", (data: { orderId: string, transactionId: string }) => {
+            console.log("Payment completed via SePay:", data);
+            useOrderStore.getState().setPaymentSuccess(data.orderId);
+            playNotificationSound();
+            toast.success(`Thanh toán thành công!`, {
+                description: `Mã giao dịch: ${data.transactionId}`
+            });
+        });
+
         const startConnection = async () => {
             if (isStopped) return;
             if (connection.state !== signalR.HubConnectionState.Disconnected) return;
@@ -60,12 +70,14 @@ export const useRealtime = () => {
                     await connection.invoke("JoinKitchenGroup");
                     console.log("Joined Kitchen Group");
                 }
-            } catch (err: any) {
+            } catch (err: unknown) {
                 if (isStopped) return;
 
+                const errorMsg = err instanceof Error ? err.message : String(err);
+
                 // SignalR standard error message for aborted connections
-                if (err.message?.includes("stopped during negotiation") ||
-                    err.message?.includes("aborted")) {
+                if (errorMsg.includes("stopped during negotiation") ||
+                    errorMsg.includes("aborted")) {
                     return;
                 }
 
@@ -85,5 +97,5 @@ export const useRealtime = () => {
         };
     }, [token, user, addOrder]);
 
-    return { connection: connectionRef.current };
+    return { connectionRef };
 };

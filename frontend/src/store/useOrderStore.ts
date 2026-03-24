@@ -24,6 +24,9 @@ interface OrderState {
   updateQuantity: (foodId: string, quantity: number) => void;
   clearCart: () => void;
 
+  paymentSuccessOrderId: string | null;
+  setPaymentSuccess: (id: string | null) => void;
+
   // Computeds (helper functions)
   getCartTotal: () => number;
   getCartCount: () => number;
@@ -35,9 +38,11 @@ export const useOrderStore = create<OrderState>()(
       table: null,
       session: null,
       cart: [],
+      paymentSuccessOrderId: null,
 
       setTable: (table) => set({ table }),
       setSession: (session) => set({ session }),
+      setPaymentSuccess: (id) => set({ paymentSuccessOrderId: id }),
 
       addToCart: (item) => set((state) => {
         const existing = state.cart.find(x => x.foodId === item.foodId);

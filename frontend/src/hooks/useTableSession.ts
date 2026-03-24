@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import axiosInstance from '@/lib/axiosInstance';
 import { TableResponseDto, TableSessionResponseDto } from '@/types';
-import { useRouter } from 'next/navigation';
 import { useOrderStore } from '@/store/useOrderStore';
 
 export function useTableSession(tableCode: string) {
-    const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -14,6 +12,13 @@ export function useTableSession(tableCode: string) {
 
     useEffect(() => {
         if (!tableCode) return;
+
+        const openNewSession = async (tableId: string) => {
+            const res = await axiosInstance.post<TableSessionResponseDto>('/table/session', { tableId });
+            const newSession = res.data;
+            localStorage.setItem('bunbo_session_id', newSession.id);
+            setSession(newSession);
+        };
 
         const initSession = async () => {
             try {
@@ -42,7 +47,7 @@ export function useTableSession(tableCode: string) {
                             console.log("Resuming session");
                             setSession(sessionData);
                         }
-                    } catch (e) {
+                    } catch {
                         // Session not found (404) -> Open New
                         console.log("Session not found, starting new");
                         await openNewSession(tableData.id);
@@ -52,8 +57,11 @@ export function useTableSession(tableCode: string) {
                     await openNewSession(tableData.id);
                 }
 
-            } catch (err: any) {
-                setError(err.response?.data?.message || 'Failed to access table');
+            } catch (err: unknown) {
+                const errorMsg = err instanceof Error ? err.message : 'Failed to access table';
+                // Type assertion for axios error matching structure
+                const axiosErr = err as { response?: { data?: { message?: string } } };
+                setError(axiosErr.response?.data?.message || errorMsg);
                 localStorage.removeItem('bunbo_session_id'); // Clear if table invalid
                 setSession(null);
             } finally {
@@ -62,14 +70,7 @@ export function useTableSession(tableCode: string) {
         };
 
         initSession();
-    }, [tableCode]);
-
-    const openNewSession = async (tableId: string) => {
-        const res = await axiosInstance.post<TableSessionResponseDto>('/table/session', { tableId });
-        const newSession = res.data;
-        localStorage.setItem('bunbo_session_id', newSession.id);
-        setSession(newSession);
-    };
+    }, [tableCode, setSession, setTable]);
 
     return { table, session, isLoading, error };
 }

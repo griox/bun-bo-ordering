@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -46,14 +47,6 @@ export function LoginForm({
 }: LoginFormProps) {
   const [isLogin, setIsLogin] = useState(true);
 
-  // TanStack Query Mutations
-  const loginMutation = useLoginMutation(onSuccess);
-  const googleLoginMutation = useGoogleLoginMutation(onSuccess);
-  const registerMutation = useRegisterMutation(() => {
-    setIsLogin(true);
-    loginForm.setValue('username', registerForm.getValues('username'));
-  });
-
   // Form for Login
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -64,6 +57,14 @@ export function LoginForm({
   const registerForm = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: { username: '', email: '', password: '', confirmPassword: '' }
+  });
+
+  // TanStack Query Mutations
+  const loginMutation = useLoginMutation(onSuccess);
+  const googleLoginMutation = useGoogleLoginMutation(onSuccess);
+  const registerMutation = useRegisterMutation(() => {
+    setIsLogin(true);
+    loginForm.setValue('username', registerForm.getValues('username'));
   });
 
   const onLoginSubmit = (data: LoginValues) => {

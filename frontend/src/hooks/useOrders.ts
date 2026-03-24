@@ -15,8 +15,9 @@ export const useUpdateOrderStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['orders'] });
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Không thể cập nhật trạng thái đơn hàng");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || "Không thể cập nhật trạng thái đơn hàng");
     }
   });
 };

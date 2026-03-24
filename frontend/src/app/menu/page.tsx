@@ -7,7 +7,7 @@ import { Footer } from '@/components/landing/Footer';
 import { Header } from '@/components/layout/Header';
 import { Loader2 } from 'lucide-react';
 import { useCategories, useFoodsByCategory } from '@/hooks/useCatalog';
-import { OrderBar } from '@/components/order/OrderBar';
+
 
 export default function MenuPage() {
     const { data: categories = [], isLoading: catsLoading } = useCategories();
@@ -16,6 +16,7 @@ export default function MenuPage() {
     // Set initial active category when data loads
     useEffect(() => {
         if (categories.length > 0 && activeCategoryId === null) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setActiveCategoryId(categories[0].id);
         }
     }, [categories, activeCategoryId]);
@@ -90,6 +91,7 @@ export default function MenuPage() {
                                             ...item,
                                             image: item.imageUrl || '/images/dish-placeholder.png',
                                             category: item.categoryName || 'Món ăn'
+                                            // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                         } as any} />
                                     ))}
                                 </div>

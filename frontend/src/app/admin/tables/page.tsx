@@ -4,11 +4,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     Plus,
     Trash2,
-    MoreVertical,
-    Pencil,
     QrCode,
     Download,
     Save,
+    Pencil,
     Move,
     Loader2
 } from 'lucide-react';
@@ -21,16 +20,8 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-    DialogFooter,
     DialogDescription
 } from '@/components/ui/dialog';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
 import { useTables, useCreateTableMutation, useUpdateTableMutation, useUpdateTablePositionsMutation, useDeleteTableMutation, RestaurantTable } from '@/hooks/useTables';
 import { motion } from 'framer-motion';
 import { QRCodeCanvas } from 'qrcode.react';
@@ -53,6 +44,7 @@ export default function TablesPage() {
     // Sync local state when server data loads
     useEffect(() => {
         if (tables.length > 0) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setLocalTables(tables);
         }
     }, [tables]);
@@ -98,7 +90,7 @@ export default function TablesPage() {
         }
     };
 
-    const handleDragEnd = (id: string, _: any, info: any) => {
+    const handleDragEnd = (id: string, _: unknown, info: { point: { x: number; y: number } }) => {
         if (!floorPlanRef.current) return;
 
         const rect = floorPlanRef.current.getBoundingClientRect();
@@ -138,7 +130,7 @@ export default function TablesPage() {
         const canvas = document.getElementById(`qr-${table.id}`) as HTMLCanvasElement;
         if (canvas) {
             const pngUrl = canvas.toDataURL("image/png").replace("image/png", "image/octet-stream");
-            let downloadLink = document.createElement("a");
+            const downloadLink = document.createElement("a");
             downloadLink.href = pngUrl;
             downloadLink.download = `QR-${table.tableCode}.png`;
             document.body.appendChild(downloadLink);

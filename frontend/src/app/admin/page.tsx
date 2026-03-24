@@ -130,7 +130,7 @@ export default function AdminDashboard() {
                                     cursor={{ fill: 'rgba(0, 0, 0, 0.05)' }}
                                     content={({ active, payload }) => {
                                         if (active && payload && payload.length) {
-                                            const p = payload[0] as any;
+                                            const p = payload[0] as { payload?: { name?: string; fullDate?: string }; value?: number };
                                             return (
                                                 <div className="bg-white p-4 border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,0.1)] rounded-xl">
                                                     <p className="text-xs font-bold text-black/50 uppercase tracking-widest mb-1">{p.payload?.name} ({p.payload?.fullDate})</p>

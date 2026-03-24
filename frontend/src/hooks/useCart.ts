@@ -55,7 +55,7 @@ export const useCart = () => {
 };
 
 export const usePlaceOrderMutation = () => {
-    const { session, clearCart } = useOrderStore();
+    const { session } = useOrderStore();
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -70,11 +70,13 @@ export const usePlaceOrderMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cart', session?.id] });
             queryClient.invalidateQueries({ queryKey: ['orders'] });
-            clearCart();
-            toast.success("Đặt món thành công! Nhà bếp đã nhận được yêu cầu.");
+            // Note: clearCart is deliberately NOT called here because we want to keep
+            // the state open for the Payment QR UI. The UI will call it once payment completes.
+            toast.info("Đơn hàng đã được tạo. Vui lòng thanh toán!");
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || "Không thể đặt món. Vui lòng thử lại.");
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || "Không thể đặt món. Vui lòng thử lại.");
         }
     });
 };

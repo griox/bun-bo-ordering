@@ -31,8 +31,9 @@ export const useCreateTableMutation = () => {
             queryClient.invalidateQueries({ queryKey: ['tables'] });
             toast.success("Tạo bàn mới thành công!");
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || "Lỗi khi tạo bàn");
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || "Lỗi khi tạo bàn");
         }
     });
 };
@@ -48,8 +49,9 @@ export const useUpdateTableMutation = () => {
             queryClient.invalidateQueries({ queryKey: ['tables'] });
             toast.success("Cập nhật bàn thành công!");
         },
-        onError: (error: any) => {
-            toast.error(error.response?.data?.message || "Lỗi khi cập nhật bàn");
+        onError: (error: unknown) => {
+            const err = error as { response?: { data?: { message?: string } } };
+            toast.error(err.response?.data?.message || "Lỗi khi cập nhật bàn");
         }
     });
 };

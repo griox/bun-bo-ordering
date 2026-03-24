@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { Food } from '@/hooks/useCatalog';
 import { useOrderStore } from '@/store/useOrderStore';
-import { Plus, Minus, ShoppingBag } from 'lucide-react';
+import { Plus, Minus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface FoodItemCardProps {

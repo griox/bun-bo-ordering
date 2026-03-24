@@ -21,17 +21,8 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         var message = context.Message;
         _logger.LogInformation($"Received OrderCreatedEvent for Order {message.OrderId}");
 
-        // 1. Notify the Kitchen unconditionally
-        await _hubContext.Clients.Group("KitchenGroup").SendAsync("ReceiveNewOrder", new 
-        {
-            OrderId = message.OrderId,
-            TableSessionId = message.TableSessionId,
-            TotalAmount = message.TotalAmount,
-            Note = message.Note,
-            CreatedAt = message.CreatedAt
-        });
-
-        // 2. Notify the specific Table that their order was successfully placed/received
+        // 1. Notify the specific Table that their order was successfully placed/received
+        // Note: The Kitchen is NOT notified here. Kitchen is notified only upon successful payment.
         await _hubContext.Clients.Group($"Table-{message.TableSessionId}").SendAsync("OrderConfirmed", new 
         {
             OrderId = message.OrderId,

@@ -22,10 +22,18 @@ builder.Services.AddCors(options =>
         .AllowCredentials());
 });
 
+// Add HttpClient for calling OrderService
+builder.Services.AddHttpClient("OrderApiClient", client =>
+{
+    var orderUrl = builder.Configuration["Services:OrderService"] ?? "http://order-service:8080";
+    client.BaseAddress = new Uri(orderUrl);
+});
+
 // Configure MassTransit to consume RabbitMQ events
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedEventConsumer>();
+    x.AddConsumer<PaymentCompletedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -40,6 +48,11 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("order_created_queue", e =>
         {
             e.ConfigureConsumer<OrderCreatedEventConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("payment_completed_realtime_queue", e =>
+        {
+            e.ConfigureConsumer<PaymentCompletedEventConsumer>(context);
         });
     });
 });

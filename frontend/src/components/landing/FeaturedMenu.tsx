@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { ArrowRight, Star, Loader2 } from "lucide-react";
@@ -19,7 +20,7 @@ export function FeaturedMenu() {
                 <div className="text-center mb-16">
                     <span className="text-primary font-bold tracking-widest uppercase text-sm mb-2 block">Menu Nổi Bật</span>
                     <h2 className="font-display text-4xl md:text-5xl text-text relative inline-block">
-                        MÓN "RUỘT" CỦA QUÁN
+                        MÓN &quot;RUỘT&quot; CỦA QUÁN
                         <span className="absolute -right-8 -top-8 text-secondary transform rotate-12">
                             <Star size={40} fill="#FFCC33" stroke="#2D2D2D" strokeWidth={2} />
                         </span>

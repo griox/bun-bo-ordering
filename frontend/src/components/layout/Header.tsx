@@ -1,9 +1,10 @@
+/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { Menu, X, User, Coffee } from 'lucide-react';
+import { User, Coffee } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
 import {
@@ -24,7 +25,6 @@ import { CartModal } from '@/components/menu/CartModal';
 
 export function Header() {
     const pathname = usePathname();
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
     const isActive = (path: string) => pathname === path;
@@ -35,6 +35,7 @@ export function Header() {
     const { table, session } = useOrderStore();
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 

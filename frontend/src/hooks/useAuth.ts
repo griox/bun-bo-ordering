@@ -11,7 +11,7 @@ export const useLoginMutation = (onSuccessCallback?: () => void) => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Record<string, unknown>) => {
       const response = await axiosInstance.post('/api/identity/login', data);
       return response.data;
     },
@@ -22,15 +22,18 @@ export const useLoginMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
       router.push(role === 'Admin' ? '/admin' : '/');
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data || err.response?.data?.message || 'Email hoặc mật khẩu không chính xác!');
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: { message?: string } | string } };
+      const data = error.response?.data;
+      const msg = typeof data === 'string' ? data : data?.message;
+      toast.error(msg || 'Email hoặc mật khẩu không chính xác!');
     },
   });
 };
 
 export const useRegisterMutation = (onSuccessCallback?: () => void) => {
   return useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Record<string, unknown>) => {
       const response = await axiosInstance.post('/api/identity/register', data);
       return response.data;
     },
@@ -38,8 +41,11 @@ export const useRegisterMutation = (onSuccessCallback?: () => void) => {
       toast.success('Đăng ký thành công! Vui lòng đăng nhập.');
       onSuccessCallback?.();
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data || err.response?.data?.message || 'Đăng ký thất bại, vui lòng thử lại!');
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: { message?: string } | string } };
+      const data = error.response?.data;
+      const msg = typeof data === 'string' ? data : data?.message;
+      toast.error(msg || 'Đăng ký thất bại, vui lòng thử lại!');
     },
   });
 };
@@ -62,8 +68,9 @@ export const useGoogleLoginMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
       router.push(role === 'Admin' ? '/admin' : '/');
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data || 'Đăng nhập Google thất bại!');
+    onError: (err: unknown) => {
+      const error = err as { response?: { data?: string } };
+      toast.error(error.response?.data || 'Đăng nhập Google thất bại!');
     },
   });
 };

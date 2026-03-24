@@ -5,7 +5,7 @@ import { useOrderStore } from '@/store/useOrderStore';
 import { usePlaceOrderMutation, useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
 import { ShoppingBag, ArrowRight, Loader2, X, Trash2, MessageSquare, Plus } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
     Sheet,
     SheetContent,
@@ -20,7 +20,7 @@ export function OrderBar() {
     const { cart, getCartTotal, getCartCount, updateQuantity, removeFromCart, session, table } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
-    
+
     const [note, setNote] = useState('');
     const [isSheetOpen, setIsSheetOpen] = useState(false);
 
@@ -38,14 +38,14 @@ export function OrderBar() {
                 unitPrice: item.price,
                 quantity: item.quantity
             }));
-            
+
             await syncCart(cartItems);
-            
+
             // 2. Place order
             await placeOrderMutation.mutateAsync({ note });
             setIsSheetOpen(false);
             setNote('');
-        } catch (error) {
+        } catch {
             // Error handled by mutation
         }
     };
@@ -58,7 +58,7 @@ export function OrderBar() {
                     animate={{ y: 0, opacity: 1 }}
                     className="bg-neutral-900 text-white rounded-3xl shadow-2xl p-4 flex items-center justify-between gap-4 border border-white/10"
                 >
-                    <SheetTrigger 
+                    <SheetTrigger
                         render={
                             <button className="flex items-center gap-3 flex-1 text-left">
                                 <div className="relative">
@@ -79,7 +79,7 @@ export function OrderBar() {
                         }
                     />
 
-                    <Button 
+                    <Button
                         onClick={() => setIsSheetOpen(true)}
                         className="bg-white hover:bg-neutral-100 text-neutral-900 rounded-2xl h-14 px-6 font-black gap-2 transition-all active:scale-95 group"
                     >
@@ -109,21 +109,21 @@ export function OrderBar() {
                                     </p>
                                 </div>
                                 <div className="flex items-center bg-white rounded-full p-1 shadow-sm border border-neutral-100">
-                                    <button 
+                                    <button
                                         className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-red-500"
                                         onClick={() => updateQuantity(item.foodId, item.quantity - 1)}
                                     >
                                         <X className="w-4 h-4" />
                                     </button>
                                     <span className="w-8 text-center font-bold text-neutral-800">{item.quantity}</span>
-                                    <button 
+                                    <button
                                         className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-primary"
                                         onClick={() => updateQuantity(item.foodId, item.quantity + 1)}
                                     >
                                         <Plus className="w-4 h-4" />
                                     </button>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => removeFromCart(item.foodId)}
                                     className="p-2 text-neutral-300 hover:text-red-500 transition-colors"
                                 >
@@ -136,7 +136,7 @@ export function OrderBar() {
                             <label className="text-xs font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-2">
                                 <MessageSquare className="w-3 h-3" /> Ghi chú cho nhà bếp
                             </label>
-                            <Input 
+                            <Input
                                 placeholder="Ví dụ: Không cay, thêm hành..."
                                 value={note}
                                 onChange={(e) => setNote(e.target.value)}
@@ -158,7 +158,7 @@ export function OrderBar() {
                                 Vui lòng quét mã QR tại bàn để bắt đầu đặt món!
                             </div>
                         ) : (
-                            <Button 
+                            <Button
                                 onClick={handlePlaceOrder}
                                 disabled={isSyncing || placeOrderMutation.isPending}
                                 className="w-full h-16 rounded-3xl text-lg font-black shadow-2xl shadow-primary/30 gap-3 group"

@@ -5,20 +5,20 @@ import axiosInstance from '@/lib/axiosInstance';
 import { toast } from 'sonner';
 
 export interface Category {
-    id: number;
-    name: string;
-    description?: string;
+  id: number;
+  name: string;
+  description?: string;
 }
 
 export interface Food {
-    id: string;
-    name: string;
-    description?: string;
-    price: number;
-    imageUrl?: string;
-    isAvailable: boolean;
-    categoryId: number;
-    categoryName?: string;
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  imageUrl?: string;
+  isAvailable: boolean;
+  categoryId: number;
+  categoryName?: string;
 }
 
 export const useCategories = () => {
@@ -50,15 +50,15 @@ export const useAllFoods = () => {
     queryKey: ['all-foods', categories?.length],
     queryFn: async () => {
       if (!categories) return [];
-      
+
       const allFoods: Food[] = [];
       for (const cat of categories) {
-          const foodRes = await axiosInstance.get(`/api/catalog/foods/category/${cat.id}`);
-          const foodsWithCat = foodRes.data.map((f: any) => ({
-              ...f,
-              categoryName: cat.name
-          }));
-          allFoods.push(...foodsWithCat);
+        const foodRes = await axiosInstance.get(`/api/catalog/foods/category/${cat.id}`);
+        const foodsWithCat = foodRes.data.map((f: Food) => ({
+          ...f,
+          categoryName: cat.name
+        }));
+        allFoods.push(...foodsWithCat);
       }
       return allFoods;
     },
@@ -82,8 +82,9 @@ export const useCreateFoodMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['foods-category'] });
       toast.success("Thêm món ăn thành công!");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi tạo món");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || "Có lỗi xảy ra khi tạo món");
     }
   });
 };
@@ -104,8 +105,9 @@ export const useUpdateFoodMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['foods-category'] });
       toast.success("Cập nhật món ăn thành công!");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Có lỗi xảy ra khi cập nhật món");
+    onError: (error: unknown) => {
+      const err = error as { response?: { data?: { message?: string } } };
+      toast.error(err.response?.data?.message || "Có lỗi xảy ra khi cập nhật món");
     }
   });
 };

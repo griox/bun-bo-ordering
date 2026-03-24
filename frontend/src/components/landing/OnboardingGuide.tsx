@@ -87,6 +87,7 @@ export function OnboardingGuide() {
             nextBtnText: 'Tiếp theo',
             prevBtnText: 'Quay lại',
             doneBtnText: 'Hoàn tất',
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             steps: [...(isMobile ? mobileSteps : desktopSteps), ...commonSteps] as any,
             onDestroyed: () => {
                 localStorage.setItem('onboarding-guided', 'true');

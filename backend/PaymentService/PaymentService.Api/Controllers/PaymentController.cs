@@ -18,11 +18,13 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
-    public IActionResult CreatePayment([FromBody] CreatePaymentRequest request)
+    public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
     {
-        // For demonstration, simply generates a mock link
-        var mockUrl = $"https://checkout.sepay.vn/xyz?orderId={request.OrderId}&amount={request.Amount}";
-        return Ok(new { PaymentUrl = mockUrl, OrderId = request.OrderId });
+        var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay");
+        await _mediator.Send(command);
+        
+        // Frontend will generate VietQR explicitly, just return Ok
+        return Ok(new { success = true, OrderId = request.OrderId, Amount = request.Amount });
     }
 
     // SePay standard webhook HTTP POST
@@ -35,13 +37,28 @@ public class PaymentController : ControllerBase
         // Use generic success logic: if there's no error code or the string matches success
         var isSuccess = string.IsNullOrWhiteSpace(payload.code) || payload.code.Equals("00", StringComparison.OrdinalIgnoreCase);
 
-        // SePay might store our orderId in the description/content. Assuming we can extract it:
-        // Or if SePay payload directly has referenceCode:
+        // SePay might store our orderId in referenceCode OR in the transfer content
         if (!Guid.TryParse(payload.referenceCode, out Guid validOrderId))
         {
-            // If we cannot parse referenceCode to Guid, try to parse from content
-            // Very simplified extraction for the purpose of this example
-            return BadRequest("Invalid Order ID format in Webhook");
+            // Try extracting from content (e.g. "THANHTOAN 550e8400-...")
+            var parts = payload.content?.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            bool found = false;
+            if (parts != null)
+            {
+                foreach (var part in parts)
+                {
+                    if (Guid.TryParse(part, out validOrderId))
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!found)
+            {
+                return BadRequest("Could not find a valid Order ID in referenceCode or content");
+            }
         }
 
         var command = new ProcessPaymentWebhookCommand(

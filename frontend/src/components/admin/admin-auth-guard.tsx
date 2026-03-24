@@ -19,6 +19,7 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
 
         // If already hydrated (e.g. navigation)
         if (useAuthStore.persist.hasHydrated()) {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsHydrated(true);
         }
 
@@ -29,11 +30,12 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
         if (!isHydrated) return;
 
         const allowedRoles = ['Admin'];
-        
+
         // Check if user is logged in and has allowed role
         if (!token || !user || !allowedRoles.includes(user.role)) {
             router.push('/');
         } else {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setIsAuthorized(true);
         }
     }, [user, token, router, isHydrated]);

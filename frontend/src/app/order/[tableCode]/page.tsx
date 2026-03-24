@@ -9,7 +9,7 @@ export default function OrderEntryPage() {
     const router = useRouter();
     const tableCode = params?.tableCode as string;
 
-    const { table, session, isLoading, error } = useTableSession(tableCode);
+    const { session, isLoading, error } = useTableSession(tableCode);
 
     useEffect(() => {
         if (session) {
