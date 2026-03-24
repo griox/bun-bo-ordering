@@ -17,7 +17,6 @@ public class PaymentController : ControllerBase
         _mediator = mediator;
     }
 
-    // A mock endpoint for creating payment links. In real world, this calls sePay/MoMo
     [HttpPost]
     public IActionResult CreatePayment([FromBody] CreatePaymentRequest request)
     {
@@ -26,20 +25,30 @@ public class PaymentController : ControllerBase
         return Ok(new { PaymentUrl = mockUrl, OrderId = request.OrderId });
     }
 
+    // SePay standard webhook HTTP POST
     [HttpPost("webhook/sepay")]
     public async Task<IActionResult> SePayWebhook([FromBody] SePayWebhookPayload payload)
     {
-        // Webhook structure according to generic rules or SePay
-        // This is simplified. Assume OrderId is in Reference or extracted.
-        // Assuming payload has OrderId directly for this implementation schema
-        
+        // Retrieve signature from header context
         var signature = Request.Headers["X-Signature"].ToString() ?? "mock-signature";
         
+        // Use generic success logic: if there's no error code or the string matches success
+        var isSuccess = string.IsNullOrWhiteSpace(payload.code) || payload.code.Equals("00", StringComparison.OrdinalIgnoreCase);
+
+        // SePay might store our orderId in the description/content. Assuming we can extract it:
+        // Or if SePay payload directly has referenceCode:
+        if (!Guid.TryParse(payload.referenceCode, out Guid validOrderId))
+        {
+            // If we cannot parse referenceCode to Guid, try to parse from content
+            // Very simplified extraction for the purpose of this example
+            return BadRequest("Invalid Order ID format in Webhook");
+        }
+
         var command = new ProcessPaymentWebhookCommand(
-            orderId: payload.OrderId,
-            providerTransactionId: payload.TransactionId,
-            amount: payload.Amount,
-            status: payload.Status,
+            orderId: validOrderId,
+            providerTransactionId: payload.id.ToString(),
+            amount: payload.transferAmount,
+            status: isSuccess ? "Success" : "Failed",
             signature: signature
         );
 
@@ -62,8 +71,17 @@ public class CreatePaymentRequest
 
 public class SePayWebhookPayload
 {
-    public Guid OrderId { get; set; }
-    public string TransactionId { get; set; } = string.Empty;
-    public decimal Amount { get; set; }
-    public string Status { get; set; } = string.Empty;
+    // Real SePay payload structure (approximate model based on standard documentation)
+    public int id { get; set; }
+    public string gateway { get; set; } = string.Empty;
+    public string transactionDate { get; set; } = string.Empty;
+    public string accountNumber { get; set; } = string.Empty;
+    public string code { get; set; } = string.Empty;
+    public string content { get; set; } = string.Empty; // Where the customer puts "THANHTOAN ORDERID"
+    public string transferType { get; set; } = string.Empty;
+    public decimal transferAmount { get; set; }
+    public decimal accumulated { get; set; }
+    public string subAccount { get; set; } = string.Empty;
+    public string referenceCode { get; set; } = string.Empty;
+    public string description { get; set; } = string.Empty;
 }

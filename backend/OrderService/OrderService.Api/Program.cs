@@ -64,6 +64,8 @@ builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.Sync
 // Configure MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
+    x.AddConsumer<OrderService.Application.Messaging.PaymentCompletedEventConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         var rabbitMqHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
@@ -72,6 +74,8 @@ builder.Services.AddMassTransit(x =>
             h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
             h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
         });
+
+        cfg.ConfigureEndpoints(context);
     });
 });
 
