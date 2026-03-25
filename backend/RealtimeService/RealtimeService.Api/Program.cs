@@ -12,11 +12,14 @@ builder.Services.AddSignalR().AddStackExchangeRedis(redisConnectionString, optio
     options.Configuration.ChannelPrefix = "BunBoSignalR";
 });
 
-// Configure CORS for Frontend (Next.js)
+// Configure CORS for Frontend
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() 
+                         ?? new[] { "http://localhost:3000" };
+                         
     options.AddPolicy("CorsPolicy", builder => builder
-        .WithOrigins("http://localhost:3000")
+        .WithOrigins(allowedOrigins)
         .AllowAnyMethod()
         .AllowAnyHeader()
         .AllowCredentials());

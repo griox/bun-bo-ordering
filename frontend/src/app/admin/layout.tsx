@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { useRealtime } from '@/hooks/useRealtime';
+
 import { Sidebar } from '@/components/admin/sidebar';
 import { Topbar } from '@/components/admin/topbar';
 import { Toaster } from '@/components/ui/sonner';
@@ -12,9 +12,6 @@ export default function AdminLayout({
 }: {
     children: React.ReactNode;
 }) {
-    // Initialize real-time listener for all admin pages
-    useRealtime();
-
     const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
 
     return (

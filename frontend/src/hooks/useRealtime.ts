@@ -12,10 +12,12 @@ const HUB_URL = process.env.NEXT_PUBLIC_HUB_URL || 'http://localhost:8000/hub/no
 export const useRealtime = () => {
     const connectionRef = useRef<signalR.HubConnection | null>(null);
     const { token, user } = useAuthStore();
+    const { session, setPaymentSuccess } = useOrderStore();
     const addOrder = useOrderNotificationStore((state) => state.addOrder);
 
     useEffect(() => {
-        if (!token || !user) return;
+        // We now allow connection even without token (for anonymous table sessions)
+        // if (!token || !user) return; 
 
         // Sound notification
         const playNotificationSound = () => {
@@ -29,7 +31,8 @@ export const useRealtime = () => {
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl(HUB_URL, {
-                accessTokenFactory: () => token
+                // Only provide token if it exists
+                accessTokenFactory: () => token || ""
             })
             .withAutomaticReconnect()
             .build();
@@ -45,8 +48,8 @@ export const useRealtime = () => {
         });
 
         connection.on("PaymentSuccess", (data: { orderId: string, transactionId: string }) => {
-            console.log("Payment completed via SePay:", data);
-            useOrderStore.getState().setPaymentSuccess(data.orderId);
+            console.log("Payment completed via SePay (Realtime):", data);
+            setPaymentSuccess(data.orderId);
             playNotificationSound();
             toast.success(`Thanh toán thành công!`, {
                 description: `Mã giao dịch: ${data.transactionId}`
@@ -66,9 +69,15 @@ export const useRealtime = () => {
                 console.log("Connected to SignalR Hub");
 
                 // Join Kitchen group if user is Admin
-                if (user.role === 'Admin') {
+                if (user?.role === 'Admin') {
                     await connection.invoke("JoinKitchenGroup");
                     console.log("Joined Kitchen Group");
+                }
+
+                // Join Table group if session exists
+                if (session?.id) {
+                    await connection.invoke("JoinTableGroup", session.id);
+                    console.log(`Joined Table Group: Table-${session.id}`);
                 }
             } catch (err: unknown) {
                 if (isStopped) return;
@@ -81,12 +90,13 @@ export const useRealtime = () => {
                     return;
                 }
 
-                console.error("SignalR Connection Error: ", err);
+                // Use warn instead of error to prevent Next.js dev overlay from crashing
+                console.warn("SignalR Connection Error (will retry):", err);
                 setTimeout(startConnection, 5000);
             }
         };
 
-        startConnection();
+        startConnection().catch(() => { }); // Silence any unhandled rejections during negotiation or aborted starts
         connectionRef.current = connection;
 
         return () => {
@@ -95,7 +105,7 @@ export const useRealtime = () => {
                 connection.stop().catch(() => { }); // Silence stop errors during unmount
             }
         };
-    }, [token, user, addOrder]);
+    }, [token, user, session?.id, addOrder, setPaymentSuccess]);
 
     return { connectionRef };
 };

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 
 export function CartModal() {
-    const { cart, getCartTotal, updateQuantity, removeFromCart, setSession, session, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
+    const { cart, getCartTotal, updateQuantity, removeFromCart, setSession, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
     const [isOpen, setIsOpen] = useState(false);
@@ -78,6 +78,11 @@ export function CartModal() {
         }
     };
 
+    const SEPAY_CONFIG = {
+        BANK: 'ICB',
+        ACC: '104876858916'
+    };
+
     // Reset state when modal is fully closed manually
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open);
@@ -120,12 +125,47 @@ export function CartModal() {
                         </div>
 
                         <div className="p-4 bg-white border-2 border-neutral-200 rounded-2xl shadow-sm mb-6 flex flex-col items-center justify-center relative min-h-[250px] w-[250px]">
-                            {/* VietQR Implementation */}
-                            <img
-                                src={`https://img.vietqr.io/image/ICB-104876858916-compact.png?amount=${total}&addInfo=THANHTOAN%20${paymentOrderId}&accountName=BUNBO`}
-                                alt="VietQR Code"
-                                className="w-[200px] h-[200px] object-cover"
-                            />
+                            {/* VietQR Implementation with SEVQR prefix for VietinBank/SePay */}
+                            {(() => {
+                                // Mandatory SEVQR prefix for VietinBank/SePay auto-recognition
+                                // Put paymentOrderId FIRST to avoid bank truncation of long strings!
+                                const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
+                                const tableName = table?.name || 'Mang ve';
+                                const paymentContent = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
+
+                                const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(paymentContent)}`;
+                                const payUrl = `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(paymentContent)}`;
+
+                                const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
+
+                                return (
+                                    <div className="flex flex-col items-center gap-4">
+                                        <img
+                                            src={vietQrUrl}
+                                            alt="VietQR Code"
+                                            className="w-[200px] h-[200px] object-cover"
+                                        />
+
+                                        {isMobile && (
+                                            <a
+                                                href={payUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md active:scale-95"
+                                            >
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></svg>
+                                                Mở App Ngân hàng
+                                            </a>
+                                        )}
+
+                                        {!isMobile && (
+                                            <p className="text-[10px] text-neutral-400 italic">
+                                                Dùng App ngân hàng để quét mã QR
+                                            </p>
+                                        )}
+                                    </div>
+                                );
+                            })()}
                         </div>
 
                         <span className="flex items-center text-sm font-bold text-neutral-500 animate-pulse">

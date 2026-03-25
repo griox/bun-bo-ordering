@@ -23,7 +23,7 @@ const webhookBody = {
     transactionDate: new Date().toISOString(),
     accountNumber: "1234",
     code: "00",
-    content: `THANHTOAN ${orderId}`,
+    content: `SEVQR 2Bun Bo Hue 1Coca-Cola Ban 1 ${orderId}`,
     transferType: "in",
     transferAmount: transferAmount,
     accumulated: 500000,
@@ -32,7 +32,7 @@ const webhookBody = {
     description: "test webhook sepay"
 };
 
-fetch('http://localhost:5006/api/payments/webhook/sepay', {
+fetch('http://localhost:8000/api/payments/webhook/sepay', {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json',
