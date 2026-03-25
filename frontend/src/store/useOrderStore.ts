@@ -48,7 +48,7 @@ export const useOrderStore = create<OrderState>()(
         const existing = state.cart.find(x => x.foodId === item.foodId);
         if (existing) {
           return {
-            cart: state.cart.map(x => x.foodId === item.foodId
+            cart: state.cart.map(x => (x.foodId === item.foodId)
               ? { ...x, quantity: x.quantity + item.quantity }
               : x)
           };
@@ -65,18 +65,20 @@ export const useOrderStore = create<OrderState>()(
           return { cart: state.cart.filter(x => x.foodId !== foodId) };
         }
         return {
-          cart: state.cart.map(x => x.foodId === foodId ? { ...x, quantity } : x)
+          cart: state.cart.map(x => (x.foodId === foodId) ? { ...x, quantity } : x)
         };
       }),
 
       clearCart: () => set({ cart: [] }),
 
       getCartTotal: () => {
-        return get().cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        return get().cart
+          .reduce((total, item) => total + (item.price * item.quantity), 0);
       },
 
       getCartCount: () => {
-        return get().cart.reduce((count, item) => count + item.quantity, 0);
+        return get().cart
+          .reduce((count, item) => count + item.quantity, 0);
       }
     }),
     {

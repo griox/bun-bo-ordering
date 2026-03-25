@@ -4,22 +4,47 @@ namespace RealtimeService.Api.Hubs;
 
 public class NotificationHub : Hub
 {
-    // Clients can call this from Frontend to join a specific table group
-    public async Task JoinTableGroup(Guid tableSessionId)
+    public override async Task OnConnectedAsync()
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, $"Table-{tableSessionId}");
-        await Clients.Caller.SendAsync("JoinedGroup", $"Table-{tableSessionId}");
+        Console.WriteLine($"[Hub] Connection established: {Context.ConnectionId}");
+        await base.OnConnectedAsync();
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        Console.WriteLine($"[Hub] Connection lost: {Context.ConnectionId}. Error: {exception?.Message}");
+        await base.OnDisconnectedAsync(exception);
+    }
+    // Clients can call this from Frontend to join a specific table group
+    public async Task JoinTableGroup(string sessionId)
+    {
+        if (Guid.TryParse(sessionId, out var tableSessionId))
+        {
+            var groupName = $"Table-{tableSessionId}";
+            Console.WriteLine($"[Hub] Client {Context.ConnectionId} joining group: {groupName}");
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+            await Clients.Caller.SendAsync("JoinedGroup", groupName);
+        }
+        else
+        {
+            Console.WriteLine($"[Hub] Invalid tableSessionId format: {sessionId}");
+        }
     }
 
     // Clients can call this from Frontend to leave the table group
-    public async Task LeaveTableGroup(Guid tableSessionId)
+    public async Task LeaveTableGroup(string sessionId)
     {
-        await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Table-{tableSessionId}");
+        if (Guid.TryParse(sessionId, out var tableSessionId))
+        {
+            Console.WriteLine($"[Hub] Client {Context.ConnectionId} leaving group: Table-{tableSessionId}");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Table-{tableSessionId}");
+        }
     }
 
     // Kitchen/Admin clients can join a global kitchen group
     public async Task JoinKitchenGroup()
     {
+        Console.WriteLine($"[Hub] Client {Context.ConnectionId} joining group: KitchenGroup");
         await Groups.AddToGroupAsync(Context.ConnectionId, "KitchenGroup");
         await Clients.Caller.SendAsync("JoinedGroup", "KitchenGroup");
     }

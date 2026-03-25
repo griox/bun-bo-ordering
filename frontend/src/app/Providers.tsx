@@ -1,3 +1,4 @@
+
 'use client';
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -7,6 +8,21 @@ import { useState } from 'react';
 import { useRealtime } from '@/hooks/useRealtime';
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '';
+
+// Suppression logic for harmless but annoying SignalR errors in dev mode
+if (typeof window !== 'undefined') {
+    const originalError = console.error;
+    console.error = (...args: any[]) => {
+        const msg = args.join(' ');
+        if (msg.includes('negotiation stopped') ||
+            msg.includes('connection was stopped') ||
+            msg.includes('Status code \'502\'') ||
+            msg.includes('Bad Gateway')) {
+            return;
+        }
+        originalError.apply(console, args);
+    };
+}
 
 export function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({

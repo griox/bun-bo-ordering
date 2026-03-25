@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dialog";
 
 export function CartModal() {
-    const { cart, getCartTotal, updateQuantity, removeFromCart, setSession, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
+    const { cart, getCartTotal, updateQuantity, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
     const [isOpen, setIsOpen] = useState(false);
@@ -27,18 +27,23 @@ export function CartModal() {
     const total = getCartTotal();
     const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
 
-    // Watch for payment success via SignalR
     useEffect(() => {
-        if (paymentOrderId && paymentSuccessOrderId === paymentOrderId) {
-            toast.success("Thanh toán thành công! Nhà bếp đang chuẩn bị món ăn.");
-            clearCart();
-            setPaymentSuccess(null);
-            // eslint-disable-next-line react-hooks/set-state-in-effect
-            setPaymentOrderId(null);
-            setIsOpen(false);
-            setSession(null);
+        if (paymentOrderId && paymentSuccessOrderId) {
+            const isMatch = paymentOrderId.toLowerCase() === paymentSuccessOrderId.toLowerCase();
+            console.log("CartModal: Payment check", { paymentOrderId, paymentSuccessOrderId, isMatch });
+
+            if (isMatch) {
+                toast.success("Thanh toán thành công! Nhà bếp đang chuẩn bị món ăn.");
+
+                // Clear the cart on payment success
+                useOrderStore.getState().clearCart();
+
+                setPaymentSuccess(null);
+                setPaymentOrderId(null);
+                setIsOpen(false);
+            }
         }
-    }, [paymentSuccessOrderId, paymentOrderId, clearCart, setPaymentSuccess, setIsOpen, setSession]);
+    }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen]);
 
     const handleConfirm = async () => {
         try {
