@@ -54,7 +54,7 @@ jobs:
           
           # Optional: Update Docker username if different from default
           if [ -n "${{ secrets.DOCKER_USERNAME }}" ]; then
-            find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/huynodev\//${{ secrets.DOCKER_USERNAME }}\//g" {} +
+            find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/griox\//${{ secrets.DOCKER_USERNAME }}\//g" {} +
           fi
 
       # 3. DEPLOY Phase
