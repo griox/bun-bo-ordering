@@ -141,7 +141,9 @@ export default function TablesPage() {
 
     // The URL the QR code points to
     const getScanUrl = (tableId: string) => {
-        const baseUrl = window.location.origin;
+        // Sử dụng biến môi trường NEXT_PUBLIC_APP_URL nếu có (cho production),
+        // Nếu không thì fallback về window.location.origin (cho local)
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
         return `${baseUrl}/scan/${tableId}`;
     };
 

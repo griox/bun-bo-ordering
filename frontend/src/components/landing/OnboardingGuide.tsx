@@ -82,7 +82,8 @@ export function OnboardingGuide() {
         const driverObj = driver({
             showProgress: true,
             animate: true,
-            allowClose: true,
+            allowClose: false,
+            overlayClickBehavior: 'nextStep',
             overlayColor: 'rgba(0, 0, 0, 0.75)',
             nextBtnText: 'Tiếp theo',
             prevBtnText: 'Quay lại',
