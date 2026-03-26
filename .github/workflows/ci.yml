@@ -28,6 +28,7 @@ jobs:
           - { name: 'cart-service', path: 'backend/CartService' }
           - { name: 'order-service', path: 'backend/OrderService' }
           - { name: 'realtime-service', path: 'backend/RealtimeService' }
+          - { name: 'payment-service', path: 'backend/PaymentService' }
           - { name: 'api-gateway', path: 'backend/ApiGateway' }
 
     steps:

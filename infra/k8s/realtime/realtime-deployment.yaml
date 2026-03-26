@@ -1,40 +1,28 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment-service
+  name: realtime-service
   labels:
-    app: payment-service
+    app: realtime-service
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: payment-service
+      app: realtime-service
   template:
     metadata:
       labels:
-        app: payment-service
+        app: realtime-service
     spec:
       containers:
-      - name: payment-service
-        image: griox/bunbo-payment-service:latest
+      - name: realtime-service
+        image: griox/bunbo-realtime-service:latest
         ports:
         - containerPort: 8080
         envFrom:
         - configMapRef:
             name: bunbo-config
         env:
-        - name: ConnectionStrings__DefaultConnection
-          value: "Host=postgresql-service;Database=payment_db;Username=postgres;Password=$(Postgres__Password)"
-        - name: Postgres__Password
-          valueFrom:
-            secretKeyRef:
-              name: bunbo-secrets
-              key: POSTGRES_PASSWORD
-        - name: SePay__SecretKey
-          valueFrom:
-            secretKeyRef:
-              name: bunbo-secrets
-              key: SEPAY_SECRET_KEY
         - name: RabbitMq__Host
           value: "rabbitmq.default.svc.cluster.local"
         - name: RabbitMq__Username
@@ -44,15 +32,22 @@ spec:
             secretKeyRef:
               name: bunbo-secrets
               key: RABBITMQ_PASSWORD
+        - name: REDIS_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Redis__Host
+        - name: Redis__ConnectionString
+          value: "$(REDIS_HOST),abortConnect=false"
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: payment-service
+  name: realtime-service
 spec:
   type: ClusterIP
   selector:
-    app: payment-service
+    app: realtime-service
   ports:
   - port: 80
     targetPort: 8080

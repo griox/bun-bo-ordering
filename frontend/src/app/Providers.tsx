@@ -17,7 +17,8 @@ if (typeof window !== 'undefined') {
         if (msg.includes('negotiation stopped') ||
             msg.includes('connection was stopped') ||
             msg.includes('Status code \'502\'') ||
-            msg.includes('Bad Gateway')) {
+            msg.includes('Bad Gateway') ||
+            msg.includes('Failed to complete negotiation')) {
             return;
         }
         originalError.apply(console, args);
