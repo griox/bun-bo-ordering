@@ -16,9 +16,11 @@ export default {
                 text: "#000000", // Black Text
             },
             fontFamily: {
+                sans: ["var(--font-roboto-mono)", "monospace"],
+                serif: ["var(--font-roboto-mono)", "monospace"],
+                mono: ["var(--font-roboto-mono)", "monospace"],
                 display: ["var(--font-roboto-mono)", "monospace"],
                 main: ["var(--font-roboto-mono)", "monospace"],
-                sans: ["var(--font-roboto-mono)", "monospace"],
             },
             backgroundImage: {
                 'paper-pattern': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",

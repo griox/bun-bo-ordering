@@ -109,10 +109,13 @@ body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: var(--font-roboto-mono) !important;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   html {
     @apply font-sans;
   }
