@@ -25,7 +25,7 @@ export const useRealtime = () => {
     );
 
     const { token, user } = useAuthStore();
-    const { session, setPaymentSuccess } = useOrderStore();
+    const { session } = useOrderStore();
     const addOrder = useOrderNotificationStore((state) => state.addOrder);
 
     useEffect(() => {
@@ -67,7 +67,7 @@ export const useRealtime = () => {
                 });
             });
 
-            globalConnection.on("PaymentSuccess", (data: any) => {
+            globalConnection.on("PaymentSuccess", (data: { orderId?: string; OrderId?: string; transactionId?: string; TransactionId?: string }) => {
                 const orderId = data.orderId || data.OrderId;
                 const transactionId = data.transactionId || data.TransactionId;
 
@@ -110,6 +110,9 @@ export const useRealtime = () => {
             }
         };
 
+        // Call it immediately
+        syncGroups();
+
         connection.onreconnecting(() => {
             console.log("!!! SIGNALR: Attempting to reconnect...");
             setConnectionStatus(signalR.HubConnectionState.Reconnecting);
@@ -131,7 +134,7 @@ export const useRealtime = () => {
                     await connection.start();
                     console.log("Connected to SignalR Hub");
                     setConnectionStatus(signalR.HubConnectionState.Connected);
-                } catch (err: any) {
+                } catch (err: unknown) {
                     console.warn("SignalR Connection Error (will retry):", err);
                     setConnectionStatus(signalR.HubConnectionState.Disconnected);
                     if (!isStopped) setTimeout(startConnection, 5000);
@@ -146,7 +149,7 @@ export const useRealtime = () => {
             // We DON'T stop the global connection here to avoid churn.
             // It will stay alive for the lifetime of the app.
         };
-    }, [token, addOrder]);
+    }, [token, addOrder, user?.role, session?.id]);
 
     // Separate effect for syncing groups to avoid connection churn
     useEffect(() => {

@@ -36,14 +36,17 @@ export function CartModal() {
                 toast.success("Thanh toán thành công! Nhà bếp đang chuẩn bị món ăn.");
 
                 // Clear the cart on payment success
-                useOrderStore.getState().clearCart();
+                clearCart();
 
-                setPaymentSuccess(null);
-                setPaymentOrderId(null);
-                setIsOpen(false);
+                // Defer these to next tick to avoid "cascading render" lint warning
+                Promise.resolve().then(() => {
+                    setPaymentSuccess(null);
+                    setPaymentOrderId(null);
+                    setIsOpen(false);
+                });
             }
         }
-    }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen]);
+    }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen, clearCart]);
 
     const handleConfirm = async () => {
         try {

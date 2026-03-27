@@ -12,7 +12,7 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? '';
 // Suppression logic for harmless but annoying SignalR errors in dev mode
 if (typeof window !== 'undefined') {
     const originalError = console.error;
-    console.error = (...args: any[]) => {
+    console.error = (...args: unknown[]) => {
         const msg = args.join(' ');
         if (msg.includes('negotiation stopped') ||
             msg.includes('connection was stopped') ||
