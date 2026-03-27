@@ -16,29 +16,29 @@ export default function AdminLayout({
 
     return (
         <AdminAuthGuard>
-            <div className="flex h-screen bg-white overflow-hidden relative font-sans">
-                {/* Clean B&W background */}
-                <div className="absolute inset-0 bg-black/[0.02] pointer-events-none"></div>
+            <div className="flex h-screen bg-neutral-50 overflow-hidden relative font-mono">
+                {/* Clean B&W background pattern */}
+                <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-40 pointer-events-none"></div>
 
                 {/* Sidebar Overlay for Mobile */}
                 {isSidebarOpen && (
                     <div
-                        className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden transition-opacity"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-md z-40 lg:hidden transition-all duration-500 ease-in-out"
                         onClick={() => setIsSidebarOpen(false)}
                     />
                 )}
 
                 <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-                <div className="flex flex-col flex-1 overflow-hidden relative z-10 w-full">
+                <div className="flex flex-col flex-1 overflow-hidden relative z-10 w-full lg:border-l-2 lg:border-black/5">
                     <Topbar onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
-                    <main className="flex-1 overflow-y-auto p-4 md:p-8">
-                        <div className="max-w-7xl mx-auto h-full w-full">
+                    <main className="flex-1 overflow-y-auto p-4 md:p-10 scroll-smooth">
+                        <div className="max-w-7xl mx-auto h-full w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
                             {children}
                         </div>
                     </main>
                 </div>
-                <Toaster position="top-right" />
+                <Toaster position="top-right" richColors />
             </div>
         </AdminAuthGuard>
     );
