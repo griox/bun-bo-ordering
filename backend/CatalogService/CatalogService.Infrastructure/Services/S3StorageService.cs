@@ -13,25 +13,43 @@ public class S3StorageService : IFileStorageService
     private readonly string _bucketName;
     private readonly string _serviceUrl;
     private readonly string _publicUrl;
+    private readonly string _fileUrlFormat;
 
     public S3StorageService(IConfiguration configuration)
     {
         var accessKey = configuration["S3Settings:AccessKey"] ?? "minioadmin";
         var secretKey = configuration["S3Settings:SecretKey"] ?? "minioadminpassword";
-        _serviceUrl = configuration["S3Settings:ServiceUrl"] ?? "http://localhost:9000";
-        _publicUrl = configuration["S3Settings:PublicUrl"] ?? _serviceUrl;
+        _serviceUrl = configuration["S3Settings:ServiceUrl"];
         _bucketName = configuration["S3Settings:BucketName"] ?? "catalog-images";
         var region = configuration["S3Settings:Region"];
 
-        var config = new AmazonS3Config
-        {
-            ServiceURL = _serviceUrl,
-            ForcePathStyle = _serviceUrl.Contains("localhost") || _serviceUrl.Contains("minio")
-        };
+        var isAwsS3 = string.IsNullOrWhiteSpace(_serviceUrl) || _serviceUrl.Contains("amazonaws.com");
 
-        if (!string.IsNullOrEmpty(region))
+        var config = new AmazonS3Config();
+
+        if (isAwsS3)
         {
-            config.AuthenticationRegion = region;
+            if (!string.IsNullOrEmpty(region))
+                config.RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(region);
+                
+            string awsRegion = string.IsNullOrEmpty(region) ? "us-east-1" : region;
+            _publicUrl = configuration["S3Settings:PublicUrl"] ?? $"https://{_bucketName}.s3.{awsRegion}.amazonaws.com";
+            _fileUrlFormat = "{0}/{1}";
+        }
+        else
+        {
+            _serviceUrl ??= "http://localhost:9000";
+            config.ServiceURL = _serviceUrl;
+            config.ForcePathStyle = true;
+            _publicUrl = configuration["S3Settings:PublicUrl"] ?? _serviceUrl;
+            _fileUrlFormat = "{0}/" + _bucketName + "/{1}";
+        }
+
+        // Nếu PublicUrl đã được set cụ thể và không phải trên local (ví dụ dùng CloudFront hoặc Custom Domain), 
+        // URL thường trỏ trực tiếp đến file path chứ không qua /bucketName/.
+        if (!string.IsNullOrEmpty(configuration["S3Settings:PublicUrl"]) && !_publicUrl.Contains("localhost") && !_publicUrl.Contains("127.0.0.1"))
+        {
+            _fileUrlFormat = "{0}/{1}";
         }
 
         _s3Client = new AmazonS3Client(accessKey, secretKey, config);
@@ -65,8 +83,8 @@ public class S3StorageService : IFileStorageService
 
         await _s3Client.PutObjectAsync(uploadRequest);
 
-        // Trả về URL để truy cập ảnh (Sử dụng PublicUrl)
-        return $"{_publicUrl.TrimEnd('/')}/{_bucketName}/{fileName}";
+        // Trả về URL để truy cập ảnh
+        return string.Format(_fileUrlFormat, _publicUrl.TrimEnd('/'), fileName);
     }
 
     public async Task DeleteFileAsync(string fileUrl)
@@ -125,7 +143,15 @@ public class S3StorageService : IFileStorageService
                     }
                 ]
             }";
-            await _s3Client.PutBucketPolicyAsync(_bucketName, policy);
+            try
+            {
+                await _s3Client.PutBucketPolicyAsync(_bucketName, policy);
+            }
+            catch (AmazonS3Exception ex) when (ex.ErrorCode == "AccessDenied")
+            {
+                // Ignore if AWS Block Public Access is turned on.
+                Console.WriteLine($"[S3StorageService] Warning: Could not set public bucket policy. Ensure Block Public Access is disabled if you need public read. Error: {ex.Message}");
+            }
         }
     }
 

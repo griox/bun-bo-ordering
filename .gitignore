@@ -3,3 +3,7 @@ doc/
 dailylogs/
 **/do-secret.template.yaml
 provisioning-k3s-manual.md
+
+.env
+.env.*
+/Users/huyngo/bunbo-system-datn.example
