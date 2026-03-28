@@ -32,7 +32,7 @@ export function HeroSection() {
                     <ScannerModal>
                         <button
                             id="btn-order"
-                            className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all border-2 border-[#2D2D2D]"
+                            className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all border-2 border-[#2D2D2D]"
                         >
                             <span className='font-bold text-white'>ĐẶT MÓN NGAY</span>
                             <span className="group-hover:translate-x-1 text-white transition-transform">→</span>

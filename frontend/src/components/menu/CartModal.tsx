@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShoppingCart, Loader2, Minus, Plus, X, QrCode } from 'lucide-react';
+import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt } from 'lucide-react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ export function CartModal() {
     const [isOpen, setIsOpen] = useState(false);
     const [note, setNote] = useState('');
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
+    const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Transfer' | null>(null);
 
     const total = getCartTotal();
     const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
@@ -49,6 +50,11 @@ export function CartModal() {
     }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen, clearCart]);
 
     const handleConfirm = async () => {
+        if (!paymentMethod) {
+            toast.error("Vui lòng chọn phương thức thanh toán");
+            return;
+        }
+
         try {
             // Sync the local cart state to the backend Redis session first
             const cartPayload = cart.map(item => ({
@@ -60,7 +66,7 @@ export function CartModal() {
 
             await syncCart(cartPayload);
 
-            // Now safely place the order since the backend cart exists
+            // Place the order
             const orderIdResult = await placeOrderMutation.mutateAsync({ note });
             const finalOrderId = orderIdResult.id || orderIdResult.Id;
 
@@ -70,17 +76,21 @@ export function CartModal() {
                 return;
             }
 
-            try {
-                // BUG FIX: Ensure we extract the ID correctly (handling casing)
-                console.log("Creating pending payment for order:", finalOrderId);
-                await axiosInstance.post('/api/payments', { orderId: finalOrderId, amount: total });
-            } catch (err) {
-                console.error('Failed to initialize payment transaction', err);
+            if (paymentMethod === 'Transfer') {
+                try {
+                    console.log("Creating pending payment for order:", finalOrderId);
+                    await axiosInstance.post('/api/payments', { orderId: finalOrderId, amount: total });
+                } catch (err) {
+                    console.error('Failed to initialize payment transaction', err);
+                }
+                // Switch to Payment QR View
+                setPaymentOrderId(finalOrderId);
+            } else {
+                // CASH FLOW: Just clear cart and close
+                toast.success("Đơn hàng đã được ghi nhận. Vui lòng thanh toán tại quầy!");
+                clearCart();
+                setIsOpen(false);
             }
-
-            // Switch to Payment QR View
-            setPaymentOrderId(finalOrderId);
-            // We NO LONGER close the modal or clear session here. We wait for payment!
         } catch (error) {
             console.error("Order failed:", error);
         }
@@ -97,6 +107,7 @@ export function CartModal() {
         if (!open) {
             setPaymentOrderId(null);
             setPaymentSuccess(null);
+            setPaymentMethod(null);
         }
     };
 
@@ -106,7 +117,7 @@ export function CartModal() {
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger nativeButton={true} render={
                 <button className="relative group cursor-pointer mr-2 md:mr-4 bg-transparent border-none p-0 focus:outline-none">
-                    <div className="flex items-center justify-center bg-primary text-white w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                    <div className="flex items-center justify-center bg-primary text-white w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
                         <ShoppingCart size={18} />
                         {itemCount > 0 && (
                             <span className="absolute -top-1 -right-1 bg-white text-primary text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-text shadow-sm">
@@ -246,15 +257,44 @@ export function CartModal() {
                                     </span>
                                 </div>
 
+                                <div className="grid grid-cols-2 gap-4 mb-6">
+                                    <button
+                                        type="button"
+                                        onClick={() => setPaymentMethod('Transfer')}
+                                        className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === 'Transfer'
+                                            ? 'border-primary bg-primary/5 shadow-md scale-[1.02]'
+                                            : 'border-neutral-200 bg-white hover:border-neutral-300'
+                                            }`}
+                                    >
+                                        <QrCode className={`size-6 ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-400'}`} />
+                                        <span className={`text-[10px] font-black uppercase tracking-tighter ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-500'}`}>
+                                            Chuyển khoản
+                                        </span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setPaymentMethod('Cash')}
+                                        className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === 'Cash'
+                                            ? 'border-primary bg-primary/5 shadow-md scale-[1.02]'
+                                            : 'border-neutral-200 bg-white hover:border-neutral-300'
+                                            }`}
+                                    >
+                                        <Receipt className={`size-6 ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-400'}`} />
+                                        <span className={`text-[10px] font-black uppercase tracking-tighter ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-500'}`}>
+                                            Tiền mặt
+                                        </span>
+                                    </button>
+                                </div>
+
                                 <Button
                                     onClick={handleConfirm}
-                                    disabled={placeOrderMutation.isPending || isSyncing}
-                                    className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-display text-lg uppercase tracking-widest rounded-2xl border-2 border-text shadow-[4px_4px_0px_#2D2D2D] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_#2D2D2D] transition-all"
+                                    disabled={placeOrderMutation.isPending || isSyncing || !paymentMethod}
+                                    className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-display text-lg uppercase tracking-widest rounded-2xl border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 disabled:grayscale"
                                 >
                                     {placeOrderMutation.isPending || isSyncing ? (
                                         <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> ĐANG TẠO ĐƠN...</>
                                     ) : (
-                                        <><QrCode className="w-5 h-5 mr-2" /> THANH TOÁN QR</>
+                                        <>XÁC NHẬN ĐẶT MÓN</>
                                     )}
                                 </Button>
                             </div>

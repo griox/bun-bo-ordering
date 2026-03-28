@@ -75,35 +75,35 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-12 pb-20 font-mono">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b-2 border-black/5 pb-8">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-200 pb-8">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
                         <div className="size-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-[10px] font-bold text-black/40 tracking-[0.2em] uppercase">System Status: Operational</span>
+                        <span className="text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase">Status: Hệ thống hoạt động</span>
                     </div>
-                    <h2 className="text-5xl font-bold text-black tracking-tighter mb-2 uppercase">Core Dashboard</h2>
-                    <p className="text-black/50 font-bold text-xs tracking-widest uppercase">Admin Session: {user?.username?.toUpperCase() || 'ROOT_ACCESS'}</p>
+                    <h2 className="text-4xl font-black text-black tracking-tighter mb-1 uppercase">Tổng quan Dash</h2>
+                    <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Phiên làm việc: {user?.username?.toUpperCase() || 'ROOT_ACCESS'}</p>
                 </div>
-                <div className="flex items-center gap-3 bg-white border-2 border-black px-6 py-3 rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] active:translate-y-px active:shadow-none transition-all cursor-default">
-                    <Calendar className="w-4 h-4 text-black" />
-                    <span className="text-xs font-bold tracking-widest uppercase">{new Date().toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+                <div className="flex items-center gap-3 bg-white border border-gray-100 px-6 py-3 rounded-2xl shadow-sm cursor-default text-gray-600 hover:shadow-md transition-all">
+                    <Calendar className="w-4 h-4 text-[#ff4d4f]" />
+                    <span className="text-xs font-black tracking-widest uppercase">{new Date().toLocaleDateString('vi-VN', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {stats.map((stat, i) => (
-                    <Card key={i} className="border-2 border-black shadow-[6px_6px_0px_rgba(0,0,0,0.05)] hover:shadow-[10px_10px_0px_rgba(0,0,0,0.1)] hover:translate-y-[-4px] transition-all rounded-2xl overflow-hidden bg-white group">
+                    <Card key={i} className="border border-gray-100 shadow-sm hover:shadow-xl hover:translate-y-[-4px] transition-all rounded-3xl overflow-hidden bg-white group">
                         <CardHeader className="flex flex-row items-center justify-between pb-2">
-                            <CardTitle className="text-[10px] font-bold text-black/40 uppercase tracking-[0.2em]">{stat.title}</CardTitle>
-                            <div className={`${stat.bg} size-10 rounded-xl flex items-center justify-center border-2 border-black/5 group-hover:bg-black group-hover:text-white transition-all`}>
+                            <CardTitle className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{stat.title}</CardTitle>
+                            <div className={`${stat.bg} size-10 rounded-xl flex items-center justify-center border border-gray-100 group-hover:bg-[#ff4d4f] group-hover:text-white transition-all`}>
                                 <stat.icon className="w-5 h-5" />
                             </div>
                         </CardHeader>
                         <CardContent>
-                            <div className="text-3xl font-bold text-black mb-3 tracking-tighter">{stat.value}</div>
-                            <div className="flex items-center gap-2 px-3 py-1.5 bg-black/5 w-fit rounded-lg border border-black/5">
-                                <TrendingUp className="w-3 h-3 text-black/60" />
-                                <span className="text-[9px] text-black/60 font-bold uppercase tracking-widest">+12.5% Delta</span>
+                            <div className="text-3xl font-black text-black mb-3 tracking-tighter">{stat.value}</div>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-50 w-fit rounded-xl border border-gray-100">
+                                <TrendingUp className="w-3 h-3 text-green-500" />
+                                <span className="text-[9px] text-gray-500 font-black uppercase tracking-widest">+12.5% Tăng trưởng</span>
                             </div>
                         </CardContent>
                     </Card>
@@ -111,75 +111,78 @@ export default function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                <Card className="xl:col-span-2 border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,0.05)] rounded-3xl overflow-hidden bg-white">
-                    <CardHeader className="border-b-2 border-black/5 pb-6 bg-black/[0.01]">
-                        <CardTitle className="text-xs font-bold text-black tracking-widest uppercase">Revenue Stream / Weekly Analytics</CardTitle>
-                        <CardDescription className="text-[10px] font-bold text-black/30 uppercase tracking-[0.1em]">Statistical data for the last 7 cycles</CardDescription>
+                <Card className="xl:col-span-2 border border-gray-100 shadow-sm rounded-[2rem] overflow-hidden bg-white hover:shadow-md transition-all">
+                    <CardHeader className="border-b border-gray-100 pb-6 bg-gray-50/50">
+                        <CardTitle className="text-xs font-black text-black tracking-widest uppercase items-center flex gap-2">
+                            <div className="size-2 rounded-full bg-[#ff4d4f]" />
+                            Dòng doanh thu / Phân tích tuần
+                        </CardTitle>
+                        <CardDescription className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Dữ liệu thống kê 7 chu kỳ gần nhất</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[400px] pt-10">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 800, fill: '#000000', opacity: 0.4 }}
+                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 800, fill: '#000000', opacity: 0.4 }}
+                                    tick={{ fontSize: 10, fontWeight: 900, fill: '#9CA3AF' }}
                                     tickFormatter={(value) => `${value / 1000}K`}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: 'rgba(0, 0, 0, 0.03)' }}
+                                    cursor={{ fill: 'rgba(255, 77, 79, 0.05)' }}
                                     content={({ active, payload }) => {
                                         if (active && payload && payload.length) {
                                             const p = payload[0] as { payload?: { name?: string; fullDate?: string }; value?: number };
                                             return (
-                                                <div className="bg-black text-white p-5 border-2 border-white shadow-[10px_10px_0px_rgba(0,0,0,0.2)] rounded-2xl font-mono">
-                                                    <p className="text-[9px] font-bold text-white/40 uppercase tracking-widest mb-2 border-b border-white/10 pb-2">{p.payload?.fullDate}</p>
-                                                    <p className="text-xl font-bold tracking-tight">{p.value?.toLocaleString('vi-VN')} VNĐ</p>
+                                                <div className="bg-white p-5 border border-gray-100 shadow-2xl rounded-2xl font-mono">
+                                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-2 border-b border-gray-50 pb-2">{p.payload?.fullDate}</p>
+                                                    <p className="text-xl font-black tracking-tight text-[#ff4d4f]">{p.value?.toLocaleString('vi-VN')} VNĐ</p>
                                                 </div>
                                             );
                                         }
                                         return null;
                                     }}
                                 />
-                                <Bar dataKey="revenue" fill="#000000" radius={[4, 4, 0, 0]} barSize={40} />
+                                <Bar dataKey="revenue" fill="#ff4d4f" radius={[8, 8, 0, 0]} barSize={45} />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                <Card className="border-2 border-black shadow-[8px_8px_0px_rgba(0,0,0,0.05)] rounded-3xl overflow-hidden bg-white flex flex-col">
-                    <CardHeader className="border-b-2 border-black/5 pb-6 bg-black/[0.01]">
-                        <CardTitle className="text-xs font-bold text-black tracking-widest uppercase">Real-Time Event Log</CardTitle>
-                        <CardDescription className="text-[10px] font-bold text-black/30 uppercase tracking-[0.1em]">Live order stream monitoring</CardDescription>
+                <Card className="border border-gray-100 shadow-sm rounded-3xl overflow-hidden bg-white flex flex-col hover:shadow-md transition-all">
+                    <CardHeader className="border-b border-gray-100 pb-6 bg-gray-50/50">
+                        <CardTitle className="text-xs font-black text-black tracking-widest uppercase">Nhật ký sự kiện thời gian thực</CardTitle>
+                        <CardDescription className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.1em]">Theo dõi dòng đơn hàng trực tiếp</CardDescription>
                     </CardHeader>
                     <CardContent className="flex-1 p-0">
-                        <div className="divide-y-2 divide-black/5">
+                        <div className="divide-y divide-gray-100">
                             {[1, 2, 3, 4, 5, 6].map((_, i) => (
-                                <div key={i} className="flex items-center gap-5 p-5 group cursor-pointer hover:bg-black/[0.02] transition-colors">
-                                    <div className="size-12 rounded-xl bg-white border-2 border-black flex items-center justify-center font-bold text-xs shadow-[4px_4px_0px_rgba(0,0,0,0.1)] group-hover:bg-black group-hover:text-white transition-all">
+                                <div key={i} className="flex items-center gap-5 p-5 group cursor-pointer hover:bg-gray-50 transition-colors">
+                                    <div className="size-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center font-black text-xs group-hover:bg-[#ff4d4f] group-hover:text-white transition-all shadow-sm">
                                         #{2040 + i}
                                     </div>
                                     <div className="flex-1">
-                                        <p className="text-[11px] font-bold text-black mb-1 uppercase tracking-tight">STATION / TABLE {i + 1}</p>
+                                        <p className="text-[11px] font-black text-black mb-1 uppercase tracking-tight">VỊ TRÍ / BÀN {i + 1}</p>
                                         <div className="flex items-center gap-2">
-                                            <div className="size-1.5 rounded-full bg-green-500" />
-                                            <p className="text-[9px] text-black/40 font-bold uppercase tracking-wider">3 ITEMS • {10 + i}:24 AM</p>
+                                            <div className="size-1.5 rounded-full bg-green-500 animate-pulse" />
+                                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">3 MÓN • {10 + i}:24 AM</p>
                                         </div>
                                     </div>
-                                    <div className="text-sm font-bold text-black tracking-tighter">145,000</div>
+                                    <div className="text-sm font-black text-[#ff4d4f] tracking-tighter italic">145k</div>
                                 </div>
                             ))}
                         </div>
                     </CardContent>
-                    <div className="p-6 bg-black/[0.02] border-t-2 border-black/5">
-                        <Button variant="outline" className="w-full font-bold text-[10px] tracking-[0.2em] rounded-xl py-6 hover:bg-black hover:text-white transition-all shadow-[4px_4px_0px_rgba(0,0,0,1)] active:translate-y-px active:shadow-none bg-white">
-                            ACCESS ALL LOGS
+                    <div className="p-6 bg-gray-50/50 border-t border-gray-100">
+                        <Button variant="ghost" className="w-full font-black text-[10px] tracking-[0.2em] rounded-xl py-6 hover:bg-[#ff4d4f] hover:text-white transition-all bg-white border border-gray-100 shadow-sm active:translate-y-px active:shadow-none">
+                            XEM TẤT CẢ LOG TERMINAL
                         </Button>
                     </div>
                 </Card>

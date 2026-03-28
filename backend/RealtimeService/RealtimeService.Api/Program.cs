@@ -82,6 +82,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<OrderCreatedEventConsumer>();
     x.AddConsumer<PaymentCompletedEventConsumer>();
+    x.AddConsumer<OrderStatusUpdatedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -94,6 +95,7 @@ builder.Services.AddMassTransit(x =>
 
         cfg.ReceiveEndpoint("order_created_queue", e => e.ConfigureConsumer<OrderCreatedEventConsumer>(context));
         cfg.ReceiveEndpoint("payment_completed_realtime_queue", e => e.ConfigureConsumer<PaymentCompletedEventConsumer>(context));
+        cfg.ReceiveEndpoint("order_status_updated_queue", e => e.ConfigureConsumer<OrderStatusUpdatedEventConsumer>(context));
     });
 });
 

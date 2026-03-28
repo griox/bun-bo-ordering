@@ -22,11 +22,15 @@ export const useUpdateOrderStatusMutation = () => {
   });
 };
 
-export const useOrders = () => {
+export const useOrders = (status?: string, skip: number = 0, take: number = 50) => {
   return useQuery({
-    queryKey: ['orders'],
+    queryKey: ['orders', status, skip, take],
     queryFn: async () => {
-      const response = await axiosInstance.get('/api/orders');
+      let url = `/api/orders?skip=${skip}&take=${take}`;
+      if (status && status !== 'All') {
+        url += `&status=${status}`;
+      }
+      const response = await axiosInstance.get(url);
       return response.data;
     },
   });

@@ -1,3 +1,5 @@
+using BunBo.SharedKernel.Messaging;
+using MassTransit;
 using MediatR;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Enums;
@@ -9,10 +11,12 @@ public record UpdateOrderStatusCommand(Guid OrderId, OrderStatus NewStatus) : IR
 public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatusCommand, bool>
 {
     private readonly IAppDbContext _context;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public UpdateOrderStatusCommandHandler(IAppDbContext context)
+    public UpdateOrderStatusCommandHandler(IAppDbContext context, IPublishEndpoint publishEndpoint)
     {
         _context = context;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<bool> Handle(UpdateOrderStatusCommand request, CancellationToken cancellationToken)
@@ -23,7 +27,12 @@ public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatus
         order.UpdateStatus(request.NewStatus);
         await _context.SaveChangesAsync(cancellationToken);
 
-        // TODO: Publish OrderStatusUpdatedEvent via RabbitMQ
+        await _publishEndpoint.Publish(new OrderStatusUpdatedEvent
+        {
+            OrderId = order.Id,
+            NewStatus = order.Status.ToString(),
+            UpdatedAt = DateTime.UtcNow
+        }, cancellationToken);
 
         return true;
     }

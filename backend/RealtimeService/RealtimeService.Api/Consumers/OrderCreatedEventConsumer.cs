@@ -22,11 +22,19 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         _logger.LogInformation($"Received OrderCreatedEvent for Order {message.OrderId}");
 
         // 1. Notify the specific Table that their order was successfully placed/received
-        // Note: The Kitchen is NOT notified here. Kitchen is notified only upon successful payment.
         await _hubContext.Clients.Group($"Table-{message.TableSessionId}").SendAsync("OrderConfirmed", new 
         {
             OrderId = message.OrderId,
             Status = "Pending"
+        });
+
+        // 2. Notify the Admin group that a new order has arrived
+        await _hubContext.Clients.Group("Admin").SendAsync("OrderPlaced", new 
+        {
+            OrderId = message.OrderId,
+            TotalAmount = message.TotalAmount,
+            CreatedAt = message.CreatedAt,
+            TableSessionId = message.TableSessionId
         });
     }
 }

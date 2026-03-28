@@ -26,6 +26,17 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Guid>
             throw new Exception("Category not found");
         }
 
+        if (request.Price <= 0)
+        {
+            throw new Exception("Price must be greater than zero");
+        }
+
+        var isDuplicate = _context.Foods.Any(f => f.Name == request.Name && f.CategoryId == request.CategoryId);
+        if (isDuplicate)
+        {
+            throw new Exception("Food with this name already exists in this category");
+        }
+
         string? imageUrl = null;
         if (request.ImageFile != null)
         {

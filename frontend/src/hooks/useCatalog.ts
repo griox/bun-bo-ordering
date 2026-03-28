@@ -43,26 +43,13 @@ export const useFoodsByCategory = (categoryId: number | null) => {
   });
 };
 
-export const useAllFoods = () => {
-  const { data: categories } = useCategories();
-
+export const useAllFoods = (skip: number = 0, take: number = 50) => {
   return useQuery<Food[]>({
-    queryKey: ['all-foods', categories?.length],
+    queryKey: ['all-foods', skip, take],
     queryFn: async () => {
-      if (!categories) return [];
-
-      const allFoods: Food[] = [];
-      for (const cat of categories) {
-        const foodRes = await axiosInstance.get(`/api/catalog/foods/category/${cat.id}`);
-        const foodsWithCat = foodRes.data.map((f: Food) => ({
-          ...f,
-          categoryName: cat.name
-        }));
-        allFoods.push(...foodsWithCat);
-      }
-      return allFoods;
+      const response = await axiosInstance.get(`/api/catalog/foods?skip=${skip}&take=${take}`);
+      return response.data;
     },
-    enabled: !!categories,
   });
 };
 

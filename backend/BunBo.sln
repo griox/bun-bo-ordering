@@ -59,6 +59,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Infrastructu
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Tests", "PaymentService\PaymentService.Tests\PaymentService.Tests.csproj", "{FE71298A-7017-48E5-BD71-170C8F23FD65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CatalogService.UnitTests", "..\tests\CatalogService.UnitTests\CatalogService.UnitTests.csproj", "{014C7824-142E-46EF-B91B-26506B12AE99}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderService.UnitTests", "..\tests\OrderService.UnitTests\OrderService.UnitTests.csproj", "{C5898869-FCC7-493D-BC6C-3EB47B2991CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -160,6 +164,14 @@ Global
 		{FE71298A-7017-48E5-BD71-170C8F23FD65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE71298A-7017-48E5-BD71-170C8F23FD65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE71298A-7017-48E5-BD71-170C8F23FD65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{014C7824-142E-46EF-B91B-26506B12AE99}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{014C7824-142E-46EF-B91B-26506B12AE99}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{014C7824-142E-46EF-B91B-26506B12AE99}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{014C7824-142E-46EF-B91B-26506B12AE99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5898869-FCC7-493D-BC6C-3EB47B2991CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5898869-FCC7-493D-BC6C-3EB47B2991CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5898869-FCC7-493D-BC6C-3EB47B2991CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5898869-FCC7-493D-BC6C-3EB47B2991CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BD99ECA9-FD3C-4E2B-B417-04344976C83F} = {30BA623E-989F-4D0D-B115-F77853C7B030}

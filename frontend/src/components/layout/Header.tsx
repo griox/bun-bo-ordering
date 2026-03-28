@@ -91,24 +91,40 @@ export function Header() {
                         <div className="hidden md:block">
                             {mounted && user ? (
                                 <div className="relative group cursor-pointer">
-                                    <div id="nav-member-desktop" className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2D2D2D] transition-all">
+                                    <div id="nav-member-desktop" className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
                                         <User size={14} className="w-4 h-4" />
                                         <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
                                     </div>
 
-                                    <div className="absolute top-full right-0 mt-2 w-48 bg-background/95 backdrop-blur-sm border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col overflow-hidden">
+                                    <div className="absolute top-full right-0 mt-2 w-52 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col overflow-hidden font-display">
+                                        {user.role === 'Admin' && (
+                                            <Link
+                                                href="/admin"
+                                                className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
+                                            >
+                                                 TRANG QUẢN TRỊ
+                                            </Link>
+                                        )}
+                                        {user.role === 'Customer' && (
+                                            <Link
+                                                href="/orders"
+                                                className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
+                                            >
+                                                 LỊCH SỬ ĐƠN HÀNG
+                                            </Link>
+                                        )}
                                         <button
                                             onClick={() => { logout(); toast.success('Đã đăng xuất!'); }}
-                                            className="px-4 py-3 text-left font-display text-sm hover:bg-black/10 hover:text-red-600 transition-colors"
+                                            className="px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"
                                         >
-                                            ĐĂNG XUẤT
+                                             ĐĂNG XUẤT
                                         </button>
                                     </div>
                                 </div>
                             ) : (
                                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                                     <DialogTrigger id="nav-member-desktop" nativeButton={true} render={
-                                        <button className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:scale-95">
+                                        <button className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all active:scale-95">
                                             <User size={16} />
                                             <span>THÀNH VIÊN</span>
                                         </button>
@@ -131,24 +147,36 @@ export function Header() {
                                 <DropdownMenuTrigger nativeButton={true} render={
                                     <button
                                         id="nav-member-mobile"
-                                        className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[3px_3px_0px_#2D2D2D] active:translate-y-[1px] active:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all"
+                                        className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all"
                                     >
                                         <User size={16} />
                                         <span>{mounted && user ? (user.username ?? 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
                                     </button>
                                 } />
-                                <DropdownMenuContent align="end" className="w-56 bg-background/95 backdrop-blur-sm border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
-                                    <DropdownMenuItem id="mobile-home" render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                        TRANG CHỦ
+                                <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
+                                    <DropdownMenuItem id="mobile-home" render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
+                                        🏠 TRANG CHỦ
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem id="mobile-menu" render={<Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                        THỰC ĐƠN
+                                    <DropdownMenuItem id="mobile-menu" render={<Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
+                                        🍜 THỰC ĐƠN
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem id="mobile-about" render={<Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                        VỀ CHÚNG TÔI
+                                    <DropdownMenuItem id="mobile-about" render={<Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
+                                        🏢 VỀ CHÚNG TÔI
                                     </DropdownMenuItem>
 
-                                    <DropdownMenuSeparator className="bg-text/20 my-1" />
+                                    {mounted && user && user.role === 'Admin' && (
+                                        <DropdownMenuItem id="mobile-admin" render={<Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
+                                            ⚙️ QUẢN TRỊ VIÊN
+                                        </DropdownMenuItem>
+                                    )}
+
+                                    {mounted && user && user.role === 'Customer' && (
+                                        <DropdownMenuItem id="mobile-history" render={<Link href="/orders" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
+                                            📜 LỊCH SỬ ĐƠN HÀNG
+                                        </DropdownMenuItem>
+                                    )}
+
+                                    <DropdownMenuSeparator className="bg-text/10 my-1" />
 
                                     {mounted && user ? (
                                         <DropdownMenuItem
@@ -157,9 +185,9 @@ export function Header() {
                                                 logout();
                                                 toast.success('Đã đăng xuất!');
                                             }}
-                                            className="w-full text-sm font-bold text-red-600 focus:text-red-700 cursor-pointer px-4 py-3 hover:bg-red-100/30 rounded-lg transition-colors focus:bg-red-100/30"
+                                            className="w-full text-sm font-bold text-red-600 focus:text-red-700 cursor-pointer px-4 py-3 hover:bg-red-50 rounded-lg transition-colors focus:bg-red-50"
                                         >
-                                            ĐĂNG XUẤT
+                                            🚪 ĐĂNG XUẤT
                                         </DropdownMenuItem>
                                     ) : (
                                         <DropdownMenuItem
@@ -167,9 +195,9 @@ export function Header() {
                                                 e.preventDefault();
                                                 setIsLoginOpen(true);
                                             }}
-                                            className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10"
+                                            className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5"
                                         >
-                                            ĐĂNG NHẬP
+                                            🔑 ĐĂNG NHẬP
                                         </DropdownMenuItem>
                                     )}
                                 </DropdownMenuContent>

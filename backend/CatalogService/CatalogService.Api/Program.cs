@@ -102,6 +102,12 @@ catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest re
     }
 }).DisableAntiforgery().RequireAuthorization("Admin"); // Disable antiforgery for simplicity in Minimal APIs with multipart
 
+catalogGroup.MapGet("/foods", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
+{
+    var foods = await mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsQuery(skip, take));
+    return Results.Ok(foods);
+});
+
 catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator mediator, int categoryId) =>
 {
     var foods = await mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsByCategoryQuery(categoryId));

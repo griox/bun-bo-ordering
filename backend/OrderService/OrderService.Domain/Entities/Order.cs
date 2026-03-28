@@ -24,7 +24,7 @@ public class Order : BaseEntity
         TableSessionId = tableSessionId;
         CustomerId = customerId;
         Note = note;
-        Status = OrderStatus.Created;
+        Status = OrderStatus.Unpaid;
     }
 
     public void AddItem(OrderItem item)
@@ -40,6 +40,11 @@ public class Order : BaseEntity
 
     public void UpdateStatus(OrderStatus newStatus)
     {
+        if (Status == OrderStatus.Paid && newStatus == OrderStatus.Unpaid)
+        {
+            throw new Exception("Cannot change status back to Unpaid once it is Paid.");
+        }
+        
         Status = newStatus;
     }
 }

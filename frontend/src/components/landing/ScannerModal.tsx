@@ -154,7 +154,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                                 <div className="flex flex-col gap-3 w-full max-w-[240px]">
                                     <Button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="bg-white hover:bg-neutral-100 text-black border-2 border-text font-bold rounded-xl h-12 shadow-[3px_3px_0px_#2D2D2D] active:translate-y-[1px] active:shadow-[1px_1px_0px_#2D2D2D] flex items-center justify-center gap-2"
+                                        className="bg-white hover:bg-neutral-100 text-black border-2 border-text font-bold rounded-xl h-12 shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none flex items-center justify-center gap-2 transition-all"
                                     >
                                         <Upload size={18} />
                                         Chọn ảnh mã QR

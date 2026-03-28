@@ -36,78 +36,77 @@ interface OrderSummary {
 }
 
 export default function OrdersPage() {
-    const [statusFilter, setStatusFilter] = useState('All');
-    const { data: orders = [], isLoading } = useOrders();
+    const [statusFilter, setStatusFilter] = useState('All'); // 'All', 'Unpaid', 'Paid'
+    const [page, setPage] = useState(0);
+    const pageSize = 10;
 
-    const filteredOrders = statusFilter === 'All'
-        ? (orders as OrderSummary[])
-        : (orders as OrderSummary[]).filter(o => o.status === statusFilter);
+    const { data: orders = [], isLoading } = useOrders(statusFilter, page * pageSize, pageSize);
 
-    const getStatusBadge = (status: string) => {
-        const baseClass = "font-display font-bold uppercase text-[9px] px-3 py-1 rounded-xl border-2 transition-all bg-white";
-        switch (status) {
-            case 'Served': return <Badge className={`${baseClass} text-black border-black`}>HOÀN TẤT</Badge>;
-            case 'Cooking': return <Badge className={`${baseClass} text-black/60 border-black/20`}>ĐANG NẤU</Badge>;
-            case 'Created': return <Badge className={`${baseClass} text-black/40 border-black/10`}>CHỜ XỬ LÝ</Badge>;
-            case 'Cancelled': return <Badge className={`${baseClass} text-black/20 border-black/5`}>ĐÃ HỦY</Badge>;
-            default: return <Badge variant="outline" className={baseClass}>{status}</Badge>;
+    const filteredOrders = orders as OrderSummary[];
+
+    const getStatusBadge = (status: number | string) => {
+        const baseClass = "font-black uppercase text-[9px] px-3 py-1.5 rounded-xl border transition-all bg-white shadow-sm";
+        // Convert string status (e.g. from filter) or numeric status (from data)
+        const isPaid = status === 1 || status === 'Paid';
+
+        if (isPaid) {
+            return <Badge variant="outline" className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>ĐÃ THANH TOÁN</Badge>;
         }
+        return <Badge variant="outline" className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50 animate-pulse`}>CHƯA THANH TOÁN</Badge>;
     };
 
     return (
         <div className="space-y-10 pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div className="flex items-center gap-4">
-                    <div className="size-14 bg-black rounded-2xl flex items-center justify-center shadow-[4px_4px_0px_rgba(0,0,0,0.1)] border-2 border-black -rotate-3">
-                        <Receipt className="size-8 text-white rotate-3" />
+                    <div className="size-14 bg-[#ff4d4f]/10 rounded-2xl flex items-center justify-center border border-[#ff4d4f]/20 shadow-sm transition-all group-hover:bg-[#ff4d4f] group-hover:text-white transition-all">
+                        <Receipt className="size-8 text-[#ff4d4f]" />
                     </div>
                     <div>
-                        <h2 className="text-4xl font-display font-bold text-black mb-1 uppercase tracking-tight">HÓA ĐƠN</h2>
-                        <p className="text-black/60 font-medium">Lịch sử giao dịch và quản lý trạng thái thanh toán.</p>
+                        <h2 className="text-4xl font-black text-black mb-0.5 uppercase tracking-tighter">HÓA ĐƠN</h2>
+                        <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Quản lý giao dịch & trạng thái thanh toán</p>
                     </div>
                 </div>
-                <div className="flex gap-4">
-                    <Button variant="outline" className="h-12 border-2 border-black font-display font-bold rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[2px_2px_0px_rgba(0,0,0,0.05)] transition-all uppercase px-6 gap-2 hover:bg-black/5">
-                        <Calendar className="size-4" />
+                <div className="flex gap-3">
+                    <Button variant="ghost" className="h-12 border border-gray-100 bg-white shadow-sm font-black rounded-xl transition-all uppercase px-6 gap-2 hover:bg-gray-50 text-[10px] tracking-widest">
+                        <Calendar className="size-4 text-[#ff4d4f]" />
                         Lọc theo ngày
                     </Button>
-                    <Button variant="outline" className="h-12 border-2 border-black font-display font-bold rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[2px_2px_0px_rgba(0,0,0,0.05)] transition-all uppercase px-6 gap-2 hover:bg-black/5">
-                        <Download className="size-4" />
+                    <Button variant="ghost" className="h-12 border border-gray-100 bg-white shadow-sm font-black rounded-xl transition-all uppercase px-6 gap-2 hover:bg-gray-50 text-[10px] tracking-widest">
+                        <Download className="size-4 text-[#ff4d4f]" />
                         Xuất báo cáo
                     </Button>
                 </div>
             </div>
 
-            <Card className="border-4 border-text shadow-[12px_12px_0px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-paper">
-                <div className="p-6 bg-black/[0.02] border-b-4 border-black/5 flex flex-col lg:flex-row gap-6 justify-between items-center">
-                    <Tabs defaultValue="All" onValueChange={setStatusFilter} className="w-full lg:w-auto">
-                        <TabsList className="bg-black/5 p-1 h-auto rounded-2xl border-2 border-black/5">
-                            <TabsTrigger value="All" className="rounded-xl px-6 py-2.5 font-display font-bold text-[10px] uppercase data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-[4px_4px_0px_rgba(0,0,0,0.1)] data-[state=active]:border-2 data-[state=active]:border-black transition-all">Tất cả</TabsTrigger>
-                            <TabsTrigger value="Created" className="rounded-xl px-6 py-2.5 font-display font-bold text-[10px] uppercase data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-[4px_4px_0px_rgba(0,0,0,0.1)] data-[state=active]:border-2 data-[state=active]:border-black transition-all">Chờ xử lý</TabsTrigger>
-                            <TabsTrigger value="Cooking" className="rounded-xl px-6 py-2.5 font-display font-bold text-[10px] uppercase data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-[4px_4px_0px_rgba(0,0,0,0.1)] data-[state=active]:border-2 data-[state=active]:border-black transition-all">Đang nấu</TabsTrigger>
-                            <TabsTrigger value="Served" className="rounded-xl px-6 py-2.5 font-display font-bold text-[10px] uppercase data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-[4px_4px_0px_rgba(0,0,0,0.1)] data-[state=active]:border-2 data-[state=active]:border-black transition-all">Hoàn tất</TabsTrigger>
-                            <TabsTrigger value="Cancelled" className="rounded-xl px-6 py-2.5 font-display font-bold text-[10px] uppercase data-[state=active]:bg-black data-[state=active]:text-white data-[state=active]:shadow-[4px_4px_0px_rgba(0,0,0,0.1)] data-[state=active]:border-2 data-[state=active]:border-black transition-all">Đã hủy</TabsTrigger>
+            <Card className="border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
+                <div className="p-6 bg-gray-50/30 border-b border-gray-100 flex flex-col lg:flex-row gap-6 justify-between items-center">
+                    <Tabs defaultValue="All" onValueChange={(val) => { setStatusFilter(val); setPage(0); }} className="w-full lg:w-auto">
+                        <TabsList className="bg-gray-100/50 p-1 h-auto rounded-2xl border border-gray-100">
+                            <TabsTrigger value="All" className="rounded-xl px-6 py-2.5 font-black text-[10px] uppercase data-[state=active]:bg-white data-[state=active]:text-[#ff4d4f] data-[state=active]:shadow-sm transition-all tracking-widest">Tất cả</TabsTrigger>
+                            <TabsTrigger value="Unpaid" className="rounded-xl px-6 py-2.5 font-black text-[10px] uppercase data-[state=active]:bg-white data-[state=active]:text-[#ff4d4f] data-[state=active]:shadow-sm transition-all tracking-widest">Chưa thanh toán</TabsTrigger>
+                            <TabsTrigger value="Paid" className="rounded-xl px-6 py-2.5 font-black text-[10px] uppercase data-[state=active]:bg-white data-[state=active]:text-[#ff4d4f] data-[state=active]:shadow-sm transition-all tracking-widest">Đã thanh toán</TabsTrigger>
                         </TabsList>
                     </Tabs>
                     <div className="relative w-full lg:w-80">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-black/30" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-300" />
                         <Input
                             placeholder="TÌM MÃ ĐƠN, SỐ BÀN..."
-                            className="h-14 pl-12 pr-6 border-2 border-black/10 rounded-2xl bg-white font-bold focus:border-black transition-all uppercase text-xs tracking-wider"
+                            className="h-14 pl-12 pr-6 border border-gray-100 rounded-2xl bg-white font-black focus:border-[#ff4d4f] transition-all uppercase text-[10px] tracking-[0.2em]"
                         />
                     </div>
                 </div>
 
                 <div className="overflow-x-auto custom-scrollbar">
                     <Table className="min-w-[900px]">
-                        <TableHeader className="bg-black/5">
-                            <TableRow className="hover:bg-transparent border-b-2 border-black/5">
-                                <TableHead className="font-display font-bold text-black uppercase p-6">Mã đơn hàng</TableHead>
-                                <TableHead className="font-display font-bold text-black uppercase p-6">Thông tin bàn</TableHead>
-                                <TableHead className="font-display font-bold text-black uppercase p-6 text-center">Thời gian</TableHead>
-                                <TableHead className="font-display font-bold text-black uppercase p-6 text-center">Tổng thanh toán</TableHead>
-                                <TableHead className="font-display font-bold text-black uppercase p-6 text-center">Trạng thái</TableHead>
-                                <TableHead className="text-right font-display font-bold text-black uppercase p-6">Thao tác</TableHead>
+                        <TableHeader className="bg-gray-50/50">
+                            <TableRow className="hover:bg-transparent border-b border-gray-100">
+                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Mã đơn / Order ID</TableHead>
+                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Vị trí / Table</TableHead>
+                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Timestamp</TableHead>
+                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Total Amount</TableHead>
+                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Status</TableHead>
+                                <TableHead className="text-right font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -131,24 +130,24 @@ export default function OrdersPage() {
                                 </TableRow>
                             ) : (
                                 filteredOrders.map((order) => (
-                                    <TableRow key={order.id} className="hover:bg-black/[0.02] transition-colors border-b-2 border-black/5 last:border-0 group">
+                                    <TableRow key={order.id} className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group">
                                         <TableCell className="p-6">
-                                            <div className="font-mono font-bold text-black bg-black/5 px-3 py-1.5 rounded-lg border-2 border-black/10 inline-block">
+                                            <div className="font-black text-black bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 inline-block text-[11px] tracking-tighter shadow-sm">
                                                 #{order.id.slice(0, 8).toUpperCase()}
                                             </div>
                                         </TableCell>
                                         <TableCell className="p-6">
-                                            <div className="font-display font-bold text-black text-lg uppercase tracking-tight">BÀN {order.tableCode}</div>
-                                            <div className="text-[10px] text-black/40 font-bold uppercase tracking-widest">{order.tableName}</div>
+                                            <div className="font-black text-black text-lg uppercase tracking-tighter mb-0.5">BÀN {order.tableCode}</div>
+                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{order.tableName}</div>
                                         </TableCell>
                                         <TableCell className="p-6 text-center">
-                                            <div className="font-display font-bold text-text mb-0.5">{format(new Date(order.createdAt), 'HH:mm')}</div>
-                                            <div className="text-[10px] text-text/40 font-bold uppercase tracking-tighter">{format(new Date(order.createdAt), 'dd/MM/yyyy')}</div>
+                                            <div className="font-black text-black mb-0.5 text-sm">{format(new Date(order.createdAt), 'HH:mm')}</div>
+                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{format(new Date(order.createdAt), 'dd/MM/yyyy')}</div>
                                         </TableCell>
                                         <TableCell className="p-6 text-center">
-                                            <div className="font-display font-bold text-primary text-xl tracking-tight">
+                                            <div className="font-black text-[#ff4d4f] text-xl tracking-tighter italic">
                                                 {order.totalAmount.toLocaleString('vi-VN')}
-                                                <span className="text-[10px] ml-1 uppercase">vnđ</span>
+                                                <span className="text-[10px] ml-1 uppercase font-black">đ</span>
                                             </div>
                                         </TableCell>
                                         <TableCell className="p-6 text-center">
@@ -157,12 +156,12 @@ export default function OrdersPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="p-6 text-right">
-                                            <div className="flex justify-end gap-3">
-                                                <Button variant="ghost" className="size-12 rounded-xl border-2 border-transparent hover:border-text hover:bg-background/50 text-text/60 hover:text-text transition-all">
-                                                    <Eye className="size-5" />
+                                            <div className="flex justify-end gap-2">
+                                                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black">
+                                                    <Eye className="size-4" />
                                                 </Button>
-                                                <Button variant="ghost" className="size-12 rounded-xl border-2 border-transparent hover:border-text hover:bg-background/50 text-text/60 hover:text-text transition-all">
-                                                    <Download className="size-5" />
+                                                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black">
+                                                    <Download className="size-4" />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -173,11 +172,27 @@ export default function OrdersPage() {
                     </Table>
                 </div>
 
-                <div className="p-8 bg-black/[0.02] border-t-4 border-black flex items-center justify-between">
-                    <p className="font-display font-bold text-[10px] text-black/40 uppercase tracking-widest">Hiển thị <b>{filteredOrders.length > 0 ? 1 : 0}-{filteredOrders.length}</b> trong tổng số <b>{filteredOrders.length}</b> đơn hàng</p>
-                    <div className="flex gap-4">
-                        <Button variant="outline" className="h-10 border-2 border-black rounded-xl font-display font-bold text-[10px] uppercase shadow-[3px_3px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_rgba(0,0,0,0.05)] transition-all" disabled>Trang trước</Button>
-                        <Button variant="outline" className="h-10 border-2 border-black rounded-xl font-display font-bold text-[10px] uppercase shadow-[3px_3px_0px_rgba(0,0,0,0.1)] active:translate-y-[1px] active:shadow-[1px_1px_0px_rgba(0,0,0,0.05)] transition-all" disabled>Trang sau</Button>
+                <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+                    <p className="font-black text-[10px] text-gray-400 uppercase tracking-widest italic">
+                        Trang <b>{page + 1}</b> | Hiển thị tối đa <b>{pageSize}</b> bản ghi
+                    </p>
+                    <div className="flex gap-3">
+                        <Button
+                            variant="ghost"
+                            className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50"
+                            disabled={page === 0}
+                            onClick={() => setPage(prev => Math.max(0, prev - 1))}
+                        >
+                            PREV_CYCLE
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50"
+                            disabled={filteredOrders.length < pageSize}
+                            onClick={() => setPage(prev => prev + 1)}
+                        >
+                            NEXT_CYCLE
+                        </Button>
                     </div>
                 </div>
             </Card>

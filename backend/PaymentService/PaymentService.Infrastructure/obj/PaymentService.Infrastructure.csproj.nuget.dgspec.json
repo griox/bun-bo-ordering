@@ -247,11 +247,11 @@
           "dependencies": {
             "MassTransit": {
               "target": "Package",
-              "version": "[9.0.1, )"
+              "version": "[8.2.0, )"
             },
             "MassTransit.RabbitMQ": {
               "target": "Package",
-              "version": "[9.0.1, )"
+              "version": "[8.2.0, )"
             },
             "Microsoft.EntityFrameworkCore.Design": {
               "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",

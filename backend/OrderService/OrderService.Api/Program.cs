@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Application;
 using OrderService.Application.Interfaces;
 using OrderService.Infrastructure.Data;
+using OrderService.Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -210,9 +211,9 @@ orderGroup.MapGet("/tablesession/{sessionId}", async (Guid sessionId, MediatR.IM
 });
 
 // Admin Dashboard & History
-orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
+orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 50, OrderStatus? status = null) =>
 {
-    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take));
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status));
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 

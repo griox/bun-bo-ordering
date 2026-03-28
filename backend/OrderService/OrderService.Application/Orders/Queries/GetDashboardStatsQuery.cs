@@ -25,7 +25,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
         // 1. Daily Revenue
         var dailyRevenue = await _context.Orders
-            .Where(o => o.CreatedAt >= today && o.Status != OrderStatus.Cancelled)
+            .Where(o => o.CreatedAt >= today && o.Status == OrderStatus.Paid)
             .SumAsync(o => o.TotalAmount, cancellationToken);
 
         // 2. Total Orders Today
@@ -43,7 +43,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         // 4. Best Selling Item
         var bestSellingItem = await _context.OrderItems
             .Include(oi => oi.Order)
-            .Where(oi => oi.Order.CreatedAt >= today.AddDays(-30) && oi.Order.Status != OrderStatus.Cancelled)
+            .Where(oi => oi.Order.CreatedAt >= today.AddDays(-30) && oi.Order.Status == OrderStatus.Paid)
             .GroupBy(oi => oi.ProductName)
             .OrderByDescending(g => g.Sum(x => x.Quantity))
             .Select(g => g.Key)
@@ -51,7 +51,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
         // 5. Weekly Revenue Chart
         var weeklyData = await _context.Orders
-            .Where(o => o.CreatedAt >= sevenDaysAgo && o.Status != OrderStatus.Cancelled)
+            .Where(o => o.CreatedAt >= sevenDaysAgo && o.Status == OrderStatus.Paid)
             .ToListAsync(cancellationToken);
 
         var chartData = new List<RevenueChartDataDto>();

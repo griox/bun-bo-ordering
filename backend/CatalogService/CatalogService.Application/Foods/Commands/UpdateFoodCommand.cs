@@ -31,6 +31,21 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
         if (food == null)
             return false;
 
+        if (request.Price <= 0)
+        {
+            throw new Exception("Price must be greater than zero");
+        }
+
+        var isDuplicate = await _context.Foods.AnyAsync(f => 
+            f.Name == request.Name && 
+            f.CategoryId == request.CategoryId && 
+            f.Id != request.Id, cancellationToken);
+            
+        if (isDuplicate)
+        {
+            throw new Exception("Food with this name already exists in this category");
+        }
+
         string? imageUrl = food.ImageUrl;
         if (request.ImageFile != null)
         {

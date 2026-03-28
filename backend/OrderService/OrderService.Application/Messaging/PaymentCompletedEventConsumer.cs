@@ -20,9 +20,9 @@ public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
     {
         var message = context.Message;
 
-        var newStatus = message.IsSuccess ? OrderStatus.Paid : OrderStatus.Cancelled; // Or whatever your failed state is
+        if (!message.IsSuccess) return;
 
-        var command = new UpdateOrderStatusCommand(message.OrderId, newStatus);
+        var command = new UpdateOrderStatusCommand(message.OrderId, OrderStatus.Paid);
         
         await _mediator.Send(command, context.CancellationToken);
     }

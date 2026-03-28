@@ -143,7 +143,7 @@ export function LoginForm({
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-11 md:h-12 bg-primary text-white font-display text-base md:text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none mt-1 md:mt-2"
+              className="w-full h-11 md:h-12 bg-primary text-white font-display text-base md:text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-[2px] active:shadow-none mt-1 md:mt-2 transition-all"
             >
               {loading ? 'ĐANG XỬ LÝ...' : 'Đăng nhập ngay'}
             </Button>
@@ -217,7 +217,7 @@ export function LoginForm({
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-11 md:h-12 bg-primary text-white font-display text-base md:text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[3px_3px_0px_#2D2D2D] hover:translate-y-[1.5px] hover:shadow-[1.5px_1.5px_0px_#2D2D2D] transition-all active:translate-y-[3px] active:shadow-none"
+            className="w-full h-11 md:h-12 bg-primary text-white font-display text-base md:text-lg font-black uppercase tracking-widest rounded-2xl border-[3px] border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-[2px] active:shadow-none transition-all"
           >
             {loading ? 'ĐANG XỬ LÝ...' : 'Tạo tài khoản ngay'}
           </Button>

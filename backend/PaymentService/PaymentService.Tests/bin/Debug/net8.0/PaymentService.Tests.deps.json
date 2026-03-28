@@ -35,39 +35,42 @@
         }
       },
       "coverlet.collector/6.0.0": {},
-      "MassTransit/9.0.1": {
+      "MassTransit/8.2.0": {
         "dependencies": {
-          "MassTransit.Abstractions": "9.0.1",
+          "MassTransit.Abstractions": "8.2.0",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "10.0.5",
           "Microsoft.Extensions.Diagnostics.HealthChecks": "8.0.0",
           "Microsoft.Extensions.Hosting.Abstractions": "8.0.0",
           "Microsoft.Extensions.Logging.Abstractions": "10.0.0",
-          "Microsoft.Extensions.Options": "8.0.2"
+          "Microsoft.Extensions.Options": "8.0.2",
+          "System.Diagnostics.DiagnosticSource": "10.0.0",
+          "System.Text.Json": "8.0.0",
+          "System.Threading.Channels": "8.0.0"
         },
         "runtime": {
           "lib/net8.0/MassTransit.dll": {
-            "assemblyVersion": "9.0.1.0",
-            "fileVersion": "9.0.1.0"
+            "assemblyVersion": "8.2.0.0",
+            "fileVersion": "8.2.0.0"
           }
         }
       },
-      "MassTransit.Abstractions/9.0.1": {
+      "MassTransit.Abstractions/8.2.0": {
         "runtime": {
           "lib/net8.0/MassTransit.Abstractions.dll": {
-            "assemblyVersion": "9.0.1.0",
-            "fileVersion": "9.0.1.0"
+            "assemblyVersion": "8.2.0.0",
+            "fileVersion": "8.2.0.0"
           }
         }
       },
-      "MassTransit.RabbitMQ/9.0.1": {
+      "MassTransit.RabbitMQ/8.2.0": {
         "dependencies": {
-          "MassTransit": "9.0.1",
-          "RabbitMQ.Client": "7.2.0"
+          "MassTransit": "8.2.0",
+          "RabbitMQ.Client": "6.8.1"
         },
         "runtime": {
           "lib/net8.0/MassTransit.RabbitMqTransport.dll": {
-            "assemblyVersion": "9.0.1.0",
-            "fileVersion": "9.0.1.0"
+            "assemblyVersion": "8.2.0.0",
+            "fileVersion": "8.2.0.0"
           }
         }
       },
@@ -683,15 +686,15 @@
           }
         }
       },
-      "RabbitMQ.Client/7.2.0": {
+      "RabbitMQ.Client/6.8.1": {
         "dependencies": {
-          "System.IO.Pipelines": "8.0.0",
-          "System.Threading.RateLimiting": "8.0.0"
+          "System.Memory": "4.5.5",
+          "System.Threading.Channels": "8.0.0"
         },
         "runtime": {
-          "lib/net8.0/RabbitMQ.Client.dll": {
-            "assemblyVersion": "7.0.0.0",
-            "fileVersion": "7.2.0.0"
+          "lib/netstandard2.0/RabbitMQ.Client.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.8.1.0"
           }
         }
       },
@@ -938,7 +941,6 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.IO.Pipelines/8.0.0": {},
       "System.Linq/4.3.0": {
         "dependencies": {
           "System.Collections": "4.3.0",
@@ -969,6 +971,7 @@
           "System.Threading": "4.3.0"
         }
       },
+      "System.Memory/4.5.5": {},
       "System.Net.Http/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -1277,6 +1280,12 @@
           "System.Text.Encoding": "4.3.0"
         }
       },
+      "System.Text.Encodings.Web/8.0.0": {},
+      "System.Text.Json/8.0.0": {
+        "dependencies": {
+          "System.Text.Encodings.Web": "8.0.0"
+        }
+      },
       "System.Text.RegularExpressions/4.3.0": {
         "dependencies": {
           "System.Runtime": "4.3.0"
@@ -1288,7 +1297,7 @@
           "System.Threading.Tasks": "4.3.0"
         }
       },
-      "System.Threading.RateLimiting/8.0.0": {},
+      "System.Threading.Channels/8.0.0": {},
       "System.Threading.Tasks/4.3.0": {
         "dependencies": {
           "Microsoft.NETCore.Platforms": "1.1.0",
@@ -1414,8 +1423,8 @@
       "PaymentService.Api/1.0.0": {
         "dependencies": {
           "BunBo.SharedKernel": "1.0.0",
-          "MassTransit": "9.0.1",
-          "MassTransit.RabbitMQ": "9.0.1",
+          "MassTransit": "8.2.0",
+          "MassTransit.RabbitMQ": "8.2.0",
           "Microsoft.AspNetCore.OpenApi": "8.0.22",
           "PaymentService.Application": "1.0.0",
           "PaymentService.Infrastructure": "1.0.0",
@@ -1456,8 +1465,8 @@
       "PaymentService.Infrastructure/1.0.0": {
         "dependencies": {
           "BunBo.SharedKernel": "1.0.0",
-          "MassTransit": "9.0.1",
-          "MassTransit.RabbitMQ": "9.0.1",
+          "MassTransit": "8.2.0",
+          "MassTransit.RabbitMQ": "8.2.0",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "8.0.11",
           "PaymentService.Application": "1.0.0"
         },
@@ -1490,26 +1499,26 @@
       "path": "coverlet.collector/6.0.0",
       "hashPath": "coverlet.collector.6.0.0.nupkg.sha512"
     },
-    "MassTransit/9.0.1": {
+    "MassTransit/8.2.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-wYMV/TX9AQqG9ybG7i97Et2rjPgIYXmYr3RV5k7ogr/BvPnAF8ohcmeESoTYSgQFWDi2lurKx57uPg1MJ9R0jw==",
-      "path": "masstransit/9.0.1",
-      "hashPath": "masstransit.9.0.1.nupkg.sha512"
+      "sha512": "sha512-Alx6HRIltMXIXB/ORfumP1gMbV7cZURgjvuQ6OaHcvIIyWgTJPqJZuzoR151n2mx1bJOVm0qIFXvMlFig2dUzw==",
+      "path": "masstransit/8.2.0",
+      "hashPath": "masstransit.8.2.0.nupkg.sha512"
     },
-    "MassTransit.Abstractions/9.0.1": {
+    "MassTransit.Abstractions/8.2.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-Rh3Bj/8VOdaUat2Zepbe1cfqQ+20Pqd9zoUme8w50qXISZ9p6yuxBXNNBazS16TN6Kfd4FLxuMUtjY928Rxqdw==",
-      "path": "masstransit.abstractions/9.0.1",
-      "hashPath": "masstransit.abstractions.9.0.1.nupkg.sha512"
+      "sha512": "sha512-BLMDGGvElV3Lu0KFNHZiui8BmdRCX7Y1WPSM+PW5ZKdBMPUQ3jRriZHglEh5yDLd2luJqG9nRY2+gTPwezFF7w==",
+      "path": "masstransit.abstractions/8.2.0",
+      "hashPath": "masstransit.abstractions.8.2.0.nupkg.sha512"
     },
-    "MassTransit.RabbitMQ/9.0.1": {
+    "MassTransit.RabbitMQ/8.2.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-/ZfrA97Y9vlTkaRAekJrPm/bLj20RJbZLvxrphCHg1aVKWK4v9RiMj2g4TFFYHybaOQk+L5kNxAS8bZ3WQg1Iw==",
-      "path": "masstransit.rabbitmq/9.0.1",
-      "hashPath": "masstransit.rabbitmq.9.0.1.nupkg.sha512"
+      "sha512": "sha512-gl+EEvB5pVaJ5Yb4f2Z7mbmTY2t/fdghG9GFKDf0zXVR+qd1R1GBD/Z5FZ/Q7RrEZZbzaDb4zbOtj6er6ykPEA==",
+      "path": "masstransit.rabbitmq/8.2.0",
+      "hashPath": "masstransit.rabbitmq.8.2.0.nupkg.sha512"
     },
     "MediatR/14.1.0": {
       "type": "package",
@@ -1798,12 +1807,12 @@
       "path": "nuget.frameworks/6.5.0",
       "hashPath": "nuget.frameworks.6.5.0.nupkg.sha512"
     },
-    "RabbitMQ.Client/7.2.0": {
+    "RabbitMQ.Client/6.8.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-PPQ7cF7lwbhqC4up6en1bTUZlz06YqQwJecOJzsguTtyhNA7oL5uNDZIx/h6ZfcyPZV4V3DYKSCxfm4RUFLcbA==",
-      "path": "rabbitmq.client/7.2.0",
-      "hashPath": "rabbitmq.client.7.2.0.nupkg.sha512"
+      "sha512": "sha512-jNsmGgmCNw2S/NzskeN2ijtGywtH4Sk/G6jWUTD5sY9SrC27Xz6BsLIiB8hdsfjeyWCa4j4GvCIGkpE8wrjU1Q==",
+      "path": "rabbitmq.client/6.8.1",
+      "hashPath": "rabbitmq.client.6.8.1.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",
@@ -2071,13 +2080,6 @@
       "path": "system.io.filesystem.primitives/4.3.0",
       "hashPath": "system.io.filesystem.primitives.4.3.0.nupkg.sha512"
     },
-    "System.IO.Pipelines/8.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-FHNOatmUq0sqJOkTx+UF/9YK1f180cnW5FVqnQMvYUN0elp6wFzbtPSiqbo1/ru8ICp43JM1i7kKkk6GsNGHlA==",
-      "path": "system.io.pipelines/8.0.0",
-      "hashPath": "system.io.pipelines.8.0.0.nupkg.sha512"
-    },
     "System.Linq/4.3.0": {
       "type": "package",
       "serviceable": true,
@@ -2091,6 +2093,13 @@
       "sha512": "sha512-PGKkrd2khG4CnlyJwxwwaWWiSiWFNBGlgXvJpeO0xCXrZ89ODrQ6tjEWS/kOqZ8GwEOUATtKtzp1eRgmYNfclg==",
       "path": "system.linq.expressions/4.3.0",
       "hashPath": "system.linq.expressions.4.3.0.nupkg.sha512"
+    },
+    "System.Memory/4.5.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XIWiDvKPXaTveaB7HVganDlOCRoj03l+jrwNvcge/t8vhGYKvqV+dMv6G4SAX2NoNmN0wZfVPTAlFwZcZvVOUw==",
+      "path": "system.memory/4.5.5",
+      "hashPath": "system.memory.4.5.5.nupkg.sha512"
     },
     "System.Net.Http/4.3.0": {
       "type": "package",
@@ -2288,6 +2297,20 @@
       "path": "system.text.encoding.extensions/4.3.0",
       "hashPath": "system.text.encoding.extensions.4.3.0.nupkg.sha512"
     },
+    "System.Text.Encodings.Web/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yev/k9GHAEGx2Rg3/tU6MQh4HGBXJs70y7j1LaM1i/ER9po+6nnQ6RRqTJn1E7Xu0fbIFK80Nh5EoODxrbxwBQ==",
+      "path": "system.text.encodings.web/8.0.0",
+      "hashPath": "system.text.encodings.web.8.0.0.nupkg.sha512"
+    },
+    "System.Text.Json/8.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-OdrZO2WjkiEG6ajEFRABTRCi/wuXQPxeV6g8xvUJqdxMvvuCCEk86zPla8UiIQJz3durtUEbNyY/3lIhS0yZvQ==",
+      "path": "system.text.json/8.0.0",
+      "hashPath": "system.text.json.8.0.0.nupkg.sha512"
+    },
     "System.Text.RegularExpressions/4.3.0": {
       "type": "package",
       "serviceable": true,
@@ -2302,12 +2325,12 @@
       "path": "system.threading/4.3.0",
       "hashPath": "system.threading.4.3.0.nupkg.sha512"
     },
-    "System.Threading.RateLimiting/8.0.0": {
+    "System.Threading.Channels/8.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7mu9v0QDv66ar3DpGSZHg9NuNcxDaaAcnMULuZlaTpP9+hwXhrxNGsF5GmLkSHxFdb5bBc1TzeujsRgTrPWi+Q==",
-      "path": "system.threading.ratelimiting/8.0.0",
-      "hashPath": "system.threading.ratelimiting.8.0.0.nupkg.sha512"
+      "sha512": "sha512-CMaFr7v+57RW7uZfZkPExsPB6ljwzhjACWW1gfU35Y56rk72B/Wu+sTqxVmGSk4SFUlPc3cjeKND0zktziyjBA==",
+      "path": "system.threading.channels/8.0.0",
+      "hashPath": "system.threading.channels.8.0.0.nupkg.sha512"
     },
     "System.Threading.Tasks/4.3.0": {
       "type": "package",
