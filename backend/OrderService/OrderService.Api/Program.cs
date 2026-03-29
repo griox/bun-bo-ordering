@@ -217,6 +217,12 @@ orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 
+orderGroup.MapGet("/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
+{
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetOrderByIdQuery(id));
+    return result is null ? Results.NotFound() : Results.Ok(result);
+}).RequireAuthorization("Admin");
+
 orderGroup.MapGet("/stats", async (MediatR.IMediator mediator) =>
 {
     var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetDashboardStatsQuery());

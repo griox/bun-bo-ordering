@@ -23,7 +23,8 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useOrders } from '@/hooks/useOrders';
+import { useOrders, useOrder } from '@/hooks/useOrders';
+import { OrderDetailModal } from '@/components/order/OrderDetailModal';
 
 interface OrderSummary {
     id: string;
@@ -41,6 +42,16 @@ export default function OrdersPage() {
     const pageSize = 10;
 
     const { data: orders = [], isLoading } = useOrders(statusFilter, page * pageSize, pageSize);
+
+    const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const { data: orderDetails } = useOrder(selectedOrderId || undefined);
+
+    const handleViewDetails = (orderId: string) => {
+        setSelectedOrderId(orderId);
+        setIsModalOpen(true);
+    };
 
     const filteredOrders = orders as OrderSummary[];
 
@@ -101,12 +112,12 @@ export default function OrdersPage() {
                     <Table className="min-w-[900px]">
                         <TableHeader className="bg-gray-50/50">
                             <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Mã đơn / Order ID</TableHead>
+                                <TableHead className="hidden md:table-cell font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Mã đơn / Order ID</TableHead>
                                 <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Vị trí / Table</TableHead>
                                 <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Timestamp</TableHead>
                                 <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Total Amount</TableHead>
-                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Status</TableHead>
-                                <TableHead className="text-right font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Actions</TableHead>
+                                <TableHead className="hidden md:table-cell font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Status</TableHead>
+                                <TableHead className="hidden md:table-cell text-right font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Actions</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -130,8 +141,12 @@ export default function OrdersPage() {
                                 </TableRow>
                             ) : (
                                 filteredOrders.map((order) => (
-                                    <TableRow key={order.id} className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group">
-                                        <TableCell className="p-6">
+                                    <TableRow
+                                        key={order.id}
+                                        className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group cursor-pointer"
+                                        onClick={() => handleViewDetails(order.id)}
+                                    >
+                                        <TableCell className="hidden md:table-cell p-6">
                                             <div className="font-black text-black bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 inline-block text-[11px] tracking-tighter shadow-sm">
                                                 #{order.id.slice(0, 8).toUpperCase()}
                                             </div>
@@ -150,17 +165,27 @@ export default function OrdersPage() {
                                                 <span className="text-[10px] ml-1 uppercase font-black">đ</span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="p-6 text-center">
+                                        <TableCell className="hidden md:table-cell p-6 text-center">
                                             <div className="inline-block scale-90">
                                                 {getStatusBadge(order.status)}
                                             </div>
                                         </TableCell>
-                                        <TableCell className="p-6 text-right">
+                                        <TableCell className="hidden md:table-cell p-6 text-right">
                                             <div className="flex justify-end gap-2">
-                                                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black"
+                                                    onClick={(e) => { e.stopPropagation(); handleViewDetails(order.id); }}
+                                                >
                                                     <Eye className="size-4" />
                                                 </Button>
-                                                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black"
+                                                    onClick={(e) => e.stopPropagation()}
+                                                >
                                                     <Download className="size-4" />
                                                 </Button>
                                             </div>
@@ -196,6 +221,12 @@ export default function OrdersPage() {
                     </div>
                 </div>
             </Card>
+
+            <OrderDetailModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                order={orderDetails}
+            />
         </div>
     );
 }

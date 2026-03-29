@@ -116,3 +116,22 @@ export const useDeleteFoodMutation = () => {
     }
   });
 };
+
+export const useCreateCategoryMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { name: string; description?: string }) => {
+      const response = await axiosInstance.post('/api/catalog/categories', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      toast.success("Thêm danh mục thành công!");
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || "Có lỗi xảy ra khi tạo danh mục";
+      toast.error(message);
+    }
+  });
+};

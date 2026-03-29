@@ -7,6 +7,8 @@ public class OrderDetailDto
 {
     public Guid Id { get; set; }
     public Guid TableSessionId { get; set; }
+    public string TableCode { get; set; } = string.Empty;
+    public string TableName { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
     public string Status { get; set; } = string.Empty;
     public string? Note { get; set; }

@@ -35,3 +35,25 @@ export const useOrders = (status?: string, skip: number = 0, take: number = 50) 
     },
   });
 };
+
+export const useSessionOrders = (sessionId?: string) => {
+  return useQuery({
+    queryKey: ['sessionData', sessionId],
+    queryFn: async () => {
+      const response = await axiosInstance.get(`/api/orders/tablesession/${sessionId}`);
+      return response.data;
+    },
+    enabled: !!sessionId,
+  });
+};
+
+export const useOrder = (orderId?: string) => {
+  return useQuery({
+    queryKey: ['order', orderId],
+    queryFn: async () => {
+      const response = await axiosInstance.get(`/api/orders/${orderId}`);
+      return response.data;
+    },
+    enabled: !!orderId,
+  });
+};

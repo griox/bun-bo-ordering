@@ -1,10 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using OrderService.Application.Interfaces;
 using OrderService.Application.Dtos;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
+using OrderService.Application.Interfaces;
 
 namespace OrderService.Application.Orders.Queries;
 
@@ -23,9 +20,11 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
     {
         var order = await _context.Orders
             .Include(o => o.OrderItems)
+            .Include(o => o.TableSession)
+                .ThenInclude(ts => ts!.Table)
             .FirstOrDefaultAsync(o => o.Id == request.OrderId, cancellationToken);
 
-        if (order == null) return null;
+        if (order is null) return null;
 
         return new OrderDetailDto
         {
@@ -35,15 +34,17 @@ public class GetOrderByIdQueryHandler : IRequestHandler<GetOrderByIdQuery, Order
             Status = order.Status.ToString(),
             Note = order.Note,
             CreatedAt = order.CreatedAt,
-            OrderItems = order.OrderItems.Select(i => new OrderItemDto
+            TableCode = order.TableSession?.Table?.TableCode ?? "N/A",
+            TableName = order.TableSession?.Table?.Name ?? "Unknown Table",
+            OrderItems = order.OrderItems.Select(item => new OrderItemDto
             {
-                Id = i.Id,
-                FoodId = i.FoodId,
-                ProductName = i.ProductName,
-                Quantity = i.Quantity,
-                UnitPrice = i.UnitPrice,
-                TotalPrice = i.TotalPrice,
-                Note = i.Note
+                Id = item.Id,
+                FoodId = item.FoodId,
+                ProductName = item.ProductName,
+                Quantity = item.Quantity,
+                UnitPrice = item.UnitPrice,
+                TotalPrice = item.TotalPrice,
+                Note = item.Note
             }).ToList()
         };
     }

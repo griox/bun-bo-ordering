@@ -23,13 +23,13 @@ spec:
         - configMapRef:
             name: bunbo-config
         env:
-        - name: ConnectionStrings__DefaultConnection
-          value: "Host=postgresql-service;Database=payment_db;Username=postgres;Password=$(Postgres__Password)"
         - name: Postgres__Password
           valueFrom:
             secretKeyRef:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=postgresql.postgresql.svc.cluster.local;Database=payment_db;Username=postgres;Password=$(Postgres__Password)"
         - name: SePay__SecretKey
           valueFrom:
             secretKeyRef:
