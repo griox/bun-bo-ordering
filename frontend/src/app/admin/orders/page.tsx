@@ -26,16 +26,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useOrders, useOrder } from '@/hooks/useOrders';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
 
-interface OrderSummary {
-    id: string;
-    tableCode: string;
-    tableName: string;
-    createdAt: string;
-    totalAmount: number;
-    status: string;
-    note: string | null;
-}
-
 export default function OrdersPage() {
     const [statusFilter, setStatusFilter] = useState('All'); // 'All', 'Unpaid', 'Paid'
     const [page, setPage] = useState(0);
@@ -53,7 +43,7 @@ export default function OrdersPage() {
         setIsModalOpen(true);
     };
 
-    const filteredOrders = orders as OrderSummary[];
+    const filteredOrders = orders;
 
     const getStatusBadge = (status: number | string) => {
         const baseClass = "font-black uppercase text-[9px] px-3 py-1.5 rounded-xl border transition-all bg-white shadow-sm";
@@ -225,7 +215,7 @@ export default function OrdersPage() {
             <OrderDetailModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                order={orderDetails}
+                order={orderDetails || null}
             />
         </div>
     );

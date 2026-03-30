@@ -19,9 +19,10 @@ export interface OrderItem {
 export interface Order {
   id: string;
   tableId: string;
+  tableCode?: string;
   tableName?: string;
   totalAmount: number;
-  status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Paid';
+  status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Paid' | number | string;
   orderItems: OrderItem[];
   createdAt: string;
   updatedAt: string;
