@@ -92,6 +92,11 @@ spec:
             secretKeyRef:
               name: bunbo-secrets
               key: S3_SECRET_KEY
+        - name: S3Settings__Region
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: S3Settings__Region
 ---
 apiVersion: v1
 kind: Service

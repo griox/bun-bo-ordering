@@ -126,32 +126,41 @@ public class S3StorageService : IFileStorageService
 
     private async Task EnsureBucketExistsAsync()
     {
-        var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_s3Client, _bucketName);
-        if (!bucketExists)
+        try
         {
-            await _s3Client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
-            
-            // Set public policy for the bucket so we can view images via URL
-            var policy = @"{
-                ""Version"": ""2012-10-17"",
-                ""Statement"": [
-                    {
-                        ""Effect"": ""Allow"",
-                        ""Principal"": ""*"",
-                        ""Action"": [""s3:GetObject""],
-                        ""Resource"": [""arn:aws:s3:::" + _bucketName + @"/*""]
-                    }
-                ]
-            }";
-            try
+            // Note: DoesS3BucketExistV2Async can sometimes return 400 Bad Request with MinIO or certain IAM policies.
+            // We wrap it in a try-catch to ensure it doesn't block the entire upload process.
+            var bucketExists = await Amazon.S3.Util.AmazonS3Util.DoesS3BucketExistV2Async(_s3Client, _bucketName);
+            if (!bucketExists)
             {
-                await _s3Client.PutBucketPolicyAsync(_bucketName, policy);
+                await _s3Client.PutBucketAsync(new PutBucketRequest { BucketName = _bucketName });
+                
+                // Set public policy for the bucket so we can view images via URL
+                var policy = @"{
+                    ""Version"": ""2012-10-17"",
+                    ""Statement"": [
+                        {
+                            ""Effect"": ""Allow"",
+                            ""Principal"": ""*"",
+                            ""Action"": [""s3:GetObject""],
+                            ""Resource"": [""arn:aws:s3:::" + _bucketName + @"/*""]
+                        }
+                    ]
+                }";
+                try
+                {
+                    await _s3Client.PutBucketPolicyAsync(_bucketName, policy);
+                }
+                catch (AmazonS3Exception ex) when (ex.ErrorCode == "AccessDenied")
+                {
+                    Console.WriteLine($"[S3StorageService] Warning: Could not set public bucket policy. Error: {ex.Message}");
+                }
             }
-            catch (AmazonS3Exception ex) when (ex.ErrorCode == "AccessDenied")
-            {
-                // Ignore if AWS Block Public Access is turned on.
-                Console.WriteLine($"[S3StorageService] Warning: Could not set public bucket policy. Ensure Block Public Access is disabled if you need public read. Error: {ex.Message}");
-            }
+        }
+        catch (Exception ex)
+        {
+            // If checking fails, we log it and proceed to the upload; the upload itself will fail if permissions are truly missing.
+            Console.WriteLine($"[S3StorageService] Warning: EnsureBucketExistsAsync check failed: {ex.Message}. Proceeding to upload...");
         }
     }
 

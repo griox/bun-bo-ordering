@@ -115,8 +115,8 @@ export function CartModal() {
 
     return (
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-            <DialogTrigger nativeButton={true} render={
-                <button className="relative group cursor-pointer mr-2 md:mr-4 bg-transparent border-none p-0 focus:outline-none">
+            <DialogTrigger nativeButton={false} render={
+                <div className="relative group cursor-pointer mr-2 md:mr-4 bg-transparent border-none p-0 focus:outline-none inline-block">
                     <div className="flex items-center justify-center bg-primary text-white w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
                         <ShoppingCart size={18} />
                         {itemCount > 0 && (
@@ -125,7 +125,7 @@ export function CartModal() {
                             </span>
                         )}
                     </div>
-                </button>
+                </div>
             } />
             <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-6 shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2rem]">
 

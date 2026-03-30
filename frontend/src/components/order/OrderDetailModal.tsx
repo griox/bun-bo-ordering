@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { ReceiptCent, Clock, StickyNote, Activity, Info } from "lucide-react";
+import { Order, OrderItem } from "@/hooks/useOrders";
 
-export function OrderDetailModal({ isOpen, onClose, order }: { isOpen: boolean, onClose: () => void, order: any }) {
+export function OrderDetailModal({ isOpen, onClose, order }: { isOpen: boolean, onClose: () => void, order: Order | null }) {
     if (!order) return null;
 
     const getStatusBadge = (status: string) => {
@@ -53,7 +54,7 @@ export function OrderDetailModal({ isOpen, onClose, order }: { isOpen: boolean, 
                             <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest">Danh sách món tương ứng</h3>
                         </div>
 
-                        {order.orderItems?.map((item: any) => (
+                        {order.orderItems?.map((item: OrderItem) => (
                             <div key={item.id} className="group bg-white rounded-2xl p-5 shadow-sm border border-gray-100 transition-all hover:border-[#ff4d4f]/30 hover:shadow-md flex flex-col gap-2">
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1 pr-4">

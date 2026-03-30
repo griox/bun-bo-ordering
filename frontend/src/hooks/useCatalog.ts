@@ -129,8 +129,9 @@ export const useCreateCategoryMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] });
       toast.success("Thêm danh mục thành công!");
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || "Có lỗi xảy ra khi tạo danh mục";
+    onError: (error: unknown) => {
+      const axiosError = error as { response?: { data?: { message?: string } } };
+      const message = axiosError.response?.data?.message || "Có lỗi xảy ra khi tạo danh mục";
       toast.error(message);
     }
   });

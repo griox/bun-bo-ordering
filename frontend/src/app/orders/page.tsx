@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { useSessionOrders } from '@/hooks/useOrders';
 import { useOrderStore } from '@/store/useOrderStore';
+import { Order } from '@/hooks/useOrders';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
 
 export default function OrderHistoryPage() {
@@ -15,10 +16,10 @@ export default function OrderHistoryPage() {
     const sessionId = session?.id;
 
     const { data: orders, isLoading, error } = useSessionOrders(sessionId);
-    const [selectedOrder, setSelectedOrder] = useState<any>(null);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const handleViewDetails = (order: any) => {
+    const handleViewDetails = (order: Order) => {
         setSelectedOrder(order);
         setIsModalOpen(true);
     };
@@ -79,14 +80,14 @@ export default function OrderHistoryPage() {
                                 </div>
                             ) : (
                                 <div className="divide-y-4 divide-black">
-                                    {orders.map((order: any) => (
+                                    {orders.map((order: Order) => (
                                         <div key={order.id} className="p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-black/5 transition-colors">
                                             <div>
                                                 <div className="flex items-center gap-3 mb-2">
                                                     <span className="font-bold text-lg">#{order.id.split('-')[0].toUpperCase()}</span>
                                                     <span className={`px-3 py-1 text-xs font-bold uppercase border-2 border-black rounded-lg ${order.status === 'Pending' ? 'bg-yellow-100' :
-                                                            order.status === 'Completed' ? 'bg-green-100' :
-                                                                order.status === 'Cancelled' ? 'bg-red-100' : 'bg-gray-100'
+                                                        order.status === 'Completed' ? 'bg-green-100' :
+                                                            order.status === 'Cancelled' ? 'bg-red-100' : 'bg-gray-100'
                                                         }`}>
                                                         {order.status}
                                                     </span>

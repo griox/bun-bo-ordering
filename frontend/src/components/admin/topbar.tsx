@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, User, Menu } from 'lucide-react';
 import { useOrderNotificationStore, OrderItem } from '@/store/useOrderNotificationStore';
 import {
     DropdownMenu,
@@ -19,7 +19,6 @@ import { formatDistanceToNow } from 'date-fns';
 import { vi } from 'date-fns/locale';
 import { useAuthStore } from '@/store/useAuthStore';
 import Link from 'next/link';
-import { Menu } from 'lucide-react';
 
 interface TopbarProps {
     onToggleSidebar?: () => void;

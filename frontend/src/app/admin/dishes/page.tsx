@@ -34,8 +34,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-    DialogDescription
+    DialogTrigger
 } from '@/components/ui/dialog';
 import { Card } from '@/components/ui/card';
 import {
@@ -86,7 +85,7 @@ export default function DishesPage() {
             return;
         }
         createCategoryMutation.mutate({ name: newCategoryName }, {
-            onSuccess: (newCat: any) => {
+            onSuccess: (newCat: { id: number; name: string }) => {
                 setFormData(prev => ({ ...prev, categoryId: newCat.id.toString() }));
                 setNewCategoryName('');
                 setShowNewCategoryInput(false);
@@ -213,14 +212,17 @@ export default function DishesPage() {
                     setIsDialogOpen(open);
                     if (!open) resetForm();
                 }}>
-                    <DialogTrigger>
-                        <span>
-                            <Button className="h-10 px-6 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-xs gap-2 rounded-md transition-all shadow-sm" onClick={() => resetForm()}>
-                                <Plus className="size-4" />
-                                THÊM MÓN MỚI
-                            </Button>
-                        </span>
-                    </DialogTrigger>
+                    <DialogTrigger
+                        nativeButton={false}
+                        render={
+                            <div className="inline-block">
+                                <Button className="h-10 px-6 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-xs gap-2 rounded-md transition-all shadow-sm" onClick={() => resetForm()}>
+                                    <Plus className="size-4" />
+                                    THÊM MÓN MỚI
+                                </Button>
+                            </div>
+                        }
+                    />
                     <DialogContent className="sm:max-w-3xl md:max-w-4xl w-[95vw] md:w-full rounded-md border border-slate-200 shadow-2xl p-0 overflow-hidden bg-white">
                         <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood} className="flex flex-col max-h-[90vh]">
                             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 shrink-0">
@@ -486,11 +488,16 @@ export default function DishesPage() {
                                             </TableCell>
                                             <TableCell className="p-6 text-right">
                                                 <DropdownMenu>
-                                                    <DropdownMenuTrigger render={
-                                                        <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm transition-all">
-                                                            <MoreVertical className="size-5 text-gray-400" />
-                                                        </Button>
-                                                    } />
+                                                    <DropdownMenuTrigger
+                                                        nativeButton={false}
+                                                        render={
+                                                            <div className="inline-block">
+                                                                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm transition-all">
+                                                                    <MoreVertical className="size-5 text-gray-400" />
+                                                                </Button>
+                                                            </div>
+                                                        }
+                                                    />
                                                     <DropdownMenuContent align="end" className="w-56 rounded-[1.2rem] border border-gray-100 shadow-2xl p-2 bg-white animate-in slide-in-from-top-1 duration-200">
                                                         <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-black text-[10px] uppercase cursor-pointer hover:bg-gray-50 text-gray-600 transition-colors" onClick={() => openEditDialog(dish)}>
                                                             <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">

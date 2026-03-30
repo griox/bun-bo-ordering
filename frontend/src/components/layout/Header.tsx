@@ -102,7 +102,7 @@ export function Header() {
                                                 href="/admin"
                                                 className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
                                             >
-                                                 TRANG QUẢN TRỊ
+                                                TRANG QUẢN TRỊ
                                             </Link>
                                         )}
                                         {user.role === 'Customer' && (
@@ -110,24 +110,24 @@ export function Header() {
                                                 href="/orders"
                                                 className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
                                             >
-                                                 LỊCH SỬ ĐƠN HÀNG
+                                                LỊCH SỬ ĐƠN HÀNG
                                             </Link>
                                         )}
                                         <button
                                             onClick={() => { logout(); toast.success('Đã đăng xuất!'); }}
                                             className="px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"
                                         >
-                                             ĐĂNG XUẤT
+                                            ĐĂNG XUẤT
                                         </button>
                                     </div>
                                 </div>
                             ) : (
                                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                                    <DialogTrigger id="nav-member-desktop" nativeButton={true} render={
-                                        <button className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all active:scale-95">
+                                    <DialogTrigger id="nav-member-desktop" nativeButton={false} render={
+                                        <div className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all active:scale-95 cursor-pointer">
                                             <User size={16} />
                                             <span>THÀNH VIÊN</span>
-                                        </button>
+                                        </div>
                                     } />
                                     <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
                                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -144,14 +144,14 @@ export function Header() {
                         {/* Mobile Version (Dropdown) */}
                         <div className="md:hidden">
                             <DropdownMenu>
-                                <DropdownMenuTrigger nativeButton={true} render={
-                                    <button
+                                <DropdownMenuTrigger nativeButton={false} render={
+                                    <div
                                         id="nav-member-mobile"
-                                        className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all"
+                                        className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all cursor-pointer"
                                     >
                                         <User size={16} />
                                         <span>{mounted && user ? (user.username ?? 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
-                                    </button>
+                                    </div>
                                 } />
                                 <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
                                     <DropdownMenuItem id="mobile-home" render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>

@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     Plus,
-    Trash2,
     QrCode,
     Download,
     Save,
@@ -22,7 +21,7 @@ import {
     DialogTrigger,
     DialogDescription
 } from '@/components/ui/dialog';
-import { useTables, useCreateTableMutation, useUpdateTableMutation, useUpdateTablePositionsMutation, useDeleteTableMutation, RestaurantTable } from '@/hooks/useTables';
+import { useTables, useCreateTableMutation, useUpdateTableMutation, useUpdateTablePositionsMutation, RestaurantTable } from '@/hooks/useTables';
 import { motion } from 'framer-motion';
 import { QRCodeCanvas } from 'qrcode.react';
 
@@ -31,7 +30,6 @@ export default function TablesPage() {
     const createTableMutation = useCreateTableMutation();
     const updateTableMutation = useUpdateTableMutation();
     const updatePositionsMutation = useUpdateTablePositionsMutation();
-    const deleteTableMutation = useDeleteTableMutation();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTable, setEditingTable] = useState<RestaurantTable | null>(null);
@@ -84,11 +82,6 @@ export default function TablesPage() {
         setIsDialogOpen(true);
     };
 
-    const handleDelete = (id: string) => {
-        if (confirm("Bạn có chắc chắn muốn xóa bàn này?")) {
-            deleteTableMutation.mutate(id);
-        }
-    };
 
     const handleDragEnd = (id: string, _: unknown, info: { point: { x: number; y: number } }) => {
         if (!floorPlanRef.current) return;

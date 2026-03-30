@@ -98,6 +98,7 @@ catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest re
     }
     catch (Exception ex)
     {
+        Console.WriteLine($"[ERROR] POST /foods: {ex.ToString()}");
         return Results.BadRequest(new { Message = ex.Message });
     }
 }).DisableAntiforgery().RequireAuthorization("Admin"); // Disable antiforgery for simplicity in Minimal APIs with multipart
@@ -131,6 +132,7 @@ catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, H
     }
     catch (Exception ex)
     {
+        Console.WriteLine($"[ERROR] PUT /foods: {ex.ToString()}");
         return Results.BadRequest(new { Message = ex.Message });
     }
 }).DisableAntiforgery().RequireAuthorization("Admin");

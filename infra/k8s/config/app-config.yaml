@@ -14,3 +14,4 @@ data:
   # S3 / DigitalOcean Spaces Configuration
   S3Settings__ServiceUrl: "https://s3.ap-southeast-1.amazonaws.com"
   S3Settings__BucketName: "bunbo-bucket"
+  S3Settings__Region: "ap-southeast-1"
