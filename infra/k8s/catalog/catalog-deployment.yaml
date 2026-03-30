@@ -18,8 +18,29 @@ spec:
       - name: catalog-service
         image: griox/bunbo-catalog-service:latest
         imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m" # Có thể burst CPU
+            memory: "256Mi" # Giới hạn RAM cứng để tránh OOM toàn node
+        livenessProbe:
+          tcpSocket:
+            port: 5002
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 5002
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
         ports:
-        - containerPort: 8080
+        - name: http
+          containerPort: 5002
+        - name: grpc
+          containerPort: 50022
         envFrom:
         - configMapRef:
             name: bunbo-config
@@ -51,6 +72,26 @@ spec:
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
           value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        - name: S3Settings__ServiceUrl
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: S3Settings__ServiceUrl
+        - name: S3Settings__BucketName
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: S3Settings__BucketName
+        - name: S3Settings__AccessKey
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: S3_ACCESS_KEY
+        - name: S3Settings__SecretKey
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: S3_SECRET_KEY
 ---
 apiVersion: v1
 kind: Service
@@ -61,6 +102,37 @@ spec:
   selector:
     app: catalog-service
   ports:
-  - port: 80
-    targetPort: 8080
+  - name: http
+    port: 80
+    targetPort: 5002
     protocol: TCP
+  - name: grpc
+    port: 50022
+    targetPort: 50022
+    protocol: TCP
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: catalog-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: catalog-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
