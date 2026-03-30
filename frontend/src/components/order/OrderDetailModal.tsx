@@ -14,14 +14,14 @@ import { Order, OrderItem } from "@/hooks/useOrders";
 export function OrderDetailModal({ isOpen, onClose, order }: { isOpen: boolean, onClose: () => void, order: Order | null }) {
     if (!order) return null;
 
-    const getStatusBadge = (status: string) => {
+    const getStatusBadge = (status: string | number) => {
         const baseClass = "font-black uppercase text-[9px] px-3 py-1.5 rounded-xl border transition-all bg-white shadow-sm tracking-widest";
-        const isPaid = status === 'Completed' || status === 'Paid';
+        const isPaid = status === 'Completed' || status === 'Paid' || status === 1;
 
         if (isPaid) {
             return <span className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>ĐÃ THANH TOÁN</span>;
         }
-        if (status === 'Cancelled') {
+        if (status === 'Cancelled' || status === 'Cancel') {
             return <span className={`${baseClass} text-gray-500 border-gray-200 bg-gray-50`}>{status}</span>;
         }
         return <span className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50 animate-pulse`}>CHƯA THANH TOÁN</span>;
