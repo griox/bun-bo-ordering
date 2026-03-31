@@ -4,7 +4,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { User, Coffee } from 'lucide-react';
+import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
 import {
@@ -59,12 +59,7 @@ export function Header() {
                         <span className="font-display text-[10px] md:text-sm text-secondary leading-none">& CÀ PHÊ PHỐ</span>
                     </div>
 
-                    {mounted && session && table && (
-                        <div className="ml-4 flex items-center gap-2 bg-secondary/10 text-secondary border-2 border-secondary/30 px-3 py-1 rounded-lg">
-                            <Coffee size={14} className="animate-pulse" />
-                            <span className="text-[10px] font-bold tracking-tighter">BÀN: {table.tableCode || table.name}</span>
-                        </div>
-                    )}
+
                 </Link>
 
                 {/* Navigation & Member CTA (Both Desktop & Mobile) */}
@@ -85,7 +80,8 @@ export function Header() {
 
                     {/* Member Section */}
                     <div className="z-50 flex items-center">
-                        <CartModal />
+                        {/* CartModal only for non-session (guest/browse) — session users use OrderBar */}
+                        {!session && <CartModal />}
 
                         {/* Desktop Version */}
                         <div className="hidden md:block">
@@ -155,24 +151,24 @@ export function Header() {
                                 } />
                                 <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
                                     <DropdownMenuItem id="mobile-home" render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
-                                        🏠 TRANG CHỦ
+                                        <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> TRANG CHỦ</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem id="mobile-menu" render={<Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
-                                        🍜 THỰC ĐƠN
+                                        <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> THỰC ĐƠN</span>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem id="mobile-about" render={<Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
-                                        🏢 VỀ CHÚNG TÔI
+                                        <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> VỀ CHÚNG TÔI</span>
                                     </DropdownMenuItem>
 
                                     {mounted && user && user.role === 'Admin' && (
                                         <DropdownMenuItem id="mobile-admin" render={<Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                            ⚙️ QUẢN TRỊ VIÊN
+                                            <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> QUẢN TRỊ VIÊN</span>
                                         </DropdownMenuItem>
                                     )}
 
                                     {mounted && user && user.role === 'Customer' && (
                                         <DropdownMenuItem id="mobile-history" render={<Link href="/orders" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                            📜 LỊCH SỬ ĐƠN HÀNG
+                                            <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ ĐƠN HÀNG</span>
                                         </DropdownMenuItem>
                                     )}
 
@@ -187,7 +183,7 @@ export function Header() {
                                             }}
                                             className="w-full text-sm font-bold text-red-600 focus:text-red-700 cursor-pointer px-4 py-3 hover:bg-red-50 rounded-lg transition-colors focus:bg-red-50"
                                         >
-                                            🚪 ĐĂNG XUẤT
+                                            <span className="flex items-center gap-2.5"><LogOut size={15} /> ĐĂNG XUẤT</span>
                                         </DropdownMenuItem>
                                     ) : (
                                         <DropdownMenuItem
@@ -197,7 +193,7 @@ export function Header() {
                                             }}
                                             className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5"
                                         >
-                                            🔑 ĐĂNG NHẬP
+                                            <span className="flex items-center gap-2.5"><KeyRound size={15} className="text-neutral-500" /> ĐĂNG NHẬP</span>
                                         </DropdownMenuItem>
                                     )}
                                 </DropdownMenuContent>

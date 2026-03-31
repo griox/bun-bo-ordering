@@ -6,8 +6,8 @@ COPY ["ApiGateway/ApiGateway.csproj", "ApiGateway/"]
 
 RUN dotnet restore "ApiGateway/ApiGateway.csproj"
 
-# Copy everything else and build
-COPY . .
+# Copy source — only ApiGateway dir to preserve layer cache
+COPY ApiGateway/ ApiGateway/
 WORKDIR "/src/ApiGateway"
 RUN dotnet build "ApiGateway.csproj" -c Release -o /app/build
 

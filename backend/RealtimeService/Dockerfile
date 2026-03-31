@@ -7,8 +7,9 @@ COPY ["BunBo.SharedKernel/BunBo.SharedKernel.csproj", "BunBo.SharedKernel/"]
 
 RUN dotnet restore "RealtimeService/RealtimeService.Api/RealtimeService.Api.csproj"
 
-# Copy everything else and build
-COPY . .
+# Copy source — only relevant service dirs to preserve layer cache
+COPY RealtimeService/ RealtimeService/
+COPY BunBo.SharedKernel/ BunBo.SharedKernel/
 WORKDIR "/src/RealtimeService/RealtimeService.Api"
 RUN dotnet build "RealtimeService.Api.csproj" -c Release -o /app/build
 

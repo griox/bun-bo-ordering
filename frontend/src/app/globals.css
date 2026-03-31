@@ -119,4 +119,28 @@ body {
   html {
     @apply font-sans;
   }
+
+  /* Hide scrollbar globally — cleaner mobile UX */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  * {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Utility: hide scrollbar via class */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* iOS safe-area padding for bottom sticky elements */
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }

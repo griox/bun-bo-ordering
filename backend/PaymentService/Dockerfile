@@ -10,8 +10,9 @@ COPY ["BunBo.SharedKernel/BunBo.SharedKernel.csproj", "BunBo.SharedKernel/"]
 
 RUN dotnet restore "PaymentService/PaymentService.Api/PaymentService.Api.csproj"
 
-# Copy full source and build
-COPY . .
+# Copy source — only relevant service dirs to preserve layer cache
+COPY PaymentService/ PaymentService/
+COPY BunBo.SharedKernel/ BunBo.SharedKernel/
 WORKDIR "/src/PaymentService/PaymentService.Api"
 RUN dotnet build "PaymentService.Api.csproj" -c Release -o /app/build
 

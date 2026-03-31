@@ -5,6 +5,7 @@ import { CategoryNav } from '@/components/menu/CategoryNav';
 import { FoodItemCard } from '@/components/menu/FoodItemCard';
 import { Footer } from '@/components/landing/Footer';
 import { Header } from '@/components/layout/Header';
+import { OrderBar } from '@/components/order/OrderBar';
 import { Loader2 } from 'lucide-react';
 import { useCategories, useFoodsByCategory } from '@/hooks/useCatalog';
 
@@ -34,7 +35,7 @@ export default function MenuPage() {
         <div className="flex flex-col min-h-screen font-main text-text">
             <Header />
 
-            <div className="flex-grow p-4 md:p-8 pb-32 md:pb-8"> {/* Added pb-32 for OrderBar on mobile */}
+            <div className="flex-grow p-4 md:p-8 pb-32 md:pb-8">
                 <div className="max-w-7xl mx-auto relative">
 
                     <div className="text-center mb-8 md:mb-16">
@@ -111,6 +112,9 @@ export default function MenuPage() {
             </div>
 
             <Footer />
+
+            {/* Sticky bottom cart bar — only visible when cart has items */}
+            <OrderBar />
         </div>
     );
 }

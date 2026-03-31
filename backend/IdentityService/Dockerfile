@@ -10,8 +10,9 @@ COPY ["BunBo.SharedKernel/BunBo.SharedKernel.csproj", "BunBo.SharedKernel/"]
 
 RUN dotnet restore "IdentityService/IdentityService.Api/IdentityService.Api.csproj"
 
-# Copy everything else and build
-COPY . .
+# Copy source — only relevant service dirs to preserve layer cache
+COPY IdentityService/ IdentityService/
+COPY BunBo.SharedKernel/ BunBo.SharedKernel/
 WORKDIR "/src/IdentityService/IdentityService.Api"
 RUN dotnet build "IdentityService.Api.csproj" -c Release -o /app/build
 

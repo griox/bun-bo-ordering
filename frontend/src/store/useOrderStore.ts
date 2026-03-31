@@ -83,6 +83,11 @@ export const useOrderStore = create<OrderState>()(
     }),
     {
       name: 'bunbo-order-storage',
+      partialize: (state) => ({
+        cart: state.cart,
+        paymentSuccessOrderId: state.paymentSuccessOrderId,
+        // ⚠️ table & session are NOT persisted — must be re-validated via QR scan
+      }),
     }
   )
 )

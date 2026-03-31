@@ -13,8 +13,9 @@ COPY ["BunBo.SharedKernel/BunBo.SharedKernel.csproj", "BunBo.SharedKernel/"]
 
 RUN dotnet restore "CartService/CartService.Api/CartService.Api.csproj"
 
-# Copy everything else and build
-COPY . .
+# Copy source — only relevant service dirs to preserve layer cache
+COPY CartService/ CartService/
+COPY BunBo.SharedKernel/ BunBo.SharedKernel/
 WORKDIR "/src/CartService/CartService.Api"
 RUN dotnet build "CartService.Api.csproj" -c Release -o /app/build
 
