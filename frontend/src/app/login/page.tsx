@@ -7,7 +7,7 @@ export default function LoginPage() {
     <main className="relative min-h-screen flex items-center justify-center p-6 md:p-10 overflow-hidden bg-background">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
+        style={{ backgroundImage: "url('/images/parchment.png')" }}>
       </div>
 
       <div className="relative z-10 w-full max-w-lg bg-background border-4 border-text p-6 md:p-10 shadow-[10px_10px_0px_rgba(0,0,0,0.1)] rounded-[2rem]">

@@ -7,7 +7,7 @@ export function HeroSection() {
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 opacity-5 pointer-events-none"
-                style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
+                style={{ backgroundImage: "url('/images/parchment.png')" }}>
             </div>
 
             {/* Decorative Floating Elements (Subtle Soft Glows) */}

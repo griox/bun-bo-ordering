@@ -127,7 +127,7 @@ export function Header() {
                                     } />
                                     <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
                                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                                            style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
+                                            style={{ backgroundImage: "url('/images/parchment.png')" }}>
                                         </div>
                                         <div className="relative p-10 overflow-y-auto max-h-[85vh]">
                                             <LoginForm onSuccess={() => setIsLoginOpen(false)} />
@@ -204,7 +204,7 @@ export function Header() {
                                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                                     <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
                                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                                            style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/parchment.png')" }}>
+                                            style={{ backgroundImage: "url('/images/parchment.png')" }}>
                                         </div>
                                         <div className="relative p-6 overflow-y-auto max-h-[85vh]">
                                             <LoginForm onSuccess={() => setIsLoginOpen(false)} />

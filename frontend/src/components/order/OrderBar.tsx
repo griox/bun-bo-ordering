@@ -101,9 +101,12 @@ export function OrderBar() {
 
             // 2. Place order
             const result = await placeOrderMutation.mutateAsync({ note });
+            console.log('Order created result:', result);
             const finalOrderId = result?.id || result?.Id;
+            console.log('Final Order ID extracted:', finalOrderId);
 
             if (!finalOrderId) {
+                console.error('Order ID is missing in response:', result);
                 toast.error('Lỗi hệ thống: Không xác định được mã đơn hàng.');
                 return;
             }
@@ -132,13 +135,18 @@ export function OrderBar() {
 
     // QR generation
     const buildQrData = () => {
-        if (!paymentOrderId) return null;
+        if (!paymentOrderId) {
+            console.warn('buildQrData: paymentOrderId is missing');
+            return null;
+        }
         const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
         const tableName = table?.name || 'Mang ve';
         const content = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
         const encoded = encodeURIComponent(content);
+        const qrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`;
+        console.log('QR Code generated URL:', qrUrl);
         return {
-            imgUrl: `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`,
+            imgUrl: qrUrl,
             payUrl: `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`,
         };
     };
