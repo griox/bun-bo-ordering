@@ -12,6 +12,7 @@ data:
   Postgres__Database: "bunbo_db"
   Postgres__Username: "postgres"
   RabbitMq__Host: "rabbitmq"
+  Services__OrderService: "http://order-service"
   # S3 / DigitalOcean Spaces Configuration
   S3Settings__ServiceUrl: "https://s3.ap-southeast-1.amazonaws.com"
   S3Settings__BucketName: "bunbo-bucket"
