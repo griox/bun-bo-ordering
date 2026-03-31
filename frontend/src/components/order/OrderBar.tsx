@@ -101,13 +101,15 @@ export function OrderBar() {
 
             // 2. Place order
             const result = await placeOrderMutation.mutateAsync({ note });
-            console.log('Order created result:', result);
-            const finalOrderId = result?.id || result?.Id;
-            console.log('Final Order ID extracted:', finalOrderId);
+            console.log('[DEBUG] Order created result:', JSON.stringify(result));
+
+            // Try all possible capitalizations for ID
+            const finalOrderId = result?.id || result?.Id || result?.ID || (typeof result === 'string' ? result : null);
+            console.log('[DEBUG] Final Order ID extracted:', finalOrderId, 'Type:', typeof finalOrderId);
 
             if (!finalOrderId) {
-                console.error('Order ID is missing in response:', result);
-                toast.error('Lỗi hệ thống: Không xác định được mã đơn hàng.');
+                console.error('[CRITICAL] Order ID is missing. Full result:', result);
+                toast.error('Lỗi hệ thống: Không nhận được mã đơn hàng từ server.');
                 return;
             }
 
@@ -136,19 +138,33 @@ export function OrderBar() {
     // QR generation
     const buildQrData = () => {
         if (!paymentOrderId) {
-            console.warn('buildQrData: paymentOrderId is missing');
+            console.warn('[DEBUG] buildQrData: paymentOrderId is EMPTY');
             return null;
         }
-        const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
-        const tableName = table?.name || 'Mang ve';
-        const content = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
-        const encoded = encodeURIComponent(content);
-        const qrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`;
-        console.log('QR Code generated URL:', qrUrl);
-        return {
-            imgUrl: qrUrl,
-            payUrl: `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`,
-        };
+
+        try {
+            const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
+            const tableName = table?.name || 'Mang ve';
+            const content = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
+            const encoded = encodeURIComponent(content);
+            const qrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`;
+
+            console.log('[DEBUG] QR Code Context:', {
+                orderId: paymentOrderId,
+                table: tableName,
+                total: total,
+                summary: itemsSummary
+            });
+            console.log('[DEBUG] Final QR URL:', qrUrl);
+
+            return {
+                imgUrl: qrUrl,
+                payUrl: `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`,
+            };
+        } catch (err) {
+            console.error('[CRITICAL] Failed to build QR data:', err);
+            return null;
+        }
     };
 
 
