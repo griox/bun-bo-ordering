@@ -14,12 +14,14 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
     private readonly IAppDbContext _context;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly ICartDataClient _cartDataClient;
+    private readonly Microsoft.Extensions.Logging.ILogger<CreateOrderCommandHandler> _logger;
 
-    public CreateOrderCommandHandler(IAppDbContext context, IPublishEndpoint publishEndpoint, ICartDataClient cartDataClient)
+    public CreateOrderCommandHandler(IAppDbContext context, IPublishEndpoint publishEndpoint, ICartDataClient cartDataClient, Microsoft.Extensions.Logging.ILogger<CreateOrderCommandHandler> logger)
     {
         _context = context;
         _publishEndpoint = publishEndpoint;
         _cartDataClient = cartDataClient;
+        _logger = logger;
     }
 
     public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -35,10 +37,12 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         }
 
         var cartOwnerId = request.TableSessionId.ToString();
+        _logger.LogInformation("[ORDER] Fetching cart for {CartOwnerId}", cartOwnerId);
         var cart = await _cartDataClient.GetCartAsync(cartOwnerId);
 
         if (cart == null || !cart.Items.Any())
         {
+            _logger.LogWarning("[ORDER] Cart is empty for {CartOwnerId}", cartOwnerId);
             throw new Exception("Giỏ hàng đang trống. Không thể tạo đơn.");
         }
 
@@ -54,6 +58,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         await _context.SaveChangesAsync(cancellationToken);
 
         // Publish OrderCreatedEvent via RabbitMQ
+        _logger.LogInformation("[ORDER] Publishing OrderCreatedEvent for Order {OrderId}", order.Id);
         await _publishEndpoint.Publish(new OrderCreatedEvent
         {
             OrderId = order.Id,
@@ -62,9 +67,12 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             Note = order.Note,
             CreatedAt = order.CreatedAt
         }, cancellationToken);
+        _logger.LogInformation("[ORDER] OrderCreatedEvent published for Order {OrderId}", order.Id);
 
         // Clear the cart after successful order creation
+        _logger.LogInformation("[ORDER] Clearing cart for {CartOwnerId}", cartOwnerId);
         await _cartDataClient.ClearCartAsync(cartOwnerId);
+        _logger.LogInformation("[ORDER] Cart cleared for {CartOwnerId}", cartOwnerId);
 
         return order.Id;
     }

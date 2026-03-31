@@ -65,7 +65,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddApplicationServices();
 
 // Add Http Clients for external sync
-builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.SyncDataServices.Http.CartDataClient>();
+builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.SyncDataServices.Http.CartDataClient>(client => {
+    client.Timeout = TimeSpan.FromSeconds(5);
+});
 
 // Configure MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
