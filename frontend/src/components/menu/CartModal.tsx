@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt } from 'lucide-react';
+import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone } from 'lucide-react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
@@ -105,6 +105,16 @@ export function CartModal() {
         ACC: '104876858916'
     };
 
+    // URI schemes for each bank app - triggers the transfer screen directly
+    const BANK_SCHEMES: Record<string, (acc: string, amount: number, note: string) => string> = {
+        icb: (acc, am, tn) => `icbapp://transfer?ben_account=${acc}&amount=${am}&content=${encodeURIComponent(tn)}`,
+        vcb: (acc, am, tn) => `vcbdirect://qrpay?account=${acc}&amount=${am}&remark=${encodeURIComponent(tn)}`,
+        mbbank: (acc, am, tn) => `mbmobile://transfer?toAccNo=${acc}&amount=${am}&memo=${encodeURIComponent(tn)}`,
+        tcb: (acc, am, tn) => `techcombank://payment?beneficiaryAccount=${acc}&amount=${am}&description=${encodeURIComponent(tn)}`,
+        acb: (acc, am, tn) => `acbmobile://transfer?toAccount=${acc}&amount=${am}&note=${encodeURIComponent(tn)}`,
+        vpbank: (acc, am, tn) => `vpbanknexgen://transfer?toAcc=${acc}&amount=${am}&note=${encodeURIComponent(tn)}`,
+    };
+
     // Reset state when modal is fully closed manually
     const handleOpenChange = (open: boolean) => {
         setIsOpen(open);
@@ -163,8 +173,15 @@ export function CartModal() {
                                 const tinyNote = `SEVQR${shortId}`;
 
                                 const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(fullNote)}`;
-                                // Official VietQR URI Scheme - works natively without any web redirect
-                                const payUrl = `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyNote}`;
+
+                                // Detect preferred bank for scheme lookup
+                                const preferredBankId = typeof window !== 'undefined' ? localStorage.getItem('preferred_bank_id') || 'icb' : 'icb';
+                                const preferredBankName = typeof window !== 'undefined' ? localStorage.getItem('preferred_bank_name') || 'VietinBank' : 'VietinBank';
+
+                                const schemeFn = BANK_SCHEMES[preferredBankId];
+                                const appSchemeUrl = schemeFn
+                                    ? schemeFn(SEPAY_CONFIG.ACC, total, tinyNote)
+                                    : `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyNote}`;
 
                                 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 
@@ -178,13 +195,19 @@ export function CartModal() {
 
                                         {isMobile && (
                                             <a
-                                                href={payUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
+                                                href={appSchemeUrl}
+                                                onClick={() => {
+                                                    // Fallback check: if the app doesn't open within 1.5s, show a hint
+                                                    setTimeout(() => {
+                                                        if (document.hasFocus()) {
+                                                            toast.info('Nếu App không tự mở, hãy quét mã QR phía trên nhé!', { duration: 5000 });
+                                                        }
+                                                    }, 1500);
+                                                }}
                                                 className="flex items-center justify-center gap-2 w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md active:scale-95"
                                             >
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2" /><path d="M12 18h.01" /></svg>
-                                                Mở App Ngân hàng
+                                                <Smartphone className="w-5 h-5" />
+                                                Mở App {preferredBankName}
                                             </a>
                                         )}
 
