@@ -1,6 +1,6 @@
 using MediatR;
-using System;
+using PaymentService.Application.Interfaces;
 
 namespace PaymentService.Application.Commands;
 
-public record CreatePaymentCommand(Guid OrderId, decimal Amount, string Provider) : IRequest<string>;
+public record CreatePaymentCommand(Guid OrderId, decimal Amount, string Provider) : IRequest<SePayCheckoutResponse?>;

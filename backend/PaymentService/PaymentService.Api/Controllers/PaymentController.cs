@@ -26,10 +26,14 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
     {
         var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay");
-        await _mediator.Send(command);
+        var result = await _mediator.Send(command);
         
-        // Frontend will generate VietQR explicitly, just return Ok
-        return Ok(new { success = true, OrderId = request.OrderId, Amount = request.Amount });
+        if (result == null || !result.Success)
+        {
+            return BadRequest(new { success = false, message = result?.Message ?? "Failed to create SePay checkout" });
+        }
+
+        return Ok(result);
     }
 
     // SePay standard webhook HTTP POST

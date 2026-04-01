@@ -21,6 +21,9 @@ public static class DependencyInjection
         services.AddScoped<ISignatureValidator, SePaySignatureValidator>();
         services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
 
+        // SePay Checkout API
+        services.AddHttpClient<ISePayService, Infrastructure.Services.SePayService>();
+
         return services;
     }
 }
