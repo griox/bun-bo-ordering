@@ -24,6 +24,15 @@ import axiosInstance from '@/lib/axiosInstance';
 type PaymentMethod = 'Cash' | 'Transfer' | null;
 type Step = 'cart' | 'payment-qr';
 
+const POPULAR_BANKS = [
+    { id: 'icb', name: 'VietinBank' },
+    { id: 'vcb', name: 'Vietcombank' },
+    { id: 'mbbank', name: 'MB Bank' },
+    { id: 'tcb', name: 'Techcombank' },
+    { id: 'acb', name: 'ACB' },
+    { id: 'vpbank', name: 'VPBank' }
+];
+
 const SEPAY_CONFIG = {
     BANK: 'VietinBank',
     BIN: '970415',
@@ -59,6 +68,23 @@ export function OrderBar() {
         window.addEventListener('resize', check);
         return () => window.removeEventListener('resize', check);
     }, []);
+
+    // Load preferred bank from localStorage
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('preferred_bank');
+            if (saved) {
+                try { setPreferredBank(JSON.parse(saved)); } catch (e) { console.error(e); }
+            }
+        }
+    }, []);
+
+    const saveBankPreference = (id: string, name: string) => {
+        const bank = { id, name };
+        setPreferredBank(bank);
+        localStorage.setItem('preferred_bank', JSON.stringify(bank));
+        toast.success(`Đã ghi nhớ ${name} cho lần sau!`);
+    };
 
     const total = getCartTotal();
     const count = getCartCount();
@@ -423,15 +449,28 @@ export function OrderBar() {
                                                         className="w-full flex items-center justify-center gap-2 bg-primary text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-primary/30 active:scale-95 transition-transform text-sm"
                                                     >
                                                         <QrCode className="w-4 h-4" />
-                                                        Mở App VietinBank
+                                                        Mở App {qr.activeBankName}
                                                     </a>
+
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        {POPULAR_BANKS.filter(b => b.name !== qr.activeBankName).slice(0, 3).map(bank => (
+                                                            <button
+                                                                key={bank.id}
+                                                                onClick={() => saveBankPreference(bank.id, bank.name)}
+                                                                className="py-2 px-1 text-[10px] font-bold bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-500 hover:bg-neutral-100 transition-colors"
+                                                            >
+                                                                Dùng {bank.name}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+
                                                     <a
                                                         href={qr.payUrl}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="w-full flex items-center justify-center gap-2 bg-neutral-100 text-neutral-600 font-bold py-3 px-6 rounded-2xl active:scale-95 transition-transform text-xs border border-neutral-200"
+                                                        className="w-full flex items-center justify-center gap-2 bg-white text-neutral-400 font-medium py-2 px-6 rounded-2xl active:scale-95 transition-transform text-[10px] border border-dashed border-neutral-200"
                                                     >
-                                                        Chọn ngân hàng khác (VCB, MB, ...)
+                                                        Ngân hàng khác...
                                                     </a>
                                                 </div>
                                             ) : (
