@@ -67,7 +67,10 @@ export function CartModal() {
             await syncCart(cartPayload);
 
             // Place the order
-            const orderIdResult = await placeOrderMutation.mutateAsync({ note });
+            const orderIdResult = await placeOrderMutation.mutateAsync({
+                note,
+                paymentMethod: paymentMethod
+            });
             const finalOrderId = orderIdResult.id || orderIdResult.Id;
 
             if (!finalOrderId) {
@@ -150,10 +153,15 @@ export function CartModal() {
                                 // Put paymentOrderId FIRST to avoid bank truncation of long strings!
                                 const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
                                 const tableName = table?.name || 'Mang ve';
-                                const paymentContent = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
 
-                                const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(paymentContent)}`;
-                                const payUrl = `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(paymentContent)}`;
+                                // Full note for visual QR
+                                const fullNote = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
+
+                                // Tiny note for Deep Link (Maximum compatibility)
+                                const tinyNote = `SEVQR ${paymentOrderId}`;
+
+                                const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(fullNote)}`;
+                                const payUrl = `https://dl.vietqr.io/pay?app=icb&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodeURIComponent(tinyNote)}`;
 
                                 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 
