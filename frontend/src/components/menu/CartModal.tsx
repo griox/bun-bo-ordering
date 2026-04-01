@@ -157,11 +157,11 @@ export function CartModal() {
                                 // Full note for visual QR
                                 const fullNote = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
 
-                                // Tiny note for Deep Link (Maximum compatibility)
-                                const tinyNote = `SEVQR ${paymentOrderId}`;
+                                // Tiny note for Deep Link (NO SPACES for pre-filling!)
+                                const tinyNote = `SEVQR${paymentOrderId}`;
 
                                 const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(fullNote)}`;
-                                const payUrl = `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(tinyNote)}`;
+                                const payUrl = `https://dl.vietqr.io/pay?app=icb&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodeURIComponent(tinyNote)}`;
 
                                 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 
