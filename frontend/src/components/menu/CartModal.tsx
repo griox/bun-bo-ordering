@@ -163,7 +163,8 @@ export function CartModal() {
                                 const tinyNote = `SEVQR${shortId}`;
 
                                 const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(fullNote)}`;
-                                const payUrl = `https://pay.vietqr.io/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${tinyNote}`;
+                                // Official VietQR URI Scheme - works natively without any web redirect
+                                const payUrl = `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyNote}`;
 
                                 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 

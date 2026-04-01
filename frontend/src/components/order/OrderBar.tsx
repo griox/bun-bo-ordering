@@ -194,10 +194,11 @@ export function OrderBar() {
 
             return {
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                // Path-based format (pay.vietqr.io/BIN/ACC/AMOUNT/NOTE) is often more reliable than search params
-                // It is more likely to be registered as a Universal Link by the banking apps
-                payUrl: `https://pay.vietqr.io/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${tinyContent}`,
-                directAppUrl: `https://pay.vietqr.io/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${tinyContent}`,
+                // Official VietQR URI Scheme - registered by VietQR Alliance
+                // All member banks (VietinBank, VCB, MB, TCB, etc.) MUST support this natively
+                // Format: vietqr://a=BIN&ac=ACCOUNT&am=AMOUNT&tn=NOTE
+                payUrl: `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyContent}`,
+                directAppUrl: `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyContent}`,
                 activeBankName
             };
         } catch (err) {
