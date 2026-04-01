@@ -24,6 +24,16 @@ import axiosInstance from '@/lib/axiosInstance';
 type PaymentMethod = 'Cash' | 'Transfer' | null;
 type Step = 'cart' | 'payment-qr';
 
+// URI schemes for each bank app - triggers the transfer screen directly
+const BANK_SCHEMES: Record<string, (acc: string, amount: number, note: string) => string> = {
+    icb: (acc, am, tn) => `icbapp://transfer?ben_account=${acc}&amount=${am}&content=${encodeURIComponent(tn)}`,
+    vcb: (acc, am, tn) => `vcbdirect://qrpay?account=${acc}&amount=${am}&remark=${encodeURIComponent(tn)}`,
+    mbbank: (acc, am, tn) => `mbmobile://transfer?toAccNo=${acc}&amount=${am}&memo=${encodeURIComponent(tn)}`,
+    tcb: (acc, am, tn) => `techcombank://payment?beneficiaryAccount=${acc}&amount=${am}&description=${encodeURIComponent(tn)}`,
+    acb: (acc, am, tn) => `acbmobile://transfer?toAccount=${acc}&amount=${am}&note=${encodeURIComponent(tn)}`,
+    vpbank: (acc, am, tn) => `vpbanknexgen://transfer?toAcc=${acc}&amount=${am}&note=${encodeURIComponent(tn)}`,
+};
+
 const POPULAR_BANKS = [
     { id: 'icb', name: 'VietinBank' },
     { id: 'vcb', name: 'Vietcombank' },
@@ -190,16 +200,20 @@ export function OrderBar() {
             // CRITICAL: Many bank apps truncate notes at 12-20 chars. Using only the first 8 chars of OrderID.
             const shortId = paymentOrderId.split('-')[0].toUpperCase();
             const tinyContent = `SEVQR${shortId}`;
+            const activeBankId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
             const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
+
+            // Bank-specific URI scheme - opens the transfer screen DIRECTLY
+            const schemeFn = BANK_SCHEMES[activeBankId];
+            const appSchemeUrl = schemeFn
+                ? schemeFn(SEPAY_CONFIG.ACC, total, tinyContent)
+                : `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyContent}`;
 
             return {
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                // Official VietQR URI Scheme - registered by VietQR Alliance
-                // All member banks (VietinBank, VCB, MB, TCB, etc.) MUST support this natively
-                // Format: vietqr://a=BIN&ac=ACCOUNT&am=AMOUNT&tn=NOTE
-                payUrl: `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyContent}`,
-                directAppUrl: `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyContent}`,
-                activeBankName
+                appSchemeUrl,
+                activeBankName,
+                activeBankId
             };
         } catch (err) {
             console.error('[CRITICAL] Failed to build QR data:', err);
@@ -444,11 +458,20 @@ export function OrderBar() {
                                             {isMobile ? (
                                                 <div className="w-full flex flex-col gap-3">
                                                     <a
-                                                        href={qr.directAppUrl}
+                                                        href={qr.appSchemeUrl}
+                                                        onClick={() => {
+                                                            // Set a fallback timer: if the app didn't open in 1.5s, show hint
+                                                            setTimeout(() => {
+                                                                // Show the QR hint if user is still on the page
+                                                                if (document.hasFocus()) {
+                                                                    toast.info('Không tự động mở được App. Hãy mở App ngân hàng và quét mã QR phía trên nhé!', { duration: 5000 });
+                                                                }
+                                                            }, 1500);
+                                                        }}
                                                         className="w-full flex items-center justify-center gap-2 bg-primary text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-primary/30 active:scale-95 transition-transform text-sm"
                                                     >
                                                         <QrCode className="w-4 h-4" />
-                                                        Mở App {qr.activeBankName}
+                                                        Chuyển tiền qua {qr.activeBankName}
                                                     </a>
 
                                                     <div className="grid grid-cols-3 gap-2">
@@ -462,15 +485,6 @@ export function OrderBar() {
                                                             </button>
                                                         ))}
                                                     </div>
-
-                                                    <a
-                                                        href={qr.payUrl}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="w-full flex items-center justify-center gap-2 bg-white text-neutral-400 font-medium py-2 px-6 rounded-2xl active:scale-95 transition-transform text-[10px] border border-dashed border-neutral-200"
-                                                    >
-                                                        Ngân hàng khác...
-                                                    </a>
                                                 </div>
                                             ) : (
                                                 <p className="text-xs text-neutral-400 italic text-center">
