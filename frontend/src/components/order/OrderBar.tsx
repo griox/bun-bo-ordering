@@ -34,7 +34,7 @@ const POPULAR_BANKS = [
 ];
 
 const SEPAY_CONFIG = {
-    BANK: 'VietinBank',
+    BANK: 'ICB',
     BIN: '970415',
     APP_ID: 'icb',
     ACC: '104876858916'
@@ -200,9 +200,9 @@ export function OrderBar() {
                 // Visual images can handle long notes fine
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
 
-                // Deep links work best with very short alphanumeric notes
-                payUrl: `https://vietqr.co/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${encodedTiny}?accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
+                // SePay Native Redirector is often more reliable for pre-filling data than raw vietqr.io links
+                payUrl: `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodedTiny}`,
+                directAppUrl: `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodedTiny}`,
                 activeBankName
             };
         } catch (err) {
