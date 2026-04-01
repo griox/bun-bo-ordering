@@ -47,6 +47,7 @@ export function OrderBar() {
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
     const [step, setStep] = useState<Step>('cart');
+    const [preferredBank, setPreferredBank] = useState<{ id: string, name: string } | null>(null);
 
     // Detect mobile for Deep Links
     useEffect(() => {
