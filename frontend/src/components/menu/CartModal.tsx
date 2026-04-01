@@ -101,6 +101,7 @@ export function CartModal() {
 
     const SEPAY_CONFIG = {
         BANK: 'ICB',
+        BIN: '970415',
         ACC: '104876858916'
     };
 
@@ -162,7 +163,7 @@ export function CartModal() {
                                 const tinyNote = `SEVQR${shortId}`;
 
                                 const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(fullNote)}`;
-                                const payUrl = `https://dl.vietqr.io/pay?app=icb&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodeURIComponent(tinyNote)}`;
+                                const payUrl = `https://pay.vietqr.io/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${tinyNote}`;
 
                                 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 

@@ -190,19 +190,14 @@ export function OrderBar() {
             // CRITICAL: Many bank apps truncate notes at 12-20 chars. Using only the first 8 chars of OrderID.
             const shortId = paymentOrderId.split('-')[0].toUpperCase();
             const tinyContent = `SEVQR${shortId}`;
-            const encodedTiny = encodeURIComponent(tinyContent);
-
-            console.log('[DEBUG] QR Code Built:', { orderId: paymentOrderId, tiny: tinyContent, shortId });
-
-            const activeAppId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
             const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
 
             return {
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                // Using dl.vietqr.io for stability (pay.vietqr.io was reported as timed out)
-                // Maintaining short note and specific app ID to ensure the app opens the transfer screen correctly
-                payUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
-                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
+                // Path-based format (pay.vietqr.io/BIN/ACC/AMOUNT/NOTE) is often more reliable than search params
+                // It is more likely to be registered as a Universal Link by the banking apps
+                payUrl: `https://pay.vietqr.io/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${tinyContent}`,
+                directAppUrl: `https://pay.vietqr.io/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${tinyContent}`,
                 activeBankName
             };
         } catch (err) {
