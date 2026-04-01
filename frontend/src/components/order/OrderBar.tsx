@@ -56,7 +56,15 @@ export function OrderBar() {
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
     const [isMobile, setIsMobile] = useState(false);
     const [step, setStep] = useState<Step>('cart');
-    const [preferredBank, setPreferredBank] = useState<{ id: string, name: string } | null>(null);
+    const [preferredBank, setPreferredBank] = useState<{ id: string, name: string } | null>(() => {
+        if (typeof window !== 'undefined') {
+            const saved = localStorage.getItem('preferred_bank');
+            if (saved) {
+                try { return JSON.parse(saved); } catch (e) { console.error(e); }
+            }
+        }
+        return null;
+    });
 
     // Detect mobile for Deep Links
     useEffect(() => {
@@ -67,16 +75,6 @@ export function OrderBar() {
         check();
         window.addEventListener('resize', check);
         return () => window.removeEventListener('resize', check);
-    }, []);
-
-    // Load preferred bank from localStorage
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('preferred_bank');
-            if (saved) {
-                try { setPreferredBank(JSON.parse(saved)); } catch (e) { console.error(e); }
-            }
-        }
     }, []);
 
     const saveBankPreference = (id: string, name: string) => {
