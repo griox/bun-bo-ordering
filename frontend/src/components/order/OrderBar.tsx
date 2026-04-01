@@ -192,15 +192,14 @@ export function OrderBar() {
             });
             console.log('[DEBUG] Final QR URL:', qrUrl);
 
+            const activeAppId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
+            const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
+
             return {
-                // img.vietqr.io for Napas-standard QR images
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encoded}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-
-                // Universal link that allows user to choose THEIR bank app if needed
                 payUrl: `https://vietqr.co/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${encoded}?accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-
-                // Direct deep link for VietinBank
-                directAppUrl: `https://dl.vietqr.io/pay?app=${SEPAY_CONFIG.APP_ID}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encoded}`
+                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encoded}`,
+                activeBankName
             };
         } catch (err) {
             console.error('[CRITICAL] Failed to build QR data:', err);
