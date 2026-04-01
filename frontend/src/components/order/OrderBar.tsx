@@ -193,7 +193,6 @@ export function OrderBar() {
 
             console.log('[DEBUG] QR Code Built:', { orderId: paymentOrderId, tiny: tinyContent });
 
-            const activeAppId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
             const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
 
             return {
