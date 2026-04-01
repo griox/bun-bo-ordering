@@ -133,7 +133,10 @@ export function OrderBar() {
             await syncCart(cartItems);
 
             // 2. Place order
-            const result = await placeOrderMutation.mutateAsync({ note });
+            const result = await placeOrderMutation.mutateAsync({
+                note,
+                paymentMethod: paymentMethod === 'Transfer' ? 'Transfer' : 'Cash'
+            });
             console.log('[DEBUG] Order created result:', JSON.stringify(result));
 
             // Try all possible capitalizations for ID
@@ -178,25 +181,28 @@ export function OrderBar() {
         try {
             const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
             const tableName = table?.name || 'Mang ve';
-            const content = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
-            const encoded = encodeURIComponent(content);
-            const qrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`;
 
-            console.log('[DEBUG] QR Code Context:', {
-                orderId: paymentOrderId,
-                table: tableName,
-                total: total,
-                summary: itemsSummary
-            });
-            console.log('[DEBUG] Final QR URL:', qrUrl);
+            // FULL content for the visual QR (Standard SePay recommendation)
+            const fullContent = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
+            const encodedFull = encodeURIComponent(fullContent);
+
+            // TINY content for Deep Link (Maximum compatibility with banking apps)
+            // Many apps fail if the note is long or has spaces in Deep Links
+            const tinyContent = `SEVQR ${paymentOrderId}`;
+            const encodedTiny = encodeURIComponent(tinyContent);
+
+            console.log('[DEBUG] QR Code Built:', { orderId: paymentOrderId, tiny: tinyContent });
 
             const activeAppId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
             const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
 
             return {
-                imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encoded}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                payUrl: `https://vietqr.co/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${encoded}?accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encoded}`,
+                // Visual images can handle long notes fine
+                imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
+
+                // Deep links work best with very short alphanumeric notes
+                payUrl: `https://vietqr.co/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${encodedTiny}?accountName=${encodeURIComponent("NGO QUANG HUY")}`,
+                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
                 activeBankName
             };
         } catch (err) {

@@ -27,7 +27,7 @@ import { useOrders, useOrder } from '@/hooks/useOrders';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
 
 export default function OrdersPage() {
-    const [statusFilter, setStatusFilter] = useState('All'); // 'All', 'Unpaid', 'Paid'
+    const [statusFilter, setStatusFilter] = useState('Paid'); // 'All', 'Unpaid', 'Paid'
     const [page, setPage] = useState(0);
     const pageSize = 10;
 

@@ -28,13 +28,23 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
             Status = "Pending"
         });
 
-        // 2. Notify the Admin group that a new order has arrived
-        await _hubContext.Clients.Group("Admin").SendAsync("OrderPlaced", new 
+        // 2. Notify the Admin group that a new order has arrived (ONLY if Cash)
+        // If Transfer, we wait for PaymentCompletedEvent to notify Admin
+        if (message.PaymentMethod == "Cash")
         {
-            OrderId = message.OrderId,
-            TotalAmount = message.TotalAmount,
-            CreatedAt = message.CreatedAt,
-            TableSessionId = message.TableSessionId
-        });
+            _logger.LogInformation($"Notifying Admin of new CASH order {message.OrderId}");
+            await _hubContext.Clients.Group("Admin").SendAsync("OrderPlaced", new 
+            {
+                OrderId = message.OrderId,
+                TotalAmount = message.TotalAmount,
+                CreatedAt = message.CreatedAt,
+                TableSessionId = message.TableSessionId,
+                PaymentMethod = "Cash"
+            });
+        }
+        else
+        {
+            _logger.LogInformation($"Skipping Admin notification for TRANSFER order {message.OrderId}. Waiting for payment.");
+        }
     }
 }

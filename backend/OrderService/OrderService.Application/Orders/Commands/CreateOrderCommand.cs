@@ -7,7 +7,7 @@ using BunBo.SharedKernel.Messaging;
 
 namespace OrderService.Application.Orders.Commands;
 
-public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note) : IRequest<Guid>;
+public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note, string PaymentMethod) : IRequest<Guid>;
 
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
 {
@@ -46,7 +46,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             throw new Exception("Giỏ hàng đang trống. Không thể tạo đơn.");
         }
 
-        var order = new Order(request.TableSessionId, request.CustomerId, request.Note);
+        var order = new Order(request.TableSessionId, request.CustomerId, request.Note, request.PaymentMethod);
 
         foreach (var itemDto in cart.Items)
         {
@@ -65,6 +65,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             TableSessionId = order.TableSessionId,
             TotalAmount = order.TotalAmount,
             Note = order.Note,
+            PaymentMethod = order.PaymentMethod,
             CreatedAt = order.CreatedAt
         }, cancellationToken);
         _logger.LogInformation("[ORDER] OrderCreatedEvent published for Order {OrderId}", order.Id);

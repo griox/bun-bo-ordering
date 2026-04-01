@@ -11,6 +11,7 @@ public class Order : BaseEntity
     public decimal TotalAmount { get; private set; }
     public OrderStatus Status { get; private set; }
     public string? Note { get; private set; }
+    public string PaymentMethod { get; private set; } = string.Empty;
     
     public Guid? CustomerId { get; private set; }
 
@@ -19,11 +20,12 @@ public class Order : BaseEntity
 
     protected Order() { }
 
-    public Order(Guid tableSessionId, Guid? customerId, string? note)
+    public Order(Guid tableSessionId, Guid? customerId, string? note, string paymentMethod)
     {
         TableSessionId = tableSessionId;
         CustomerId = customerId;
         Note = note;
+        PaymentMethod = paymentMethod;
         Status = OrderStatus.Unpaid;
     }
 

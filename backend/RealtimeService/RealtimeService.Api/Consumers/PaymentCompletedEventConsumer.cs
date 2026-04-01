@@ -49,14 +49,15 @@ public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
                 var createdAt = order.GetProperty("createdAt").GetDateTime();
 
                 // 2. Notify Admin/Kitchen
-                _logger.LogInformation($"Broadcasting ReceiveNewOrder to KitchenGroup for Order {message.OrderId}");
-                await _hubContext.Clients.Group("KitchenGroup").SendAsync("ReceiveNewOrder", new 
+                _logger.LogInformation($"Broadcasting ReceiveNewOrder to KitchenGroup and Admin for Order {message.OrderId}");
+                await _hubContext.Clients.Groups("KitchenGroup", "Admin").SendAsync("ReceiveNewOrder", new 
                 {
                     OrderId = message.OrderId,
                     TableSessionId = tableSessionId,
                     TotalAmount = totalAmount,
                     Note = note,
-                    CreatedAt = createdAt
+                    CreatedAt = createdAt,
+                    PaymentMethod = "Transfer"
                 });
 
                 // 3. Notify the exact Table
