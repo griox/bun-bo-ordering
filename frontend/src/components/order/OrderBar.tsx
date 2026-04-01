@@ -186,24 +186,21 @@ export function OrderBar() {
             const fullContent = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
             const encodedFull = encodeURIComponent(fullContent);
 
-            // TINY content for Deep Link (NO SPACES for maximum compatibility!)
-            // CRITICAL: Spaces in transaction notes are the #1 reason pre-filling fails in Deep Links
-            const tinyContent = `SEVQR${paymentOrderId}`;
+            // TINY content for Deep Link (NO SPACES and SHORT for maximum compatibility!)
+            // CRITICAL: Many bank apps truncate notes at 12-20 chars. Using only the first 8 chars of OrderID.
+            const shortId = paymentOrderId.split('-')[0].toUpperCase();
+            const tinyContent = `SEVQR${shortId}`;
             const encodedTiny = encodeURIComponent(tinyContent);
 
-            console.log('[DEBUG] QR Code Built:', { orderId: paymentOrderId, tiny: tinyContent });
+            console.log('[DEBUG] QR Code Built:', { orderId: paymentOrderId, tiny: tinyContent, shortId });
 
             const activeAppId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
             const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
 
             return {
-                // Visual images can handle long notes fine
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-
-                // Reverting to dl.vietqr.io to avoid the SePay Web Redirector page
-                // Using individual app targeting and NO SPACES in note for pre-filling success
-                payUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
-                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
+                payUrl: `https://pay.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
+                directAppUrl: `https://pay.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
                 activeBankName
             };
         } catch (err) {
