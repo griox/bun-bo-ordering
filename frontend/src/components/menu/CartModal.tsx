@@ -162,7 +162,7 @@ export function CartModal() {
                                 const tinyNote = `SEVQR${shortId}`;
 
                                 const vietQrUrl = `https://qr.sepay.vn/img?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encodeURIComponent(fullNote)}`;
-                                const payUrl = `https://pay.vietqr.io/pay?app=icb&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodeURIComponent(tinyNote)}`;
+                                const payUrl = `https://dl.vietqr.io/pay?app=icb&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodeURIComponent(tinyNote)}`;
 
                                 const isMobile = typeof window !== 'undefined' && /Mobi|Android/i.test(navigator.userAgent);
 

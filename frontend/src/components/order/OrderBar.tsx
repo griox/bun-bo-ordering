@@ -199,8 +199,10 @@ export function OrderBar() {
 
             return {
                 imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                payUrl: `https://pay.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
-                directAppUrl: `https://pay.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
+                // Using dl.vietqr.io for stability (pay.vietqr.io was reported as timed out)
+                // Maintaining short note and specific app ID to ensure the app opens the transfer screen correctly
+                payUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
+                directAppUrl: `https://dl.vietqr.io/pay?app=${activeAppId}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encodedTiny}`,
                 activeBankName
             };
         } catch (err) {
