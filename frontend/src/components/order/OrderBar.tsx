@@ -27,7 +27,7 @@ type Step = 'cart' | 'payment-qr';
 const SEPAY_CONFIG = {
     BANK: 'VietinBank',
     BIN: '970415',
-    APP_ID: 'icb', // Specific for dl.vietqr.io
+    APP_ID: 'icb',
     ACC: '104876858916'
 };
 
@@ -48,9 +48,15 @@ export function OrderBar() {
     const [isMobile, setIsMobile] = useState(false);
     const [step, setStep] = useState<Step>('cart');
 
-    // Detect mobile after mount to avoid SSR hydration mismatch
+    // Detect mobile for Deep Links
     useEffect(() => {
-        setIsMobile(/Mobi|Android/i.test(navigator.userAgent));
+        const check = () => setIsMobile(
+            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+            window.innerWidth < 1024
+        );
+        check();
+        window.addEventListener('resize', check);
+        return () => window.removeEventListener('resize', check);
     }, []);
 
     const total = getCartTotal();
@@ -160,10 +166,14 @@ export function OrderBar() {
             console.log('[DEBUG] Final QR URL:', qrUrl);
 
             return {
-                // img.vietqr.io is highly stable for fetching standard VietQR images
-                imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encoded}`,
-                // dl.vietqr.io is the most reliable way to trigger banking apps directly on mobile
-                payUrl: `https://dl.vietqr.io/pay?app=${SEPAY_CONFIG.APP_ID}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encoded}`,
+                // img.vietqr.io for Napas-standard QR images
+                imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encoded}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
+
+                // Universal link that allows user to choose THEIR bank app if needed
+                payUrl: `https://vietqr.co/${SEPAY_CONFIG.BIN}/${SEPAY_CONFIG.ACC}/${total}/${encoded}?accountName=${encodeURIComponent("NGO QUANG HUY")}`,
+
+                // Direct deep link for VietinBank
+                directAppUrl: `https://dl.vietqr.io/pay?app=${SEPAY_CONFIG.APP_ID}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encoded}`
             };
         } catch (err) {
             console.error('[CRITICAL] Failed to build QR data:', err);
@@ -405,22 +415,25 @@ export function OrderBar() {
                                                 />
                                             </div>
 
-                                            {isMobile && (
-                                                <a
-                                                    href={qr.payUrl}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="w-full flex items-center justify-center gap-2 bg-primary text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-primary/30 active:scale-95 transition-transform text-sm"
-                                                >
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                                        <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
-                                                        <path d="M12 18h.01" />
-                                                    </svg>
-                                                    Mở App Ngân hàng
-                                                </a>
-                                            )}
-
-                                            {!isMobile && (
+                                            {isMobile ? (
+                                                <div className="w-full flex flex-col gap-3">
+                                                    <a
+                                                        href={qr.directAppUrl}
+                                                        className="w-full flex items-center justify-center gap-2 bg-primary text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-primary/30 active:scale-95 transition-transform text-sm"
+                                                    >
+                                                        <QrCode className="w-4 h-4" />
+                                                        Mở App VietinBank
+                                                    </a>
+                                                    <a
+                                                        href={qr.payUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="w-full flex items-center justify-center gap-2 bg-neutral-100 text-neutral-600 font-bold py-3 px-6 rounded-2xl active:scale-95 transition-transform text-xs border border-neutral-200"
+                                                    >
+                                                        Chọn ngân hàng khác (VCB, MB, ...)
+                                                    </a>
+                                                </div>
+                                            ) : (
                                                 <p className="text-xs text-neutral-400 italic text-center">
                                                     Dùng App ngân hàng để quét mã QR phía trên
                                                 </p>
