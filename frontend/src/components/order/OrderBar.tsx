@@ -159,7 +159,8 @@ export function OrderBar() {
 
             return {
                 imgUrl: qrUrl,
-                payUrl: `https://qr.sepay.vn/pay?acc=${SEPAY_CONFIG.ACC}&bank=${SEPAY_CONFIG.BANK}&amount=${total}&des=${encoded}`,
+                // Using vietqr.net redirector which handles direct app opening better on mobile
+                payUrl: `https://vietqr.net/pay/${SEPAY_CONFIG.BANK}/${SEPAY_CONFIG.ACC}?amount=${total}&addInfo=${encoded}`,
             };
         } catch (err) {
             console.error('[CRITICAL] Failed to build QR data:', err);
