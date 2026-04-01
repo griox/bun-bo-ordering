@@ -25,7 +25,9 @@ type PaymentMethod = 'Cash' | 'Transfer' | null;
 type Step = 'cart' | 'payment-qr';
 
 const SEPAY_CONFIG = {
-    BANK: 'ICB',
+    BANK: 'VietinBank',
+    BIN: '970415',
+    APP_ID: 'icb', // Specific for dl.vietqr.io
     ACC: '104876858916'
 };
 
@@ -158,9 +160,10 @@ export function OrderBar() {
             console.log('[DEBUG] Final QR URL:', qrUrl);
 
             return {
-                imgUrl: qrUrl,
-                // Using vietqr.net redirector which handles direct app opening better on mobile
-                payUrl: `https://vietqr.net/pay/${SEPAY_CONFIG.BANK}/${SEPAY_CONFIG.ACC}?amount=${total}&addInfo=${encoded}`,
+                // img.vietqr.io is highly stable for fetching standard VietQR images
+                imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encoded}`,
+                // dl.vietqr.io is the most reliable way to trigger banking apps directly on mobile
+                payUrl: `https://dl.vietqr.io/pay?app=${SEPAY_CONFIG.APP_ID}&ba=${SEPAY_CONFIG.ACC}&am=${total}&tn=${encoded}`,
             };
         } catch (err) {
             console.error('[CRITICAL] Failed to build QR data:', err);
