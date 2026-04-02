@@ -25,7 +25,7 @@ spec:
           name: ingestion
         env:
         - name: ACCEPT_EULA
-          value: "true"
+          value: "Y"
         - name: SEQ_FIRSTRUN_NOAUTHENTICATION
           value: "true"
         resources:
