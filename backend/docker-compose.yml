@@ -268,6 +268,7 @@ services:
     restart: always
     environment:
       - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_NOAUTHENTICATION=true
     ports:
       - "5341:5341" # Ingestion port
       - "8081:80"   # UI port
