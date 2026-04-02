@@ -6,4 +6,10 @@ provisioning-k3s-manual.md
 
 .env
 .env.*
-/Users/huyngo/bunbo-system-datn.example
+
+# Build artifacts
+**/bin/
+**/obj/
+
+# Kubernetes Secrets
+infra/k8s/config/bunbo-secrets.yaml

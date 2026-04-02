@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/RealtimeService.Api.props" />
-</Project>
