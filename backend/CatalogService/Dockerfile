@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
 WORKDIR /src
 
 # Give grpc tools the native libs it needs
-RUN apt-get update && apt-get install -y libc6-dev
+RUN apt-get update && apt-get install -y libc6-dev libstdc++6
 
 # Copy csproj and restore as distinct layers
 COPY ["CatalogService/CatalogService.Api/CatalogService.Api.csproj", "CatalogService/CatalogService.Api/"]

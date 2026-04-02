@@ -20,35 +20,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import axiosInstance from '@/lib/axiosInstance';
+import { SePayCheckout } from '@/components/payment/SePayCheckout';
 
 type PaymentMethod = 'Cash' | 'Transfer' | null;
 type Step = 'cart' | 'payment-qr';
-
-// URI schemes for each bank app - triggers the transfer screen directly
-const BANK_SCHEMES: Record<string, (acc: string, amount: number, note: string) => string> = {
-    icb: (acc, am, tn) => `icbapp://transfer?ben_account=${acc}&amount=${am}&content=${encodeURIComponent(tn)}`,
-    vcb: (acc, am, tn) => `vcbdirect://qrpay?account=${acc}&amount=${am}&remark=${encodeURIComponent(tn)}`,
-    mbbank: (acc, am, tn) => `mbmobile://transfer?toAccNo=${acc}&amount=${am}&memo=${encodeURIComponent(tn)}`,
-    tcb: (acc, am, tn) => `techcombank://payment?beneficiaryAccount=${acc}&amount=${am}&description=${encodeURIComponent(tn)}`,
-    acb: (acc, am, tn) => `acbmobile://transfer?toAccount=${acc}&amount=${am}&note=${encodeURIComponent(tn)}`,
-    vpbank: (acc, am, tn) => `vpbanknexgen://transfer?toAcc=${acc}&amount=${am}&note=${encodeURIComponent(tn)}`,
-};
-
-const POPULAR_BANKS = [
-    { id: 'icb', name: 'VietinBank' },
-    { id: 'vcb', name: 'Vietcombank' },
-    { id: 'mbbank', name: 'MB Bank' },
-    { id: 'tcb', name: 'Techcombank' },
-    { id: 'acb', name: 'ACB' },
-    { id: 'vpbank', name: 'VPBank' }
-];
-
-const SEPAY_CONFIG = {
-    BANK: 'ICB',
-    BIN: '970415',
-    APP_ID: 'icb',
-    ACC: '104876858916'
-};
 
 export function OrderBar() {
     const {
@@ -64,35 +39,8 @@ export function OrderBar() {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
-    const [isMobile, setIsMobile] = useState(false);
     const [step, setStep] = useState<Step>('cart');
-    const [preferredBank, setPreferredBank] = useState<{ id: string, name: string } | null>(() => {
-        if (typeof window !== 'undefined') {
-            const saved = localStorage.getItem('preferred_bank');
-            if (saved) {
-                try { return JSON.parse(saved); } catch (e) { console.error(e); }
-            }
-        }
-        return null;
-    });
-
-    // Detect mobile for Deep Links
-    useEffect(() => {
-        const check = () => setIsMobile(
-            /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-            window.innerWidth < 1024
-        );
-        check();
-        window.addEventListener('resize', check);
-        return () => window.removeEventListener('resize', check);
-    }, []);
-
-    const saveBankPreference = (id: string, name: string) => {
-        const bank = { id, name };
-        setPreferredBank(bank);
-        localStorage.setItem('preferred_bank', JSON.stringify(bank));
-        toast.success(`Đã ghi nhớ ${name} cho lần sau!`);
-    };
+    const [checkoutData, setCheckoutData] = useState<{ checkoutUrl: string, qrCode: string } | null>(null);
 
     const total = getCartTotal();
     const count = getCartCount();
@@ -107,6 +55,7 @@ export function OrderBar() {
                 Promise.resolve().then(() => {
                     setPaymentSuccess(null);
                     setPaymentOrderId(null);
+                    setCheckoutData(null);
                     setStep('cart');
                     setIsSheetOpen(false);
                 });
@@ -117,6 +66,7 @@ export function OrderBar() {
     const resetState = () => {
         setPaymentMethod(null);
         setPaymentOrderId(null);
+        setCheckoutData(null);
         setStep('cart');
         setNote('');
     };
@@ -147,28 +97,29 @@ export function OrderBar() {
                 note,
                 paymentMethod: paymentMethod === 'Transfer' ? 'Transfer' : 'Cash'
             });
-            console.log('[DEBUG] Order created result:', JSON.stringify(result));
 
-            // Try all possible capitalizations for ID
             const finalOrderId = result?.id || result?.Id || result?.ID || (typeof result === 'string' ? result : null);
-            console.log('[DEBUG] Final Order ID extracted:', finalOrderId, 'Type:', typeof finalOrderId);
 
             if (!finalOrderId) {
-                console.error('[CRITICAL] Order ID is missing. Full result:', result);
                 toast.error('Lỗi hệ thống: Không nhận được mã đơn hàng từ server.');
                 return;
             }
 
             if (paymentMethod === 'Transfer') {
-                // 3a. Init payment record
-                try {
-                    await axiosInstance.post('/api/payments', { orderId: finalOrderId, amount: total });
-                } catch (err) {
-                    console.error('Failed to create payment record:', err);
-                }
-                // Switch to QR view
                 setPaymentOrderId(finalOrderId);
                 setStep('payment-qr');
+
+                // 3a. Init payment record and get checkout URL
+                try {
+                    const payResult = await axiosInstance.post('/api/payments', { orderId: finalOrderId, amount: total });
+                    setCheckoutData({
+                        checkoutUrl: payResult.data.checkoutUrl,
+                        qrCode: payResult.data.qrCode
+                    });
+                } catch (err) {
+                    console.error('Failed to create payment record:', err);
+                    toast.error('Không thể khởi tạo cổng thanh toán SePay.');
+                }
             } else {
                 // 3b. Cash: close and clear
                 toast.success('Đơn hàng đã ghi nhận! Vui lòng thanh toán tại quầy.');
@@ -181,53 +132,10 @@ export function OrderBar() {
         }
     };
 
-    // QR generation
-    const buildQrData = () => {
-        if (!paymentOrderId) {
-            console.warn('[DEBUG] buildQrData: paymentOrderId is EMPTY');
-            return null;
-        }
-
-        try {
-            const itemsSummary = cart.map(i => `${i.quantity}${i.name}`).join(' ');
-            const tableName = table?.name || 'Mang ve';
-
-            // FULL content for the visual QR (Standard SePay recommendation)
-            const fullContent = `SEVQR ${paymentOrderId} ${tableName} ${itemsSummary}`.substring(0, 140);
-            const encodedFull = encodeURIComponent(fullContent);
-
-            // TINY content for Deep Link (NO SPACES and SHORT for maximum compatibility!)
-            // CRITICAL: Many bank apps truncate notes at 12-20 chars. Using only the first 8 chars of OrderID.
-            const shortId = paymentOrderId.split('-')[0].toUpperCase();
-            const tinyContent = `SEVQR${shortId}`;
-            const activeBankId = preferredBank?.id || SEPAY_CONFIG.APP_ID;
-            const activeBankName = preferredBank?.name || SEPAY_CONFIG.BANK;
-
-            // Bank-specific URI scheme - opens the transfer screen DIRECTLY
-            const schemeFn = BANK_SCHEMES[activeBankId];
-            const appSchemeUrl = schemeFn
-                ? schemeFn(SEPAY_CONFIG.ACC, total, tinyContent)
-                : `vietqr://a=${SEPAY_CONFIG.BIN}&ac=${SEPAY_CONFIG.ACC}&am=${total}&tn=${tinyContent}`;
-
-            return {
-                imgUrl: `https://img.vietqr.io/image/${SEPAY_CONFIG.BIN}-${SEPAY_CONFIG.ACC}-compact2.jpg?amount=${total}&addInfo=${encodedFull}&accountName=${encodeURIComponent("NGO QUANG HUY")}`,
-                appSchemeUrl,
-                activeBankName,
-                activeBankId
-            };
-        } catch (err) {
-            console.error('[CRITICAL] Failed to build QR data:', err);
-            return null;
-        }
-    };
-
-
-
     if (count === 0) return null;
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-safe">
-            {/* Safe area gradient fade */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
 
             <Sheet open={isSheetOpen} onOpenChange={handleSheetChange}>
@@ -243,7 +151,6 @@ export function OrderBar() {
                             <button className="relative w-full flex items-center justify-between bg-neutral-900 text-white rounded-2xl shadow-2xl shadow-black/40 px-4 py-3.5 active:scale-[0.98] transition-transform" />
                         }
                     >
-                        {/* Left: Bag + count */}
                         <div className="flex items-center gap-3">
                             <div className="relative">
                                 <div className="bg-primary p-2.5 rounded-xl">
@@ -261,7 +168,6 @@ export function OrderBar() {
                             </div>
                         </div>
 
-                        {/* Right: CTA */}
                         <div className="flex items-center gap-2 bg-primary text-white rounded-xl px-4 py-2 font-black text-sm">
                             XEM ĐƠN <ArrowRight className="w-4 h-4" />
                         </div>
@@ -272,7 +178,6 @@ export function OrderBar() {
                     side="bottom"
                     className="h-[88vh] rounded-t-[32px] px-0 pb-0 border-none shadow-2xl flex flex-col bg-white overflow-hidden"
                 >
-                    {/* Handle */}
                     <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
                         <div className="w-10 h-1 bg-neutral-200 rounded-full" />
                     </div>
@@ -298,7 +203,6 @@ export function OrderBar() {
                                     )}
                                 </SheetHeader>
 
-                                {/* Scrollable cart items */}
                                 <div className="flex-1 overflow-y-auto no-scrollbar px-6 space-y-3 pb-4">
                                     {cart.map((item) => (
                                         <div key={item.foodId} className="flex items-center gap-3 bg-neutral-50 p-3 rounded-2xl">
@@ -332,7 +236,6 @@ export function OrderBar() {
                                         </div>
                                     ))}
 
-                                    {/* Note input */}
                                     <div className="space-y-1.5 pt-2">
                                         <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
                                             <MessageSquare className="w-3 h-3" /> Ghi chú cho bếp
@@ -346,9 +249,7 @@ export function OrderBar() {
                                     </div>
                                 </div>
 
-                                {/* Footer: fixed at bottom */}
                                 <div className="flex-shrink-0 px-6 pt-4 pb-8 border-t border-neutral-100 bg-white">
-                                    {/* Total */}
                                     <div className="flex justify-between items-center mb-4">
                                         <span className="text-sm font-bold text-neutral-500 uppercase tracking-wider">Tổng thanh toán</span>
                                         <span className="text-2xl font-black text-neutral-900">
@@ -356,7 +257,6 @@ export function OrderBar() {
                                         </span>
                                     </div>
 
-                                    {/* Payment method selection */}
                                     {!session ? (
                                         <div className="bg-red-50 text-red-600 p-3 rounded-xl text-center font-bold text-sm border border-red-100 mb-4">
                                             Vui lòng quét mã QR tại bàn để đặt món!
@@ -411,7 +311,6 @@ export function OrderBar() {
                                 </div>
                             </motion.div>
                         ) : (
-                            /* ── PAYMENT QR VIEW ── */
                             <motion.div
                                 key="payment"
                                 initial={{ opacity: 0, x: 20 }}
@@ -420,90 +319,41 @@ export function OrderBar() {
                                 transition={{ duration: 0.25 }}
                                 className="flex flex-col items-center flex-1 overflow-y-auto no-scrollbar px-6 pb-8"
                             >
-                                {/* Back button */}
                                 <button
-                                    onClick={() => { setStep('cart'); setPaymentOrderId(null); }}
+                                    onClick={() => { setStep('cart'); setPaymentOrderId(null); setCheckoutData(null); }}
                                     className="self-start flex items-center gap-1 text-sm font-bold text-neutral-500 hover:text-neutral-800 transition-colors mb-4"
                                 >
-                                    <ChevronLeft className="w-4 h-4" /> Quay lại
+                                    <ChevronLeft className="w-4 h-4" /> Quay lại giỏ hàng
                                 </button>
 
                                 <div className="text-center mb-6">
-                                    <h2 className="text-xl font-black text-neutral-900 mb-1">Thanh toán đơn hàng</h2>
-                                    <p className="text-sm text-neutral-500">Quét mã QR để thanh toán</p>
+                                    <h2 className="text-xl font-black text-neutral-900 mb-1">Thanh toán (SePay)</h2>
+                                    <p className="text-sm text-neutral-500">Hoàn tất thanh toán để bếp nhận đơn</p>
                                 </div>
 
-                                {/* Amount badge */}
-                                <div className="bg-primary/10 rounded-2xl px-8 py-3 mb-6 text-center">
-                                    <p className="text-xs font-bold text-neutral-500 mb-0.5">Tổng số tiền</p>
-                                    <p className="text-3xl font-black text-primary">
-                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
-                                    </p>
-                                </div>
-
-                                {/* QR code */}
-                                {(() => {
-                                    const qr = buildQrData();
-                                    if (!qr) return null;
-                                    return (
-                                        <div className="flex flex-col items-center gap-4 w-full">
-                                            <div className="p-3 bg-white border-2 border-neutral-200 rounded-2xl shadow-sm">
-                                                <img
-                                                    src={qr.imgUrl}
-                                                    alt="VietQR Thanh toán"
-                                                    className="w-52 h-52 object-cover"
-                                                />
-                                            </div>
-
-                                            {isMobile ? (
-                                                <div className="w-full flex flex-col gap-3">
-                                                    <a
-                                                        href={qr.appSchemeUrl}
-                                                        onClick={() => {
-                                                            // Set a fallback timer: if the app didn't open in 1.5s, show hint
-                                                            setTimeout(() => {
-                                                                // Show the QR hint if user is still on the page
-                                                                if (document.hasFocus()) {
-                                                                    toast.info('Không tự động mở được App. Hãy mở App ngân hàng và quét mã QR phía trên nhé!', { duration: 5000 });
-                                                                }
-                                                            }, 1500);
-                                                        }}
-                                                        className="w-full flex items-center justify-center gap-2 bg-primary text-white font-black py-4 px-6 rounded-2xl shadow-lg shadow-primary/30 active:scale-95 transition-transform text-sm"
-                                                    >
-                                                        <QrCode className="w-4 h-4" />
-                                                        Chuyển tiền qua {qr.activeBankName}
-                                                    </a>
-
-                                                    <div className="grid grid-cols-3 gap-2">
-                                                        {POPULAR_BANKS.filter(b => b.name !== qr.activeBankName).slice(0, 3).map(bank => (
-                                                            <button
-                                                                key={bank.id}
-                                                                onClick={() => saveBankPreference(bank.id, bank.name)}
-                                                                className="py-2 px-1 text-[10px] font-bold bg-neutral-50 border border-neutral-100 rounded-xl text-neutral-500 hover:bg-neutral-100 transition-colors"
-                                                            >
-                                                                Dùng {bank.name}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <p className="text-xs text-neutral-400 italic text-center">
-                                                    Dùng App ngân hàng để quét mã QR phía trên
-                                                </p>
-                                            )}
+                                <div className="w-full">
+                                    {checkoutData ? (
+                                        <SePayCheckout
+                                            checkoutUrl={checkoutData.checkoutUrl}
+                                            qrCode={checkoutData.qrCode}
+                                            amount={total}
+                                        />
+                                    ) : (
+                                        <div className="py-12 flex flex-col items-center gap-4 text-neutral-400">
+                                            <Loader2 className="w-8 h-8 animate-spin" />
+                                            <p className="text-sm">Đang khởi tạo thanh toán...</p>
                                         </div>
-                                    );
-                                })()}
+                                    )}
+                                </div>
 
-                                {/* Waiting indicator */}
                                 <div className="flex items-center gap-2 mt-6 text-sm font-bold text-neutral-400 animate-pulse">
                                     <Loader2 className="w-4 h-4 animate-spin" />
-                                    Đang chờ xác nhận thanh toán...
+                                    Đang chờ xác nhận giao dịch...
                                 </div>
 
                                 <div className="flex items-center gap-2 mt-3 text-xs text-neutral-400 bg-neutral-50 rounded-xl px-4 py-2.5">
                                     <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                                    <span>Tự động xác nhận khi SePay ghi nhận giao dịch</span>
+                                    <span>Tự động xác nhận sau khi bạn chuyển khoản thành công</span>
                                 </div>
                             </motion.div>
                         )}

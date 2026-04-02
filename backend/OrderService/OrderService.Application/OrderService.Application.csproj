@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderService.Domain\OrderService.Domain.csproj" />
+    <ProjectReference Include="..\..\BunBo.SharedKernel\BunBo.SharedKernel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

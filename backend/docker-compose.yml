@@ -63,7 +63,6 @@ services:
     build:
       context: .
       dockerfile: IdentityService/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-identity
     restart: on-failure
     environment:
@@ -85,7 +84,6 @@ services:
     build:
       context: .
       dockerfile: CatalogService/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-catalog
     restart: on-failure
     environment:
@@ -114,7 +112,6 @@ services:
     build:
       context: .
       dockerfile: CartService/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-cart
     restart: on-failure
     environment:
@@ -139,7 +136,6 @@ services:
     build:
       context: .
       dockerfile: OrderService/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-order
     restart: on-failure
     environment:
@@ -166,7 +162,6 @@ services:
     build:
       context: .
       dockerfile: RealtimeService/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-realtime
     restart: on-failure
     environment:
@@ -190,7 +185,6 @@ services:
     build:
       context: .
       dockerfile: PaymentService/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-payment
     restart: on-failure
     environment:
@@ -218,7 +212,6 @@ services:
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
-    platform: linux/amd64
     container_name: bunbo-gateway
     restart: on-failure
     environment:
@@ -268,6 +261,21 @@ services:
       timeout: 5s
       retries: 5
 
+  # Centralized Logging (Serilog Sink)
+  seq:
+    image: datalust/seq:latest
+    container_name: bunbo-seq
+    restart: always
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "5341:5341" # Ingestion port
+      - "8081:80"   # UI port
+    volumes:
+      - seq-data:/data
+    networks:
+      - bunbo-network
+
 networks:
   bunbo-network:
     driver: bridge
@@ -277,3 +285,4 @@ volumes:
   redis-data:
   rabbitmq-data:
   minio-data:
+  seq-data:

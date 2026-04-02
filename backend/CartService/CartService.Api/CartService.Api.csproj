@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\CartService.Infrastructure\CartService.Infrastructure.csproj" />
     <ProjectReference Include="..\CartService.Application\CartService.Application.csproj" />
+    <ProjectReference Include="..\..\BunBo.SharedKernel\BunBo.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IdentityService.Infrastructure\IdentityService.Infrastructure.csproj" />
     <ProjectReference Include="..\IdentityService.Application\IdentityService.Application.csproj" />
+    <ProjectReference Include="..\..\BunBo.SharedKernel\BunBo.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

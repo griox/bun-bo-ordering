@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
 WORKDIR /src
 
 # Copy csproj and restore
@@ -20,13 +20,13 @@ FROM build AS publish
 RUN dotnet publish "PaymentService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Final stage
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
 
 # Use non-root user
-RUN addgroup -g 1000 appgroup && \
-    adduser -u 1000 -G appgroup -D -s /bin/sh appuser
+RUN groupadd -g 1000 appgroup && \
+    useradd -u 1000 -g appgroup -s /bin/sh appuser
 USER appuser
 
 EXPOSE 8080

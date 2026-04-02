@@ -4,6 +4,7 @@ using OrderService.Application.Interfaces;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Enums;
 using BunBo.SharedKernel.Messaging;
+using Microsoft.Extensions.Logging;
 
 namespace OrderService.Application.Orders.Commands;
 

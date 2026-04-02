@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 using OrderService.Application.Dtos;
 using OrderService.Application.Interfaces;

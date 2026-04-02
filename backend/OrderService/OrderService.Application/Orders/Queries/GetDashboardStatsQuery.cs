@@ -43,7 +43,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         // 4. Best Selling Item
         var bestSellingItem = await _context.OrderItems
             .Include(oi => oi.Order)
-            .Where(oi => oi.Order.CreatedAt >= today.AddDays(-30) && oi.Order.Status == OrderStatus.Paid)
+            .Where(oi => oi.Order!.CreatedAt >= today.AddDays(-30) && oi.Order!.Status == OrderStatus.Paid)
             .GroupBy(oi => oi.ProductName)
             .OrderByDescending(g => g.Sum(x => x.Quantity))
             .Select(g => g.Key)

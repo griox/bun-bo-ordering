@@ -53,6 +53,21 @@ spec:
             secretKeyRef:
               name: bunbo-secrets
               key: SEPAY_SECRET_KEY
+        - name: SePay__ApiKey
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: SEPAY_API_KEY
+        - name: SePay__AccountNumber
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: SEPAY_ACCOUNT_NUMBER
+        - name: SePay__BankBin
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: SEPAY_BANK_BIN
         - name: RabbitMq__Host
           value: "rabbitmq.default.svc.cluster.local"
         - name: RabbitMq__Username

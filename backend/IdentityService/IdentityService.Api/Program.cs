@@ -1,8 +1,12 @@
 using IdentityService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using IdentityService.Application;
+using BunBo.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("IdentityService");
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

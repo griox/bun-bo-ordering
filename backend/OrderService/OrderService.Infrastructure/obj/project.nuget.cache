@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "UfkyTEobYd8=",
+  "dgSpecHash": "9FGKN+W0ehU=",
   "success": true,
   "projectFilePath": "/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Infrastructure/OrderService.Infrastructure.csproj",
   "expectedPackageFiles": [
@@ -14,8 +14,13 @@
     "/Users/huyngo/.nuget/packages/microsoft.extensions.caching.abstractions/8.0.0/microsoft.extensions.caching.abstractions.8.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.caching.memory/8.0.1/microsoft.extensions.caching.memory.8.0.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.configuration.binder/8.0.0/microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.1/microsoft.extensions.dependencyinjection.8.0.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.0/microsoft.extensions.dependencyinjection.abstractions.10.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.dependencymodel/8.0.2/microsoft.extensions.dependencymodel.8.0.2.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.diagnostics.abstractions/8.0.0/microsoft.extensions.diagnostics.abstractions.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.fileproviders.abstractions/8.0.0/microsoft.extensions.fileproviders.abstractions.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/microsoft.extensions.hosting.abstractions/8.0.0/microsoft.extensions.hosting.abstractions.8.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.logging/8.0.1/microsoft.extensions.logging.8.0.1.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.0/microsoft.extensions.logging.abstractions.10.0.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/microsoft.extensions.options/8.0.2/microsoft.extensions.options.8.0.2.nupkg.sha512",
@@ -26,7 +31,22 @@
     "/Users/huyngo/.nuget/packages/microsoft.identitymodel.tokens/8.14.0/microsoft.identitymodel.tokens.8.14.0.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/npgsql/8.0.6/npgsql.8.0.6.nupkg.sha512",
     "/Users/huyngo/.nuget/packages/npgsql.entityframeworkcore.postgresql/8.0.11/npgsql.entityframeworkcore.postgresql.8.0.11.nupkg.sha512",
-    "/Users/huyngo/.nuget/packages/system.diagnostics.diagnosticsource/10.0.0/system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512"
+    "/Users/huyngo/.nuget/packages/serilog/4.0.0/serilog.4.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.aspnetcore/8.0.3/serilog.aspnetcore.8.0.3.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.enrichers.environment/3.0.0/serilog.enrichers.environment.3.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.enrichers.process/3.0.0/serilog.enrichers.process.3.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.enrichers.thread/4.0.0/serilog.enrichers.thread.4.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.exceptions/8.4.0/serilog.exceptions.8.4.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.extensions.hosting/8.0.0/serilog.extensions.hosting.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.extensions.logging/8.0.0/serilog.extensions.logging.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.formatting.compact/2.0.0/serilog.formatting.compact.2.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.settings.configuration/8.0.4/serilog.settings.configuration.8.0.4.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.sinks.console/6.0.0/serilog.sinks.console.6.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.sinks.debug/2.0.0/serilog.sinks.debug.2.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.sinks.file/5.0.0/serilog.sinks.file.5.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/serilog.sinks.seq/8.0.0/serilog.sinks.seq.8.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/system.diagnostics.diagnosticsource/10.0.0/system.diagnostics.diagnosticsource.10.0.0.nupkg.sha512",
+    "/Users/huyngo/.nuget/packages/system.reflection.typeextensions/4.7.0/system.reflection.typeextensions.4.7.0.nupkg.sha512"
   ],
   "logs": []
 }

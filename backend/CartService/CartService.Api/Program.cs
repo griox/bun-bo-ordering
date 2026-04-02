@@ -2,8 +2,12 @@ using CartService.Application;
 using CartService.Application.Interfaces;
 using CartService.Infrastructure.Repositories;
 using StackExchange.Redis;
+using BunBo.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("CartService");
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

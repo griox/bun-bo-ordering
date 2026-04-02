@@ -1,4 +1,5 @@
 using BunBo.SharedKernel.Messaging;
+using Microsoft.Extensions.Logging;
 using MassTransit;
 using Microsoft.AspNetCore.SignalR;
 using RealtimeService.Api.Hubs;

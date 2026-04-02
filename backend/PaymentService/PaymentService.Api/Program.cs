@@ -4,7 +4,12 @@ using MassTransit;
 using PaymentService.Application;
 using PaymentService.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
+using BunBo.SharedKernel;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("PaymentService");
+
 
 // Add services to the container.
 builder.Services.AddControllers();

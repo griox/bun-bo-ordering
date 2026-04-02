@@ -1,12 +1,14 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-jammy AS build
 WORKDIR /src
 
 # Copy csproj and restore as distinct layers
+COPY ["BunBo.SharedKernel/BunBo.SharedKernel.csproj", "BunBo.SharedKernel/"]
 COPY ["ApiGateway/ApiGateway.csproj", "ApiGateway/"]
 
 RUN dotnet restore "ApiGateway/ApiGateway.csproj"
 
-# Copy source — only ApiGateway dir to preserve layer cache
+# Copy source
+COPY BunBo.SharedKernel/ BunBo.SharedKernel/
 COPY ApiGateway/ ApiGateway/
 WORKDIR "/src/ApiGateway"
 RUN dotnet build "ApiGateway.csproj" -c Release -o /app/build

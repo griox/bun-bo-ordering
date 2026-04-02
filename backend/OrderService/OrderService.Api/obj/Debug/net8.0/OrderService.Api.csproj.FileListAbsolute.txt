@@ -133,3 +133,17 @@
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.dll
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 /Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.AspNetCore.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Enrichers.Environment.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Enrichers.Process.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Enrichers.Thread.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Exceptions.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Extensions.Hosting.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Extensions.Logging.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Formatting.Compact.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Settings.Configuration.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Sinks.Console.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Sinks.Debug.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Sinks.File.dll
+/Users/huyngo/bunbo-system-datn/backend/OrderService/OrderService.Api/bin/Debug/net8.0/Serilog.Sinks.Seq.dll

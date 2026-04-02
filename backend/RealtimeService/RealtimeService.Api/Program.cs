@@ -4,8 +4,12 @@ using System.Text;
 using MassTransit;
 using RealtimeService.Api.Consumers;
 using RealtimeService.Api.Hubs;
+using BunBo.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("RealtimeService");
+
 
 builder.Services.AddEndpointsApiExplorer();
 

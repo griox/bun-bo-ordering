@@ -7,9 +7,12 @@ using OrderService.Domain.Enums;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BunBo.SharedKernel;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("OrderService");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

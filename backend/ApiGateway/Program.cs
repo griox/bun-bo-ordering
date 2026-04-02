@@ -1,4 +1,9 @@
+using BunBo.SharedKernel;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("ApiGateway");
+
 
 // Add Yarp reverse proxy
 builder.Services.AddReverseProxy()

@@ -7,8 +7,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BunBo.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.AddSerilogLogging("CatalogService");
+
 
 // Configure Kestrel to support HTTP/2 for gRPC globally
 builder.WebHost.ConfigureKestrel(options =>

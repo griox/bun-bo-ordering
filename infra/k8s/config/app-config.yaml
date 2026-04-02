@@ -17,3 +17,7 @@ data:
   S3Settings__ServiceUrl: "https://s3.ap-southeast-1.amazonaws.com"
   S3Settings__BucketName: "bunbo-bucket"
   S3Settings__Region: "ap-southeast-1"
+  # Centralized Logging (Seq)
+  Serilog__SeqUrl: "http://seq.monitoring.svc.cluster.local:5341"
+  Serilog__MinimumLevel__Default: "Information"
+  Serilog__MinimumLevel__Override__Microsoft: "Warning"

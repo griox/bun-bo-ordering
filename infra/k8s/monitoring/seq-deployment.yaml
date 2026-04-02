@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: seq
+  namespace: monitoring
+  labels:
+    app: seq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seq
+  template:
+    metadata:
+      labels:
+        app: seq
+    spec:
+      containers:
+      - name: seq
+        image: datalust/seq:latest
+        ports:
+        - containerPort: 80
+          name: http
+        - containerPort: 5341
+          name: ingestion
+        environment:
+        - name: ACCEPT_EULA
+          value: "Y"
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "512Mi"
+          limits:
+            cpu: "500m"
+            memory: "1Gi"
+        volumeMounts:
+        - name: seq-data
+          mountPath: /data
+      volumes:
+      - name: seq-data
+        emptyDir: {} # For production, use a PersistentVolumeClaim
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seq
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 80
+    name: ui
+  - port: 5341
+    targetPort: 5341
+    name: ingestion
+  selector:
+    app: seq
