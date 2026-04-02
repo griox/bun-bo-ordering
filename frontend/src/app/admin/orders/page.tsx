@@ -82,7 +82,7 @@ export default function OrdersPage() {
 
             <Card className="border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
                 <div className="p-6 bg-gray-50/30 border-b border-gray-100 flex flex-col lg:flex-row gap-6 justify-between items-center">
-                    <Tabs defaultValue="All" onValueChange={(val) => { setStatusFilter(val); setPage(0); }} className="w-full lg:w-auto">
+                    <Tabs defaultValue="Paid" onValueChange={(val) => { setStatusFilter(val); setPage(0); }} className="w-full lg:w-auto">
                         <TabsList className="bg-gray-100/50 p-1 h-auto rounded-2xl border border-gray-100">
                             <TabsTrigger value="All" className="rounded-xl px-6 py-2.5 font-black text-[10px] uppercase data-[state=active]:bg-white data-[state=active]:text-[#ff4d4f] data-[state=active]:shadow-sm transition-all tracking-widest">Tất cả</TabsTrigger>
                             <TabsTrigger value="Unpaid" className="rounded-xl px-6 py-2.5 font-black text-[10px] uppercase data-[state=active]:bg-white data-[state=active]:text-[#ff4d4f] data-[state=active]:shadow-sm transition-all tracking-widest">Chưa thanh toán</TabsTrigger>

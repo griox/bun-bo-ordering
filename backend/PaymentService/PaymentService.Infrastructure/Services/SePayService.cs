@@ -23,7 +23,6 @@ public class SePayService : ISePayService
     {
         try
         {
-            var apiKey = _configuration["SePay:ApiKey"] ?? "YOUR_SEPAY_API_KEY";
             var accountNumber = _configuration["SePay:AccountNumber"] ?? "YOUR_ACC_NUMBER";
             var bankBin = _configuration["SePay:BankBin"] ?? "YOUR_BANK_BIN";
 
@@ -31,48 +30,16 @@ public class SePayService : ISePayService
             // Using long to ensure no decimal points in the JSON payload.
             var roundedAmount = (long)Math.Round(amount);
 
-            var requestBody = new
+            var checkoutUrl = $"https://checkout.sepay.vn?acc={accountNumber}&bank={bankBin}&amount={roundedAmount}&des={Uri.EscapeDataString(description)}";
+            var qrCodeUrl = $"https://qr.sepay.vn/img?acc={accountNumber}&bank={bankBin}&amount={roundedAmount}&des={Uri.EscapeDataString(description)}";
+
+            return await Task.FromResult(new SePayCheckoutResponse
             {
-                account_number = accountNumber,
-                amount = roundedAmount,
-                bank_bin = bankBin,
-                description = description,
-                order_id = orderId.ToString()
-            };
-
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
-
-            var response = await _httpClient.PostAsJsonAsync("https://api.sepay.vn/v1/checkout/create", requestBody, cancellationToken);
-            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                _logger.LogError("[SEPAY] API Error: {Status} - {Error}", response.StatusCode, responseBody);
-                return new SePayCheckoutResponse { Success = false, Message = $"SePay Error: {response.StatusCode}" };
-            }
-
-            try 
-            {
-                var content = JsonSerializer.Deserialize<SePayApiResponse>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-                
-                if (content?.Status == 200 && content.Data != null)
-                {
-                    return new SePayCheckoutResponse
-                    {
-                        Success = true,
-                        CheckoutUrl = content.Data.CheckoutUrl,
-                        QrCode = content.Data.QrCode,
-                        Message = "Success"
-                    };
-                }
-
-                return new SePayCheckoutResponse { Success = false, Message = content?.Error?.Message ?? "Unknown SePay business error" };
-            }
-            catch (JsonException jex)
-            {
-                _logger.LogError(jex, "[SEPAY] Failed to parse JSON response. Body: {Body}", responseBody);
-                return new SePayCheckoutResponse { Success = false, Message = "Invalid response format from SePay" };
-            }
+                Success = true,
+                CheckoutUrl = checkoutUrl,
+                QrCode = qrCodeUrl,
+                Message = "Success"
+            });
         }
         catch (Exception ex)
         {

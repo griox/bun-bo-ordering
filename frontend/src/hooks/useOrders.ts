@@ -53,7 +53,9 @@ export const useOrders = (status?: string, skip: number = 0, take: number = 50) 
     queryFn: async () => {
       let url = `/api/orders?skip=${skip}&take=${take}`;
       if (status && status !== 'All') {
-        url += `&status=${status}`;
+        const statuses: Record<string, number> = { 'Unpaid': 0, 'Paid': 1 };
+        const statusValue = statuses[status] !== undefined ? statuses[status] : status;
+        url += `&status=${statusValue}`;
       }
       const response = await axiosInstance.get(url);
       return response.data;
