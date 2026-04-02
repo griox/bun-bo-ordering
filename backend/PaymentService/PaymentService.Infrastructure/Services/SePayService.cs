@@ -27,10 +27,14 @@ public class SePayService : ISePayService
             var accountNumber = _configuration["SePay:AccountNumber"] ?? "YOUR_ACC_NUMBER";
             var bankBin = _configuration["SePay:BankBin"] ?? "YOUR_BANK_BIN";
 
+            // SePay/VND typically requires whole numbers. 
+            // Using long to ensure no decimal points in the JSON payload.
+            var roundedAmount = (long)Math.Round(amount);
+
             var requestBody = new
             {
                 account_number = accountNumber,
-                amount = amount,
+                amount = roundedAmount,
                 bank_bin = bankBin,
                 description = description,
                 order_id = orderId.ToString()
@@ -39,32 +43,40 @@ public class SePayService : ISePayService
             _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
             var response = await _httpClient.PostAsJsonAsync("https://api.sepay.vn/v1/checkout/create", requestBody, cancellationToken);
-            
+            var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
+
             if (!response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync(cancellationToken);
-                _logger.LogError("[SEPAY] API Error: {Status} - {Error}", response.StatusCode, error);
+                _logger.LogError("[SEPAY] API Error: {Status} - {Error}", response.StatusCode, responseBody);
                 return new SePayCheckoutResponse { Success = false, Message = $"SePay Error: {response.StatusCode}" };
             }
 
-            var content = await response.Content.ReadFromJsonAsync<SePayApiResponse>(new JsonSerializerOptions { PropertyNameCaseInsensitive = true }, cancellationToken);
-            
-            if (content?.Status == 200 && content.Data != null)
+            try 
             {
-                return new SePayCheckoutResponse
+                var content = JsonSerializer.Deserialize<SePayApiResponse>(responseBody, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+                
+                if (content?.Status == 200 && content.Data != null)
                 {
-                    Success = true,
-                    CheckoutUrl = content.Data.CheckoutUrl,
-                    QrCode = content.Data.QrCode,
-                    Message = "Success"
-                };
-            }
+                    return new SePayCheckoutResponse
+                    {
+                        Success = true,
+                        CheckoutUrl = content.Data.CheckoutUrl,
+                        QrCode = content.Data.QrCode,
+                        Message = "Success"
+                    };
+                }
 
-            return new SePayCheckoutResponse { Success = false, Message = content?.Error?.Message ?? "Unknown error" };
+                return new SePayCheckoutResponse { Success = false, Message = content?.Error?.Message ?? "Unknown SePay business error" };
+            }
+            catch (JsonException jex)
+            {
+                _logger.LogError(jex, "[SEPAY] Failed to parse JSON response. Body: {Body}", responseBody);
+                return new SePayCheckoutResponse { Success = false, Message = "Invalid response format from SePay" };
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[SEPAY] Exception while creating checkout URL for Order: {OrderId}", orderId);
+            _logger.LogError(ex, "[SEPAY] Unexpected exception while creating checkout URL for Order: {OrderId}", orderId);
             return new SePayCheckoutResponse { Success = false, Message = ex.Message };
         }
     }
