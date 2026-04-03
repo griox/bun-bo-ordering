@@ -14,7 +14,7 @@ public class PaymentTransactionTests
         var orderId = Guid.NewGuid();
         var amount = 150000m;
         var provider = "SePay";
-        var paymentUrl = "https://checkout.sepay.vn/xyz";
+        var paymentUrl = "https://dl.vietqr.io/pay?app=xyz";
 
         // Act
         var transaction = new PaymentTransaction(orderId, amount, provider, paymentUrl);

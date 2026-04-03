@@ -30,7 +30,8 @@ public class SePayService : ISePayService
             // Using long to ensure no decimal points in the JSON payload.
             var roundedAmount = (long)Math.Round(amount);
 
-            var checkoutUrl = $"https://checkout.sepay.vn?acc={accountNumber}&bank={bankBin}&amount={roundedAmount}&des={Uri.EscapeDataString(description)}";
+            // Use dl.vietqr.io for universal mobile deep-linking to banking apps
+            var checkoutUrl = $"https://dl.vietqr.io/pay?app={bankBin}&ba={accountNumber}&am={roundedAmount}&tn={Uri.EscapeDataString(description)}";
             var qrCodeUrl = $"https://qr.sepay.vn/img?acc={accountNumber}&bank={bankBin}&amount={roundedAmount}&des={Uri.EscapeDataString(description)}";
 
             return await Task.FromResult(new SePayCheckoutResponse
