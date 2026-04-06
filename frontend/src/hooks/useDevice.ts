@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -7,6 +8,7 @@ export function useDevice() {
     const [isInAppBrowser, setIsInAppBrowser] = useState(false);
 
     useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
 
         // Basic mobile detection

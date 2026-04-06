@@ -234,6 +234,18 @@ orderGroup.MapGet("/stats", async (MediatR.IMediator mediator) =>
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 
+orderGroup.MapGet("/customer/{customerId:guid}", async (Guid customerId, MediatR.IMediator mediator) =>
+{
+    var orders = await mediator.Send(new OrderService.Application.Orders.Queries.GetOrdersByCustomerQuery(customerId));
+    return Results.Ok(orders);
+}).RequireAuthorization();
+
+orderGroup.MapGet("/customer/{customerId:guid}/recent", async (Guid customerId, MediatR.IMediator mediator) =>
+{
+    var items = await mediator.Send(new OrderService.Application.Orders.Queries.GetRecentOrderForCustomerQuery(customerId));
+    return Results.Ok(items);
+}).RequireAuthorization();
+
 orderGroup.MapPut("/{id}/status", async (Guid id, OrderService.Domain.Enums.OrderStatus status, MediatR.IMediator mediator) =>
 {
     var cmd = new OrderService.Application.Orders.Commands.UpdateOrderStatusCommand(id, status);

@@ -6,9 +6,10 @@ import { toast } from 'sonner';
 
 export interface OrderItem {
   id: string;
-  orderId: string;
-  dishId: string;
-  dishName: string;
+  orderId?: string;
+  dishId?: string;
+  foodId?: string;
+  dishName?: string;
   productName?: string;
   unitPrice: number;
   quantity: number;
@@ -22,8 +23,9 @@ export interface Order {
   tableCode?: string;
   tableName?: string;
   totalAmount: number;
-  status: 'Pending' | 'Confirmed' | 'Completed' | 'Cancelled' | 'Paid' | number | string;
+  status: 'Unpaid' | 'Paid' | 'Confirmed' | 'Completed' | 'Cancelled' | number | string;
   orderItems: OrderItem[];
+  paymentMethod?: string;
   createdAt: string;
   updatedAt: string;
   note?: string;
@@ -82,5 +84,16 @@ export const useOrder = (orderId?: string) => {
       return response.data;
     },
     enabled: !!orderId,
+  });
+};
+
+export const useCustomerOrders = (customerId?: string) => {
+  return useQuery<Order[]>({
+    queryKey: ['customerOrders', customerId],
+    queryFn: async () => {
+      const response = await axiosInstance.get(`/api/orders/customer/${customerId}`);
+      return response.data;
+    },
+    enabled: !!customerId,
   });
 };

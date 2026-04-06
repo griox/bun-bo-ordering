@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { useOrderNotificationStore, OrderNotification } from '@/store/useOrderNotificationStore';
 import { useOrderStore } from '@/store/useOrderStore';
 import { toast } from 'sonner';
+import { useQueryClient } from '@tanstack/react-query';
 
 const getHubUrl = () => {
     // Priority: 1. ENV VAR, 2. Current origin if accessing through gateway, 3. Localhost:8000
@@ -27,6 +28,7 @@ export const useRealtime = () => {
     const { token, user } = useAuthStore();
     const { session } = useOrderStore();
     const addOrder = useOrderNotificationStore((state) => state.addOrder);
+    const queryClient = useQueryClient();
 
     useEffect(() => {
         console.log("SignalR Effect Sync:", {
@@ -57,14 +59,39 @@ export const useRealtime = () => {
                 console.log("!!! SIGNALR GROUP JOIN CONFIRMED !!!", groupName);
             });
 
-            globalConnection.on("ReceiveNewOrder", (order: OrderNotification) => {
-                console.log("New order received:", order);
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            globalConnection.on("ReceiveNewOrder", (rawOrder: any) => {
+                console.log("New order received:", rawOrder);
+
+                const order: OrderNotification = {
+                    orderId: rawOrder.orderId || rawOrder.OrderId,
+                    tableNumber: rawOrder.tableNumber || rawOrder.TableNumber || rawOrder.tableCode || rawOrder.TableCode || "N/A",
+                    items: rawOrder.items || rawOrder.Items || [],
+                    status: rawOrder.status || rawOrder.Status || 'Created',
+                    createdAt: rawOrder.createdAt || rawOrder.CreatedAt || new Date().toISOString()
+                };
+
                 addOrder(order);
                 playNotificationSound();
                 toast.success(`Đơn hàng mới từ bàn ${order.tableNumber}`, {
                     description: "Nhấn vào chuông để xem chi tiết",
                     duration: 5000,
                 });
+                queryClient.invalidateQueries({ queryKey: ['orders'] });
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            globalConnection.on("OrderUpdated", (rawUpdate: any) => {
+                console.log("OrderUpdated received:", rawUpdate);
+                const orderId = rawUpdate.orderId || rawUpdate.OrderId;
+                const newStatus = rawUpdate.newStatus || rawUpdate.NewStatus;
+
+                if (orderId && newStatus) {
+                    useOrderNotificationStore.getState().updateOrderStatus(orderId, newStatus);
+
+                    toast.info(`Đơn hàng ${orderId.substring(0, 8).toUpperCase()} đã chuyển sang: ${newStatus}`);
+                    queryClient.invalidateQueries({ queryKey: ['orders'] });
+                }
             });
 
             globalConnection.on("PaymentSuccess", (data: { orderId?: string; OrderId?: string; transactionId?: string; TransactionId?: string }) => {
@@ -84,6 +111,7 @@ export const useRealtime = () => {
                 toast.success(`Thanh toán thành công!`, {
                     description: `Mã giao dịch: ${transactionId || ""}`
                 });
+                queryClient.invalidateQueries({ queryKey: ['orders'] });
             });
         }
 
@@ -149,7 +177,7 @@ export const useRealtime = () => {
             // We DON'T stop the global connection here to avoid churn.
             // It will stay alive for the lifetime of the app.
         };
-    }, [token, addOrder, user?.role, session?.id]);
+    }, [token, addOrder, user?.role, session?.id, queryClient]);
 
     // Separate effect for syncing groups to avoid connection churn
     useEffect(() => {

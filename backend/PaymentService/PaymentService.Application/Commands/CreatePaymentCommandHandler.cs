@@ -28,9 +28,10 @@ public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand,
             await _repository.SaveChangesAsync(cancellationToken);
         }
 
-        // Call SePay API to get checkout_url
-        // Note: In a real app, description could be "Order #123"
-        var description = $"ORDER {request.OrderId.ToString().Substring(0, 8).ToUpper()}";
+        // Call SePay to generate checkout and QR endpoints
+        // Use full OrderId GUID to ensure webhook regex can match it
+        // MUST INCLUDE "SEVQR" PREFIX so SePay recognizes it as a system transaction and triggers the webhook
+        var description = $"SEVQR {request.OrderId}";
         var response = await _sePayService.CreateCheckoutUrlAsync(request.OrderId, request.Amount, description, cancellationToken);
 
         return response;

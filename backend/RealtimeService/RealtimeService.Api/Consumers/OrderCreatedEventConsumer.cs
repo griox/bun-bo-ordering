@@ -33,10 +33,11 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         // If Transfer, we wait for PaymentCompletedEvent to notify Admin
         if (message.PaymentMethod == "Cash")
         {
-            _logger.LogInformation($"Notifying Admin of new CASH order {message.OrderId}");
-            await _hubContext.Clients.Group("Admin").SendAsync("ReceiveNewOrder", new 
+            _logger.LogInformation($"Notifying Admin/Kitchen of new CASH order {message.OrderId}");
+            await _hubContext.Clients.Group("KitchenGroup").SendAsync("ReceiveNewOrder", new 
             {
                 OrderId = message.OrderId,
+                TableNumber = message.TableNumber,
                 TotalAmount = message.TotalAmount,
                 CreatedAt = message.CreatedAt,
                 TableSessionId = message.TableSessionId,

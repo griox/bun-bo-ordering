@@ -42,7 +42,10 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
 
 var app = builder.Build();
 
@@ -101,6 +104,18 @@ authGroup.MapPost("/logout", () =>
     // Client-side logout strategy
     return Results.Ok(new { Message = "Logged out successfully. Please remove the token from your client storage." });
 });
+
+authGroup.MapGet("/users", async (int? pageNumber, int? pageSize, string? searchTerm, MediatR.IMediator mediator) =>
+{
+    var users = await mediator.Send(new IdentityService.Application.Users.Queries.GetAllUsersQuery(pageNumber ?? 1, pageSize ?? 10, searchTerm));
+    return Results.Ok(users);
+}).RequireAuthorization("Admin");
+
+authGroup.MapGet("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
+{
+    var user = await mediator.Send(new IdentityService.Application.Users.Queries.GetUserByIdQuery(id));
+    return user is null ? Results.NotFound() : Results.Ok(user);
+}).RequireAuthorization();
 
 app.MapGet("/", () => "Identity Service is running.");
 

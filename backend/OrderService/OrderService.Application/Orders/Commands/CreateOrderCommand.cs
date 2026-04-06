@@ -5,6 +5,7 @@ using OrderService.Domain.Entities;
 using OrderService.Domain.Enums;
 using BunBo.SharedKernel.Messaging;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderService.Application.Orders.Commands;
 
@@ -27,7 +28,10 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
 
     public async Task<Guid> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
     {
-        var session = await _context.TableSessions.FindAsync(new object[] { request.TableSessionId }, cancellationToken);
+        var session = await _context.TableSessions
+            .Include(s => s.Table)
+            .SingleOrDefaultAsync(s => s.Id == request.TableSessionId, cancellationToken);
+            
         if (session == null)
         {
             throw new Exception("TableSession not found.");
@@ -64,6 +68,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         {
             OrderId = order.Id,
             TableSessionId = order.TableSessionId,
+            TableNumber = session.Table?.Name ?? "N/A",
             TotalAmount = order.TotalAmount,
             Note = order.Note,
             PaymentMethod = order.PaymentMethod,

@@ -24,7 +24,7 @@ export function OrderDetailModal({ isOpen, onClose, order }: { isOpen: boolean, 
         if (status === 'Cancelled' || status === 'Cancel') {
             return <span className={`${baseClass} text-gray-500 border-gray-200 bg-gray-50`}>{status}</span>;
         }
-        return <span className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50 animate-pulse`}>CHƯA THANH TOÁN</span>;
+        return <span className={`${baseClass} text-red-500 border-red-100 bg-red-50/50 animate-pulse`}>CHƯA THANH TOÁN</span>;
     };
 
     return (

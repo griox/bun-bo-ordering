@@ -42,6 +42,7 @@ public class AppDbContext : DbContext, IAppDbContext
         builder.Entity<Order>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CustomerId); // Add index for fast querying by customer
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Status).HasConversion(v => v.ToString(), v => (OrderStatus)Enum.Parse(typeof(OrderStatus), v));
             

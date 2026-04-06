@@ -29,7 +29,7 @@ public class UpdateOrderStatusCommandHandlerTests
     {
         // Arrange
         var orderId = Guid.NewGuid();
-        var order = new Order(Guid.NewGuid(), null, null); // Status is Unpaid initially
+        var order = new Order(Guid.NewGuid(), null, null, "Cash"); // Status is Unpaid initially
         SetId(order, orderId);
 
         _contextMock.Setup(x => x.Orders.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
@@ -68,7 +68,7 @@ public class UpdateOrderStatusCommandHandlerTests
     {
         // Arrange
         var orderId = Guid.NewGuid();
-        var order = new Order(Guid.NewGuid(), null, null);
+        var order = new Order(Guid.NewGuid(), null, null, "Cash");
         SetId(order, orderId);
         order.UpdateStatus(OrderStatus.Paid); // Order is now Paid
 

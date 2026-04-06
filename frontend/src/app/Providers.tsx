@@ -25,6 +25,11 @@ if (typeof window !== 'undefined') {
     };
 }
 
+function RealtimeInit() {
+    useRealtime();
+    return null;
+}
+
 export function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(() => new QueryClient({
         defaultOptions: {
@@ -36,11 +41,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
         },
     }));
 
-    // Initialize global real-time listeners (SignalR)
-    useRealtime();
-
     return (
         <QueryClientProvider client={queryClient}>
+            <RealtimeInit />
             <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
                 {children}
             </GoogleOAuthProvider>

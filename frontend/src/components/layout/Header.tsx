@@ -32,7 +32,7 @@ export function Header() {
     // Xử lý Hydration mismatch với local storage state của Zustand
     const [mounted, setMounted] = useState(false);
     const { user, logout } = useAuthStore();
-    const { table, session } = useOrderStore();
+    const { session } = useOrderStore();
 
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -101,12 +101,12 @@ export function Header() {
                                                 TRANG QUẢN TRỊ
                                             </Link>
                                         )}
-                                        {user.role === 'Customer' && (
+                                        {user.role === 'Client' && (
                                             <Link
-                                                href="/orders"
+                                                href="/history"
                                                 className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
                                             >
-                                                LỊCH SỬ ĐƠN HÀNG
+                                                LỊCH SỬ GIAO DỊCH
                                             </Link>
                                         )}
                                         <button
@@ -166,9 +166,9 @@ export function Header() {
                                         </DropdownMenuItem>
                                     )}
 
-                                    {mounted && user && user.role === 'Customer' && (
-                                        <DropdownMenuItem id="mobile-history" render={<Link href="/orders" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                            <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ ĐƠN HÀNG</span>
+                                    {mounted && user && user.role === 'Client' && (
+                                        <DropdownMenuItem id="mobile-history" render={<Link href="/history" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
+                                            <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ GIAO DỊCH</span>
                                         </DropdownMenuItem>
                                     )}
 

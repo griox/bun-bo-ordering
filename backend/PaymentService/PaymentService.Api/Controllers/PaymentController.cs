@@ -92,7 +92,7 @@ public class PaymentController : ControllerBase
         else 
         {
             _logger.LogInformation("[SEPAY] referenceCode was not a valid GUID ('{Ref}'). Searching in content...", payload.referenceCode);
-            var match = Regex.Match(payload.content ?? "", @"[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}");
+            var match = Regex.Match(payload.content ?? "", @"[a-fA-F0-9]{8}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{12}");
             
             if (match.Success && Guid.TryParse(match.Value, out validOrderId))
             {

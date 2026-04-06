@@ -11,6 +11,7 @@ public class OrderDetailDto
     public string TableName { get; set; } = string.Empty;
     public decimal TotalAmount { get; set; }
     public string Status { get; set; } = string.Empty;
+    public string PaymentMethod { get; set; } = string.Empty;
     public string? Note { get; set; }
     public DateTime CreatedAt { get; set; }
     public List<OrderItemDto> OrderItems { get; set; } = new();

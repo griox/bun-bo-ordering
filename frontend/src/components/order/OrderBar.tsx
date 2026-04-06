@@ -1,6 +1,5 @@
 'use client';
 
-/* eslint-disable @next/next/no-img-element */
 import React, { useEffect, useState } from 'react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { usePlaceOrderMutation, useCart } from '@/hooks/useCart';
@@ -334,7 +333,6 @@ export function OrderBar() {
                                 <div className="w-full">
                                     {checkoutData ? (
                                         <SePayCheckout
-                                            checkoutUrl={checkoutData.checkoutUrl}
                                             qrCode={checkoutData.qrCode}
                                             amount={total}
                                         />

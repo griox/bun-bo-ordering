@@ -8,6 +8,7 @@ using OrderService.Application.Interfaces;
 using OrderService.Application.Orders.Commands;
 using OrderService.Domain.Entities;
 using OrderService.Domain.Enums;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace OrderService.UnitTests.Application;
@@ -17,6 +18,7 @@ public class CreateOrderCommandHandlerTests
     private readonly Mock<IAppDbContext> _contextMock;
     private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly Mock<ICartDataClient> _cartDataClientMock;
+    private readonly Mock<ILogger<CreateOrderCommandHandler>> _loggerMock;
     private readonly CreateOrderCommandHandler _handler;
 
     public CreateOrderCommandHandlerTests()
@@ -24,7 +26,8 @@ public class CreateOrderCommandHandlerTests
         _contextMock = new Mock<IAppDbContext>();
         _publishEndpointMock = new Mock<IPublishEndpoint>();
         _cartDataClientMock = new Mock<ICartDataClient>();
-        _handler = new CreateOrderCommandHandler(_contextMock.Object, _publishEndpointMock.Object, _cartDataClientMock.Object);
+        _loggerMock = new Mock<ILogger<CreateOrderCommandHandler>>();
+        _handler = new CreateOrderCommandHandler(_contextMock.Object, _publishEndpointMock.Object, _cartDataClientMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -49,7 +52,7 @@ public class CreateOrderCommandHandlerTests
         _contextMock.Setup(x => x.Orders).ReturnsDbSet(new List<Order>());
         _cartDataClientMock.Setup(x => x.GetCartAsync(sessionId.ToString())).ReturnsAsync(cart);
 
-        var command = new CreateOrderCommand(sessionId, null, "No spicy");
+        var command = new CreateOrderCommand(sessionId, null, "No spicy", "Cash");
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -69,7 +72,7 @@ public class CreateOrderCommandHandlerTests
         _contextMock.Setup(x => x.TableSessions.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync((TableSession?)null);
 
-        var command = new CreateOrderCommand(Guid.NewGuid(), null, null);
+        var command = new CreateOrderCommand(Guid.NewGuid(), null, null, "Cash");
 
         // Act
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);
@@ -90,7 +93,7 @@ public class CreateOrderCommandHandlerTests
         _contextMock.Setup(x => x.TableSessions.FindAsync(It.IsAny<object[]>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(session);
 
-        var command = new CreateOrderCommand(sessionId, null, null);
+        var command = new CreateOrderCommand(sessionId, null, null, "Cash");
 
         // Act
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);
@@ -111,7 +114,7 @@ public class CreateOrderCommandHandlerTests
             .ReturnsAsync(session);
         _cartDataClientMock.Setup(x => x.GetCartAsync(sessionId.ToString())).ReturnsAsync(new CartDto());
 
-        var command = new CreateOrderCommand(sessionId, null, null);
+        var command = new CreateOrderCommand(sessionId, null, null, "Cash");
 
         // Act
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);

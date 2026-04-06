@@ -53,7 +53,7 @@ export default function OrdersPage() {
         if (isPaid) {
             return <Badge variant="outline" className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>ĐÃ THANH TOÁN</Badge>;
         }
-        return <Badge variant="outline" className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50 animate-pulse`}>CHƯA THANH TOÁN</Badge>;
+        return <Badge variant="outline" className={`${baseClass} text-red-500 border-red-100 bg-red-50/50 animate-pulse`}>CHƯA THANH TOÁN</Badge>;
     };
 
     return (

@@ -17,6 +17,8 @@ builder.Services.AddEndpointsApiExplorer();
 var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
 builder.Services.AddSignalR(options => {
     options.EnableDetailedErrors = true;
+    options.KeepAliveInterval = TimeSpan.FromSeconds(10);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(30);
 }).AddStackExchangeRedis(redisConnectionString, options => {
     options.Configuration.ChannelPrefix = "BunBoSignalR";
 });
