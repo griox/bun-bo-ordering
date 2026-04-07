@@ -277,6 +277,28 @@ services:
     networks:
       - bunbo-network
 
+  # Notification Service (Email & SMS)
+  notification-service:
+    image: bunbo-notification
+    container_name: bunbo-notification
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMq__Host=bunbo-rabbitmq
+      - Serilog__SeqUrl=http://bunbo-seq:5341
+      - SmtpSettings__Host=smtp.gmail.com
+      - SmtpSettings__Port=587
+      - SmtpSettings__SenderEmail=nh920211@gmail.com
+      - SmtpSettings__Username=nh920211@gmail.com
+      - SmtpSettings__Password=limeqqvcrtcjzzya
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bunbo-network
+
 networks:
   bunbo-network:
     driver: bridge

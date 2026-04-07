@@ -2,6 +2,8 @@ using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using BunBo.SharedKernel.Messaging;
 
 namespace IdentityService.Application.Auth.Commands;
 
@@ -12,12 +14,18 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
     private readonly IAppDbContext _dbContext;
     private readonly ITokenService _tokenService;
     private readonly IGoogleAuthService _googleAuthService;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public GoogleLoginCommandHandler(IAppDbContext dbContext, ITokenService tokenService, IGoogleAuthService googleAuthService)
+    public GoogleLoginCommandHandler(
+        IAppDbContext dbContext, 
+        ITokenService tokenService, 
+        IGoogleAuthService googleAuthService,
+        IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
         _tokenService = tokenService;
         _googleAuthService = googleAuthService;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<LoginResult> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
@@ -38,6 +46,15 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
             user = User.CreateGoogleUser(googleUser.Email, googleUser.Sub);
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync(cancellationToken);
+
+            // Publish event for new Google user
+            await _publishEndpoint.Publish(new UserRegisteredEvent
+            {
+                UserId = user.Id,
+                Username = user.Username,
+                Email = user.Email,
+                RegisteredAt = DateTime.UtcNow
+            }, cancellationToken);
         }
 
         var token = _tokenService.GenerateToken(user);

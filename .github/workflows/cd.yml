@@ -70,13 +70,14 @@ jobs:
           kubectl apply -f infra/k8s/cart/
           kubectl apply -f infra/k8s/order/
           kubectl apply -f infra/k8s/payment/
+          kubectl apply -f infra/k8s/notification/
           kubectl apply -f infra/k8s/realtime/
           kubectl apply -f infra/k8s/gateway/
 
       - name: Force Rollout Restart (Direct Push)
         if: github.event_name == 'push'
         run: |
-          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "realtime-service" "api-gateway")
+          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "api-gateway")
           for service in "${services[@]}"; do
             kubectl rollout restart deployment/$service
           done
@@ -86,7 +87,7 @@ jobs:
         id: verify_rollout
         run: |
           # 5-Phase Deployment: Verify health check
-          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "realtime-service" "api-gateway")
+          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "api-gateway")
           
           for service in "${services[@]}"; do
             echo "Waiting for rollout of deployment/$service..."
@@ -102,7 +103,7 @@ jobs:
         if: failure() && steps.verify_rollout.outcome == 'failure'
         run: |
           echo "::warning::Deployment verification failed, initiating automated rollback..."
-          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "realtime-service" "api-gateway")
+          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "api-gateway")
           
           for service in "${services[@]}"; do
             echo "Rolling back deployment/$service..."

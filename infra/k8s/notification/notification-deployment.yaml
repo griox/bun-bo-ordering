@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  labels:
+    app: notification-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+      - name: notification-service
+        image: griox/bunbo-notification-service:latest
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: RabbitMq__Host
+          value: "rabbitmq.default.svc.cluster.local"
+        - name: RabbitMq__Password
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: RABBITMQ_PASSWORD
+        - name: Serilog__SeqUrl
+          value: "http://seq-service.default.svc.cluster.local:5341"
+        - name: SmtpSettings__Host
+          value: "smtp.gmail.com"
+        - name: SmtpSettings__Port
+          value: "587"
+        - name: SmtpSettings__SenderEmail
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: SMTP_SENDER_EMAIL
+        - name: SmtpSettings__Username
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: SMTP_USERNAME
+        - name: SmtpSettings__Password
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: SMTP_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+spec:
+  type: ClusterIP
+  selector:
+    app: notification-service
+  ports:
+  - port: 80
+    targetPort: 8080

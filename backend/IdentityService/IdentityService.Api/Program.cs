@@ -2,6 +2,7 @@ using IdentityService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using IdentityService.Application;
 using BunBo.SharedKernel;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,19 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
+});
+
+builder.Services.AddMassTransit(x =>
+{
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        var rabbitHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
+        cfg.Host(rabbitHost, "/", h =>
+        {
+            h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
+            h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
+        });
+    });
 });
 
 var app = builder.Build();

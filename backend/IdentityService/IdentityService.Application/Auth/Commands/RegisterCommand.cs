@@ -1,8 +1,10 @@
 using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
-using MediatR;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using BunBo.SharedKernel.Messaging;
+using MediatR;
 
 namespace IdentityService.Application.Auth.Commands;
 
@@ -11,10 +13,12 @@ public record RegisterCommand(string Username, string Email, string Password) : 
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
 {
     private readonly IAppDbContext _dbContext;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public RegisterCommandHandler(IAppDbContext dbContext)
+    public RegisterCommandHandler(IAppDbContext dbContext, IPublishEndpoint publishEndpoint)
     {
         _dbContext = dbContext;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Guid> Handle(RegisterCommand request, CancellationToken cancellationToken)
@@ -41,6 +45,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
 
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // Publish event
+        await _publishEndpoint.Publish(new UserRegisteredEvent
+        {
+            UserId = user.Id,
+            Username = user.Username,
+            Email = user.Email,
+            RegisteredAt = DateTime.UtcNow
+        }, cancellationToken);
 
         return user.Id;
     }
