@@ -14,6 +14,8 @@ spec:
       labels:
         app: cart-service
     spec:
+      nodeSelector:
+        role: apps
       containers:
       - name: cart-service
         image: griox/bunbo-cart-service:latest

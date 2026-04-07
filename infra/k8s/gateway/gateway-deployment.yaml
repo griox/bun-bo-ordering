@@ -14,6 +14,8 @@ spec:
       labels:
         app: api-gateway
     spec:
+      nodeSelector:
+        role: apps
       containers:
       - name: api-gateway
         image: griox/bunbo-api-gateway:latest # Example image tag, will be updated by CI/CD

@@ -14,6 +14,8 @@ spec:
       labels:
         app: catalog-service
     spec:
+      nodeSelector:
+        role: apps
       containers:
       - name: catalog-service
         image: griox/bunbo-catalog-service:latest

@@ -14,6 +14,8 @@ spec:
       labels:
         app: rabbitmq
     spec:
+      nodeSelector:
+        role: infra
       containers:
       - name: rabbitmq
         image: rabbitmq:3-management

@@ -45,6 +45,11 @@ jobs:
       - name: Verify Cluster Connection
         run: kubectl cluster-info
 
+      - name: Ensure Node Labels
+        run: |
+          kubectl label node bunbo-master role=infra --overwrite
+          kubectl label node worker-node role=apps --overwrite
+
       # 2. UPDATE CONFIGURATION
       - name: Prepare Image Tags
         run: |
