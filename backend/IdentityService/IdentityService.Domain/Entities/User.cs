@@ -35,6 +35,11 @@ public class User : BaseEntity
         return user;
     }
 
+    public void UpdateUsername(string newUsername)
+    {
+        Username = newUsername;
+    }
+
     public void UpdatePassword(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;

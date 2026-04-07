@@ -56,6 +56,12 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
                 RegisteredAt = DateTime.UtcNow
             }, cancellationToken);
         }
+        else if (user.Username.Contains("@"))
+        {
+            // Auto-correct legacy usernames that were set to the full email
+            user.UpdateUsername(user.Email.Split('@')[0]);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
 
         var token = _tokenService.GenerateToken(user);
         return new LoginResult(token, user.Id.ToString(), user.Username, user.Email, user.Role);
