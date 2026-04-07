@@ -68,9 +68,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoIdentityDb;Username=root;Password=rootpassword
-      - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
-      - Jwt__Issuer=BunBoIdentityService
-      - Jwt__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=guest
@@ -94,9 +94,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoCatalogDb;Username=root;Password=rootpassword
-      - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
-      - Jwt__Issuer=BunBoIdentityService
-      - Jwt__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
       - Kestrel__Endpoints__Http__Protocols=Http1AndHttp2
       - S3Settings__ServiceUrl=${AWS_S3_SERVICE_URL:-http://minio:9000}
@@ -123,9 +123,9 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
       - GrpcSettings__CatalogUrl=http://catalog-service:50022
-      - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
-      - Jwt__Issuer=BunBoIdentityService
-      - Jwt__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
     ports:
       - "5003:8080"
@@ -149,9 +149,9 @@ services:
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest
-      - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
-      - Jwt__Issuer=BunBoIdentityService
-      - Jwt__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
     ports:
       - "5004:8080"
@@ -198,9 +198,9 @@ services:
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest
-      - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
-      - Jwt__Issuer=BunBoIdentityService
-      - Jwt__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
     ports:
       - "5006:8080"
@@ -221,9 +221,9 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - Jwt__Key=SuperSecretKeyForBunBoSystem123456789!!!
-      - Jwt__Issuer=BunBoIdentityService
-      - Jwt__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
       - Cors__AllowedOrigins__0=http://localhost:3000
       - Kestrel__Endpoints__Http__Url=http://+:8080
       - ReverseProxy__Clusters__identity-cluster__Destinations__destination1__Address=http://identity-service:8080
@@ -291,7 +291,7 @@ services:
       dockerfile: NotificationService/Dockerfile
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - RabbitMq__Host=bunbo-rabbitmq
+      - RabbitMq__Host=rabbitmq
       - Serilog__SeqUrl=http://bunbo-seq:5341
       - SmtpSettings__Host=smtp.gmail.com
       - SmtpSettings__Port=587

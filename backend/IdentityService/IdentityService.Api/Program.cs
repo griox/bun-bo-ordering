@@ -50,7 +50,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    x.UsingRabbitMq((context, cfg) =>
+    x.UsingRabbitMq((_, cfg) =>
     {
         var rabbitHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
         cfg.Host(rabbitHost, "/", h =>
