@@ -69,6 +69,15 @@ spec:
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
           value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        - name: RabbitMq__Host
+          value: "rabbitmq.default.svc.cluster.local"
+        - name: RabbitMq__Username
+          value: "guest"
+        - name: RabbitMq__Password
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: RABBITMQ_PASSWORD
 ---
 apiVersion: v1
 kind: Service
