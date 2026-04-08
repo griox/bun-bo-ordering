@@ -77,10 +77,7 @@ export default function AdminDashboard() {
         <div className="space-y-12 pb-20 font-mono">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-gray-200 pb-8">
                 <div>
-                    <div className="flex items-center gap-2 mb-2">
-                        <div className="size-2 rounded-full bg-green-500 animate-pulse" />
-                        <span className="text-[10px] font-black text-gray-400 tracking-[0.2em] uppercase">Status: Hệ thống hoạt động</span>
-                    </div>
+
                     <h2 className="text-4xl font-black text-black tracking-tighter mb-1 uppercase">Tổng quan Dash</h2>
                     <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Phiên làm việc: {user?.username?.toUpperCase() || 'ROOT_ACCESS'}</p>
                 </div>

@@ -60,6 +60,7 @@ export default function AdminUserManagement() {
         setSelectedOrder(order);
         setIsOrderDetailModalOpen(true);
     };
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
         <div className="space-y-10 pb-10 font-mono">
@@ -71,18 +72,13 @@ export default function AdminUserManagement() {
                     </div>
                     <div>
                         <h2 className="text-4xl font-black text-black mb-0.5 uppercase tracking-tighter">Người dùng</h2>
-                        <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Quản lý định danh & lịch sử giao dịch khách hàng</p>
+                        <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Quản lý thông tin & lịch sử giao dịch khách hàng</p>
                     </div>
                 </div>
             </div>
 
             <Card className="border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
                 <div className="p-6 bg-gray-50/30 border-b border-gray-100 flex flex-col lg:flex-row gap-6 justify-between items-center">
-                    <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="bg-white border-gray-100 px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm">
-                            Tổng cộng: {users?.length || 0} thành viên
-                        </Badge>
-                    </div>
 
                     <div className="relative w-full lg:w-80">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-300" />
@@ -184,7 +180,7 @@ export default function AdminUserManagement() {
 
                 <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
                     <p className="font-black text-[10px] text-gray-400 uppercase tracking-widest italic">
-                        Trang <b>{page + 1}</b> | Tổng cộng <b>{totalCount}</b> thành viên
+                        Trang <b>{page + 1}</b> / <b>{totalPages || 1}</b> | Tổng cộng <b>{totalCount}</b> thành viên
                     </p>
                     <div className="flex gap-3">
                         <Button

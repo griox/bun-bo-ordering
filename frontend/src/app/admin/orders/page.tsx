@@ -31,7 +31,10 @@ export default function OrdersPage() {
     const [page, setPage] = useState(0);
     const pageSize = 10;
 
-    const { data: orders = [], isLoading } = useOrders(statusFilter, page * pageSize, pageSize);
+    const { data: pagedData, isLoading } = useOrders(statusFilter, page * pageSize, pageSize);
+    const orders = pagedData?.items || [];
+    const totalCount = pagedData?.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / pageSize);
 
     const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -189,7 +192,7 @@ export default function OrdersPage() {
 
                 <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
                     <p className="font-black text-[10px] text-gray-400 uppercase tracking-widest italic">
-                        Trang <b>{page + 1}</b> | Hiển thị tối đa <b>{pageSize}</b> bản ghi
+                        Trang <b>{page + 1}</b> / <b>{totalPages || 1}</b> | Tổng cộng <b>{totalCount}</b> đơn
                     </p>
                     <div className="flex gap-3">
                         <Button
@@ -198,15 +201,15 @@ export default function OrdersPage() {
                             disabled={page === 0}
                             onClick={() => setPage(prev => Math.max(0, prev - 1))}
                         >
-                            PREV_CYCLE
+                            trước
                         </Button>
                         <Button
                             variant="ghost"
                             className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50"
-                            disabled={filteredOrders.length < pageSize}
+                            disabled={page + 1 >= totalPages}
                             onClick={() => setPage(prev => prev + 1)}
                         >
-                            NEXT_CYCLE
+                            tiếp theo
                         </Button>
                     </div>
                 </div>

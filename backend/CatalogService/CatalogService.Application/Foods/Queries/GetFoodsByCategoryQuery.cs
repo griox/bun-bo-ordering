@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 
 namespace CatalogService.Application.Foods.Queries;
 
-public record FoodDto(Guid Id, string Name, string? Description, string? ImageUrl, decimal Price, bool IsAvailable, int CategoryId);
 
 public record GetFoodsByCategoryQuery(int CategoryId) : IRequest<List<FoodDto>>;
 
@@ -23,6 +22,7 @@ public class GetFoodsByCategoryQueryHandler : IRequestHandler<GetFoodsByCategory
     public async Task<List<FoodDto>> Handle(GetFoodsByCategoryQuery request, CancellationToken cancellationToken)
     {
         var foods = await _context.Foods
+            .Include(f => f.Category)
             .Where(f => f.CategoryId == request.CategoryId)
             .ToListAsync(cancellationToken);
 
@@ -33,7 +33,8 @@ public class GetFoodsByCategoryQueryHandler : IRequestHandler<GetFoodsByCategory
             FixImageUrl(f.ImageUrl), 
             f.Price, 
             f.IsAvailable, 
-            f.CategoryId))
+            f.CategoryId,
+            f.Category?.Name))
             .ToList();
     }
 

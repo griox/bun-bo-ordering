@@ -5,9 +5,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace CatalogService.Application.Foods.Queries;
 
-public record GetFoodsQuery(int Skip = 0, int Take = 50) : IRequest<List<FoodDto>>;
+public record PagedResult<T>(List<T> Items, int TotalCount, int Skip, int Take);
 
-public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, List<FoodDto>>
+public record GetFoodsQuery(int Skip = 0, int Take = 50) : IRequest<PagedResult<FoodDto>>;
+
+public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<FoodDto>>
 {
     private readonly IAppDbContext _context;
     private readonly string _publicUrl;
@@ -18,24 +20,31 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, List<FoodDto>
         _publicUrl = configuration["S3Settings:PublicUrl"] ?? "http://localhost:9000";
     }
 
-    public async Task<List<FoodDto>> Handle(GetFoodsQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<FoodDto>> Handle(GetFoodsQuery request, CancellationToken cancellationToken)
     {
-        var foods = await _context.Foods
+        var query = _context.Foods.AsQueryable();
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var foods = await query
             .Include(f => f.Category)
             .OrderBy(f => f.Name)
             .Skip(request.Skip)
             .Take(request.Take)
             .ToListAsync(cancellationToken);
 
-        return foods.Select(f => new FoodDto(
+        var items = foods.Select(f => new FoodDto(
             f.Id,
             f.Name,
             f.Description,
             FixImageUrl(f.ImageUrl),
             f.Price,
             f.IsAvailable,
-            f.CategoryId
+            f.CategoryId,
+            f.Category?.Name
         )).ToList();
+
+        return new PagedResult<FoodDto>(items, totalCount, request.Skip, request.Take);
     }
 
     private string? FixImageUrl(string? imageUrl)

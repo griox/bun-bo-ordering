@@ -49,8 +49,15 @@ export const useUpdateOrderStatusMutation = () => {
   });
 };
 
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  skip: number;
+  take: number;
+}
+
 export const useOrders = (status?: string, skip: number = 0, take: number = 50) => {
-  return useQuery<Order[]>({
+  return useQuery<PagedResult<Order>>({
     queryKey: ['orders', status, skip, take],
     queryFn: async () => {
       let url = `/api/orders?skip=${skip}&take=${take}`;
@@ -60,6 +67,17 @@ export const useOrders = (status?: string, skip: number = 0, take: number = 50) 
         url += `&status=${statusValue}`;
       }
       const response = await axiosInstance.get(url);
+
+      // Handle both raw array and PagedResult
+      if (Array.isArray(response.data)) {
+        return {
+          items: response.data,
+          totalCount: response.data.length, // This is not accurate for all items, but helps avoid crash
+          skip: skip,
+          take: take
+        };
+      }
+
       return response.data;
     },
   });

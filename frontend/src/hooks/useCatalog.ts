@@ -43,11 +43,29 @@ export const useFoodsByCategory = (categoryId: number | null) => {
   });
 };
 
+export interface PagedResult<T> {
+  items: T[];
+  totalCount: number;
+  skip: number;
+  take: number;
+}
+
 export const useAllFoods = (skip: number = 0, take: number = 50) => {
-  return useQuery<Food[]>({
+  return useQuery<PagedResult<Food>>({
     queryKey: ['all-foods', skip, take],
     queryFn: async () => {
       const response = await axiosInstance.get(`/api/catalog/foods?skip=${skip}&take=${take}`);
+
+      // Handle both raw array and PagedResult
+      if (Array.isArray(response.data)) {
+        return {
+          items: response.data,
+          totalCount: response.data.length,
+          skip: skip,
+          take: take
+        };
+      }
+
       return response.data;
     },
   });

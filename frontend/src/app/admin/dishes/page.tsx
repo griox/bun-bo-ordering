@@ -66,7 +66,10 @@ export default function DishesPage() {
 
     // TanStack Query Hooks
     const { data: categories = [], isLoading: catsLoading } = useCategories();
-    const { data: foods = [], isLoading: foodsLoading } = useAllFoods(page * pageSize, pageSize);
+    const { data: pagedData, isLoading: foodsLoading } = useAllFoods(page * pageSize, pageSize);
+    const foods = pagedData?.items || [];
+    const totalCount = pagedData?.totalCount || 0;
+    const totalPages = Math.ceil(totalCount / pageSize);
     const createFoodMutation = useCreateFoodMutation();
     const updateFoodMutation = useUpdateFoodMutation();
     const deleteFoodMutation = useDeleteFoodMutation();
@@ -189,10 +192,7 @@ export default function DishesPage() {
         deleteFoodMutation.mutate(id);
     };
 
-    const filteredDishes = foods.filter(dish =>
-        dish.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        dish.categoryName?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredDishes = foods;
 
     const isLoading = catsLoading || foodsLoading;
 
@@ -527,7 +527,7 @@ export default function DishesPage() {
 
                 <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
                     <p className="font-black text-[10px] text-gray-400 uppercase tracking-widest italic">
-                        Trang <b>{page + 1}</b> | Hiển thị tối đa <b>{pageSize}</b> bản ghi
+                        Trang <b>{page + 1}</b> / <b>{totalPages || 1}</b> | Tổng cộng <b>{totalCount}</b> món ăn
                     </p>
                     <div className="flex gap-3">
                         <Button
@@ -541,7 +541,7 @@ export default function DishesPage() {
                         <Button
                             variant="ghost"
                             className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50"
-                            disabled={foods.length < pageSize}
+                            disabled={page + 1 >= totalPages}
                             onClick={() => setPage(prev => prev + 1)}
                         >
                             TIẾP THEO
