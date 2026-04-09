@@ -6,10 +6,8 @@ import Link from "next/link";
 import { useAllFoods } from "@/hooks/useCatalog";
 
 export function FeaturedMenu() {
-    const { data: foods = [], isLoading } = useAllFoods();
-
-    // Select top 3 items or first 3
-    const featuredItems = foods.slice(0, 3);
+    const { data: pagedData, isLoading } = useAllFoods(0, 3);
+    const featuredItems = pagedData?.items || [];
 
     return (
         <section className="py-20 bg-background relative overflow-hidden">

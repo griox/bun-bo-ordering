@@ -212,6 +212,32 @@ services:
     networks:
       - bunbo-network
 
+  promotion-service:
+    build:
+      context: .
+      dockerfile: PromotionService/Dockerfile
+    container_name: bunbo-promotion
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoPromotionDb;Username=root;Password=rootpassword
+      - RabbitMq__Host=rabbitmq
+      - RabbitMq__Username=guest
+      - RabbitMq__Password=guest
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Issuer=BunBoIdentityService
+      - JwtSettings__Audience=BunBoClients
+      - Kestrel__Endpoints__Http__Url=http://+:8080
+    ports:
+      - "5007:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - bunbo-network
+
   # API Gateway
   api-gateway:
     build:
@@ -241,6 +267,7 @@ services:
       - order-service
       - realtime-service
       - payment-service
+      - promotion-service
     networks:
       - bunbo-network
 

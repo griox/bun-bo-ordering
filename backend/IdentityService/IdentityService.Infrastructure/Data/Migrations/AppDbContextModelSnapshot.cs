@@ -28,6 +28,12 @@ namespace IdentityService.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("BlacklistReason")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("BlacklistedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -41,6 +47,9 @@ namespace IdentityService.Infrastructure.Data.Migrations
                     b.Property<string>("GoogleId")
                         .HasMaxLength(150)
                         .HasColumnType("character varying(150)");
+
+                    b.Property<bool>("IsBlacklisted")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("boolean");

@@ -1,0 +1,35 @@
+using BunBo.SharedKernel;
+
+namespace PromotionService.Domain.Entities;
+
+public class UserVoucher : BaseEntity
+{
+    public Guid UserId { get; private set; }
+    public Guid VoucherId { get; private set; }
+    public bool IsUsed { get; private set; }
+    public Guid? OrderId { get; private set; }
+    public DateTime ClaimedAt { get; private set; }
+    public DateTime? UsedAt { get; private set; }
+
+    // Navigation (Optional for EF Core)
+    // public Voucher Voucher { get; private set; }
+
+    protected UserVoucher() { }
+
+    public UserVoucher(Guid userId, Guid voucherId)
+    {
+        UserId = userId;
+        VoucherId = voucherId;
+        IsUsed = false;
+        ClaimedAt = DateTime.UtcNow;
+    }
+
+    public void Use(Guid orderId)
+    {
+        if (IsUsed) throw new Exception("Voucher này đã được sử dụng!");
+        
+        IsUsed = true;
+        OrderId = orderId;
+        UsedAt = DateTime.UtcNow;
+    }
+}

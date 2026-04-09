@@ -23,7 +23,7 @@ public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand,
         var existing = await _repository.GetByOrderIdAsync(request.OrderId, cancellationToken);
         if (existing == null)
         {
-            var tx = new PaymentTransaction(request.OrderId, request.Amount, request.Provider);
+            var tx = new PaymentTransaction(request.OrderId, request.Amount, request.Provider, request.CustomerId);
             await _repository.AddAsync(tx, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
         }

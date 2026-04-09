@@ -10,6 +10,10 @@ public class User : BaseEntity
     public string Role { get; private set; }
     public string? GoogleId { get; private set; } // Nullable for normal users
 
+    public bool IsBlacklisted { get; private set; }
+    public string? BlacklistReason { get; private set; }
+    public DateTime? BlacklistedAt { get; private set; }
+
     // For EF Core
     protected User() { }
 
@@ -43,5 +47,19 @@ public class User : BaseEntity
     public void UpdatePassword(string newPasswordHash)
     {
         PasswordHash = newPasswordHash;
+    }
+
+    public void Blacklist(string reason)
+    {
+        IsBlacklisted = true;
+        BlacklistReason = reason;
+        BlacklistedAt = DateTime.UtcNow;
+    }
+
+    public void RemoveBlacklist()
+    {
+        IsBlacklisted = false;
+        BlacklistReason = null;
+        BlacklistedAt = null;
     }
 }

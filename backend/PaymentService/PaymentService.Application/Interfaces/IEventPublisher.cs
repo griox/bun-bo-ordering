@@ -6,5 +6,5 @@ namespace PaymentService.Application.Interfaces;
 
 public interface IEventPublisher
 {
-    Task PublishPaymentCompletedEventAsync(Guid orderId, bool isSuccess, CancellationToken cancellationToken = default);
+    Task PublishPaymentCompletedEventAsync(Guid orderId, bool isSuccess, decimal amount, Guid? customerId, CancellationToken cancellationToken = default);
 }

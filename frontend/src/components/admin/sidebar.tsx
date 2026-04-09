@@ -9,7 +9,8 @@ import {
     ClipboardList,
     Settings,
     LogOut,
-    Users
+    Users,
+    Ticket
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -27,6 +28,7 @@ const menuItems = [
     { title: 'Quản lý bàn', icon: Settings, href: '/admin/tables' },
     { title: 'Đơn hàng', icon: ClipboardList, href: '/admin/orders' },
     { title: 'Người dùng', icon: Users, href: '/admin/users' },
+    { title: 'Khuyến mãi', icon: Ticket, href: '/admin/promotions' },
 ];
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {

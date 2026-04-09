@@ -4,8 +4,9 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound } from 'lucide-react';
+import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound, Star } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
+import { usePromotions } from '@/hooks/usePromotions';
 import toast from 'react-hot-toast';
 import {
     Dialog,
@@ -33,9 +34,10 @@ export function Header() {
     const [mounted, setMounted] = useState(false);
     const { user, logout } = useAuthStore();
     const { session } = useOrderStore();
+    const { useMyPoints } = usePromotions();
+    const { data: points } = useMyPoints();
 
     useEffect(() => {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMounted(true);
     }, []);
 
@@ -90,6 +92,12 @@ export function Header() {
                                     <div id="nav-member-desktop" className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
                                         <User size={14} className="w-4 h-4" />
                                         <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
+                                        {points && (
+                                            <div className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full ml-1">
+                                                <Star size={10} className="fill-yellow-300 text-yellow-300" />
+                                                <span className="text-[10px] font-black">{points.balance}</span>
+                                            </div>
+                                        )}
                                     </div>
 
                                     <div className="absolute top-full right-0 mt-2 w-52 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all flex flex-col overflow-hidden font-display">
@@ -147,6 +155,12 @@ export function Header() {
                                     >
                                         <User size={16} />
                                         <span>{mounted && user ? (user.username ?? 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
+                                        {mounted && user && points && (
+                                            <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-black">
+                                                <Star size={8} className="fill-yellow-300 text-yellow-300" />
+                                                {points.balance}
+                                            </span>
+                                        )}
                                     </div>
                                 } />
                                 <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">

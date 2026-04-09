@@ -23,9 +23,14 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
+    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
     {
-        var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay");
+        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        Guid? customerId = null;
+        if (Guid.TryParse(userIdStr, out var parsedId)) customerId = parsedId;
+
+        var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay", customerId);
         var result = await _mediator.Send(command);
         
         if (result == null || !result.Success)

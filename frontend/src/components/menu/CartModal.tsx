@@ -2,9 +2,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone } from 'lucide-react';
+import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone, Ticket } from 'lucide-react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
+import { usePromotions } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import axiosInstance from '@/lib/axiosInstance';
@@ -20,13 +21,43 @@ export function CartModal() {
     const { cart, getCartTotal, updateQuantity, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
+    const { validateVoucherMutation } = usePromotions();
     const [isOpen, setIsOpen] = useState(false);
     const [note, setNote] = useState('');
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Transfer' | null>(null);
 
-    const total = getCartTotal();
+    // Voucher states
+    const [voucherCode, setVoucherCode] = useState('');
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
+
+    const subtotal = getCartTotal();
+    const total = Math.max(0, subtotal - discountAmount);
     const itemCount = cart.reduce((count, item) => count + item.quantity, 0);
+
+    const handleApplyVoucher = async () => {
+        if (!voucherCode.trim()) return;
+
+        try {
+            const result = await validateVoucherMutation.mutateAsync({
+                code: voucherCode,
+                orderValue: subtotal
+            });
+
+            if (result.isValid) {
+                setDiscountAmount(result.discountAmount);
+                setAppliedVoucher(voucherCode);
+                toast.success(`Đã áp dụng mã giảm giá! Tiết kiệm ${new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(result.discountAmount)}`);
+            } else {
+                setDiscountAmount(0);
+                setAppliedVoucher(null);
+                toast.error(result.message || "Mã giảm giá không hợp lệ");
+            }
+        } catch (_error) {
+            toast.error("Lỗi khi kiểm tra mã giảm giá");
+        }
+    };
 
     useEffect(() => {
         if (paymentOrderId && paymentSuccessOrderId) {
@@ -284,11 +315,62 @@ export function CartModal() {
                                     className="w-full text-sm font-main p-3 rounded-xl border-2 border-neutral-200 focus:border-primary focus:outline-none mb-4 resize-none h-20"
                                 />
 
-                                <div className="flex justify-between items-center mb-6">
-                                    <span className="font-bold text-neutral-600 tracking-wider text-sm uppercase">Tổng cộng:</span>
-                                    <span className="font-display text-2xl font-black text-primary">
-                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
-                                    </span>
+                                {/* Voucher Section */}
+                                <div className="mb-6 space-y-3 p-4 bg-gray-50 rounded-2xl border-2 border-neutral-100">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Mã giảm giá</p>
+                                    <div className="flex gap-2">
+                                        <div className="relative flex-1">
+                                            <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+                                            <input
+                                                type="text"
+                                                placeholder="Nhập mã..."
+                                                value={voucherCode}
+                                                onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                                disabled={!!appliedVoucher}
+                                                className="w-full h-11 pl-9 pr-3 py-2 bg-white border-2 border-neutral-200 rounded-xl focus:border-primary focus:outline-none text-sm font-bold uppercase disabled:bg-neutral-100 disabled:text-neutral-400"
+                                            />
+                                        </div>
+                                        {appliedVoucher ? (
+                                            <Button
+                                                variant="outline"
+                                                onClick={() => {
+                                                    setAppliedVoucher(null);
+                                                    setVoucherCode('');
+                                                    setDiscountAmount(0);
+                                                }}
+                                                className="h-11 px-4 border-2 border-red-100 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl font-bold text-xs uppercase"
+                                            >
+                                                Hủy
+                                            </Button>
+                                        ) : (
+                                            <Button
+                                                onClick={handleApplyVoucher}
+                                                disabled={validateVoucherMutation.isPending || !voucherCode.trim()}
+                                                className="h-11 px-4 bg-gray-900 text-white rounded-xl font-bold text-xs uppercase active:scale-95 disabled:opacity-50"
+                                            >
+                                                {validateVoucherMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : 'Áp dụng'}
+                                            </Button>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div className="space-y-2 mb-6">
+                                    <div className="flex justify-between items-center text-sm font-bold text-neutral-500">
+                                        <span>Tạm tính:</span>
+                                        <span>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}</span>
+                                    </div>
+                                    {discountAmount > 0 && (
+                                        <div className="flex justify-between items-center text-sm font-bold text-emerald-600">
+                                            <span>Giảm giá:</span>
+                                            <span>-{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(discountAmount)}</span>
+                                        </div>
+                                    )}
+                                    <div className="flex justify-between items-center pt-2 border-t-2 border-neutral-100">
+                                        <span className="font-bold text-neutral-600 tracking-wider text-sm uppercase">Tổng cộng:</span>
+                                        <span className="font-display text-2xl font-black text-primary">
+                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-4 mb-6">

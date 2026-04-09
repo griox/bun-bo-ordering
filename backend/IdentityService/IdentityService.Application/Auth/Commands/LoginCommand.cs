@@ -31,6 +31,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         if (user.PasswordHash == null)
             throw new Exception("Tài khoản này được đăng kí bằng Google. Vui lòng đăng nhập bằng Google.");
 
+        if (user.IsBlacklisted)
+            throw new Exception($"Tài khoản của bạn đã bị khóa! Lý do: {user.BlacklistReason ?? "Không có lý do cụ thể"}. Liên hệ Admin để được hỗ trợ.");
+
         var passwordHasher = new PasswordHasher<User>();
         var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 

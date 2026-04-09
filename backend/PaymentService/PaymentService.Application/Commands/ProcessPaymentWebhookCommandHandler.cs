@@ -52,7 +52,12 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
 
         // 4. Publish Event
         var isSuccess = transaction.Status == Domain.Enums.PaymentStatus.Success;
-        await _eventPublisher.PublishPaymentCompletedEventAsync(transaction.OrderId, isSuccess, cancellationToken);
+        await _eventPublisher.PublishPaymentCompletedEventAsync(
+            transaction.OrderId, 
+            isSuccess, 
+            transaction.Amount, 
+            transaction.CustomerId, 
+            cancellationToken);
 
         return true;
     }
