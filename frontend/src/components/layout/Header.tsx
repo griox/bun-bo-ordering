@@ -127,12 +127,12 @@ export function Header() {
                                 </div>
                             ) : (
                                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                                    <DialogTrigger id="nav-member-desktop" nativeButton={false} render={
+                                    <DialogTrigger asChild id="nav-member-desktop">
                                         <div className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all active:scale-95 cursor-pointer">
                                             <User size={16} />
                                             <span>THÀNH VIÊN</span>
                                         </div>
-                                    } />
+                                    </DialogTrigger>
                                     <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
                                         <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                                             style={{ backgroundImage: "url('/images/parchment.png')" }}>
@@ -148,7 +148,7 @@ export function Header() {
                         {/* Mobile Version (Dropdown) */}
                         <div className="md:hidden">
                             <DropdownMenu>
-                                <DropdownMenuTrigger nativeButton={false} render={
+                                <DropdownMenuTrigger asChild>
                                     <div
                                         id="nav-member-mobile"
                                         className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all cursor-pointer"
@@ -162,28 +162,38 @@ export function Header() {
                                             </span>
                                         )}
                                     </div>
-                                } />
+                                </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
-                                    <DropdownMenuItem id="mobile-home" render={<Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
-                                        <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> TRANG CHỦ</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem id="mobile-menu" render={<Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
-                                        <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> THỰC ĐƠN</span>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem id="mobile-about" render={<Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" />}>
-                                        <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> VỀ CHÚNG TÔI</span>
-                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild id="mobile-home">
+    <Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
+        <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> TRANG CHỦ</span>
+    </Link>
+</DropdownMenuItem>
+                                    <DropdownMenuItem asChild id="mobile-menu">
+    <Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
+        <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> THỰC ĐƠN</span>
+    </Link>
+</DropdownMenuItem>
+                                    <DropdownMenuItem asChild id="mobile-about">
+    <Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
+        <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> VỀ CHÚNG TÔI</span>
+    </Link>
+</DropdownMenuItem>
 
                                     {mounted && user && user.role === 'Admin' && (
-                                        <DropdownMenuItem id="mobile-admin" render={<Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                            <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> QUẢN TRỊ VIÊN</span>
-                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild id="mobile-admin">
+    <Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
+        <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> QUẢN TRỊ VIÊN</span>
+    </Link>
+</DropdownMenuItem>
                                     )}
 
                                     {mounted && user && user.role === 'Client' && (
-                                        <DropdownMenuItem id="mobile-history" render={<Link href="/history" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" />}>
-                                            <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ GIAO DỊCH</span>
-                                        </DropdownMenuItem>
+                                        <DropdownMenuItem asChild id="mobile-history">
+    <Link href="/history" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
+        <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ GIAO DỊCH</span>
+    </Link>
+</DropdownMenuItem>
                                     )}
 
                                     <DropdownMenuSeparator className="bg-text/10 my-1" />

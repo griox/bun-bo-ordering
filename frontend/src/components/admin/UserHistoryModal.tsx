@@ -146,16 +146,13 @@ export function UserHistoryModal({ isOpen, onClose, user, orders, isLoading, onV
 
                                             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                                                 <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        nativeButton={false}
-                                                        render={
-                                                            <div className="inline-block">
-                                                                <Button variant="ghost" className="size-8 p-0 hover:bg-gray-100 rounded-lg">
-                                                                    <ArrowRight className="size-4 rotate-90" />
-                                                                </Button>
-                                                            </div>
-                                                        }
-                                                    />
+                                                    <DropdownMenuTrigger asChild>
+                                                        <div className="inline-block">
+                                                            <Button variant="ghost" className="size-8 p-0 hover:bg-gray-100 rounded-lg">
+                                                                <ArrowRight className="size-4 rotate-90" />
+                                                            </Button>
+                                                        </div>
+                                                    </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="rounded-xl border-gray-100 font-mono">
                                                         <DropdownMenuLabel className="text-[8px] uppercase tracking-widest opacity-50">Trạng thái</DropdownMenuLabel>
                                                         <DropdownMenuSeparator />

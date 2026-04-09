@@ -47,7 +47,7 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
             <div className="flex items-center gap-6">
                 {/* Notification Bell */}
                 <DropdownMenu onOpenChange={(open) => open && markAsRead()}>
-                    <DropdownMenuTrigger render={
+                    <DropdownMenuTrigger asChild>
                         <Button variant="ghost" size="icon" className="relative size-11 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all border border-gray-100">
                             <Bell className="w-5 h-5 text-gray-600" />
                             {unreadCount > 0 && (
@@ -56,7 +56,7 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
                                 </Badge>
                             )}
                         </Button>
-                    } />
+                    </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-96 p-0 border border-gray-100 shadow-2xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                         <DropdownMenuGroup>
                             <DropdownMenuLabel className="p-5 flex items-center justify-between bg-gray-50 border-b border-gray-100">

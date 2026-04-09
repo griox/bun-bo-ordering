@@ -156,12 +156,12 @@ export default function TablesPage() {
                     setIsDialogOpen(open);
                     if (!open) resetForm();
                 }}>
-                    <DialogTrigger render={
+                    <DialogTrigger asChild>
                         <Button className="h-14 px-8 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-black text-sm gap-3 rounded-2xl border-none shadow-lg active:translate-y-px transition-all uppercase tracking-widest" onClick={() => resetForm()}>
                             <Plus className="size-5" />
                             THÊM BÀN MỚI
                         </Button>
-                    } />
+                    </DialogTrigger>
                     <DialogContent className="max-w-md rounded-[2rem] border border-gray-100 shadow-2xl p-0 overflow-hidden bg-white">
                         <form onSubmit={handleCreateOrUpdate} className="flex flex-col">
                             <div className="p-8 border-b border-gray-100 bg-gray-50/50">

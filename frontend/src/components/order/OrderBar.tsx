@@ -145,31 +145,29 @@ export function OrderBar() {
                     transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                     className="mb-4"
                 >
-                    <SheetTrigger
-                        render={
-                            <button className="relative w-full flex items-center justify-between bg-neutral-900 text-white rounded-2xl shadow-2xl shadow-black/40 px-4 py-3.5 active:scale-[0.98] transition-transform" />
-                        }
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="relative">
-                                <div className="bg-primary p-2.5 rounded-xl">
-                                    <ShoppingBag className="w-5 h-5" />
+                    <SheetTrigger asChild>
+                        <button className="relative w-full flex items-center justify-between bg-neutral-900 text-white rounded-2xl shadow-2xl shadow-black/40 px-4 py-3.5 active:scale-[0.98] transition-transform">
+                            <div className="flex items-center gap-3">
+                                <div className="relative">
+                                    <div className="bg-primary p-2.5 rounded-xl">
+                                        <ShoppingBag className="w-5 h-5" />
+                                    </div>
+                                    <span className="absolute -top-1.5 -right-1.5 bg-white text-primary text-[9px] font-black w-[18px] h-[18px] rounded-full flex items-center justify-center shadow">
+                                        {count}
+                                    </span>
                                 </div>
-                                <span className="absolute -top-1.5 -right-1.5 bg-white text-primary text-[9px] font-black w-[18px] h-[18px] rounded-full flex items-center justify-center shadow">
-                                    {count}
-                                </span>
+                                <div className="text-left">
+                                    <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest leading-none">Giỏ hàng</p>
+                                    <p className="text-base font-black leading-tight">
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
+                                    </p>
+                                </div>
                             </div>
-                            <div className="text-left">
-                                <p className="text-[9px] font-bold text-white/50 uppercase tracking-widest leading-none">Giỏ hàng</p>
-                                <p className="text-base font-black leading-tight">
-                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
-                                </p>
-                            </div>
-                        </div>
 
-                        <div className="flex items-center gap-2 bg-primary text-white rounded-xl px-4 py-2 font-black text-sm">
-                            XEM ĐƠN <ArrowRight className="w-4 h-4" />
-                        </div>
+                            <div className="flex items-center gap-2 bg-primary text-white rounded-xl px-4 py-2 font-black text-sm">
+                                XEM ĐƠN <ArrowRight className="w-4 h-4" />
+                            </div>
+                        </button>
                     </SheetTrigger>
                 </motion.div>
 

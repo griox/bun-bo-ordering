@@ -212,17 +212,14 @@ export default function DishesPage() {
                     setIsDialogOpen(open);
                     if (!open) resetForm();
                 }}>
-                    <DialogTrigger
-                        nativeButton={false}
-                        render={
-                            <div className="inline-block">
-                                <Button className="h-10 px-6 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-xs gap-2 rounded-md transition-all shadow-sm" onClick={() => resetForm()}>
-                                    <Plus className="size-4" />
-                                    THÊM MÓN MỚI
-                                </Button>
-                            </div>
-                        }
-                    />
+                    <DialogTrigger asChild>
+                        <div className="inline-block">
+                            <Button className="h-10 px-6 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-xs gap-2 rounded-md transition-all shadow-sm" onClick={() => resetForm()}>
+                                <Plus className="size-4" />
+                                THÊM MÓN MỚI
+                            </Button>
+                        </div>
+                    </DialogTrigger>
                     <DialogContent className="sm:max-w-3xl md:max-w-4xl w-[95vw] md:w-full rounded-md border border-slate-200 shadow-2xl p-0 overflow-hidden bg-white">
                         <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood} className="flex flex-col max-h-[90vh]">
                             <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 shrink-0">
@@ -468,7 +465,7 @@ export default function DishesPage() {
                                                 <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wide line-clamp-1 italic">{dish.description || 'Chưa cấu hình mô tả...'}</div>
                                             </TableCell>
                                             <TableCell className="p-6 text-center">
-                                                <Badge variant="ghost" className="bg-gray-100 text-gray-500 font-black uppercase text-[10px] px-3 py-1 rounded-lg border border-gray-200 shadow-sm">
+                                                <Badge variant="secondary" className="bg-gray-100 text-gray-500 font-black uppercase text-[10px] px-3 py-1 rounded-lg border border-gray-200 shadow-sm">
                                                     {dish.categoryName}
                                                 </Badge>
                                             </TableCell>
@@ -488,16 +485,13 @@ export default function DishesPage() {
                                             </TableCell>
                                             <TableCell className="p-6 text-right">
                                                 <DropdownMenu>
-                                                    <DropdownMenuTrigger
-                                                        nativeButton={false}
-                                                        render={
-                                                            <div className="inline-block">
-                                                                <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm transition-all">
-                                                                    <MoreVertical className="size-5 text-gray-400" />
-                                                                </Button>
-                                                            </div>
-                                                        }
-                                                    />
+                                                    <DropdownMenuTrigger asChild>
+                                                        <div className="inline-block">
+                                                            <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm transition-all">
+                                                                <MoreVertical className="size-5 text-gray-400" />
+                                                            </Button>
+                                                        </div>
+                                                    </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-56 rounded-[1.2rem] border border-gray-100 shadow-2xl p-2 bg-white animate-in slide-in-from-top-1 duration-200">
                                                         <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-black text-[10px] uppercase cursor-pointer hover:bg-gray-50 text-gray-600 transition-colors" onClick={() => openEditDialog(dish)}>
                                                             <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">

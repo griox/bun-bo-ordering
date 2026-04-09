@@ -4,11 +4,7 @@
 import { useState, useEffect } from 'react';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { useGoogleLogin } from '@react-oauth/google';
 import { useForm } from 'react-hook-form';
@@ -105,9 +101,9 @@ export function LoginForm({
 
       {isLogin ? (
         <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="flex flex-col gap-4 md:gap-5">
-          <FieldGroup className="gap-3 md:gap-4">
-            <Field className="space-y-1">
-              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên đăng nhập</FieldLabel>
+          <div className="gap-3 md:gap-4">
+            <div className="space-y-1">
+              <Label className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên đăng nhập</Label>
               <Input
                 {...loginForm.register('username')}
                 placeholder="Ví dụ: nva_123"
@@ -119,11 +115,11 @@ export function LoginForm({
               {loginForm.formState.errors.username && (
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{loginForm.formState.errors.username.message}</span>
               )}
-            </Field>
+            </div>
 
-            <Field className="space-y-1">
+            <div className="space-y-1">
               <div className="flex items-center ml-1">
-                <FieldLabel className="font-display text-[10px] md:text-xs font-black uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
+                <Label className="font-display text-[10px] md:text-xs font-black uppercase tracking-wider text-secondary">Mật khẩu</Label>
                 <a href="#" className="ml-auto text-[10px] font-main font-bold italic underline decoration-text/40 underline-offset-2 hover:text-primary transition-colors text-text/50">Quên?</a>
               </div>
               <Input
@@ -138,7 +134,7 @@ export function LoginForm({
               {loginForm.formState.errors.password && (
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{loginForm.formState.errors.password.message}</span>
               )}
-            </Field>
+            </div>
 
             <Button
               type="submit"
@@ -147,13 +143,13 @@ export function LoginForm({
             >
               {loading ? 'ĐANG XỬ LÝ...' : 'Đăng nhập ngay'}
             </Button>
-          </FieldGroup>
+          </div>
         </form>
       ) : (
         <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="flex flex-col gap-4 md:gap-5">
-          <FieldGroup className="gap-3 md:gap-4 overflow-y-auto max-h-[40vh] md:max-h-none pr-1">
-            <Field className="space-y-1">
-              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên hiển thị</FieldLabel>
+          <div className="gap-3 md:gap-4 overflow-y-auto max-h-[40vh] md:max-h-none pr-1">
+            <div className="space-y-1">
+              <Label className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Tên hiển thị</Label>
               <Input
                 {...registerForm.register('username')}
                 placeholder="Tên của bạn..."
@@ -165,10 +161,10 @@ export function LoginForm({
               {registerForm.formState.errors.username && (
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.username.message}</span>
               )}
-            </Field>
+            </div>
 
-            <Field className="space-y-1">
-              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Email liên hệ</FieldLabel>
+            <div className="space-y-1">
+              <Label className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Email liên hệ</Label>
               <Input
                 {...registerForm.register('email')}
                 placeholder="vi-du@gmail.com"
@@ -180,10 +176,10 @@ export function LoginForm({
               {registerForm.formState.errors.email && (
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.email.message}</span>
               )}
-            </Field>
+            </div>
 
-            <Field className="space-y-1">
-              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Mật khẩu</FieldLabel>
+            <div className="space-y-1">
+              <Label className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Mật khẩu</Label>
               <Input
                 {...registerForm.register('password')}
                 type="password"
@@ -196,10 +192,10 @@ export function LoginForm({
               {registerForm.formState.errors.password && (
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.password.message}</span>
               )}
-            </Field>
+            </div>
 
-            <Field className="space-y-1">
-              <FieldLabel className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Xác nhận</FieldLabel>
+            <div className="space-y-1">
+              <Label className="font-display text-[10px] md:text-xs font-black ml-1 uppercase tracking-wider text-secondary">Xác nhận</Label>
               <Input
                 {...registerForm.register('confirmPassword')}
                 type="password"
@@ -212,8 +208,8 @@ export function LoginForm({
               {registerForm.formState.errors.confirmPassword && (
                 <span className="text-[10px] text-red-500 font-bold uppercase ml-2">{registerForm.formState.errors.confirmPassword.message}</span>
               )}
-            </Field>
-          </FieldGroup>
+            </div>
+          </div>
           <Button
             type="submit"
             disabled={loading}

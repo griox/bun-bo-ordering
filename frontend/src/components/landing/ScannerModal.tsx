@@ -125,7 +125,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger render={children} nativeButton={true} />
+            <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="w-[92vw] max-w-md bg-background border-4 border-primary p-0 overflow-hidden shadow-[10px_10px_0px_rgba(217,56,30,0.2)] rounded-[2rem]">
                 <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
                     style={{ backgroundImage: "url('/images/parchment.png')" }}>
