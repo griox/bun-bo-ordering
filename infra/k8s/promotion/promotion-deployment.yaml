@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: promotion-service
+  labels:
+    app: promotion-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: promotion-service
+  template:
+    metadata:
+      labels:
+        app: promotion-service
+    spec:
+      nodeSelector:
+        role: apps
+      containers:
+      - name: promotion-service
+        image: griox/bunbo-promotion-service:latest
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: bunbo-config
+        env:
+        - name: POSTGRES_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Host
+        - name: POSTGRES_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Port
+        - name: POSTGRES_DB
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Database
+        - name: POSTGRES_USER
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Postgres__Username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: POSTGRES_PASSWORD
+        - name: ConnectionStrings__DefaultConnection
+          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        - name: JwtSettings__Secret
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: JWT_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: promotion-service
+spec:
+  type: ClusterIP
+  selector:
+    app: promotion-service
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+    name: http-legacy
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: promotion-service-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: promotion-service
+  minReplicas: 1
+  maxReplicas: 3
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80

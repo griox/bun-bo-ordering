@@ -30,6 +30,7 @@ jobs:
           - { name: 'realtime-service', path: 'backend/RealtimeService' }
           - { name: 'payment-service', path: 'backend/PaymentService' }
           - { name: 'notification-service', path: 'backend/NotificationService' }
+          - { name: 'promotion-service', path: 'backend/PromotionService' }
           - { name: 'api-gateway', path: 'backend/ApiGateway' }
 
     steps:
