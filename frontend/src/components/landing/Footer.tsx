@@ -9,7 +9,7 @@ export function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
                     {/* Brand */}
                     <div>
-                        <h3 className="font-display text-2xl text-secondary mb-4">BÚN BÒ & CÀ PHÊ PHỐ</h3>
+                        <h3 className="font-display text-2xl text-primary mb-4">BÚN BÒ & CÀ PHÊ PHỐ</h3>
                         <p className="font-main text-gray-400 mb-6">
                             Hương vị truyền thống, phong cách hiện đại. Phục vụ bằng cả trái tim.
                         </p>

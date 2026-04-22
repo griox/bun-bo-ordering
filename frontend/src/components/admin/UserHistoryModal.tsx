@@ -68,31 +68,27 @@ export function UserHistoryModal({ isOpen, onClose, user, orders, isLoading, onV
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-            <DialogContent className="sm:max-w-[800px] border border-gray-100 shadow-2xl rounded-[2.5rem] p-0 overflow-hidden bg-white gap-0">
-                <DialogHeader className="p-8 border-b border-gray-100 bg-gray-50/30 m-0 relative overflow-hidden">
+            <DialogContent className="sm:max-w-[800px] surface-base border-none shadow-ambient rounded-[3rem] p-0 overflow-hidden gap-0">
+                <DialogHeader className="p-10 border-b border-border/5 m-0 relative overflow-hidden">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex items-center gap-5">
-                            <div className="size-16 bg-primary/10 rounded-2xl flex flex-shrink-0 items-center justify-center border border-primary/20 shadow-sm text-primary">
-                                <UserIcon className="size-8" />
+                        <div className="flex items-center gap-6">
+                            <div className="size-20 surface-highest rounded-[2rem] flex flex-shrink-0 items-center justify-center border border-border/10 shadow-sm text-primary">
+                                <UserIcon className="size-10" />
                             </div>
                             <div className="text-left">
-                                <DialogTitle className="text-3xl font-black text-black uppercase tracking-tighter">
-                                    Hồ sơ & Lịch sử
+                                <DialogTitle className="text-4xl font-black text-primary uppercase tracking-tighter italic">
+                                    Hồ sơ cá nhân
                                 </DialogTitle>
-                                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1.5 flex items-center gap-4">
-                                    <span>User: {user.username}</span>
-                                    <span className="flex items-center gap-1"><Calendar className="size-3" /> {format(new Date(user.createdAt), "dd/MM/yyyy")}</span>
+                                <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mt-2 flex items-center gap-6">
+                                    <span>Tên: {user.username}</span>
+                                    <span className="flex items-center gap-1.5"><Calendar className="size-4" /> THAM GIA {format(new Date(user.createdAt), "dd/MM/yyyy")}</span>
                                 </div>
                             </div>
                         </div>
                         <div className="flex gap-4">
-                            <div className="bg-white border border-gray-100 p-3 rounded-xl shadow-sm min-w-[120px]">
-                                <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Tổng chi tiêu</p>
-                                <p className="text-lg font-black text-primary leading-tight">{totalSpent.toLocaleString('vi-VN')}đ</p>
-                            </div>
-                            <div className="bg-white border border-gray-100 p-3 rounded-xl shadow-sm min-w-[100px]">
-                                <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Số đơn hàng</p>
-                                <p className="text-lg font-black text-black leading-tight">{orders?.length || 0}</p>
+                            <div className="surface-low border border-border/5 p-5 rounded-2xl shadow-sm min-w-[140px]">
+                                <p className="text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.3em] mb-1.5">TỔNG CHI TIÊU</p>
+                                <p className="text-2xl font-black text-primary leading-tight italic">{totalSpent.toLocaleString('vi-VN')}Đ</p>
                             </div>
                         </div>
                     </div>

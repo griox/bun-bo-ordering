@@ -16,7 +16,7 @@ export default function AdminLayout({
 
     return (
         <AdminAuthGuard>
-            <div className="flex h-screen bg-[#F9FAFB] overflow-hidden relative font-mono">
+            <div className="flex h-screen bg-[#F9FAFB] overflow-hidden relative font-mono heritage-theme">
                 {/* Clean background */}
                 <div className="absolute inset-0 bg-gray-50/50 pointer-events-none"></div>
 

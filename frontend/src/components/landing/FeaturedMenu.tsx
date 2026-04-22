@@ -10,7 +10,7 @@ export function FeaturedMenu() {
     const featuredItems = pagedData?.items || [];
 
     return (
-        <section className="py-20 bg-background relative overflow-hidden">
+        <section className="py-20 bg-background relative overflow-hidden transition-colors duration-300">
             {/* Background Ticket Edge Top */}
             <div className="absolute top-0 left-0 right-0 h-4 bg-background" style={{ clipPath: "polygon(0% 0%, 0% 100%, 2% 0%, 4% 100%, 6% 0%, 8% 100%, 10% 0%, 12% 100%, 14% 0%, 16% 100%, 18% 0%, 20% 100%, 22% 0%, 24% 100%, 26% 0%, 28% 100%, 30% 0%, 32% 100%, 34% 0%, 36% 100%, 38% 0%, 40% 100%, 42% 0%, 44% 100%, 46% 0%, 48% 100%, 50% 0%, 52% 100%, 54% 0%, 56% 100%, 58% 0%, 60% 100%, 62% 0%, 64% 100%, 66% 0%, 68% 100%, 70% 0%, 72% 100%, 74% 0%, 76% 100%, 78% 0%, 80% 100%, 82% 0%, 84% 100%, 86% 0%, 88% 100%, 90% 0%, 92% 100%, 94% 0%, 96% 100%, 98% 0%, 100% 100%, 100% 0%)" }}></div>
 

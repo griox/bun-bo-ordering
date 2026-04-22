@@ -68,6 +68,7 @@ export default function PromotionsPage() {
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-white border-4 border-gray-900 rounded-[2rem] p-8 shadow-[20px_20px_0px_rgba(31,41,55,0.1)]">
+                        <DialogTitle className="sr-only">Tạo mã khuyến mãi</DialogTitle>
                         <CreateVoucherForm onSuccess={() => setIsCreateModalOpen(false)} />
                     </DialogContent>
                 </Dialog>

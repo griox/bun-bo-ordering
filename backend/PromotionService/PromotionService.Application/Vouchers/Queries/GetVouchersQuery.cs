@@ -32,7 +32,10 @@ public class GetVouchersQueryHandler : IRequestHandler<GetVouchersQuery, List<Vo
                 v.TotalUsageLimit,
                 v.UsageCount,
                 v.MaxUsagePerUser,
-                v.IsActive
+                v.IsActive,
+                v.Type,
+                v.PointCost,
+                v.Conditions
             ))
             .ToListAsync(cancellationToken);
     }

@@ -29,19 +29,19 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
     const { user } = useAuthStore();
 
     return (
-        <header className="h-20 bg-white border-b border-gray-100 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all font-mono">
+        <header className="h-20 surface-low border-b border-border/5 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all">
             <div className="flex items-center gap-6">
                 {/* Mobile Menu Toggle */}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="lg:hidden size-11 border border-gray-100 bg-white text-black hover:bg-gray-50 transition-all shadow-sm rounded-xl"
+                    className="lg:hidden size-11 surface-base border border-border/10 text-foreground/60 hover:surface-highest transition-all shadow-sm rounded-2xl"
                     onClick={onToggleSidebar}
                 >
-                    <Menu className="size-6 text-gray-600" />
+                    <Menu className="size-5" />
                 </Button>
 
-                <h1 className="hidden sm:block text-xl font-black text-black tracking-tighter uppercase">Admin Panel</h1>
+                <h1 className="hidden sm:block text-2xl font-black text-primary tracking-tighter uppercase italic">Quản Trị</h1>
             </div>
 
             <div className="flex items-center gap-6">

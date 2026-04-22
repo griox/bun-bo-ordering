@@ -11,6 +11,9 @@ public class Voucher : BaseEntity
     public decimal DiscountValue { get; private set; }
     public decimal? MaxDiscountAmount { get; private set; }
     public decimal MinOrderValue { get; private set; }
+    public VoucherType Type { get; private set; }
+    public int? PointCost { get; private set; }
+    public string? Conditions { get; private set; }
     
     public DateTime ValidFrom { get; private set; }
     public DateTime ValidTo { get; private set; }
@@ -34,7 +37,10 @@ public class Voucher : BaseEntity
         DateTime validFrom,
         DateTime validTo,
         int totalUsageLimit,
-        int maxUsagePerUser)
+        int maxUsagePerUser,
+        VoucherType type = VoucherType.Standard,
+        int? pointCost = null,
+        string? conditions = null)
     {
         Code = code.ToUpper();
         Description = description;
@@ -48,6 +54,9 @@ public class Voucher : BaseEntity
         MaxUsagePerUser = maxUsagePerUser;
         UsageCount = 0;
         IsActive = true;
+        Type = type;
+        PointCost = pointCost;
+        Conditions = conditions;
     }
 
     public void ToggleActive() => IsActive = !IsActive;

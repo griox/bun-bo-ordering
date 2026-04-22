@@ -162,17 +162,17 @@ export function CartModal() {
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <div className="relative group cursor-pointer mr-2 md:mr-4 bg-transparent border-none p-0 focus:outline-none inline-block">
-                    <div className="flex items-center justify-center bg-primary text-white w-10 h-10 md:w-11 md:h-11 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
+                    <div className="flex items-center justify-center surface-highest text-primary w-11 h-11 rounded-[1.25rem] border border-border/10 shadow-sm hover:surface-low transition-all">
                         <ShoppingCart size={18} />
                         {itemCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-white text-primary text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border-2 border-text shadow-sm">
+                            <span className="absolute -top-1 -right-1 bg-white text-primary text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full border border-border/10 shadow-sm">
                                 {itemCount}
                             </span>
                         )}
                     </div>
                 </div>
             </DialogTrigger>
-            <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-6 shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2rem]">
+            <DialogContent className="w-[92vw] max-w-lg surface-base border-none p-8 shadow-ambient rounded-[3rem] heritage-theme">
 
                 {paymentOrderId ? (
                     // PAYMENT QR VIEW
@@ -259,44 +259,44 @@ export function CartModal() {
                 ) : (
                     // CART VIEW
                     <>
-                        <DialogHeader className="mb-4">
-                            <DialogTitle className="font-display text-2xl text-center uppercase tracking-wider text-text">Giỏ Hàng Của Bạn</DialogTitle>
+                        <DialogHeader className="mb-8">
+                            <DialogTitle className="text-3xl font-black text-primary text-center uppercase tracking-tighter italic">Giỏ Hàng Của Bạn</DialogTitle>
                         </DialogHeader>
 
-                        <div className="flex flex-col gap-4 max-h-[50vh] overflow-y-auto no-scrollbar pb-2">
+                        <div className="flex flex-col gap-3 max-h-[50vh] overflow-y-auto no-scrollbar pb-2">
                             {cart.length === 0 ? (
-                                <div className="text-center py-8 text-neutral-500 font-main">
-                                    Giỏ hàng đang trống. Hãy chọn món nhé!
+                                <div className="text-center py-12 text-muted-foreground font-bold opacity-60 uppercase tracking-widest text-xs">
+                                    Giỏ hàng đang trống
                                 </div>
                             ) : (
                                 cart.map((item) => (
-                                    <div key={item.foodId} className="flex justify-between items-center bg-white p-3 rounded-2xl border-2 border-neutral-100 shadow-sm">
+                                    <div key={item.foodId} className="flex justify-between items-center surface-low p-4 rounded-2xl border border-border/5 shadow-sm">
                                         <div className="flex-1">
-                                            <h4 className="font-bold text-sm text-neutral-800 line-clamp-1">{item.name}</h4>
-                                            <p className="text-primary font-display font-medium text-sm">
+                                            <h4 className="font-black text-sm text-foreground tracking-tight line-clamp-1">{item.name}</h4>
+                                            <p className="text-primary font-black text-[10px] tracking-widest uppercase mt-1">
                                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
                                             </p>
                                         </div>
 
-                                        <div className="flex items-center gap-3">
-                                            <div className="flex items-center bg-neutral-100 rounded-full p-1">
+                                        <div className="flex items-center gap-4">
+                                            <div className="flex items-center surface-base rounded-xl p-1 border border-border/5">
                                                 <button
                                                     onClick={() => updateQuantity(item.foodId, item.quantity - 1)}
-                                                    className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-white text-neutral-500 transition-colors"
+                                                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:surface-highest text-muted-foreground transition-all"
                                                 >
                                                     <Minus size={12} />
                                                 </button>
-                                                <span className="w-6 text-center text-sm font-bold">{item.quantity}</span>
+                                                <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
                                                 <button
                                                     onClick={() => updateQuantity(item.foodId, item.quantity + 1)}
-                                                    className="w-6 h-6 flex items-center justify-center rounded-full hover:bg-white text-neutral-500 transition-colors"
+                                                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:surface-highest text-muted-foreground transition-all"
                                                 >
                                                     <Plus size={12} />
                                                 </button>
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(item.foodId)}
-                                                className="text-red-400 hover:text-red-600 transition-colors p-1"
+                                                className="text-muted-foreground/30 hover:text-primary transition-colors p-1"
                                             >
                                                 <X size={16} />
                                             </button>

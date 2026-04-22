@@ -11,6 +11,8 @@ import toast from 'react-hot-toast';
 import {
     Dialog,
     DialogContent,
+    DialogHeader,
+    DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
 import {
@@ -48,7 +50,7 @@ export function Header() {
     ];
 
     return (
-        <header className="bg-background/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+        <header className="bg-background/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm transition-colors duration-300">
             <div className="container mx-auto px-4 h-24 flex items-center justify-between">
 
                 {/* Brand Logo */}
@@ -126,22 +128,14 @@ export function Header() {
                                     </div>
                                 </div>
                             ) : (
-                                <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                                    <DialogTrigger asChild id="nav-member-desktop">
-                                        <div className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all active:scale-95 cursor-pointer">
-                                            <User size={16} />
-                                            <span>THÀNH VIÊN</span>
-                                        </div>
-                                    </DialogTrigger>
-                                    <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
-                                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                                            style={{ backgroundImage: "url('/images/parchment.png')" }}>
-                                        </div>
-                                        <div className="relative p-10 overflow-y-auto max-h-[85vh]">
-                                            <LoginForm onSuccess={() => setIsLoginOpen(false)} />
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
+                                <div
+                                    id="nav-member-desktop"
+                                    className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-6 py-3 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all active:scale-95 cursor-pointer"
+                                    onClick={() => setIsLoginOpen(true)}
+                                >
+                                    <User size={16} />
+                                    <span>THÀNH VIÊN</span>
+                                </div>
                             )}
                         </div>
 
@@ -165,35 +159,35 @@ export function Header() {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
                                     <DropdownMenuItem asChild id="mobile-home">
-    <Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
-        <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> TRANG CHỦ</span>
-    </Link>
-</DropdownMenuItem>
+                                        <Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
+                                            <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> TRANG CHỦ</span>
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem asChild id="mobile-menu">
-    <Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
-        <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> THỰC ĐƠN</span>
-    </Link>
-</DropdownMenuItem>
+                                        <Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
+                                            <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> THỰC ĐƠN</span>
+                                        </Link>
+                                    </DropdownMenuItem>
                                     <DropdownMenuItem asChild id="mobile-about">
-    <Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
-        <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> VỀ CHÚNG TÔI</span>
-    </Link>
-</DropdownMenuItem>
+                                        <Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
+                                            <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> VỀ CHÚNG TÔI</span>
+                                        </Link>
+                                    </DropdownMenuItem>
 
                                     {mounted && user && user.role === 'Admin' && (
                                         <DropdownMenuItem asChild id="mobile-admin">
-    <Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
-        <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> QUẢN TRỊ VIÊN</span>
-    </Link>
-</DropdownMenuItem>
+                                            <Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
+                                                <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> QUẢN TRỊ VIÊN</span>
+                                            </Link>
+                                        </DropdownMenuItem>
                                     )}
 
                                     {mounted && user && user.role === 'Client' && (
                                         <DropdownMenuItem asChild id="mobile-history">
-    <Link href="/history" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
-        <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ GIAO DỊCH</span>
-    </Link>
-</DropdownMenuItem>
+                                            <Link href="/history" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
+                                                <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ GIAO DỊCH</span>
+                                            </Link>
+                                        </DropdownMenuItem>
                                     )}
 
                                     <DropdownMenuSeparator className="bg-text/10 my-1" />
@@ -223,24 +217,29 @@ export function Header() {
                                 </DropdownMenuContent>
                             </DropdownMenu>
 
-                            {/* Mobile Login Dialog rendered globally outside DropdownMenu */}
-                            {!user && (
-                                <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                                    <DialogContent className="w-[92vw] max-w-lg bg-background border-4 border-text p-0 overflow-hidden shadow-[10px_10px_0px_rgba(0,0,0,0.15)] rounded-[2.5rem]">
-                                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
-                                            style={{ backgroundImage: "url('/images/parchment.png')" }}>
-                                        </div>
-                                        <div className="relative p-6 overflow-y-auto max-h-[85vh]">
-                                            <LoginForm onSuccess={() => setIsLoginOpen(false)} />
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
-                            )}
+                            {/* Mobile Login Dialog removed from here, moved to global scope */}
                         </div>
                     </div>
                 </div>
 
             </div>
+
+            {/* Global Login Dialog */}
+            {!user && (
+                <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
+                    <DialogContent className="w-[92vw] max-w-lg bg-background border-2 border-black box-border p-0 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.1)] rounded-[2rem]">
+                        <DialogHeader>
+                            <DialogTitle className="sr-only">Đăng nhập</DialogTitle>
+                        </DialogHeader>
+                        <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                            style={{ backgroundImage: "url('/images/parchment.png')" }}>
+                        </div>
+                        <div className="relative p-10 overflow-y-auto max-h-[85vh] custom-scrollbar">
+                            <LoginForm onSuccess={() => setIsLoginOpen(false)} />
+                        </div>
+                    </DialogContent>
+                </Dialog>
+            )}
         </header>
     );
 }

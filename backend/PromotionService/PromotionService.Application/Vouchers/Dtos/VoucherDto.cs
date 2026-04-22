@@ -15,5 +15,8 @@ public record VoucherDto(
     int TotalUsageLimit,
     int UsageCount,
     int MaxUsagePerUser,
-    bool IsActive
+    bool IsActive,
+    VoucherType Type,
+    int? PointCost,
+    string? Conditions
 );

@@ -15,7 +15,10 @@ public record CreateVoucherCommand(
     DateTime ValidFrom,
     DateTime ValidTo,
     int TotalUsageLimit,
-    int MaxUsagePerUser
+    int MaxUsagePerUser,
+    VoucherType Type,
+    int? PointCost,
+    string? Conditions
 ) : IRequest<Guid>;
 
 public class CreateVoucherCommandHandler : IRequestHandler<CreateVoucherCommand, Guid>
@@ -39,7 +42,10 @@ public class CreateVoucherCommandHandler : IRequestHandler<CreateVoucherCommand,
             request.ValidFrom,
             request.ValidTo,
             request.TotalUsageLimit,
-            request.MaxUsagePerUser
+            request.MaxUsagePerUser,
+            request.Type,
+            request.PointCost,
+            request.Conditions
         );
 
         _context.Vouchers.Add(voucher);

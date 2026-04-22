@@ -4,6 +4,7 @@ services:
   # Infrastructure
   postgres:
     image: postgres:15-alpine
+    init: true
     container_name: bunbo-postgres
     restart: always
     environment:
@@ -23,6 +24,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    init: true
     container_name: bunbo-redis
     restart: always
     ports:
@@ -40,6 +42,7 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
+    init: true
     container_name: bunbo-rabbitmq
     restart: always
     environment:
@@ -63,6 +66,7 @@ services:
     build:
       context: .
       dockerfile: IdentityService/Dockerfile
+    init: true
     container_name: bunbo-identity
     restart: on-failure
     environment:
@@ -89,6 +93,7 @@ services:
     build:
       context: .
       dockerfile: CatalogService/Dockerfile
+    init: true
     container_name: bunbo-catalog
     restart: on-failure
     environment:
@@ -117,6 +122,7 @@ services:
     build:
       context: .
       dockerfile: CartService/Dockerfile
+    init: true
     container_name: bunbo-cart
     restart: on-failure
     environment:
@@ -141,6 +147,7 @@ services:
     build:
       context: .
       dockerfile: OrderService/Dockerfile
+    init: true
     container_name: bunbo-order
     restart: on-failure
     environment:
@@ -167,6 +174,7 @@ services:
     build:
       context: .
       dockerfile: RealtimeService/Dockerfile
+    init: true
     container_name: bunbo-realtime
     restart: on-failure
     environment:
@@ -190,6 +198,7 @@ services:
     build:
       context: .
       dockerfile: PaymentService/Dockerfile
+    init: true
     container_name: bunbo-payment
     restart: on-failure
     environment:
@@ -216,6 +225,7 @@ services:
     build:
       context: .
       dockerfile: PromotionService/Dockerfile
+    init: true
     container_name: bunbo-promotion
     restart: on-failure
     environment:
@@ -243,6 +253,7 @@ services:
     build:
       context: .
       dockerfile: ApiGateway/Dockerfile
+    init: true
     container_name: bunbo-gateway
     restart: on-failure
     environment:
@@ -274,6 +285,7 @@ services:
   # Object Storage (S3 Compatible)
   minio:
     image: minio/minio:latest
+    init: true
     container_name: bunbo-minio
     restart: always
     ports:
@@ -296,6 +308,7 @@ services:
   # Centralized Logging (Serilog Sink)
   seq:
     image: datalust/seq:latest
+    init: true
     container_name: bunbo-seq
     restart: always
     environment:
@@ -312,6 +325,7 @@ services:
   # Notification Service (Email & SMS)
   notification-service:
     image: bunbo-notification
+    init: true
     container_name: bunbo-notification
     build:
       context: .

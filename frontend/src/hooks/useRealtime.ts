@@ -141,21 +141,6 @@ export const useRealtime = () => {
         // Call it immediately
         syncGroups();
 
-        connection.onreconnecting(() => {
-            console.log("!!! SIGNALR: Attempting to reconnect...");
-            setConnectionStatus(signalR.HubConnectionState.Reconnecting);
-        });
-
-        connection.onreconnected(() => {
-            console.log("!!! SIGNALR: Reconnected successfully !!!");
-            setConnectionStatus(signalR.HubConnectionState.Connected);
-        });
-
-        connection.onclose(() => {
-            console.warn("!!! SIGNALR: Connection closed.");
-            setConnectionStatus(signalR.HubConnectionState.Disconnected);
-        });
-
         const startConnection = async () => {
             if (connection.state === signalR.HubConnectionState.Disconnected) {
                 try {
@@ -169,6 +154,22 @@ export const useRealtime = () => {
                 }
             }
         };
+
+        connection.onreconnecting(() => {
+            console.log("!!! SIGNALR: Attempting to reconnect...");
+            setConnectionStatus(signalR.HubConnectionState.Reconnecting);
+        });
+
+        connection.onreconnected(() => {
+            console.log("!!! SIGNALR: Reconnected successfully !!!");
+            setConnectionStatus(signalR.HubConnectionState.Connected);
+        });
+
+        connection.onclose(() => {
+            console.warn("!!! SIGNALR: Connection closed permanently. Attempting to start a fresh connection...");
+            setConnectionStatus(signalR.HubConnectionState.Disconnected);
+            if (!isStopped) setTimeout(startConnection, 5000);
+        });
 
         startConnection();
 
