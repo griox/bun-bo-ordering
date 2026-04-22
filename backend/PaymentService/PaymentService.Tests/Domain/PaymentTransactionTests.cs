@@ -17,7 +17,7 @@ public class PaymentTransactionTests
         var paymentUrl = "https://dl.vietqr.io/pay?app=xyz";
 
         // Act
-        var transaction = new PaymentTransaction(orderId, amount, provider, paymentUrl);
+        var transaction = new PaymentTransaction(orderId, amount, provider, paymentUrl: paymentUrl);
 
         // Assert
         Assert.Equal(orderId, transaction.OrderId);
@@ -33,7 +33,7 @@ public class PaymentTransactionTests
     public void MarkAsSuccess_WithValidTransactionData_ShouldUpdateStatusAndDetails()
     {
         // Arrange
-        var transaction = new PaymentTransaction(Guid.NewGuid(), 150000m, "SePay", "url");
+        var transaction = new PaymentTransaction(Guid.NewGuid(), 150000m, "SePay", paymentUrl: "url");
         var providerTransactionId = "SEPAY123456";
         var signature = "hmac256signature";
 
@@ -50,7 +50,7 @@ public class PaymentTransactionTests
     public void MarkAsFailed_ShouldUpdateStatusToFailed()
     {
         // Arrange
-        var transaction = new PaymentTransaction(Guid.NewGuid(), 150000m, "SePay", "url");
+        var transaction = new PaymentTransaction(Guid.NewGuid(), 150000m, "SePay", paymentUrl: "url");
 
         // Act
         transaction.MarkAsFailed();

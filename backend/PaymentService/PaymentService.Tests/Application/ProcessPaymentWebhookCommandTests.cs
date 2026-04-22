@@ -21,7 +21,7 @@ public class ProcessPaymentWebhookCommandTests
         var providerTransactionId = "SEPAY123456";
         var signature = "valid_signature";
         
-        var transaction = new PaymentTransaction(orderId, amount, "SePay", "url");
+        var transaction = new PaymentTransaction(orderId, amount, "SePay", paymentUrl: "url");
         
         var mockRepo = new Mock<IPaymentTransactionRepository>();
         mockRepo.Setup(r => r.GetByOrderIdAsync(orderId, It.IsAny<CancellationToken>()))
@@ -49,6 +49,6 @@ public class ProcessPaymentWebhookCommandTests
         Assert.Equal(providerTransactionId, transaction.TransactionId);
         
         mockRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        mockEventPublisher.Verify(p => p.PublishPaymentCompletedEventAsync(orderId, true, It.IsAny<CancellationToken>()), Times.Once);
+        mockEventPublisher.Verify(p => p.PublishPaymentCompletedEventAsync(orderId, true, amount, transaction.CustomerId, It.IsAny<CancellationToken>()), Times.Once);
     }
 }
