@@ -234,9 +234,9 @@ services:
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
-      - JwtSettings__Issuer=BunBoIdentityService
-      - JwtSettings__Audience=BunBoClients
+      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem1234567890
+      - JwtSettings__Issuer=BunBoIdentity
+      - JwtSettings__Audience=BunBoMicroservices
       - Kestrel__Endpoints__Http__Url=http://+:8080
     ports:
       - "5007:8080"
@@ -269,6 +269,7 @@ services:
       - ReverseProxy__Clusters__order-cluster__Destinations__destination1__Address=http://order-service:8080
       - ReverseProxy__Clusters__realtime-cluster__Destinations__destination1__Address=http://realtime-service:8080
       - ReverseProxy__Clusters__payment-cluster__Destinations__destination1__Address=http://payment-service:8080
+      - ReverseProxy__Clusters__promotion-cluster__Destinations__destination1__Address=http://promotion-service:8080
     ports:
       - "8000:8080"
     depends_on:

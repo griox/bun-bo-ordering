@@ -126,43 +126,77 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="w-[92vw] max-w-md bg-background border-4 border-primary p-0 overflow-hidden shadow-[10px_10px_0px_rgba(217,56,30,0.2)] rounded-[2rem]">
-                <div className="absolute inset-0 opacity-[0.03] pointer-events-none"
+            <DialogContent className="w-[92vw] max-w-md bg-white border-2 border-black p-0 overflow-hidden shadow-[8px_8px_0px_rgba(0,0,0,0.1)] rounded-[2.5rem]">
+                <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
                     style={{ backgroundImage: "url('/images/parchment.png')" }}>
                 </div>
 
-                <DialogHeader className="p-6 pb-2 relative z-10 text-center bg-white">
-                    <DialogTitle className="font-display text-2xl text-primary tracking-widest uppercase">Quét Mã Tại Bàn</DialogTitle>
-                    <p className="text-sm font-main text-neutral-500 mt-2">Đưa camera về phía mã QR hoặc tải lên ảnh mã QR.</p>
+                <DialogHeader className="p-8 pb-4 relative z-10 text-center bg-white border-b-2 border-black/5">
+                    <DialogTitle className="font-display text-3xl font-black text-primary tracking-tight uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
+                        Quét Mã QR
+                    </DialogTitle>
+                    <p className="text-xs font-main font-bold text-neutral-400 mt-2 uppercase tracking-widest">
+                        Vui lòng quét mã tại bàn quý khách đang ngồi
+                    </p>
                 </DialogHeader>
 
-                <div className="bg-neutral-50 p-6 relative z-10">
-                    <div className="relative w-full aspect-square rounded-2xl overflow-hidden bg-black border-2 border-neutral-200 shadow-inner">
-                        <div id="reader" className="w-full h-full"></div>
+                <div className="p-8 relative z-10">
+                    <div className="relative w-full aspect-square rounded-[2rem] overflow-hidden bg-black border-2 border-black shadow-[4px_4px_0px_rgba(0,0,0,0.05)] group">
+                        {/* Viewfinder Overlay */}
+                        {isScanning && (
+                            <div className="absolute inset-0 z-20 pointer-events-none flex items-center justify-center">
+                                {/* Corner borders */}
+                                <div className="absolute top-8 left-8 w-12 h-12 border-t-4 border-l-4 border-primary rounded-tl-xl opacity-80" />
+                                <div className="absolute top-8 right-8 w-12 h-12 border-t-4 border-r-4 border-primary rounded-tr-xl opacity-80" />
+                                <div className="absolute bottom-8 left-8 w-12 h-12 border-b-4 border-l-4 border-primary rounded-bl-xl opacity-80" />
+                                <div className="absolute bottom-8 right-8 w-12 h-12 border-b-4 border-r-4 border-primary rounded-br-xl opacity-80" />
+
+                                {/* Scanning Line */}
+                                <div className="w-full h-[2px] bg-primary/50 absolute top-0 shadow-[0_0_15px_rgba(217,56,30,0.8)] animate-[scan_2s_linear_infinite]" />
+
+                                <style jsx>{`
+                                    @keyframes scan {
+                                        0% { top: 10%; opacity: 0; }
+                                        10% { opacity: 1; }
+                                        90% { opacity: 1; }
+                                        100% { top: 90%; opacity: 0; }
+                                    }
+                                `}</style>
+                            </div>
+                        )}
+
+                        <div id="reader" className="w-full h-full scale-[1.02]"></div>
 
                         {!isScanning && !cameraError && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/60 backdrop-blur-sm p-4 text-center">
-                                <Loader2 className="w-8 h-8 animate-spin mb-4 text-primary" />
-                                <span className="font-bold">Đang khởi động Camera...</span>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-neutral-900/90 backdrop-blur-md p-4 text-center z-30">
+                                <div className="relative">
+                                    <Loader2 className="w-12 h-12 animate-spin text-primary relative z-10" />
+                                    <div className="absolute inset-0 w-12 h-12 bg-primary/20 blur-xl animate-pulse" />
+                                </div>
+                                <span className="font-display font-black text-xs uppercase tracking-[0.3em] mt-6 animate-pulse">Khởi động camera...</span>
                             </div>
                         )}
 
                         {cameraError && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-black/80 p-6 text-center">
-                                <CameraOff className="w-12 h-12 mb-4 text-red-500" />
-                                <p className="text-sm mb-6 font-main font-bold leading-relaxed">{cameraError}</p>
-                                <div className="flex flex-col gap-3 w-full max-w-[240px]">
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-white bg-neutral-900 p-8 text-center z-30">
+                                <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mb-6 border-2 border-red-500/20">
+                                    <CameraOff className="w-10 h-10 text-red-500" />
+                                </div>
+                                <p className="text-sm mb-8 font-main font-bold leading-relaxed text-neutral-300 px-4 italic">
+                                    "{cameraError}"
+                                </p>
+                                <div className="flex flex-col gap-4 w-full max-w-[260px]">
                                     <Button
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="bg-white hover:bg-neutral-100 text-black border-2 border-text font-bold rounded-xl h-12 shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none flex items-center justify-center gap-2 transition-all"
+                                        className="bg-white hover:bg-neutral-100 text-black border-2 border-black font-display font-black text-xs tracking-widest uppercase rounded-full h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-3"
                                     >
-                                        <Upload size={18} />
-                                        Chọn ảnh mã QR
+                                        <Upload size={18} className="text-primary" />
+                                        Tải ảnh mã QR
                                     </Button>
                                     <Button
                                         variant="ghost"
                                         onClick={startScanner}
-                                        className="text-white hover:bg-white/10 mt-2"
+                                        className="text-neutral-400 hover:text-white hover:bg-white/5 font-bold text-xs uppercase tracking-widest"
                                     >
                                         Thử lại
                                     </Button>
@@ -178,18 +212,23 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                         )}
                     </div>
 
-                    <div className="mt-6 flex flex-col items-center gap-3">
+                    <div className="mt-8 flex flex-col items-center">
                         {isScanning ? (
-                            <div className="flex items-center gap-2 text-primary font-bold animate-pulse">
-                                <Camera size={20} />
-                                <span className="text-sm uppercase tracking-wider">Đang đợi quét...</span>
+                            <div className="flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-3 px-6 py-2 bg-primary/5 rounded-full border border-primary/10">
+                                    <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
+                                    <span className="text-[10px] font-display font-black text-primary uppercase tracking-[0.2em]">Đang tìm mã QR...</span>
+                                </div>
+                                <button
+                                    onClick={stopScanner}
+                                    className="text-[10px] font-bold text-neutral-400 mt-4 uppercase tracking-widest hover:text-red-500 transition-colors"
+                                >
+                                    Dừng quét
+                                </button>
                             </div>
                         ) : (
-                            <div className="h-6"></div>
+                            <div className="h-10"></div>
                         )}
-                        <p className="text-[10px] text-neutral-400 font-main text-center px-4 italic">
-                            Nếu macOS chặn Camera, bạn vẫn có thể sử dụng ảnh screenshot mã QR (Cmd+Shift+4) để tải lên và quét.
-                        </p>
                     </div>
                 </div>
             </DialogContent>

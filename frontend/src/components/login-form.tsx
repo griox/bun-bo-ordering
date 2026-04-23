@@ -95,7 +95,7 @@ export function LoginForm({
           {isLogin ? 'Đăng nhập' : 'Tạo tài khoản'}
         </h1>
         <p className="italic text-secondary font-bold tracking-tight text-sm md:text-base">
-          {isLogin? 'Chào mừng bạn quay lại với Bún Bò Phố': 'Chào mừng đến với cộng đồng yêu bún bò'}
+          {isLogin ? 'Chào mừng bạn quay lại với Bún Bò Phố' : 'Chào mừng đến với cộng đồng yêu bún bò'}
         </p>
       </div>
 
@@ -108,7 +108,7 @@ export function LoginForm({
                 {...loginForm.register('username')}
                 placeholder="Ví dụ: nva_123"
                 className={cn(
-                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-full shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] transition-all placeholder:text-neutral-400 placeholder:italic",
+                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-2xl shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] transition-all placeholder:text-neutral-400 placeholder:italic",
                   loginForm.formState.errors.username ? "border-red-500" : "focus:border-black focus:ring-0"
                 )}
               />
@@ -127,7 +127,7 @@ export function LoginForm({
                 type="password"
                 placeholder="••••••••"
                 className={cn(
-                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-full shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] transition-all placeholder:text-neutral-400 placeholder:italic",
+                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-2xl shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] transition-all placeholder:text-neutral-400 placeholder:italic",
                   loginForm.formState.errors.password ? "border-red-500" : "focus:border-black focus:ring-0"
                 )}
               />
@@ -139,7 +139,7 @@ export function LoginForm({
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-16 bg-primary text-white font-display font-black text-base md:text-lg uppercase tracking-[0.2em] rounded-full border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none mt-4 transition-all"
+              className="w-full h-16 bg-primary text-white font-display font-black text-base md:text-lg uppercase tracking-[0.2em] rounded-2xl border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none mt-4 transition-all"
             >
               {loading ? 'ĐANG XỬ LÝ...' : 'ĐĂNG NHẬP NGAY'}
             </Button>
@@ -154,7 +154,7 @@ export function LoginForm({
                 {...registerForm.register('username')}
                 placeholder="Tên của bạn..."
                 className={cn(
-                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-full shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
+                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-2xl shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
                   registerForm.formState.errors.username ? "border-red-500" : ""
                 )}
               />
@@ -169,7 +169,7 @@ export function LoginForm({
                 {...registerForm.register('email')}
                 placeholder="vi-du@gmail.com"
                 className={cn(
-                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-full shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
+                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-2xl shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
                   registerForm.formState.errors.email ? "border-red-500" : ""
                 )}
               />
@@ -185,7 +185,7 @@ export function LoginForm({
                 type="password"
                 placeholder="••••••••"
                 className={cn(
-                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-full shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
+                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-2xl shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
                   registerForm.formState.errors.password ? "border-red-500" : ""
                 )}
               />
@@ -201,7 +201,7 @@ export function LoginForm({
                 type="password"
                 placeholder="••••••••"
                 className={cn(
-                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-full shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
+                  "h-14 bg-white border-2 border-black font-bold text-sm md:text-base px-8 rounded-2xl shadow-[1.5px_1.5px_0px_rgba(0,0,0,0.08)] focus:border-black focus:ring-0 transition-all placeholder:text-neutral-400 placeholder:italic",
                   registerForm.formState.errors.confirmPassword ? "border-red-500" : ""
                 )}
               />
@@ -213,7 +213,7 @@ export function LoginForm({
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-16 bg-primary text-white font-display font-black text-base md:text-lg uppercase tracking-[0.2em] rounded-full border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none mt-6 transition-all"
+            className="w-full h-16 bg-primary text-white font-display font-black text-base md:text-lg uppercase tracking-[0.2em] rounded-2xl border-2 border-black shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none mt-6 transition-all"
           >
             {loading ? 'ĐANG XỬ LÝ...' : 'TẠO TÀI KHOẢN NGAY'}
           </Button>
@@ -229,7 +229,7 @@ export function LoginForm({
           <Button
             variant="outline"
             type="button"
-            className="w-full h-16 bg-white text-black font-display font-black text-sm tracking-[0.2em] rounded-full border-2 border-black transition-all hover:bg-neutral-50 shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none !shadow-[3px_3px_0px_rgba(0,0,0,0.12)]"
+            className="w-full h-16 bg-white text-black font-display font-black text-sm tracking-[0.2em] rounded-2xl border-2 border-black transition-all hover:bg-neutral-50 shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none !shadow-[3px_3px_0px_rgba(0,0,0,0.12)]"
             onClick={() => handleGoogleLogin()}
           >
             <img src="https://www.google.com/favicon.ico" alt="G" className="mr-3 h-5 w-5" />

@@ -26,9 +26,13 @@ axiosInstance.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response?.status === 401) {
-            toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
-            useAuthStore.getState().logout();
-            window.location.href = '/login';
+            const hasToken = !!useAuthStore.getState().token;
+            // Only show expired-session message and redirect if user had a token.
+            // If there's no token, it's simply an anonymous/guest request — ignore silently.
+            if (hasToken) {
+                toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+                useAuthStore.getState().logout();
+            }
         }
         return Promise.reject(error);
     }

@@ -1,4 +1,4 @@
-.agent
+
 doc/
 dailylogs/
 **/do-secret.template.yaml

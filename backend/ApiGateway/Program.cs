@@ -28,6 +28,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseCors(); // Must be before MapReverseProxy
+app.UseWebSockets(); // Crucial for proxying SignalR WebSocket connections
 
 app.MapReverseProxy();
 
