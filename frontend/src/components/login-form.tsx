@@ -91,11 +91,11 @@ export function LoginForm({
   return (
     <div className={cn("flex flex-col gap-6 md:gap-8", className)} {...props}>
       <div className="flex flex-col items-center gap-3 text-center">
-        <h1 className="text-5xl md:text-6xl font-display font-black text-primary tracking-tighter uppercase drop-shadow-[3px_3px_0px_#000000]">
+        <h1 className="text-5xl md:text-5xl font-display font-black text-primary tracking-tighter uppercase drop-shadow-[3px_3px_0px_#000000]">
           {isLogin ? 'Đăng nhập' : 'Tạo tài khoản'}
         </h1>
         <p className="italic text-secondary font-bold tracking-tight text-sm md:text-base">
-          Chào mừng bạn quay lại với Bún Bò Phố!
+          {isLogin? 'Chào mừng bạn quay lại với Bún Bò Phố': 'Chào mừng đến với cộng đồng yêu bún bò'}
         </p>
       </div>
 
