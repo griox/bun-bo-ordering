@@ -7,6 +7,8 @@ using System.Text;
 using PromotionService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
+using MS = Microsoft.Extensions.Configuration;
+using System.Security.Claims;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,9 +33,37 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+            RoleClaimType = ClaimTypes.Role
+        };
+        
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = context =>
+            {
+                Console.WriteLine($"[JWT Error] Authentication failed: {context.Exception}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = context =>
+            {
+                Console.WriteLine($"[JWT Success] Token validated successfully for {context.Principal?.Identity?.Name}");
+                return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                Console.WriteLine($"[JWT Info] Token received: {context.Token?.Substring(0, Math.Min(10, context.Token?.Length ?? 0))}...");
+                return Task.CompletedTask;
+            }
         };
     });
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
 
 builder.Services.AddAuthorization(options =>
 {
@@ -69,6 +99,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 

@@ -205,13 +205,13 @@ export default function PromotionsPage() {
                                         <td className="px-8 py-6">
                                             <div className="space-y-1">
                                                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tighter text-gray-500">
-                                                    <span>{voucher.usageCount} / {voucher.maxUsageLimit}</span>
-                                                    <span>{Math.round((voucher.usageCount / voucher.maxUsageLimit) * 100)}%</span>
+                                                    <span>{voucher.usageCount} / {voucher.totalUsageLimit}</span>
+                                                    <span>{Math.round((voucher.usageCount / voucher.totalUsageLimit) * 100)}%</span>
                                                 </div>
                                                 <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                                     <div
                                                         className="h-full bg-[#ff4d4f] rounded-full transition-all duration-1000"
-                                                        style={{ width: `${Math.min((voucher.usageCount / voucher.maxUsageLimit) * 100, 100)}%` }}
+                                                        style={{ width: `${Math.min((voucher.usageCount / voucher.totalUsageLimit) * 100, 100)}%` }}
                                                     />
                                                 </div>
                                             </div>
@@ -220,8 +220,8 @@ export default function PromotionsPage() {
                                             <div className="flex items-center gap-3">
                                                 <Calendar className="size-4 text-gray-400" />
                                                 <div className="text-[10px] font-bold text-gray-600">
-                                                    <p>{format(new Date(voucher.startDate), 'dd/MM/yyyy', { locale: vi })}</p>
-                                                    <p className="text-gray-400">đến {format(new Date(voucher.endDate), 'dd/MM/yyyy', { locale: vi })}</p>
+                                                    <p>{format(new Date(voucher.validFrom), 'dd/MM/yyyy', { locale: vi })}</p>
+                                                    <p className="text-gray-400">đến {format(new Date(voucher.validTo), 'dd/MM/yyyy', { locale: vi })}</p>
                                                 </div>
                                             </div>
                                         </td>
@@ -339,8 +339,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <Input
                         type="number"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.discountValue}
-                        onChange={(e) => setFormData({ ...formData, discountValue: Number(e.target.value) })}
+                        value={formData.discountValue || ''}
+                        placeholder="0"
+                        onChange={(e) => setFormData({ ...formData, discountValue: e.target.value === '' ? 0 : Number(e.target.value) })}
                         required
                     />
                 </div>
@@ -349,8 +350,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <Input
                         type="number"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.minOrderValue}
-                        onChange={(e) => setFormData({ ...formData, minOrderValue: Number(e.target.value) })}
+                        value={formData.minOrderValue || ''}
+                        placeholder="0"
+                        onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value === '' ? 0 : Number(e.target.value) })}
                         required
                     />
                 </div>
@@ -381,8 +383,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <Input
                         type="number"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.maxUsageLimit}
-                        onChange={(e) => setFormData({ ...formData, maxUsageLimit: Number(e.target.value) })}
+                        value={formData.maxUsageLimit || ''}
+                        placeholder="0"
+                        onChange={(e) => setFormData({ ...formData, maxUsageLimit: e.target.value === '' ? 0 : Number(e.target.value) })}
                         required
                     />
                 </div>
@@ -391,8 +394,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <Input
                         type="number"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.maxUsagePerUser}
-                        onChange={(e) => setFormData({ ...formData, maxUsagePerUser: Number(e.target.value) })}
+                        value={formData.maxUsagePerUser || ''}
+                        placeholder="0"
+                        onChange={(e) => setFormData({ ...formData, maxUsagePerUser: e.target.value === '' ? 0 : Number(e.target.value) })}
                         required
                     />
                 </div>

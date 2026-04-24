@@ -9,12 +9,15 @@ export interface Voucher {
     discountValue: number;
     minOrderValue: number;
     maxDiscountAmount: number;
-    startDate: string;
-    endDate: string;
-    maxUsageLimit: number;
+    validFrom: string;
+    validTo: string;
+    totalUsageLimit: number;
     maxUsagePerUser: number;
     isActive: boolean;
     usageCount: number;
+    type: 'Standard' | 'PointRedemption' | 'Reward';
+    pointCost?: number;
+    conditions?: string;
 }
 
 export interface LoyaltyPoints {
@@ -44,8 +47,36 @@ export function usePromotions() {
 
     // Admin: Create voucher
     const createVoucherMutation = useMutation({
-        mutationFn: async (newVoucher: Partial<Voucher>) => {
-            const { data } = await axiosInstance.post<Voucher>('/api/promotion/vouchers', newVoucher);
+        mutationFn: async (formData: {
+            code: string;
+            description: string;
+            discountType: 'Percentage' | 'FixedAmount';
+            discountValue: number;
+            minOrderValue: number;
+            maxDiscountAmount: number;
+            startDate: string;
+            endDate: string;
+            maxUsageLimit: number;
+            maxUsagePerUser: number;
+            isActive: boolean;
+        }) => {
+            // Map frontend form fields to backend C# command fields
+            const payload = {
+                Code: formData.code,
+                Description: formData.description,
+                DiscountType: formData.discountType,
+                DiscountValue: formData.discountValue,
+                MinOrderValue: formData.minOrderValue,
+                MaxDiscountAmount: formData.maxDiscountAmount || null,
+                ValidFrom: new Date(formData.startDate).toISOString(),
+                ValidTo: new Date(formData.endDate).toISOString(),
+                TotalUsageLimit: formData.maxUsageLimit,
+                MaxUsagePerUser: formData.maxUsagePerUser,
+                Type: 0, // VoucherType.Standard
+                PointCost: null,
+                Conditions: null,
+            };
+            const { data } = await axiosInstance.post<Voucher>('/api/promotion/vouchers', payload);
             return data;
         },
         onSuccess: () => {
