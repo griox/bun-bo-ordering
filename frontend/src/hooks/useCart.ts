@@ -59,12 +59,14 @@ export const usePlaceOrderMutation = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: async ({ note, paymentMethod }: { note?: string, paymentMethod: string }) => {
+        mutationFn: async ({ note, paymentMethod, voucherCode, discountAmount }: { note?: string, paymentMethod: string, voucherCode?: string | null, discountAmount?: number }) => {
             if (!session?.id) throw new Error("No active session");
             const response = await axiosInstance.post('/api/orders', {
                 tableSessionId: session.id,
                 note: note,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
+                voucherCode: voucherCode,
+                discountAmount: discountAmount
             });
             return response.data;
         },

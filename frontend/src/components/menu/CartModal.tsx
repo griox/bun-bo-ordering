@@ -100,7 +100,9 @@ export function CartModal() {
             // Place the order
             const orderIdResult = await placeOrderMutation.mutateAsync({
                 note,
-                paymentMethod: paymentMethod
+                paymentMethod: paymentMethod,
+                voucherCode: appliedVoucher,
+                discountAmount: discountAmount
             });
             const finalOrderId = orderIdResult.id || orderIdResult.Id;
 
@@ -113,7 +115,11 @@ export function CartModal() {
             if (paymentMethod === 'Transfer') {
                 try {
                     console.log("Creating pending payment for order:", finalOrderId);
-                    await axiosInstance.post('/api/payments', { orderId: finalOrderId, amount: total });
+                    await axiosInstance.post('/api/payments', {
+                        orderId: finalOrderId,
+                        amount: total,
+                        voucherCode: appliedVoucher
+                    });
                 } catch (err) {
                     console.error('Failed to initialize payment transaction', err);
                 }

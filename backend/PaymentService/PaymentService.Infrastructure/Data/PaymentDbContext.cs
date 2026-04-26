@@ -23,6 +23,7 @@ public class PaymentDbContext : DbContext
                 v => v.ToString(),
                 v => (PaymentStatus)Enum.Parse(typeof(PaymentStatus), v)
             );
+            entity.Property(e => e.VoucherCode).HasMaxLength(50);
             
             // Unique index to prevent processing the same webhook twice
             entity.HasIndex(e => e.TransactionId).IsUnique();

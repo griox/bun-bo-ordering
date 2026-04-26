@@ -13,17 +13,19 @@ public class PaymentTransaction : BaseEntity
     public string? TransactionId { get; private set; }
     public string? Signature { get; private set; }
     public PaymentStatus Status { get; private set; }
+    public string? VoucherCode { get; private set; }
     public string? PaymentUrl { get; private set; }
 
     protected PaymentTransaction() { } // EF Core
 
-    public PaymentTransaction(Guid orderId, decimal amount, string provider, Guid? customerId = null, string? paymentUrl = null)
+    public PaymentTransaction(Guid orderId, decimal amount, string provider, Guid? customerId = null, string? paymentUrl = null, string? voucherCode = null)
     {
         OrderId = orderId;
         Amount = amount;
         Provider = provider;
         CustomerId = customerId;
         PaymentUrl = paymentUrl;
+        VoucherCode = voucherCode;
         Status = PaymentStatus.Pending;
     }
 

@@ -7,6 +7,8 @@ public record OrderCreatedEvent
     public Guid TableSessionId { get; init; }
     public string TableNumber { get; init; } = string.Empty;
     public decimal TotalAmount { get; init; }
+    public decimal DiscountAmount { get; init; }
+    public string? VoucherCode { get; init; }
     public string? Note { get; init; }
     public string PaymentMethod { get; init; } = string.Empty;
     public DateTime CreatedAt { get; init; }

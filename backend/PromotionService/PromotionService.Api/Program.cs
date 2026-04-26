@@ -10,6 +10,7 @@ using MassTransit;
 using MS = Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using Serilog;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,12 @@ builder.Host.AddSerilogLogging("PromotionService");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
@@ -128,13 +135,13 @@ promotionGroup.MapGet("/vouchers", async (MediatR.IMediator mediator) =>
 }).RequireAuthorization("Admin");
 
 // Client APIs
-promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, string code, decimal amount, System.Security.Claims.ClaimsPrincipal user) =>
+promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, ValidateVoucherRequest req, System.Security.Claims.ClaimsPrincipal user) =>
 {
     var userIdStr = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);
-    var result = await mediator.Send(new PromotionService.Application.Vouchers.Queries.ValidateVoucherQuery(code, userId, amount));
+    var result = await mediator.Send(new PromotionService.Application.Vouchers.Queries.ValidateVoucherQuery(req.Code, userId, req.OrderValue));
     
     return result.IsValid ? Results.Ok(result) : Results.BadRequest(result);
 }).RequireAuthorization();
@@ -166,3 +173,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+public record ValidateVoucherRequest(string Code, decimal OrderValue);

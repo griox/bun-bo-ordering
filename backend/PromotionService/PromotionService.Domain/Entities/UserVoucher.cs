@@ -24,6 +24,16 @@ public class UserVoucher : BaseEntity
         ClaimedAt = DateTime.UtcNow;
     }
 
+    public UserVoucher(Guid userId, Guid voucherId, Guid orderId)
+    {
+        UserId = userId;
+        VoucherId = voucherId;
+        IsUsed = true;
+        OrderId = orderId;
+        ClaimedAt = DateTime.UtcNow;
+        UsedAt = DateTime.UtcNow;
+    }
+
     public void Use(Guid orderId)
     {
         if (IsUsed) throw new Exception("Voucher này đã được sử dụng!");

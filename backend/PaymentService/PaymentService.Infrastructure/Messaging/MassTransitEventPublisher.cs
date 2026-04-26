@@ -16,13 +16,14 @@ public class MassTransitEventPublisher : IEventPublisher
         _publishEndpoint = publishEndpoint;
     }
 
-    public async Task PublishPaymentCompletedEventAsync(Guid orderId, bool isSuccess, decimal amount, Guid? customerId, CancellationToken cancellationToken = default)
+    public async Task PublishPaymentCompletedEventAsync(Guid orderId, bool isSuccess, decimal amount, Guid? customerId, string? voucherCode, CancellationToken cancellationToken = default)
     {
         var e = new PaymentCompletedEvent
         {
             OrderId = orderId,
             CustomerId = customerId,
             TransactionId = "PENDING_REAL_ID",
+            VoucherCode = voucherCode,
             Amount = amount,
             IsSuccess = isSuccess,
             CompletedAt = DateTime.UtcNow

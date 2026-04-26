@@ -70,8 +70,32 @@ public class PaymentCompletedConsumer : IConsumer<PaymentCompletedEvent>
         loyaltyPoint.AddPoints(pointsToEarn);
         _context.PointTransactions.Add(transaction);
 
+        // Voucher usage consumption
+        if (!string.IsNullOrEmpty(@event.VoucherCode))
+        {
+            _logger.LogInformation("Processing voucher usage for Code {VoucherCode} for Order {OrderId}", 
+                @event.VoucherCode, @event.OrderId);
+            
+            var voucher = await _context.Vouchers
+                .SingleOrDefaultAsync(v => v.Code == @event.VoucherCode);
+
+            if (voucher != null)
+            {
+                voucher.IncrementUsage();
+                _logger.LogInformation("Incremented usage for Voucher {VoucherCode}", @event.VoucherCode);
+                
+                // Record user voucher mapping if customer is logged in
+                var userVoucher = new UserVoucher(userId, voucher.Id, @event.OrderId);
+                _context.UserVouchers.Add(userVoucher);
+            }
+            else
+            {
+                _logger.LogWarning("Voucher {VoucherCode} not found in database.", @event.VoucherCode);
+            }
+        }
+
         await _context.SaveChangesAsync();
         
-        _logger.LogInformation("Successfully awarded points to User {UserId}", userId);
+        _logger.LogInformation("Successfully awarded points and processed voucher for User {UserId}", userId);
     }
 }

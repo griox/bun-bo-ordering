@@ -9,6 +9,8 @@ public class Order : BaseEntity
     public TableSession? TableSession { get; private set; }
 
     public decimal TotalAmount { get; private set; }
+    public decimal DiscountAmount { get; private set; }
+    public string? VoucherCode { get; private set; }
     public OrderStatus Status { get; private set; }
     public string? Note { get; private set; }
     public string PaymentMethod { get; private set; } = string.Empty;
@@ -20,12 +22,14 @@ public class Order : BaseEntity
 
     protected Order() { }
 
-    public Order(Guid tableSessionId, Guid? customerId, string? note, string paymentMethod)
+    public Order(Guid tableSessionId, Guid? customerId, string? note, string paymentMethod, string? voucherCode = null, decimal discountAmount = 0)
     {
         TableSessionId = tableSessionId;
         CustomerId = customerId;
         Note = note;
         PaymentMethod = paymentMethod;
+        VoucherCode = voucherCode;
+        DiscountAmount = discountAmount;
         Status = OrderStatus.Unpaid;
     }
 
@@ -37,7 +41,8 @@ public class Order : BaseEntity
 
     public void RecalculateTotal()
     {
-        TotalAmount = OrderItems.Sum(x => x.TotalPrice);
+        var itemsTotal = OrderItems.Sum(x => x.TotalPrice);
+        TotalAmount = Math.Max(0, itemsTotal - DiscountAmount);
     }
 
     public void UpdateStatus(OrderStatus newStatus)

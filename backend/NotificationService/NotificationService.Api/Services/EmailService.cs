@@ -44,7 +44,7 @@ public class EmailService : IEmailService
                         </div>
 
                         <!-- Hero Image -->
-                        <div style='width: 100%; height: 300px; background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url(""https://bun-bo-chung-cu.io.vn/images/Gemini_Generated_Image_w39rcaw39rcaw39r.png"") center/cover;'>
+                        <div style='width: 100%; height: 300px; background: url(""https://bun-bo-chung-cu.io.vn/images/Gemini_Generated_Image_w39rcaw39rcaw39r.png"") center/cover;'>
                         </div>
 
                         <!-- Content Body -->

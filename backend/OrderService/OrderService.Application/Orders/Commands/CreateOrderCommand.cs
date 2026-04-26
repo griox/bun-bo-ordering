@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace OrderService.Application.Orders.Commands;
 
-public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note, string PaymentMethod) : IRequest<Guid>;
+public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note, string PaymentMethod, string? VoucherCode = null, decimal DiscountAmount = 0) : IRequest<Guid>;
 
 public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
 {
@@ -51,7 +51,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             throw new Exception("Giỏ hàng đang trống. Không thể tạo đơn.");
         }
 
-        var order = new Order(request.TableSessionId, request.CustomerId, request.Note, request.PaymentMethod);
+        var order = new Order(request.TableSessionId, request.CustomerId, request.Note, request.PaymentMethod, request.VoucherCode, request.DiscountAmount);
 
         foreach (var itemDto in cart.Items)
         {
@@ -70,6 +70,8 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             TableSessionId = order.TableSessionId,
             TableNumber = session.Table?.Name ?? "N/A",
             TotalAmount = order.TotalAmount,
+            DiscountAmount = order.DiscountAmount,
+            VoucherCode = order.VoucherCode,
             Note = order.Note,
             PaymentMethod = order.PaymentMethod,
             CreatedAt = order.CreatedAt
