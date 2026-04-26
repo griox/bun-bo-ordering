@@ -19,16 +19,17 @@ public class S3StorageService : IFileStorageService
     {
         var accessKey = configuration["S3Settings:AccessKey"] ?? "minioadmin";
         var secretKey = configuration["S3Settings:SecretKey"] ?? "minioadminpassword";
-        _serviceUrl = configuration["S3Settings:ServiceUrl"];
+        var serviceUrlFromConfig = configuration["S3Settings:ServiceUrl"];
         _bucketName = configuration["S3Settings:BucketName"] ?? "catalog-images";
         var region = configuration["S3Settings:Region"];
 
-        var isAwsS3 = string.IsNullOrWhiteSpace(_serviceUrl) || _serviceUrl.Contains("amazonaws.com");
+        var isAwsS3 = string.IsNullOrWhiteSpace(serviceUrlFromConfig) || serviceUrlFromConfig.Contains("amazonaws.com");
 
         var config = new AmazonS3Config();
 
         if (isAwsS3)
         {
+            _serviceUrl = serviceUrlFromConfig ?? ""; // For AWS it might be empty
             if (!string.IsNullOrEmpty(region))
                 config.RegionEndpoint = Amazon.RegionEndpoint.GetBySystemName(region);
                 
@@ -38,7 +39,7 @@ public class S3StorageService : IFileStorageService
         }
         else
         {
-            _serviceUrl ??= "http://localhost:9000";
+            _serviceUrl = serviceUrlFromConfig ?? "http://localhost:9000";
             config.ServiceURL = _serviceUrl;
             config.ForcePathStyle = true;
             _publicUrl = configuration["S3Settings:PublicUrl"] ?? _serviceUrl;
