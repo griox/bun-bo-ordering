@@ -143,10 +143,19 @@ authGroup.MapDelete("/users/{id:guid}/blacklist", async (Guid id, MediatR.IMedia
     return Results.Ok(new { Message = "User removed from blacklist successfully" });
 }).RequireAuthorization("Admin");
 
-authGroup.MapDelete("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
+authGroup.MapDelete("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator, ILogger<Program> logger) =>
 {
-    await mediator.Send(new IdentityService.Application.Users.Commands.DeleteUserCommand(id));
-    return Results.Ok(new { Message = "User deleted successfully" });
+    try
+    {
+        logger.LogInformation("Received request to delete user: {UserId}", id);
+        await mediator.Send(new IdentityService.Application.Users.Commands.DeleteUserCommand(id));
+        return Results.Ok(new { Message = "User deleted successfully" });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Failed to delete user: {UserId}", id);
+        return Results.BadRequest(ex.Message);
+    }
 }).RequireAuthorization("Admin");
 
 app.MapGet("/", () => "Identity Service is running.");

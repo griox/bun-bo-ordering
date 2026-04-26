@@ -27,6 +27,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
     Dialog,
     DialogContent,
     DialogDescription,
@@ -60,8 +70,10 @@ export default function AdminUserManagement() {
     const [isOrderDetailModalOpen, setIsOrderDetailModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-    // Banning state
+    // Dialogs state
     const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
+    const [isUnbanDialogOpen, setIsUnbanDialogOpen] = useState(false);
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [userToAction, setUserToAction] = useState<User | null>(null);
     const [banReason, setBanReason] = useState('Vi phạm quy định hệ thống');
 
@@ -90,16 +102,18 @@ export default function AdminUserManagement() {
         setUserToAction(null);
     };
 
-    const handleRemoveBan = async (user: User) => {
-        if (window.confirm(`Xác nhận bỏ chặn cho người dùng ${user.username}?`)) {
-            await removeBlacklistMutation.mutateAsync(user.id);
-        }
+    const handleRemoveBan = async () => {
+        if (!userToAction) return;
+        await removeBlacklistMutation.mutateAsync(userToAction.id);
+        setIsUnbanDialogOpen(false);
+        setUserToAction(null);
     };
 
-    const handleDeleteUser = async (user: User) => {
-        if (window.confirm(`CẢNH BÁO: Bạn có chắc chắn muốn XÓA HOÀN TOÀN người dùng ${user.username}? Hành động này không thể hoàn tác!`)) {
-            await deleteMutation.mutateAsync(user.id);
-        }
+    const handleDeleteUser = async () => {
+        if (!userToAction) return;
+        await deleteMutation.mutateAsync(userToAction.id);
+        setIsDeleteDialogOpen(false);
+        setUserToAction(null);
     };
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -218,7 +232,7 @@ export default function AdminUserManagement() {
                                                         size="icon"
                                                         title="Bỏ chặn"
                                                         className="size-11 rounded-xl bg-green-50 border border-green-100 shadow-sm text-green-500 hover:bg-green-100 transition-all"
-                                                        onClick={(e) => { e.stopPropagation(); handleRemoveBan(user); }}
+                                                        onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsUnbanDialogOpen(true); }}
                                                         disabled={removeBlacklistMutation.isPending}
                                                     >
                                                         <Unlock className="size-5" />
@@ -241,7 +255,7 @@ export default function AdminUserManagement() {
                                                     size="icon"
                                                     title="Xóa người dùng"
                                                     className="size-11 rounded-xl bg-red-50 border border-red-100 shadow-sm text-red-500 hover:bg-red-100 transition-all"
-                                                    onClick={(e) => { e.stopPropagation(); handleDeleteUser(user); }}
+                                                    onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsDeleteDialogOpen(true); }}
                                                     disabled={deleteMutation.isPending || user.role === 'Admin'}
                                                 >
                                                     <Trash2 className="size-5" />
@@ -353,6 +367,68 @@ export default function AdminUserManagement() {
                     </div>
                 </DialogContent>
             </Dialog>
+
+            {/* Unban Confirmation */}
+            <AlertDialog open={isUnbanDialogOpen} onOpenChange={setIsUnbanDialogOpen}>
+                <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-0 overflow-hidden font-mono translate-y-[-5%] sm:translate-y-0">
+                    <div className="bg-green-500 p-8 text-white">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
+                                <Unlock className="size-6 text-white" />
+                            </div>
+                            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tighter">Bỏ chặn người dùng</AlertDialogTitle>
+                        </div>
+                    </div>
+                    <div className="p-8 space-y-6 bg-white">
+                        <AlertDialogDescription className="text-gray-500 font-bold text-sm">
+                            Bạn có chắc chắn muốn bỏ chặn cho người dùng <span className="text-black font-black">@{userToAction?.username}</span>? Họ sẽ có thể đăng nhập lại vào hệ thống ngay lập tức.
+                        </AlertDialogDescription>
+                        <AlertDialogFooter className="flex gap-3">
+                            <AlertDialogCancel className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 border border-gray-100 hover:bg-gray-50">Hủy</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleRemoveBan}
+                                className="h-12 rounded-xl bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[10px] tracking-widest flex-1 shadow-lg shadow-green-500/20"
+                            >
+                                Xác nhận bỏ chặn
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </div>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            {/* Delete Confirmation */}
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-0 overflow-hidden font-mono translate-y-[-5%] sm:translate-y-0">
+                    <div className="bg-black p-8 text-white">
+                        <div className="flex items-center gap-4 mb-2">
+                            <div className="size-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                <Trash2 className="size-6 text-red-500" />
+                            </div>
+                            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tighter">Xóa người dùng</AlertDialogTitle>
+                        </div>
+                    </div>
+                    <div className="p-8 space-y-6 bg-white">
+                        <div className="flex items-start gap-4 p-4 bg-red-50 border border-red-100 rounded-2xl">
+                            <AlertCircle className="size-5 text-red-500 mt-0.5 shrink-0" />
+                            <div className="space-y-1">
+                                <p className="text-sm font-black text-red-900 uppercase tracking-tight">Hành động nguy hiểm</p>
+                                <AlertDialogDescription className="text-red-700 text-xs font-bold leading-relaxed">
+                                    Dữ liệu của người dùng <span className="underline decoration-2">@{userToAction?.username}</span> sẽ bị xóa vĩnh viễn và không thể khôi phục.
+                                </AlertDialogDescription>
+                            </div>
+                        </div>
+                        <AlertDialogFooter className="flex gap-3">
+                            <AlertDialogCancel className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 border border-gray-100 hover:bg-gray-50">Quay lại</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={handleDeleteUser}
+                                className="h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-widest flex-1 shadow-lg shadow-red-500/20"
+                            >
+                                Tôi hiểu, xóa ngay
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </div>
+                </AlertDialogContent>
+            </AlertDialog>
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {
