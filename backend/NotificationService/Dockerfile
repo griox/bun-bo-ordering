@@ -23,5 +23,13 @@ RUN dotnet publish "NotificationService.Api.csproj" -c Release -o /app/publish /
 
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+
+# Create a non-root user
+RUN addgroup -g 1000 appgroup && \
+    adduser -u 1000 -G appgroup -S -D appuser && \
+    chown -R appuser:appgroup /app
+
+USER appuser
+
+COPY --from=publish --chown=appuser:appgroup /app/publish .
 ENTRYPOINT ["dotnet", "NotificationService.Api.dll"]
