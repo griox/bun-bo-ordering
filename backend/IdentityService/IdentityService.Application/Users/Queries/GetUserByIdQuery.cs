@@ -19,7 +19,7 @@ public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserDto
     {
         var user = await _context.Users
             .Where(u => u.Id == request.Id)
-            .Select(u => new UserDto(u.Id, u.Username, u.Email, u.Role, u.CreatedAt))
+            .Select(u => new UserDto(u.Id, u.Username, u.Email, u.Role, u.IsBlacklisted, u.BlacklistReason, u.CreatedAt))
             .FirstOrDefaultAsync(cancellationToken);
 
         return user;

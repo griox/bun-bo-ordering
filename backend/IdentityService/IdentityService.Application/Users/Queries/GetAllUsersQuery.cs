@@ -4,7 +4,7 @@ using IdentityService.Application.Interfaces;
 
 namespace IdentityService.Application.Users.Queries;
 
-public record UserDto(Guid Id, string Username, string Email, string Role, DateTime CreatedAt);
+public record UserDto(Guid Id, string Username, string Email, string Role, bool IsBlacklisted, string? BlacklistReason, DateTime CreatedAt);
 
 public record PagedResult<T>(List<T> Items, int TotalCount, int PageNumber, int PageSize);
 
@@ -35,7 +35,7 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, PagedRe
             .OrderByDescending(u => u.CreatedAt)
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
-            .Select(u => new UserDto(u.Id, u.Username, u.Email, u.Role, u.CreatedAt))
+            .Select(u => new UserDto(u.Id, u.Username, u.Email, u.Role, u.IsBlacklisted, u.BlacklistReason, u.CreatedAt))
             .ToListAsync(cancellationToken);
 
         return new PagedResult<UserDto>(users, totalCount, request.PageNumber, request.PageSize);
