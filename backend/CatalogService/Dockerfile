@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
 # Give grpc tools the native libs it needs
-RUN apt-get update && apt-get install -y libc6-dev libstdc++6
+RUN apk add --no-cache libc6-compat libstdc++
 
 # Copy csproj and restore as distinct layers
 COPY ["CatalogService/CatalogService.Api/CatalogService.Api.csproj", "CatalogService/CatalogService.Api/"]
@@ -23,13 +23,13 @@ FROM build AS publish
 RUN dotnet publish "CatalogService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 EXPOSE 8080
 
 # Create a non-root user
-RUN groupadd -g 1000 appgroup && \
-    useradd -u 1000 -g appgroup -s /bin/sh -m appuser && \
+RUN addgroup -g 1000 appgroup && \
+    adduser -u 1000 -G appgroup -S -D appuser && \
     chown -R appuser:appgroup /app
 
 USER appuser

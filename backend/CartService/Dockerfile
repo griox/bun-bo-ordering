@@ -1,8 +1,8 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
 WORKDIR /src
 
 # Give grpc tools the native libs it needs
-RUN apt-get update && apt-get install -y libc6-dev libstdc++6
+RUN apk add --no-cache libc6-compat libstdc++
 
 # Copy csproj and restore as distinct layers
 COPY ["CartService/CartService.Api/CartService.Api.csproj", "CartService/CartService.Api/"]
@@ -23,7 +23,7 @@ FROM build AS publish
 RUN dotnet publish "CartService.Api.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 EXPOSE 8080
 
