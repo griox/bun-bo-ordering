@@ -336,11 +336,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMq__Host=rabbitmq
       - Serilog__SeqUrl=http://bunbo-seq:5341
-      - SmtpSettings__Host=smtp.gmail.com
+      - SmtpSettings__Host=email-smtp.ap-southeast-1.amazonaws.com
       - SmtpSettings__Port=587
-      - SmtpSettings__SenderEmail=nh920211@gmail.com
-      - SmtpSettings__Username=nh920211@gmail.com
-      - SmtpSettings__Password=limeqqvcrtcjzzya
+      - SmtpSettings__DefaultSenderEmail=noreply@bun-bo-chung-cu.io.vn
+      - SmtpSettings__SupportSenderEmail=support@bun-bo-chung-cu.io.vn
+      - SmtpSettings__Username=AKIARHQBNEVIRH3N2TWX
+      - SmtpSettings__Password=BNoVY4Sgh31a/5YWid/ArUT4nChWy9CpVdf9waroyjqw
     depends_on:
       rabbitmq:
         condition: service_healthy

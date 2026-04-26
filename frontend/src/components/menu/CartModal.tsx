@@ -54,7 +54,7 @@ export function CartModal() {
                 setAppliedVoucher(null);
                 toast.error(result.message || "Mã giảm giá không hợp lệ");
             }
-        } catch (_error) {
+        } catch {
             toast.error("Lỗi khi kiểm tra mã giảm giá");
         }
     };

@@ -44,6 +44,7 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
             }
 
             user = User.CreateGoogleUser(googleUser.Email, googleUser.Sub);
+            user.UpdateUsername(googleUser.Email.Split('@')[0]);
             _dbContext.Users.Add(user);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
@@ -56,10 +57,11 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
                 RegisteredAt = DateTime.UtcNow
             }, cancellationToken);
         }
-        else if (user.Username.Contains("@"))
+        else if (string.IsNullOrWhiteSpace(user.Username) || user.Username.Contains("@"))
         {
-            // Auto-correct legacy usernames that were set to the full email
-            user.UpdateUsername(user.Email.Split('@')[0]);
+            // Auto-correct empty usernames or legacy ones set to full email
+            var newUsername = googleUser.Email.Split('@')[0];
+            user.UpdateUsername(newUsername);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
 

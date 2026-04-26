@@ -26,7 +26,8 @@ public class GoogleAuthService : IGoogleAuthService
 
         return new GoogleUserInfo(
             Sub: data.GetProperty("sub").GetString() ?? string.Empty,
-            Email: data.GetProperty("email").GetString() ?? string.Empty
+            Email: data.GetProperty("email").GetString() ?? string.Empty,
+            Name: data.TryGetProperty("name", out var nameElement) ? nameElement.GetString() ?? string.Empty : string.Empty
         );
     }
 }

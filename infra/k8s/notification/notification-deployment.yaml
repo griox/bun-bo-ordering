@@ -51,14 +51,13 @@ spec:
         - name: Serilog__SeqUrl
           value: "http://seq-service.default.svc.cluster.local:5341"
         - name: SmtpSettings__Host
-          value: "smtp.gmail.com"
+          value: "email-smtp.ap-southeast-1.amazonaws.com"
         - name: SmtpSettings__Port
           value: "587"
-        - name: SmtpSettings__SenderEmail
-          valueFrom:
-            secretKeyRef:
-              name: bunbo-secrets
-              key: SMTP_SENDER_EMAIL
+        - name: SmtpSettings__DefaultSenderEmail
+          value: "noreply@bun-bo-chung-cu.io.vn"
+        - name: SmtpSettings__SupportSenderEmail
+          value: "support@bun-bo-chung-cu.io.vn"
         - name: SmtpSettings__Username
           valueFrom:
             secretKeyRef:

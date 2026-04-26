@@ -23,7 +23,6 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
-    [Microsoft.AspNetCore.Authorization.Authorize]
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
     {
         var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;

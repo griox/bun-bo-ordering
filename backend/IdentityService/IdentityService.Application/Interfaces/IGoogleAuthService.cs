@@ -1,6 +1,6 @@
 namespace IdentityService.Application.Interfaces;
 
-public record GoogleUserInfo(string Sub, string Email);
+public record GoogleUserInfo(string Sub, string Email, string Name);
 
 public interface IGoogleAuthService
 {

@@ -10,7 +10,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Camera, CameraOff, Upload } from 'lucide-react';
+import { Loader2, CameraOff, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 
@@ -183,7 +183,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                                     <CameraOff className="w-10 h-10 text-red-500" />
                                 </div>
                                 <p className="text-sm mb-8 font-main font-bold leading-relaxed text-neutral-300 px-4 italic">
-                                    "{cameraError}"
+                                    &quot;{cameraError}&quot;
                                 </p>
                                 <div className="flex flex-col gap-4 w-full max-w-[260px]">
                                     <Button

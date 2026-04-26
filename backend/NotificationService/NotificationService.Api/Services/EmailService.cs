@@ -23,9 +23,10 @@ public class EmailService : IEmailService
     public async Task SendWelcomeEmailAsync(string email, string username)
     {
         var smtpSettings = _configuration.GetSection("SmtpSettings");
+        var senderEmail = smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"];
         
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Bun Bo Nam Bo", smtpSettings["SenderEmail"]));
+        message.From.Add(new MailboxAddress("Bun Bo Nam Bo", senderEmail));
         message.To.Add(new MailboxAddress(username, email));
         message.Subject = "Chào mừng bạn đến với Hệ thống đặt món Bun Bo Nam Bo!";
 

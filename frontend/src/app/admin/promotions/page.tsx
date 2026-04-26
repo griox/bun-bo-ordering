@@ -276,7 +276,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
             await createVoucherMutation.mutateAsync(formData);
             toast.success('Đã tạo mã khuyến mãi thành công!');
             onSuccess();
-        } catch (_error) {
+        } catch {
             toast.error('Lỗi khi tạo mã khuyến mãi.');
         }
     };

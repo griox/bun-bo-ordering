@@ -16,6 +16,9 @@ interface OrderState {
   session: TableSessionResponseDto | null;
   cart: CartItem[];
 
+  _hasHydrated: boolean;
+  setHasHydrated: (val: boolean) => void;
+
   setTable: (table: TableResponseDto | null) => void;
   setSession: (session: TableSessionResponseDto | null) => void;
 
@@ -39,7 +42,9 @@ export const useOrderStore = create<OrderState>()(
       session: null,
       cart: [],
       paymentSuccessOrderId: null,
+      _hasHydrated: false,
 
+      setHasHydrated: (val) => set({ _hasHydrated: val }),
       setTable: (table) => set({ table }),
       setSession: (session) => set({ session }),
       setPaymentSuccess: (id) => set({ paymentSuccessOrderId: id }),
@@ -88,6 +93,9 @@ export const useOrderStore = create<OrderState>()(
         paymentSuccessOrderId: state.paymentSuccessOrderId,
         // ⚠️ table & session are NOT persisted — must be re-validated via QR scan
       }),
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 )

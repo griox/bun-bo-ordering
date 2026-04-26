@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { usePlaceOrderMutation, useCart } from '@/hooks/useCart';
 import { Button } from '@/components/ui/button';
@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import axiosInstance from '@/lib/axiosInstance';
 import { SePayCheckout } from '@/components/payment/SePayCheckout';
+import { ScannerModal } from '@/components/landing/ScannerModal';
 
 type PaymentMethod = 'Cash' | 'Transfer' | null;
 type Step = 'cart' | 'payment-qr';
@@ -29,7 +30,8 @@ export function OrderBar() {
         cart, getCartTotal, getCartCount,
         updateQuantity, removeFromCart,
         session, table,
-        paymentSuccessOrderId, setPaymentSuccess, clearCart
+        paymentSuccessOrderId, setPaymentSuccess, clearCart,
+        _hasHydrated,
     } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
@@ -40,6 +42,11 @@ export function OrderBar() {
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
     const [step, setStep] = useState<Step>('cart');
     const [checkoutData, setCheckoutData] = useState<{ checkoutUrl: string, qrCode: string } | null>(null);
+    const isClient = useSyncExternalStore(
+        () => () => { },
+        () => true,
+        () => false,
+    );
 
     const total = getCartTotal();
     const count = getCartCount();
@@ -131,7 +138,7 @@ export function OrderBar() {
         }
     };
 
-    if (count === 0) return null;
+    if (!isClient || count === 0) return null;
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-safe">
@@ -255,9 +262,30 @@ export function OrderBar() {
                                     </div>
 
                                     {!session ? (
-                                        <div className="bg-red-50 text-red-600 p-3 rounded-xl text-center font-bold text-sm border border-red-100 mb-4">
-                                            Vui lòng quét mã QR tại bàn để đặt món!
-                                        </div>
+                                        _hasHydrated && cart.length > 0 ? (
+                                            // Recovery mode: cart loaded from localStorage but no session
+                                            <div className="mb-4 space-y-3">
+                                                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                                                    <p className="text-amber-700 font-black text-xs uppercase tracking-wider">Phiên bàn đã hết</p>
+                                                    <p className="text-amber-600 text-xs font-bold mt-0.5">Bạn còn ngồi tại bàn cũ không?</p>
+                                                </div>
+                                                <ScannerModal>
+                                                    <button className="w-full flex items-center justify-center gap-2 bg-primary text-white font-black text-xs uppercase tracking-wider px-4 py-3 rounded-xl shadow shadow-primary/20 active:scale-[0.98] transition-transform">
+                                                        Còn ngồi — Quét lại mã bàn
+                                                    </button>
+                                                </ScannerModal>
+                                                <button
+                                                    onClick={() => clearCart()}
+                                                    className="w-full flex items-center justify-center gap-2 bg-neutral-100 text-neutral-600 font-black text-xs uppercase tracking-wider px-4 py-3 rounded-xl hover:bg-red-50 hover:text-red-600 active:scale-[0.98] transition-all"
+                                                >
+                                                    Không còn — Xóa giỏ hàng
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="bg-red-50 text-red-600 p-3 rounded-xl text-center font-bold text-sm border border-red-100 mb-4">
+                                                Vui lòng quét mã QR tại bàn để đặt món!
+                                            </div>
+                                        )
                                     ) : (
                                         <>
                                             <p className="text-[10px] font-black text-neutral-400 uppercase tracking-widest mb-2">

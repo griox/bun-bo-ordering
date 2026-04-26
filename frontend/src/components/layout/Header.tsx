@@ -12,8 +12,7 @@ import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
-    DialogTrigger,
+    DialogTitle
 } from "@/components/ui/dialog"
 import {
     DropdownMenu,
@@ -93,7 +92,7 @@ export function Header() {
                                 <div className="relative group cursor-pointer">
                                     <div id="nav-member-desktop" className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
                                         <User size={14} className="w-4 h-4" />
-                                        <span>{(user.username ?? 'THÀNH VIÊN').toUpperCase()}</span>
+                                        <span>{(user.username || 'THÀNH VIÊN').toUpperCase()}</span>
                                         {points && (
                                             <div className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full ml-1">
                                                 <Star size={10} className="fill-yellow-300 text-yellow-300" />
@@ -148,7 +147,7 @@ export function Header() {
                                         className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all cursor-pointer"
                                     >
                                         <User size={16} />
-                                        <span>{mounted && user ? (user.username ?? 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
+                                        <span>{mounted && user ? (user.username || 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
                                         {mounted && user && points && (
                                             <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-black">
                                                 <Star size={8} className="fill-yellow-300 text-yellow-300" />
