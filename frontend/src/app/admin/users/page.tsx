@@ -1,14 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+
 import {
     Users,
     Search,
     Mail,
     History,
     Loader2,
+    Ban,
+    Trash2,
+    Unlock,
+    AlertCircle
 } from 'lucide-react';
-import { useUsers, User } from '@/hooks/useUsers';
+import { useUsers, User, useBlacklistUser, useRemoveBlacklist, useDeleteUser } from '@/hooks/useUsers';
 import { useCustomerOrders, Order } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -21,6 +26,14 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import { Badge } from '@/components/ui/badge';
 import { UserHistoryModal } from '@/components/admin/UserHistoryModal';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
@@ -47,9 +60,18 @@ export default function AdminUserManagement() {
     const [isOrderDetailModalOpen, setIsOrderDetailModalOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
+    // Banning state
+    const [isBanDialogOpen, setIsBanDialogOpen] = useState(false);
+    const [userToAction, setUserToAction] = useState<User | null>(null);
+    const [banReason, setBanReason] = useState('Vi phạm quy định hệ thống');
+
+    // Hooks
+    const blacklistMutation = useBlacklistUser();
+    const removeBlacklistMutation = useRemoveBlacklist();
+    const deleteMutation = useDeleteUser();
+
     // Fetch orders for the selected user
     const { data: userOrders = [], isLoading: ordersLoading } = useCustomerOrders(selectedUser?.id || undefined);
-
 
     const handleViewHistory = (user: User) => {
         setSelectedUser(user);
@@ -59,6 +81,25 @@ export default function AdminUserManagement() {
     const handleViewOrderDetail = (order: Order) => {
         setSelectedOrder(order);
         setIsOrderDetailModalOpen(true);
+    };
+
+    const handleBanUser = async () => {
+        if (!userToAction) return;
+        await blacklistMutation.mutateAsync({ userId: userToAction.id, reason: banReason });
+        setIsBanDialogOpen(false);
+        setUserToAction(null);
+    };
+
+    const handleRemoveBan = async (user: User) => {
+        if (window.confirm(`Xác nhận bỏ chặn cho người dùng ${user.username}?`)) {
+            await removeBlacklistMutation.mutateAsync(user.id);
+        }
+    };
+
+    const handleDeleteUser = async (user: User) => {
+        if (window.confirm(`CẢNH BÁO: Bạn có chắc chắn muốn XÓA HOÀN TOÀN người dùng ${user.username}? Hành động này không thể hoàn tác!`)) {
+            await deleteMutation.mutateAsync(user.id);
+        }
     };
     const totalPages = Math.ceil(totalCount / pageSize);
 
@@ -164,10 +205,46 @@ export default function AdminUserManagement() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    className="size-11 rounded-xl bg-white border border-gray-100 shadow-sm text-gray-400 hover:text-[#ff4d4f] hover:border-[#ff4d4f]/20 transition-all"
+                                                    title="Xem lịch sử"
+                                                    className="size-11 rounded-xl bg-white border border-gray-100 shadow-sm text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all"
                                                     onClick={(e) => { e.stopPropagation(); handleViewHistory(user); }}
                                                 >
                                                     <History className="size-5" />
+                                                </Button>
+
+                                                {user.isBlacklisted ? (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Bỏ chặn"
+                                                        className="size-11 rounded-xl bg-green-50 border border-green-100 shadow-sm text-green-500 hover:bg-green-100 transition-all"
+                                                        onClick={(e) => { e.stopPropagation(); handleRemoveBan(user); }}
+                                                        disabled={removeBlacklistMutation.isPending}
+                                                    >
+                                                        <Unlock className="size-5" />
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Chặn người dùng"
+                                                        className="size-11 rounded-xl bg-orange-50 border border-orange-100 shadow-sm text-orange-500 hover:bg-orange-100 transition-all"
+                                                        onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsBanDialogOpen(true); }}
+                                                        disabled={blacklistMutation.isPending || user.role === 'Admin'}
+                                                    >
+                                                        <Ban className="size-5" />
+                                                    </Button>
+                                                )}
+
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    title="Xóa người dùng"
+                                                    className="size-11 rounded-xl bg-red-50 border border-red-100 shadow-sm text-red-500 hover:bg-red-100 transition-all"
+                                                    onClick={(e) => { e.stopPropagation(); handleDeleteUser(user); }}
+                                                    disabled={deleteMutation.isPending || user.role === 'Admin'}
+                                                >
+                                                    <Trash2 className="size-5" />
                                                 </Button>
                                             </div>
                                         </TableCell>
@@ -219,6 +296,63 @@ export default function AdminUserManagement() {
                 onClose={() => setIsOrderDetailModalOpen(false)}
                 order={selectedOrder}
             />
+
+            {/* Ban Reason Dialog */}
+            <Dialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
+                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-0 shadow-2xl p-0 overflow-hidden font-mono translate-y-[-5%] sm:translate-y-0">
+                    <div className="bg-[#ff4d4f] p-8 text-white">
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
+                                <Ban className="size-6 text-white" />
+                            </div>
+                            <div>
+                                <DialogTitle className="text-2xl font-black uppercase tracking-tighter leading-none">Chặn người dùng</DialogTitle>
+                                <DialogDescription className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1">
+                                    Tài khoản sẽ không thể đăng nhập
+                                </DialogDescription>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="p-8 space-y-6 bg-white">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 px-4 py-3 bg-orange-50 border border-orange-100 rounded-xl">
+                                <AlertCircle className="size-4 text-orange-500 shrink-0" />
+                                <p className="text-[10px] font-bold text-orange-700 uppercase">
+                                    Đang thực hiện trên: <span className="text-black">{userToAction?.username}</span>
+                                </p>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Lý do chặn</label>
+                                <Textarea
+                                    value={banReason}
+                                    onChange={(e) => setBanReason(e.target.value)}
+                                    placeholder="Nhập lý do chặn..."
+                                    className="min-h-[120px] rounded-2xl border-gray-100 focus:border-[#ff4d4f] focus:ring-0 font-bold text-sm bg-gray-50/50"
+                                />
+                            </div>
+                        </div>
+
+                        <DialogFooter className="flex flex-col sm:flex-row gap-3">
+                            <Button
+                                variant="ghost"
+                                onClick={() => setIsBanDialogOpen(false)}
+                                className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 border border-gray-100"
+                            >
+                                Hủy
+                            </Button>
+                            <Button
+                                onClick={handleBanUser}
+                                disabled={blacklistMutation.isPending || !banReason.trim()}
+                                className="h-12 rounded-xl bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-black uppercase text-[10px] tracking-widest flex-1 shadow-lg shadow-[#ff4d4f]/20"
+                            >
+                                {blacklistMutation.isPending ? "Đang xử lý..." : "Xác nhận chặn"}
+                            </Button>
+                        </DialogFooter>
+                    </div>
+                </DialogContent>
+            </Dialog>
 
             <style jsx global>{`
                 .custom-scrollbar::-webkit-scrollbar {

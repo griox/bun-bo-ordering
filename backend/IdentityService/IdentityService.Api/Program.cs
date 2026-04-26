@@ -131,6 +131,24 @@ authGroup.MapGet("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator)
     return user is null ? Results.NotFound() : Results.Ok(user);
 }).RequireAuthorization();
 
+authGroup.MapPost("/users/{id:guid}/blacklist", async (Guid id, string reason, MediatR.IMediator mediator) =>
+{
+    await mediator.Send(new IdentityService.Application.Users.Commands.BlacklistUserCommand(id, reason));
+    return Results.Ok(new { Message = "User blacklisted successfully" });
+}).RequireAuthorization("Admin");
+
+authGroup.MapDelete("/users/{id:guid}/blacklist", async (Guid id, MediatR.IMediator mediator) =>
+{
+    await mediator.Send(new IdentityService.Application.Users.Commands.RemoveBlacklistCommand(id));
+    return Results.Ok(new { Message = "User removed from blacklist successfully" });
+}).RequireAuthorization("Admin");
+
+authGroup.MapDelete("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
+{
+    await mediator.Send(new IdentityService.Application.Users.Commands.DeleteUserCommand(id));
+    return Results.Ok(new { Message = "User deleted successfully" });
+}).RequireAuthorization("Admin");
+
 app.MapGet("/", () => "Identity Service is running.");
 
 // Auto migrate database on startup

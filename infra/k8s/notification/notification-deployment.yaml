@@ -53,7 +53,7 @@ spec:
         - name: SmtpSettings__Host
           value: "email-smtp.ap-southeast-1.amazonaws.com"
         - name: SmtpSettings__Port
-          value: "587"
+          value: "465"
         - name: SmtpSettings__DefaultSenderEmail
           value: "noreply@bun-bo-chung-cu.io.vn"
         - name: SmtpSettings__SupportSenderEmail
