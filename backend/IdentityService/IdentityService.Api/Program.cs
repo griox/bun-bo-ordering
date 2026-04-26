@@ -159,6 +159,12 @@ authGroup.MapDelete("/users/{id:guid}", async (Guid id, MediatR.IMediator mediat
     }
 }).RequireAuthorization("Admin");
 
+authGroup.Map("{**catchall}", (string catchall, HttpContext context, ILogger<Program> logger) =>
+{
+    logger.LogWarning("Request to unmatched route: {Method} {Path}", context.Request.Method, context.Request.Path);
+    return Results.NotFound(new { Message = "Route not found", Path = context.Request.Path, Method = context.Request.Method });
+});
+
 app.MapGet("/", () => "Identity Service is running.");
 
 // Auto migrate database on startup
