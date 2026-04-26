@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using IdentityService.Application;
 using BunBo.SharedKernel;
 using MassTransit;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 

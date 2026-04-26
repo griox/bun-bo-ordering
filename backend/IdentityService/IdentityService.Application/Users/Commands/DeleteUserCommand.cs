@@ -1,6 +1,7 @@
 using IdentityService.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityService.Application.Users.Commands;
 

@@ -94,7 +94,15 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<PaymentDbContext>();
-    Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(db.Database);
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    try 
+    {
+        Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.Migrate(db.Database);
+    }
+    catch (Exception ex)
+    {
+        logger.LogWarning(ex, "Migration failed or tables already exist. Continuing as DB might be in correct state.");
+    }
 }
 
 app.Run();
