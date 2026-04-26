@@ -26,9 +26,9 @@ public class EmailService : IEmailService
         var senderEmail = smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"];
         
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Bun Bo Nam Bo", senderEmail));
+        message.From.Add(new MailboxAddress("Bún bò Chung Cư", senderEmail));
         message.To.Add(new MailboxAddress(username, email));
-        message.Subject = "Chào mừng bạn đến với Hệ thống đặt món Bun Bo Nam Bo!";
+        message.Subject = "Chào mừng bạn đến với Hệ thống đặt món Bún bò Chung Cư!";
 
         var bodyBuilder = new BodyBuilder
         {
@@ -44,7 +44,7 @@ public class EmailService : IEmailService
                         </div>
 
                         <!-- Hero Image -->
-                        <div style='width: 100%; height: 300px; background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url(""https://images.unsplash.com/photo-1503767849114-97202720dbe4?auto=format&fit=crop&q=80&w=600"") center/cover;'>
+                        <div style='width: 100%; height: 300px; background: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.4)), url(""https://bun-bo-chung-cu.io.vn/images/Gemini_Generated_Image_w39rcaw39rcaw39r.png"") center/cover;'>
                         </div>
 
                         <!-- Content Body -->
@@ -56,7 +56,7 @@ public class EmailService : IEmailService
                             <div style='background-color: #fff9f9; border-left: 4px solid #ff4d4f; padding: 15px 20px; margin: 25px 0;'>
                                 <p style='margin: 5px 0; font-weight: 600;'>💡 Tại sao bạn sẽ thích chúng tôi?</p>
                                 <ul style='margin: 10px 0; padding-left: 20px; font-size: 14px; color: #666;'>
-                                    <li>Đặt món nhanh chóng, không cần chờ đợi.</li>
+                                    <li>Đặt món nhanh chóng tại bàn, không cần chờ đợi.</li>
                                     <li>Theo dõi hành trình đơn hàng thời gian thực.</li>
                                     <li>Tích điểm đổi quà cho mỗi lần đặt món.</li>
                                 </ul>
