@@ -28,8 +28,8 @@ WORKDIR /app
 EXPOSE 8080
 
 # Create a non-root user
-RUN groupadd -g 1000 appgroup && \
-    useradd -u 1000 -g appgroup -s /bin/sh -m appuser && \
+RUN addgroup -g 1000 appgroup && \
+    adduser -u 1000 -G appgroup -S -D appuser && \
     chown -R appuser:appgroup /app
 
 USER appuser
