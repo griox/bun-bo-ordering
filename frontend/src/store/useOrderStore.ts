@@ -25,6 +25,7 @@ interface OrderState {
   addToCart: (item: CartItem) => void;
   removeFromCart: (foodId: string) => void;
   updateQuantity: (foodId: string, quantity: number) => void;
+  updateNote: (foodId: string, note: string) => void;
   clearCart: () => void;
 
   paymentSuccessOrderId: string | null;
@@ -73,6 +74,9 @@ export const useOrderStore = create<OrderState>()(
           cart: state.cart.map(x => (x.foodId === foodId) ? { ...x, quantity } : x)
         };
       }),
+      updateNote: (foodId, note) => set((state) => ({
+        cart: state.cart.map(x => (x.foodId === foodId) ? { ...x, note } : x)
+      })),
 
       clearCart: () => set({ cart: [] }),
 

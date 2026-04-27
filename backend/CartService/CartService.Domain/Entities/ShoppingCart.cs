@@ -6,7 +6,7 @@ public class CartItem
     public string FoodName { get; set; } = string.Empty;
     public decimal UnitPrice { get; set; }
     public int Quantity { get; set; }
-    
+    public string? Note { get; set; }
     // In a real scenario we'll update this from CatalogService via gRPC
     public decimal TotalPrice => UnitPrice * Quantity;
 }

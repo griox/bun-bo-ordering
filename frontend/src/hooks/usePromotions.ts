@@ -45,6 +45,15 @@ export function usePromotions() {
         }
     });
 
+    // Client: Get active vouchers
+    const useActiveVouchers = () => useQuery({
+        queryKey: ['vouchers', 'active'],
+        queryFn: async () => {
+            const { data } = await axiosInstance.get<Voucher[]>('/api/promotion/vouchers/active');
+            return data;
+        }
+    });
+
     // Admin: Create voucher
     const createVoucherMutation = useMutation({
         mutationFn: async (formData: {
@@ -103,6 +112,7 @@ export function usePromotions() {
 
     return {
         useVouchers,
+        useActiveVouchers,
         createVoucherMutation,
         useMyPoints,
         validateVoucherMutation

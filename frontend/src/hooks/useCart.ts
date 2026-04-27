@@ -10,6 +10,7 @@ export interface CartItemDto {
     foodName: string;
     unitPrice: number;
     quantity: number;
+    note?: string;
 }
 
 export interface CartDto {

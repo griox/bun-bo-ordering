@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone, Ticket } from 'lucide-react';
+import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone, Ticket, MessageSquare } from 'lucide-react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
 import { usePromotions } from '@/hooks/usePromotions';
@@ -18,12 +18,13 @@ import {
 } from "@/components/ui/dialog";
 
 export function CartModal() {
-    const { cart, getCartTotal, updateQuantity, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
+    const { cart, getCartTotal, updateQuantity, updateNote, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
-    const { validateVoucherMutation } = usePromotions();
+    const { validateVoucherMutation, useActiveVouchers } = usePromotions();
+    const { data: availableVouchers } = useActiveVouchers();
+
     const [isOpen, setIsOpen] = useState(false);
-    const [note, setNote] = useState('');
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
     const [paymentMethod, setPaymentMethod] = useState<'Cash' | 'Transfer' | null>(null);
 
@@ -31,6 +32,7 @@ export function CartModal() {
     const [voucherCode, setVoucherCode] = useState('');
     const [discountAmount, setDiscountAmount] = useState(0);
     const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
+    const [isVoucherListOpen, setIsVoucherListOpen] = useState(false);
 
     const subtotal = getCartTotal();
     const total = Math.max(0, subtotal - discountAmount);
@@ -92,14 +94,14 @@ export function CartModal() {
                 foodId: item.foodId,
                 foodName: item.name,
                 unitPrice: item.price,
-                quantity: item.quantity
+                quantity: item.quantity,
+                note: item.note
             }));
 
             await syncCart(cartPayload);
 
             // Place the order
             const orderIdResult = await placeOrderMutation.mutateAsync({
-                note,
                 paymentMethod: paymentMethod,
                 voucherCode: appliedVoucher,
                 discountAmount: discountAmount
@@ -259,7 +261,7 @@ export function CartModal() {
                         </div>
 
                         <span className="flex items-center text-sm font-bold text-neutral-500 animate-pulse">
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Đang chờ thanh toán (SePay)...
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Đang chờ thanh toán...
                         </span>
                     </div>
                 ) : (
@@ -276,36 +278,50 @@ export function CartModal() {
                                 </div>
                             ) : (
                                 cart.map((item) => (
-                                    <div key={item.foodId} className="flex justify-between items-center surface-low p-4 rounded-2xl border border-border/5 shadow-sm">
-                                        <div className="flex-1">
-                                            <h4 className="font-black text-sm text-foreground tracking-tight line-clamp-1">{item.name}</h4>
-                                            <p className="text-primary font-black text-[10px] tracking-widest uppercase mt-1">
-                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                            </p>
-                                        </div>
+                                    <div key={item.foodId} className="flex flex-col gap-3 surface-low p-4 rounded-2xl border border-border/5 shadow-sm">
+                                        <div className="flex justify-between items-center">
+                                            <div className="flex-1">
+                                                <h4 className="font-black text-sm text-foreground tracking-tight line-clamp-1">{item.name}</h4>
+                                                <p className="text-primary font-black text-[10px] tracking-widest uppercase mt-1">
+                                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                                </p>
+                                            </div>
 
-                                        <div className="flex items-center gap-4">
-                                            <div className="flex items-center surface-base rounded-xl p-1 border border-border/5">
+                                            <div className="flex items-center gap-4">
+                                                <div className="flex items-center surface-base rounded-xl p-1 border border-border/5">
+                                                    <button
+                                                        onClick={() => updateQuantity(item.foodId, item.quantity - 1)}
+                                                        className="w-7 h-7 flex items-center justify-center rounded-lg hover:surface-highest text-muted-foreground transition-all"
+                                                    >
+                                                        <Minus size={12} />
+                                                    </button>
+                                                    <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
+                                                    <button
+                                                        onClick={() => updateQuantity(item.foodId, item.quantity + 1)}
+                                                        className="w-7 h-7 flex items-center justify-center rounded-lg hover:surface-highest text-muted-foreground transition-all"
+                                                    >
+                                                        <Plus size={12} />
+                                                    </button>
+                                                </div>
                                                 <button
-                                                    onClick={() => updateQuantity(item.foodId, item.quantity - 1)}
-                                                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:surface-highest text-muted-foreground transition-all"
+                                                    onClick={() => removeFromCart(item.foodId)}
+                                                    className="text-muted-foreground/30 hover:text-primary transition-colors p-1"
                                                 >
-                                                    <Minus size={12} />
-                                                </button>
-                                                <span className="w-8 text-center text-xs font-black">{item.quantity}</span>
-                                                <button
-                                                    onClick={() => updateQuantity(item.foodId, item.quantity + 1)}
-                                                    className="w-7 h-7 flex items-center justify-center rounded-lg hover:surface-highest text-muted-foreground transition-all"
-                                                >
-                                                    <Plus size={12} />
+                                                    <X size={16} />
                                                 </button>
                                             </div>
-                                            <button
-                                                onClick={() => removeFromCart(item.foodId)}
-                                                className="text-muted-foreground/30 hover:text-primary transition-colors p-1"
-                                            >
-                                                <X size={16} />
-                                            </button>
+                                        </div>
+
+                                        {/* Per-item Note Input */}
+                                        <div className="flex items-center gap-2 group/note surface-base p-2.5 rounded-xl border border-border/10 transition-all">
+                                            <MessageSquare className="w-3.5 h-3.5 text-muted-foreground group-focus-within/note:text-primary transition-colors" />
+                                            <input
+                                                type="text"
+                                                placeholder="Ghi chú món này..."
+                                                value={item.note || ''}
+                                                onChange={(e) => updateNote(item.foodId, e.target.value)}
+                                                className="flex-1 bg-transparent border-none focus:ring-0 text-[11px] font-bold text-foreground placeholder:text-muted-foreground p-0 outline-none"
+                                            />
                                         </div>
                                     </div>
                                 ))
@@ -313,52 +329,120 @@ export function CartModal() {
                         </div>
 
                         {cart.length > 0 && (
-                            <div className="mt-4 pt-4 border-t-2 border-dashed border-neutral-200">
-                                <textarea
-                                    value={note}
-                                    onChange={(e) => setNote(e.target.value)}
-                                    placeholder="Ghi chú cho bếp (vd: không hành, ít cay...)"
-                                    className="w-full text-sm font-main p-3 rounded-xl border-2 border-neutral-200 focus:border-primary focus:outline-none mb-4 resize-none h-20"
-                                />
-
-                                {/* Voucher Section */}
-                                <div className="mb-6 space-y-3 p-4 bg-gray-50 rounded-2xl border-2 border-neutral-100">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">Mã giảm giá</p>
-                                    <div className="flex gap-2">
-                                        <div className="relative flex-1">
-                                            <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
-                                            <input
-                                                type="text"
-                                                placeholder="Nhập mã..."
-                                                value={voucherCode}
-                                                onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
-                                                disabled={!!appliedVoucher}
-                                                className="w-full h-11 pl-9 pr-3 py-2 bg-white border-2 border-neutral-200 rounded-xl focus:border-primary focus:outline-none text-sm font-bold uppercase disabled:bg-neutral-100 disabled:text-neutral-400"
-                                            />
+                            <div className="mt-4 p-4 border-t-2 border-dashed border-neutral-100">
+                                {/* Select Voucher Button */}
+                                <div className="mb-4">
+                                    <button
+                                        onClick={() => setIsVoucherListOpen(!isVoucherListOpen)}
+                                        className="w-full flex items-center justify-between p-4 bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 rounded-2xl transition-all group"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="p-2 bg-primary/10 rounded-xl group-hover:scale-110 transition-transform">
+                                                <Ticket className="size-5 text-primary" />
+                                            </div>
+                                            <div className="text-left">
+                                                <p className="text-xs font-black text-primary uppercase tracking-wider">Ưu đãi / Mã giảm giá</p>
+                                                <p className="text-[11px] text-primary/70 font-medium italic">
+                                                    {appliedVoucher ? `Đã chọn: ${appliedVoucher}` : 'Chọn hoặc nhập mã khuyến mãi'}
+                                                </p>
+                                            </div>
                                         </div>
-                                        {appliedVoucher ? (
-                                            <Button
-                                                variant="outline"
-                                                onClick={() => {
-                                                    setAppliedVoucher(null);
-                                                    setVoucherCode('');
-                                                    setDiscountAmount(0);
-                                                }}
-                                                className="h-11 px-4 border-2 border-red-100 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl font-bold text-xs uppercase"
-                                            >
-                                                Hủy
-                                            </Button>
-                                        ) : (
-                                            <Button
-                                                onClick={handleApplyVoucher}
-                                                disabled={validateVoucherMutation.isPending || !voucherCode.trim()}
-                                                className="h-11 px-4 bg-gray-900 text-white rounded-xl font-bold text-xs uppercase active:scale-95 disabled:opacity-50"
-                                            >
-                                                {validateVoucherMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : 'Áp dụng'}
-                                            </Button>
-                                        )}
-                                    </div>
+                                        <Plus className={`size-4 text-primary transition-transform ${isVoucherListOpen ? 'rotate-45' : ''}`} />
+                                    </button>
+
+                                    {/* Voucher List Expandable */}
+                                    {isVoucherListOpen && (
+                                        <div className="mt-3 p-3 bg-white border-2 border-neutral-100 rounded-2xl shadow-sm space-y-3 animate-in slide-in-from-top-2 duration-200">
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="NHẬP MÃ..."
+                                                    value={voucherCode}
+                                                    onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                                    disabled={!!appliedVoucher}
+                                                    className="flex-1 h-10 px-4 bg-neutral-50 border-2 border-neutral-200 rounded-xl focus:border-primary focus:outline-none text-xs font-bold uppercase disabled:opacity-50"
+                                                />
+                                                {appliedVoucher ? (
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        onClick={() => {
+                                                            setAppliedVoucher(null);
+                                                            setVoucherCode('');
+                                                            setDiscountAmount(0);
+                                                        }}
+                                                        className="h-10 px-4 border-2 border-red-100 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-xl font-bold text-[10px] uppercase"
+                                                    >
+                                                        Hủy
+                                                    </Button>
+                                                ) : (
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={handleApplyVoucher}
+                                                        disabled={validateVoucherMutation.isPending || !voucherCode.trim()}
+                                                        className="h-10 px-4 bg-primary text-white rounded-xl font-bold text-[10px] uppercase"
+                                                    >
+                                                        Áp dụng
+                                                    </Button>
+                                                )}
+                                            </div>
+
+                                            {/* List of Available Vouchers */}
+                                            <div className="space-y-2 max-h-40 overflow-y-auto no-scrollbar pt-2">
+                                                <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-2">Mã có sẵn</p>
+                                                {availableVouchers?.filter(v => v.isActive).map(voucher => {
+                                                    const isSelected = appliedVoucher === voucher.code;
+                                                    const isEligible = subtotal >= voucher.minOrderValue;
+
+                                                    return (
+                                                        <button
+                                                            key={voucher.id}
+                                                            disabled={!isEligible}
+                                                            onClick={async () => {
+                                                                if (isSelected) return;
+                                                                setVoucherCode(voucher.code);
+                                                                const result = await validateVoucherMutation.mutateAsync({
+                                                                    code: voucher.code,
+                                                                    orderValue: subtotal
+                                                                });
+                                                                if (result.isValid) {
+                                                                    setDiscountAmount(result.discountAmount);
+                                                                    setAppliedVoucher(voucher.code);
+                                                                    toast.success(`Đã chọn ${voucher.code}`);
+                                                                    setIsVoucherListOpen(false);
+                                                                } else {
+                                                                    toast.error(result.message);
+                                                                }
+                                                            }}
+                                                            className={`w-full text-left p-3 rounded-xl border-2 transition-all flex justify-between items-center ${isSelected
+                                                                ? 'border-primary bg-primary/5'
+                                                                : isEligible
+                                                                    ? 'border-neutral-100 hover:border-primary/30 bg-neutral-50'
+                                                                    : 'border-neutral-50 bg-neutral-50 opacity-50 grayscale cursor-not-allowed'
+                                                                }`}
+                                                        >
+                                                            <div>
+                                                                <p className="text-xs font-black text-neutral-800">{voucher.code}</p>
+                                                                <p className="text-[10px] text-neutral-500 line-clamp-1">{voucher.description}</p>
+                                                            </div>
+                                                            {isSelected && <div className="size-2 bg-primary rounded-full animate-pulse" />}
+                                                            {!isEligible && (
+                                                                <p className="text-[9px] font-bold text-red-500 italic">
+                                                                    Thêm {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(voucher.minOrderValue - subtotal)}
+                                                                </p>
+                                                            )}
+                                                        </button>
+                                                    );
+                                                })}
+                                                {(!availableVouchers || availableVouchers.length === 0) && (
+                                                    <p className="text-[10px] text-neutral-400 italic text-center py-2">Không có mã giảm giá nào khác</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
+
+
 
                                 <div className="space-y-2 mb-6">
                                     <div className="flex justify-between items-center text-sm font-bold text-neutral-500">

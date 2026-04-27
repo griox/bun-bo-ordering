@@ -134,6 +134,12 @@ promotionGroup.MapGet("/vouchers", async (MediatR.IMediator mediator) =>
     return Results.Ok(vouchers);
 }).RequireAuthorization("Admin");
 
+promotionGroup.MapGet("/vouchers/active", async (MediatR.IMediator mediator) =>
+{
+    var vouchers = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetPublicVouchersQuery());
+    return Results.Ok(vouchers);
+}).RequireAuthorization();
+
 // Client APIs
 promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, ValidateVoucherRequest req, System.Security.Claims.ClaimsPrincipal user) =>
 {

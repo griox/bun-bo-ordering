@@ -3,10 +3,12 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { usePlaceOrderMutation, useCart } from '@/hooks/useCart';
+import { usePromotions } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
 import {
-    ShoppingBag, ArrowRight, Loader2, X, Trash2, MessageSquare,
-    Plus, QrCode, Receipt, ChevronLeft, CheckCircle2
+    ShoppingBag, ArrowRight, Loader2, Trash2, MessageSquare,
+    Plus, QrCode, Receipt, ChevronLeft, CheckCircle2, Ticket,
+    Minus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -28,27 +30,33 @@ type Step = 'cart' | 'payment-qr';
 export function OrderBar() {
     const {
         cart, getCartTotal, getCartCount,
-        updateQuantity, removeFromCart,
+        updateQuantity, updateNote, removeFromCart,
         session, table,
         paymentSuccessOrderId, setPaymentSuccess, clearCart,
         _hasHydrated,
     } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
-
-    const [note, setNote] = useState('');
     const [isSheetOpen, setIsSheetOpen] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
     const [step, setStep] = useState<Step>('cart');
     const [checkoutData, setCheckoutData] = useState<{ checkoutUrl: string, qrCode: string } | null>(null);
+
+    const { validateVoucherMutation, useActiveVouchers } = usePromotions();
+    const { data: availableVouchers } = useActiveVouchers();
+    const [voucherCode, setVoucherCode] = useState('');
+    const [discountAmount, setDiscountAmount] = useState(0);
+    const [appliedVoucher, setAppliedVoucher] = useState<string | null>(null);
+    const [isVoucherListOpen, setIsVoucherListOpen] = useState(false);
     const isClient = useSyncExternalStore(
         () => () => { },
         () => true,
         () => false,
     );
 
-    const total = getCartTotal();
+    const subtotal = getCartTotal();
+    const total = Math.max(0, subtotal - discountAmount);
     const count = getCartCount();
 
     // Listen for SignalR payment success
@@ -74,12 +82,32 @@ export function OrderBar() {
         setPaymentOrderId(null);
         setCheckoutData(null);
         setStep('cart');
-        setNote('');
     };
 
     const handleSheetChange = (open: boolean) => {
         setIsSheetOpen(open);
         if (!open) resetState();
+    };
+
+    const handleApplyVoucher = async () => {
+        if (!voucherCode.trim()) return;
+
+        try {
+            const result = await validateVoucherMutation.mutateAsync({
+                code: voucherCode,
+                orderValue: subtotal
+            });
+
+            if (result.isValid) {
+                setDiscountAmount(result.discountAmount);
+                setAppliedVoucher(voucherCode);
+                toast.success('Áp dụng mã giảm giá thành công!');
+            } else {
+                toast.error(result.message || 'Mã giảm giá không hợp lệ');
+            }
+        } catch {
+            toast.error('Có lỗi xảy ra khi áp dụng mã giảm giá');
+        }
     };
 
     const handlePlaceOrder = async () => {
@@ -94,14 +122,16 @@ export function OrderBar() {
                 foodId: item.foodId,
                 foodName: item.name,
                 unitPrice: item.price,
-                quantity: item.quantity
+                quantity: item.quantity,
+                note: item.note
             }));
             await syncCart(cartItems);
 
             // 2. Place order
             const result = await placeOrderMutation.mutateAsync({
-                note,
-                paymentMethod: paymentMethod === 'Transfer' ? 'Transfer' : 'Cash'
+                paymentMethod: paymentMethod === 'Transfer' ? 'Transfer' : 'Cash',
+                voucherCode: appliedVoucher || undefined,
+                discountAmount: discountAmount > 0 ? discountAmount : undefined
             });
 
             const finalOrderId = result?.id || result?.Id || result?.ID || (typeof result === 'string' ? result : null);
@@ -209,56 +239,182 @@ export function OrderBar() {
 
                                 <div className="flex-1 overflow-y-auto no-scrollbar px-6 space-y-3 pb-4">
                                     {cart.map((item) => (
-                                        <div key={item.foodId} className="flex items-center gap-3 bg-neutral-50 p-3 rounded-2xl">
-                                            <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-neutral-800 text-sm truncate">{item.name}</h4>
-                                                <p className="text-xs font-bold text-primary">
-                                                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
-                                                </p>
-                                            </div>
-                                            <div className="flex items-center bg-white rounded-full px-1 py-0.5 shadow-sm border border-neutral-100 gap-1">
+                                        <div key={item.foodId} className="flex flex-col gap-2 bg-neutral-50 p-3 rounded-2xl">
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-bold text-neutral-800 text-sm truncate">{item.name}</h4>
+                                                    <p className="text-xs font-bold text-primary">
+                                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center bg-white rounded-full px-1 py-0.5 shadow-sm border border-neutral-100 gap-1">
+                                                    <button
+                                                        className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-red-500 transition-colors"
+                                                        onClick={() => updateQuantity(item.foodId, item.quantity - 1)}
+                                                    >
+                                                        <Minus className="w-3.5 h-3.5" />
+                                                    </button>
+                                                    <span className="w-6 text-center font-black text-sm text-neutral-800">{item.quantity}</span>
+                                                    <button
+                                                        className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-primary transition-colors"
+                                                        onClick={() => updateQuantity(item.foodId, item.quantity + 1)}
+                                                    >
+                                                        <Plus className="w-3.5 h-3.5" />
+                                                    </button>
+                                                </div>
                                                 <button
-                                                    className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-red-500 transition-colors"
-                                                    onClick={() => updateQuantity(item.foodId, item.quantity - 1)}
+                                                    onClick={() => removeFromCart(item.foodId)}
+                                                    className="p-1.5 text-neutral-300 hover:text-red-500 transition-colors"
                                                 >
-                                                    <X className="w-3.5 h-3.5" />
-                                                </button>
-                                                <span className="w-6 text-center font-black text-sm text-neutral-800">{item.quantity}</span>
-                                                <button
-                                                    className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-neutral-100 text-neutral-400 hover:text-primary transition-colors"
-                                                    onClick={() => updateQuantity(item.foodId, item.quantity + 1)}
-                                                >
-                                                    <Plus className="w-3.5 h-3.5" />
+                                                    <Trash2 className="w-4 h-4" />
                                                 </button>
                                             </div>
-                                            <button
-                                                onClick={() => removeFromCart(item.foodId)}
-                                                className="p-1.5 text-neutral-300 hover:text-red-500 transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
+                                            <div className="flex items-center gap-2 group/note bg-white/50 hover:bg-white p-2 rounded-xl border border-neutral-200/50 transition-all">
+                                                <MessageSquare className="w-3 h-3 text-neutral-400 group-focus-within/note:text-primary transition-colors" />
+                                                <input
+                                                    type="text"
+                                                    placeholder="Ghi chú món ăn... (vd: không hành)"
+                                                    value={item.note || ''}
+                                                    onChange={(e) => updateNote(item.foodId, e.target.value)}
+                                                    className="flex-1 bg-transparent border-none focus:ring-0 text-[10px] font-bold text-neutral-700 placeholder:text-neutral-400 p-0 outline-none"
+                                                />
+                                            </div>
                                         </div>
                                     ))}
 
-                                    <div className="space-y-1.5 pt-2">
-                                        <label className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest flex items-center gap-1.5">
-                                            <MessageSquare className="w-3 h-3" /> Ghi chú cho bếp
-                                        </label>
-                                        <Input
-                                            placeholder="Ví dụ: Không cay, thêm hành..."
-                                            value={note}
-                                            onChange={(e) => setNote(e.target.value)}
-                                            className="h-11 rounded-xl bg-neutral-50 border-neutral-200 focus-visible:ring-primary/30 text-sm"
-                                        />
+                                    {/* Voucher Section */}
+                                    <div className="pt-2">
+                                        <button
+                                            onClick={() => setIsVoucherListOpen(!isVoucherListOpen)}
+                                            className="w-full flex items-center justify-between p-4 bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 rounded-2xl transition-all group"
+                                        >
+                                            <div className="flex items-center gap-3">
+                                                <div className="p-2 bg-primary/10 rounded-xl group-hover:scale-110 transition-transform">
+                                                    <Ticket className="size-5 text-primary" />
+                                                </div>
+                                                <div className="text-left">
+                                                    <p className="text-xs font-black text-primary uppercase tracking-wider">Áp dụng mã giảm giá</p>
+                                                    <p className="text-[11px] text-primary/70 font-medium italic">
+                                                        {appliedVoucher ? `Đã chọn: ${appliedVoucher}` : 'Chọn hoặc nhập mã khuyến mãi'}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Plus className={`size-4 text-primary transition-transform ${isVoucherListOpen ? 'rotate-45' : ''}`} />
+                                        </button>
+
+                                        {isVoucherListOpen && (
+                                            <div className="mt-3 p-3 bg-white border-2 border-neutral-100 rounded-2xl shadow-sm space-y-3 animate-in slide-in-from-top-2 duration-200">
+                                                <div className="flex gap-2">
+                                                    <Input
+                                                        placeholder="NHẬP MÃ..."
+                                                        value={voucherCode}
+                                                        onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
+                                                        disabled={!!appliedVoucher}
+                                                        className="flex-1 h-10 bg-neutral-50 border-neutral-200 rounded-xl focus-visible:ring-primary/30 text-xs font-bold uppercase disabled:opacity-50"
+                                                    />
+                                                    {appliedVoucher ? (
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={() => {
+                                                                setAppliedVoucher(null);
+                                                                setVoucherCode('');
+                                                                setDiscountAmount(0);
+                                                            }}
+                                                            className="h-10 px-4 border-2 border-red-100 text-red-500 hover:bg-red-50 rounded-xl font-bold text-[10px] uppercase"
+                                                        >
+                                                            Hủy
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            size="sm"
+                                                            onClick={handleApplyVoucher}
+                                                            disabled={validateVoucherMutation.isPending || !voucherCode.trim()}
+                                                            className="h-10 px-4 bg-primary text-white rounded-xl font-bold text-[10px] uppercase"
+                                                        >
+                                                            {validateVoucherMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : 'Áp dụng'}
+                                                        </Button>
+                                                    )}
+                                                </div>
+
+                                                <div className="space-y-2 max-h-40 overflow-y-auto no-scrollbar pt-2">
+                                                    <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-1">Mã có sẵn</p>
+                                                    {availableVouchers?.filter(v => v.isActive).map(voucher => {
+                                                        const isSelected = appliedVoucher === voucher.code;
+                                                        const isEligible = subtotal >= voucher.minOrderValue;
+
+                                                        return (
+                                                            <button
+                                                                key={voucher.id}
+                                                                disabled={!isEligible}
+                                                                onClick={async () => {
+                                                                    if (isSelected) return;
+                                                                    setVoucherCode(voucher.code);
+                                                                    const result = await validateVoucherMutation.mutateAsync({
+                                                                        code: voucher.code,
+                                                                        orderValue: subtotal
+                                                                    });
+                                                                    if (result.isValid) {
+                                                                        setDiscountAmount(result.discountAmount);
+                                                                        setAppliedVoucher(voucher.code);
+                                                                        toast.success(`Đã chọn ${voucher.code}`);
+                                                                        setIsVoucherListOpen(false);
+                                                                    } else {
+                                                                        toast.error(result.message);
+                                                                    }
+                                                                }}
+                                                                className={`w-full text-left p-3 rounded-xl border-2 transition-all flex justify-between items-center ${isSelected
+                                                                    ? 'border-primary bg-primary/5'
+                                                                    : isEligible
+                                                                        ? 'border-neutral-100 hover:border-primary/30 bg-neutral-50'
+                                                                        : 'border-neutral-50 bg-neutral-50 opacity-50 grayscale cursor-not-allowed'
+                                                                    }`}
+                                                            >
+                                                                <div>
+                                                                    <p className="text-xs font-black text-neutral-800">{voucher.code}</p>
+                                                                    <p className="text-[10px] text-neutral-500 line-clamp-1">{voucher.description}</p>
+                                                                </div>
+                                                                {isSelected && <div className="size-2 bg-primary rounded-full animate-pulse" />}
+                                                                {!isEligible && (
+                                                                    <p className="text-[9px] font-bold text-red-500 italic">
+                                                                        Thêm {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(voucher.minOrderValue - subtotal)}
+                                                                    </p>
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                    {(!availableVouchers || availableVouchers.length === 0) && (
+                                                        <p className="text-[10px] text-neutral-400 italic text-center py-2">Không có mã giảm giá nào khác</p>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
+
                                 </div>
 
                                 <div className="flex-shrink-0 px-6 pt-4 pb-8 border-t border-neutral-100 bg-white">
-                                    <div className="flex justify-between items-center mb-4">
-                                        <span className="text-sm font-bold text-neutral-500 uppercase tracking-wider">Tổng thanh toán</span>
-                                        <span className="text-2xl font-black text-neutral-900">
-                                            {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
-                                        </span>
+                                    <div className="flex flex-col gap-1.5 mb-4">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Tạm tính</span>
+                                            <span className="text-sm font-bold text-neutral-600">
+                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(subtotal)}
+                                            </span>
+                                        </div>
+                                        {discountAmount > 0 && (
+                                            <div className="flex justify-between items-center mb-1">
+                                                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-wider">Giảm giá ({appliedVoucher})</span>
+                                                <span className="text-sm font-bold text-emerald-600">
+                                                    -{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(discountAmount)}
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between items-center pt-2 border-t border-neutral-100">
+                                            <span className="text-sm font-bold text-neutral-500 uppercase tracking-wider">Tổng thanh toán</span>
+                                            <span className="text-2xl font-black text-neutral-900">
+                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(total)}
+                                            </span>
+                                        </div>
                                     </div>
 
                                     {!session ? (
@@ -352,7 +508,7 @@ export function OrderBar() {
                                 </button>
 
                                 <div className="text-center mb-6">
-                                    <h2 className="text-xl font-black text-neutral-900 mb-1">Thanh toán (SePay)</h2>
+                                    <h2 className="text-xl font-black text-neutral-900 mb-1">Thanh toán </h2>
                                     <p className="text-sm text-neutral-500">Hoàn tất thanh toán để bếp nhận đơn</p>
                                 </div>
 
