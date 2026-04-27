@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import axiosInstance from '@/lib/axiosInstance';
 import { toast } from 'sonner';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export interface OrderItem {
   id: string;
@@ -57,8 +58,10 @@ export interface PagedResult<T> {
 }
 
 export const useOrders = (status?: string, skip: number = 0, take: number = 50) => {
+  const { token } = useAuthStore();
   return useQuery<PagedResult<Order>>({
     queryKey: ['orders', status, skip, take],
+    enabled: !!token,
     queryFn: async () => {
       let url = `/api/orders?skip=${skip}&take=${take}`;
       if (status && status !== 'All') {

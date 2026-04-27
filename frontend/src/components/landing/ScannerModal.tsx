@@ -8,8 +8,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+    DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, CameraOff, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
@@ -127,6 +126,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="w-[92vw] max-w-md bg-white border-2 border-black p-0 overflow-hidden shadow-[8px_8px_0px_rgba(0,0,0,0.1)] rounded-[2.5rem]">
+        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
                     style={{ backgroundImage: "url('/images/parchment.png')" }}>
                 </div>

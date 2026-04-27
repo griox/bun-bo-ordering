@@ -41,7 +41,7 @@ builder.Services.AddScoped<IdentityService.Application.Interfaces.IAppDbContext>
 // Configure Caching
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration["Redis__ConnectionString"] ?? "localhost:6379";
+    options.Configuration = builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
 });
 
 builder.Services.AddHttpClient<IdentityService.Infrastructure.Services.GoogleAuthService>();
@@ -115,6 +115,16 @@ authGroup.MapPost("/forgot-password", async (MediatR.IMediator mediator, Identit
 {
     await mediator.Send(cmd);
     return Results.Ok(new { Message = "Nếu email tồn tại, mã OTP đã được gửi." });
+}).RequireRateLimiting("auth");
+
+authGroup.MapPost("/verify-otp", async (MediatR.IMediator mediator, IdentityService.Application.Users.Commands.VerifyOtpCommand cmd) =>
+{
+    var isValid = await mediator.Send(cmd);
+    if (!isValid)
+    {
+        return Results.BadRequest(new { Message = "Mã OTP không hợp lệ hoặc đã hết hạn." });
+    }
+    return Results.Ok(new { Message = "Mã OTP hợp lệ." });
 }).RequireRateLimiting("auth");
 
 authGroup.MapPost("/reset-password", async (MediatR.IMediator mediator, IdentityService.Application.Users.Commands.ResetPasswordCommand cmd) =>

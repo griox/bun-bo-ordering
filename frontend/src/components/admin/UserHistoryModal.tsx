@@ -5,8 +5,7 @@ import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { Receipt, Clock, User as UserIcon, Calendar, ArrowRight } from "lucide-react";
 import { Order, useUpdateOrderStatusMutation } from "@/hooks/useOrders";
@@ -69,6 +68,7 @@ export function UserHistoryModal({ isOpen, onClose, user, orders, isLoading, onV
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
             <DialogContent className="sm:max-w-[800px] surface-base border-none shadow-ambient rounded-[3rem] p-0 overflow-hidden gap-0">
+        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
                 <DialogHeader className="p-10 border-b border-border/5 m-0 relative overflow-hidden">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div className="flex items-center gap-6">

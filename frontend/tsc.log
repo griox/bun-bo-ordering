@@ -1,0 +1,4 @@
+src/components/admin/UserHistoryModal.tsx(9,1): error TS1003: Identifier expected.
+src/components/landing/ScannerModal.tsx(12,1): error TS1003: Identifier expected.
+src/components/menu/CartModal.tsx(18,1): error TS1003: Identifier expected.
+src/components/order/OrderDetailModal.tsx(9,1): error TS1003: Identifier expected.

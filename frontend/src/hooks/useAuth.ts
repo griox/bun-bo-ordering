@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import { useMutation } from '@tanstack/react-query';
@@ -109,6 +110,25 @@ export const useForgotPasswordMutation = (onSuccessCallback?: () => void, onErro
     onError: (err: unknown) => {
       const msg = getErrorMessage(err);
       toast.error(msg || 'Gửi mã OTP thất bại!');
+      const data = (err as any).response?.data;
+      if (data) onErrorCallback?.(data);
+    },
+  });
+};
+
+export const useVerifyOtpMutation = (onSuccessCallback?: () => void, onErrorCallback?: (errData: any) => void) => {
+  return useMutation({
+    mutationFn: async (data: { email: string; otpCode: string }) => {
+      const response = await axiosInstance.post('/api/identity/verify-otp', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success('Xác thực mã OTP thành công!');
+      onSuccessCallback?.();
+    },
+    onError: (err: unknown) => {
+      const msg = getErrorMessage(err);
+      toast.error(msg || 'Mã OTP không hợp lệ!');
       const data = (err as any).response?.data;
       if (data) onErrorCallback?.(data);
     },

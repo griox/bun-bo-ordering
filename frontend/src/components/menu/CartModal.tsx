@@ -14,8 +14,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+    DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 
 export function CartModal() {
     const { cart, getCartTotal, updateQuantity, updateNote, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
@@ -181,6 +180,7 @@ export function CartModal() {
                 </div>
             </DialogTrigger>
             <DialogContent className="w-[92vw] max-w-lg surface-base border-none p-8 shadow-ambient rounded-[3rem] heritage-theme">
+        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
 
                 {paymentOrderId ? (
                     // PAYMENT QR VIEW

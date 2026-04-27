@@ -13,7 +13,7 @@ import {
     DialogContent,
     DialogHeader,
     DialogTitle
-} from "@/components/ui/dialog"
+, DialogDescription } from "@/components/ui/dialog"
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -227,6 +227,7 @@ export function Header() {
             {!user && (
                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
                     <DialogContent className="w-[92vw] max-w-lg bg-background border-2 border-black box-border p-0 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.1)] rounded-[2rem]">
+        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
                         <DialogHeader>
                             <DialogTitle className="sr-only">Đăng nhập</DialogTitle>
                         </DialogHeader>

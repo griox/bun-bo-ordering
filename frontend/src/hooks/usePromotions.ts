@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axiosInstance from '@/lib/axiosInstance';
+import { useAuthStore } from '@/store/useAuthStore';
 
 export interface Voucher {
     id: string;
@@ -34,11 +35,13 @@ export interface LoyaltyPoints {
 }
 
 export function usePromotions() {
+    const { token } = useAuthStore();
     const queryClient = useQueryClient();
 
     // Admin: Get all vouchers
     const useVouchers = () => useQuery({
         queryKey: ['vouchers'],
+        enabled: !!token,
         queryFn: async () => {
             const { data } = await axiosInstance.get<Voucher[]>('/api/promotion/vouchers');
             return data;
@@ -48,6 +51,7 @@ export function usePromotions() {
     // Client: Get active vouchers
     const useActiveVouchers = () => useQuery({
         queryKey: ['vouchers', 'active'],
+        enabled: !!token,
         queryFn: async () => {
             const { data } = await axiosInstance.get<Voucher[]>('/api/promotion/vouchers/active');
             return data;
@@ -96,6 +100,7 @@ export function usePromotions() {
     // Client: Get loyalty points
     const useMyPoints = () => useQuery({
         queryKey: ['my-points'],
+        enabled: !!token,
         queryFn: async () => {
             const { data } = await axiosInstance.get<LoyaltyPoints>('/api/promotion/points');
             return data;

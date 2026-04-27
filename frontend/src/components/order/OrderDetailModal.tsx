@@ -5,8 +5,7 @@ import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { ReceiptCent, Clock, StickyNote, Activity, Info } from "lucide-react";
 import { Order, OrderItem } from "@/hooks/useOrders";
@@ -30,6 +29,7 @@ export function OrderDetailModal({ isOpen, onClose, order }: { isOpen: boolean, 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
             <DialogContent className="sm:max-w-[700px] border border-gray-100 shadow-2xl rounded-[2.5rem] p-0 overflow-hidden bg-white gap-0">
+        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
                 <DialogHeader className="p-8 border-b border-gray-100 bg-white m-0 relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#ff4d4f] to-transparent opacity-50"></div>
                     <div className="flex items-center gap-5">
