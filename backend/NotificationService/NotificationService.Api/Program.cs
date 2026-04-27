@@ -17,6 +17,7 @@ builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserRegisteredEventConsumer>();
+    x.AddConsumer<ForgotPasswordRequestedConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -31,8 +32,13 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("user_registered_email_queue", e =>
         {
             e.ConfigureConsumer<UserRegisteredEventConsumer>(context);
-            
-            // Retries for transient SMTP errors
+            e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+        });
+
+        // Unique queue for forgot password notifications
+        cfg.ReceiveEndpoint("forgot_password_email_queue", e =>
+        {
+            e.ConfigureConsumer<ForgotPasswordRequestedConsumer>(context);
             e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
         });
     });

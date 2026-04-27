@@ -23,15 +23,6 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
 
     public async Task<Guid> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
-        // Validate email format
-        if (!System.Net.Mail.MailAddress.TryCreate(request.Email, out _))
-            throw new Exception("Email không hợp lệ.");
-
-        // Password validation
-        var passwordRegex = new System.Text.RegularExpressions.Regex(@"^(?=.*[A-Z])(?=.*[^a-zA-Z0-9]).{8,}$");
-        if (!passwordRegex.IsMatch(request.Password))
-            throw new Exception("Mật khẩu phải ít nhất 8 ký tự, có 1 chữ hoa và 1 ký tự đặc biệt.");
-
         if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username, cancellationToken))
             throw new Exception("Tên đăng nhập đã được sử dụng.");
 

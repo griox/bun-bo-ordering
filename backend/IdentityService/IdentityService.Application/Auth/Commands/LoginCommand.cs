@@ -28,8 +28,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         if (user == null)
             throw new Exception("Tên đăng nhập hoặc mật khẩu không chính xác!");
 
+        // Check Lockout
+        if (user.IsLockedOut())
+        {
+            var remainingTime = user.LockoutEnd!.Value - DateTimeOffset.UtcNow;
+            throw new Exception($"Tài khoản đã bị khóa do đăng nhập sai nhiều lần. Vui lòng thử lại sau {Math.Ceiling(remainingTime.TotalMinutes)} phút.");
+        }
+
         if (user.PasswordHash == null)
-            throw new Exception("Tài khoản này được đăng kí bằng Google. Vui lòng đăng nhập bằng Google.");
+            throw new Exception("Tài khoản này được đăng kì bằng Google. Vui lòng đăng nhập bằng Google.");
 
         if (user.IsBlacklisted)
             throw new Exception($"Tài khoản của bạn đã bị khóa! Lý do: {user.BlacklistReason ?? "Không có lý do cụ thể"}. Liên hệ Admin để được hỗ trợ.");
@@ -38,7 +45,15 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         var result = passwordHasher.VerifyHashedPassword(user, user.PasswordHash, request.Password);
 
         if (result == PasswordVerificationResult.Failed)
+        {
+            user.IncrementFailedAttempts();
+            await _dbContext.SaveChangesAsync(cancellationToken);
             throw new Exception("Tên đăng nhập hoặc mật khẩu không chính xác!");
+        }
+
+        // Reset failed attempts on successful login
+        user.ResetFailedAttempts();
+        await _dbContext.SaveChangesAsync(cancellationToken);
 
         var token = _tokenService.GenerateToken(user);
         return new LoginResult(token, user.Id.ToString(), user.Username, user.Email, user.Role);

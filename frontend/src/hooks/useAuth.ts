@@ -6,7 +6,18 @@ import { useAuthStore } from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
-export const useLoginMutation = (onSuccessCallback?: () => void) => {
+const getErrorMessage = (err: any) => {
+  const data = err.response?.data;
+  if (data?.errors) {
+    // Get the first validation error message
+    const firstErrorKey = Object.keys(data.errors)[0];
+    const errors = data.errors[firstErrorKey];
+    return Array.isArray(errors) ? errors[0] : errors;
+  }
+  return data?.detail || data?.message || (typeof data === 'string' ? data : null);
+};
+
+export const useLoginMutation = (onSuccessCallback?: () => void, onErrorCallback?: (errData: any) => void) => {
   const loginAction = useAuthStore((state) => state.login);
   const router = useRouter();
 
@@ -28,15 +39,15 @@ export const useLoginMutation = (onSuccessCallback?: () => void) => {
       router.push(role === 'Admin' ? '/admin' : '/');
     },
     onError: (err: unknown) => {
-      const error = err as { response?: { data?: { message?: string } | string } };
-      const data = error.response?.data;
-      const msg = typeof data === 'string' ? data : data?.message;
+      const msg = getErrorMessage(err);
       toast.error(msg || 'Email hoặc mật khẩu không chính xác!');
+      const data = (err as any).response?.data;
+      if (data) onErrorCallback?.(data);
     },
   });
 };
 
-export const useRegisterMutation = (onSuccessCallback?: () => void) => {
+export const useRegisterMutation = (onSuccessCallback?: () => void, onErrorCallback?: (errData: any) => void) => {
   return useMutation({
     mutationFn: async (data: Record<string, unknown>) => {
       const response = await axiosInstance.post('/api/identity/register', data);
@@ -47,10 +58,10 @@ export const useRegisterMutation = (onSuccessCallback?: () => void) => {
       onSuccessCallback?.();
     },
     onError: (err: unknown) => {
-      const error = err as { response?: { data?: { message?: string } | string } };
-      const data = error.response?.data;
-      const msg = typeof data === 'string' ? data : data?.message;
+      const msg = getErrorMessage(err);
       toast.error(msg || 'Đăng ký thất bại, vui lòng thử lại!');
+      const data = (err as any).response?.data;
+      if (data) onErrorCallback?.(data);
     },
   });
 };
@@ -79,8 +90,46 @@ export const useGoogleLoginMutation = (onSuccessCallback?: () => void) => {
       router.push(role === 'Admin' ? '/admin' : '/');
     },
     onError: (err: unknown) => {
-      const error = err as { response?: { data?: string } };
-      toast.error(error.response?.data || 'Đăng nhập Google thất bại!');
+      const msg = getErrorMessage(err);
+      toast.error(msg || 'Đăng nhập Google thất bại!');
+    },
+  });
+};
+
+export const useForgotPasswordMutation = (onSuccessCallback?: () => void, onErrorCallback?: (errData: any) => void) => {
+  return useMutation({
+    mutationFn: async (data: { email: string }) => {
+      const response = await axiosInstance.post('/api/identity/forgot-password', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success('Mã OTP đã được gửi đến email của bạn.');
+      onSuccessCallback?.();
+    },
+    onError: (err: unknown) => {
+      const msg = getErrorMessage(err);
+      toast.error(msg || 'Gửi mã OTP thất bại!');
+      const data = (err as any).response?.data;
+      if (data) onErrorCallback?.(data);
+    },
+  });
+};
+
+export const useResetPasswordMutation = (onSuccessCallback?: () => void, onErrorCallback?: (errData: any) => void) => {
+  return useMutation({
+    mutationFn: async (data: Record<string, unknown>) => {
+      const response = await axiosInstance.post('/api/identity/reset-password', data);
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success('Mật khẩu của bạn đã được đặt lại!');
+      onSuccessCallback?.();
+    },
+    onError: (err: unknown) => {
+      const msg = getErrorMessage(err);
+      toast.error(msg || 'Đặt lại mật khẩu thất bại!');
+      const data = (err as any).response?.data;
+      if (data) onErrorCallback?.(data);
     },
   });
 };

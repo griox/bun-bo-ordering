@@ -14,6 +14,9 @@ public class User : BaseEntity
     public string? BlacklistReason { get; private set; }
     public DateTime? BlacklistedAt { get; private set; }
 
+    public int FailedLoginAttempts { get; private set; }
+    public DateTimeOffset? LockoutEnd { get; private set; }
+
     // For EF Core
     protected User() { }
 
@@ -61,5 +64,30 @@ public class User : BaseEntity
         IsBlacklisted = false;
         BlacklistReason = null;
         BlacklistedAt = null;
+    }
+
+    public void IncrementFailedAttempts()
+    {
+        FailedLoginAttempts++;
+        if (FailedLoginAttempts >= 5)
+        {
+            LockAccount(TimeSpan.FromMinutes(5));
+        }
+    }
+
+    public void ResetFailedAttempts()
+    {
+        FailedLoginAttempts = 0;
+        LockoutEnd = null;
+    }
+
+    public void LockAccount(TimeSpan duration)
+    {
+        LockoutEnd = DateTimeOffset.UtcNow.Add(duration);
+    }
+
+    public bool IsLockedOut()
+    {
+        return LockoutEnd.HasValue && LockoutEnd.Value > DateTimeOffset.UtcNow;
     }
 }

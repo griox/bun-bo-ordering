@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useLoginMutation, useRegisterMutation, useGoogleLoginMutation } from '@/hooks/useAuth';
+import { ForgotPasswordDialog } from './auth/forgot-password-dialog';
 
 // Login Schema
 const loginSchema = z.object({
@@ -56,11 +57,31 @@ export function LoginForm({
   });
 
   // TanStack Query Mutations
-  const loginMutation = useLoginMutation(onSuccess);
+  const loginMutation = useLoginMutation(onSuccess, (errData) => {
+    if (errData?.errors) {
+      Object.keys(errData.errors).forEach((key) => {
+        const fieldName = key.toLowerCase() as keyof LoginValues;
+        loginForm.setError(fieldName, {
+          type: 'manual',
+          message: errData.errors[key][0],
+        });
+      });
+    }
+  });
   const googleLoginMutation = useGoogleLoginMutation(onSuccess);
   const registerMutation = useRegisterMutation(() => {
     setIsLogin(true);
     loginForm.setValue('username', registerForm.getValues('username'));
+  }, (errData) => {
+    if (errData?.errors) {
+      Object.keys(errData.errors).forEach((key) => {
+        const fieldName = key.toLowerCase() as keyof RegisterValues;
+        registerForm.setError(fieldName, {
+          type: 'manual',
+          message: errData.errors[key][0],
+        });
+      });
+    }
   });
 
   const onLoginSubmit = (data: LoginValues) => {
@@ -120,7 +141,7 @@ export function LoginForm({
             <div className="space-y-2">
               <div className="flex items-center ml-4">
                 <Label className="text-xs font-black uppercase tracking-[0.2em] text-black">Mật khẩu</Label>
-                <a href="#" className="ml-auto mr-4 text-[10px] font-black italic underline text-black tracking-widest">QUÊN?</a>
+                <ForgotPasswordDialog />
               </div>
               <Input
                 {...loginForm.register('password')}

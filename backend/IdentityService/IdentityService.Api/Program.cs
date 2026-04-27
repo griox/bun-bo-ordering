@@ -4,14 +4,33 @@ using IdentityService.Application;
 using BunBo.SharedKernel;
 using MassTransit;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.AddSerilogLogging("IdentityService");
 
 
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure Application Services
+builder.Services.AddApplication();
+
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<IdentityService.Api.Middlewares.GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("auth", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 10;
+        opt.QueueLimit = 0;
+    });
+});
 
 // Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -19,8 +38,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IdentityService.Application.Interfaces.IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
-// Configure MediatR
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
+// Configure Caching
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration["Redis__ConnectionString"] ?? "localhost:6379";
+});
 
 builder.Services.AddHttpClient<IdentityService.Infrastructure.Services.GoogleAuthService>();
 builder.Services.AddScoped<IdentityService.Application.Interfaces.IGoogleAuthService, IdentityService.Infrastructure.Services.GoogleAuthService>();
@@ -72,47 +94,34 @@ if (app.Environment.IsDevelopment())
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimiter();
+app.UseExceptionHandler();
 
 var authGroup = app.MapGroup("/api/identity");
 
 authGroup.MapPost("/register", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.RegisterCommand cmd) =>
 {
-    try
-    {
-        var userId = await mediator.Send(cmd);
-        return Results.Ok(new { UserId = userId, Message = "Registration successful. Please login to get your token." });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(ex.Message);
-    }
-});
+    var userId = await mediator.Send(cmd);
+    return Results.Ok(new { UserId = userId, Message = "Registration successful. Please login to get your token." });
+}).RequireRateLimiting("auth");
 
 authGroup.MapPost("/login", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.LoginCommand cmd) =>
 {
-    try
-    {
-        var result = await mediator.Send(cmd);
-        return Results.Ok(result);
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(ex.Message);
-    }
-});
+    var result = await mediator.Send(cmd);
+    return Results.Ok(result);
+}).RequireRateLimiting("auth");
 
-authGroup.MapPost("/google-login", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.GoogleLoginCommand cmd) =>
+authGroup.MapPost("/forgot-password", async (MediatR.IMediator mediator, IdentityService.Application.Users.Commands.ForgotPasswordCommand cmd) =>
 {
-    try
-    {
-        var result = await mediator.Send(cmd);
-        return Results.Ok(result);
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(ex.Message);
-    }
-});
+    await mediator.Send(cmd);
+    return Results.Ok(new { Message = "Nếu email tồn tại, mã OTP đã được gửi." });
+}).RequireRateLimiting("auth");
+
+authGroup.MapPost("/reset-password", async (MediatR.IMediator mediator, IdentityService.Application.Users.Commands.ResetPasswordCommand cmd) =>
+{
+    await mediator.Send(cmd);
+    return Results.Ok(new { Message = "Mật khẩu đã được đặt lại thành công." });
+}).RequireRateLimiting("auth");
 
 authGroup.MapPost("/logout", () =>
 {
