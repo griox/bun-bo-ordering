@@ -48,8 +48,14 @@ const forgotOtpSchema = z.object({
   otpCode: z.string().length(6, 'Mã OTP phải có 6 chữ số'),
 });
 
+const passwordRules = z.string()
+  .min(8, 'Mật khẩu phải ít nhất 8 ký tự')
+  .regex(/[A-Z]/, 'Phải có ít nhất 1 chữ hoa')
+  .regex(/[0-9]/, 'Phải có ít nhất 1 chữ số')
+  .regex(/[^A-Za-z0-9]/, 'Phải có ít nhất 1 ký tự đặc biệt (!@#$%...)');
+
 const forgotNewPasswordSchema = z.object({
-  newPassword: z.string().min(6, 'Mật khẩu phải ít nhất 6 ký tự'),
+  newPassword: passwordRules,
   confirmPassword: z.string().min(1, 'Vui lòng xác nhận mật khẩu'),
 }).refine((data) => data.newPassword === data.confirmPassword, {
   message: 'Mật khẩu không khớp',

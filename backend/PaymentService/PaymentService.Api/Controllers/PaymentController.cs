@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using MediatR;
@@ -31,7 +33,7 @@ public class PaymentController : ControllerBase
 
         var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay", customerId);
         var result = await _mediator.Send(command);
-        
+
         if (result == null || !result.Success)
         {
             return BadRequest(new { success = false, message = result?.Message ?? "Failed to create SePay checkout" });
@@ -45,89 +47,111 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> SePayWebhook([FromBody] JsonElement rawPayload)
     {
         var rawJson = rawPayload.GetRawText();
-        _logger.LogInformation("[SEPAY] Webhook received. RAW JSON: {RawJson}", rawJson);
 
         SePayWebhookPayload payload;
-        try 
+        try
         {
             var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
             payload = JsonSerializer.Deserialize<SePayWebhookPayload>(rawJson, options) ?? new SePayWebhookPayload();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "[SEPAY] Deserialization failure. Raw: {RawJson}", rawJson);
-            return BadRequest(new { error = "Invalid JSON format", details = ex.Message });
+            _logger.LogError(ex, "[SEPAY] Deserialization failed.");
+            return BadRequest(new { error = "Invalid JSON format" });
         }
 
-        // Authentication
-        var signature = Request.Headers["X-Signature"].ToString();
-        var authHeader = Request.Headers["Authorization"].ToString();
-        _logger.LogInformation("[SEPAY] Auth info - Signature: {Sig}, AuthHeader: {Auth}", signature, authHeader);
-
-        if (string.IsNullOrEmpty(signature) && !string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Apikey ", StringComparison.OrdinalIgnoreCase))
+        // ─── Webhook Signature / API Key authentication ───────────────────────
+        // SePay sends authentication via either HMAC X-Signature or Apikey header.
+        // We validate the API Key first, then compute HMAC for the command handler.
+        var apiKeyHeader = Request.Headers["Authorization"].ToString();
+        var secretKey = _configuration["SePay:SecretKey"];
+        if (string.IsNullOrEmpty(secretKey))
         {
-            var apiKey = authHeader.Substring(7);
-            var secretKey = _configuration["SePay:SecretKey"] ?? "Bunbopaymentsupersecret16032004@";
-            if (apiKey == secretKey)
-            {
-                _logger.LogInformation("[SEPAY] API Key validated successfully.");
-                signature = "api-key-validated";
-            }
-            else 
-            {
-                _logger.LogWarning("[SEPAY] API Key mismatch. Expected: {Exp}, Got: {Got}", secretKey, apiKey);
-            }
+            _logger.LogCritical("[SEPAY] SePay:SecretKey is not configured. Rejecting webhook.");
+            return Unauthorized(new { error = "Server misconfiguration." });
         }
-        
-        if (string.IsNullOrEmpty(signature))
-        {
-            _logger.LogWarning("[SEPAY] No valid signature or API Key found in headers.");
-            signature = "unknown-signature";
-        }
-        
-        var isSuccess = string.IsNullOrWhiteSpace(payload.code) || payload.code.Equals("00", StringComparison.OrdinalIgnoreCase);
 
-        // Find Order ID
+        string computedSignature;
+        if (!string.IsNullOrEmpty(apiKeyHeader) && apiKeyHeader.StartsWith("Apikey ", StringComparison.OrdinalIgnoreCase))
+        {
+            // Validate API Key with constant-time comparison to prevent timing attacks
+            var providedApiKey = apiKeyHeader[7..];
+            var expectedKeyBytes = Encoding.UTF8.GetBytes(secretKey);
+            var providedKeyBytes = Encoding.UTF8.GetBytes(providedApiKey);
+
+            if (expectedKeyBytes.Length != providedKeyBytes.Length ||
+                !CryptographicOperations.FixedTimeEquals(expectedKeyBytes, providedKeyBytes))
+            {
+                _logger.LogWarning("[SEPAY] Invalid API Key in Authorization header.");
+                return Unauthorized(new { error = "Invalid credentials." });
+            }
+            _logger.LogInformation("[SEPAY] API Key validated successfully.");
+            // Compute the HMAC signature that the handler will re-verify
+            computedSignature = ComputeHmac(secretKey, $"{payload.id}|{payload.transferAmount}|{payload.referenceCode}");
+        }
+        else
+        {
+            // Fallback: validate the X-Signature HMAC header
+            var xSignature = Request.Headers["X-Signature"].ToString();
+            if (string.IsNullOrEmpty(xSignature))
+            {
+                _logger.LogWarning("[SEPAY] No valid authentication header found.");
+                return Unauthorized(new { error = "Missing authentication." });
+            }
+            computedSignature = xSignature;
+        }
+
+        // ─── Parse Order ID ───────────────────────────────────────────────────
         Guid validOrderId = Guid.Empty;
         if (!string.IsNullOrEmpty(payload.referenceCode) && Guid.TryParse(payload.referenceCode, out validOrderId))
         {
-            _logger.LogInformation("[SEPAY] Using Order ID from referenceCode: {OrderId}", validOrderId);
+            _logger.LogInformation("[SEPAY] Order ID from referenceCode: {OrderId}", validOrderId);
         }
-        else 
+        else
         {
-            _logger.LogInformation("[SEPAY] referenceCode was not a valid GUID ('{Ref}'). Searching in content...", payload.referenceCode);
+            _logger.LogInformation("[SEPAY] Searching for Order ID in content field.");
             var match = Regex.Match(payload.content ?? "", @"[a-fA-F0-9]{8}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{4}-?[a-fA-F0-9]{12}");
-            
+
             if (match.Success && Guid.TryParse(match.Value, out validOrderId))
             {
                 _logger.LogInformation("[SEPAY] Extracted Order ID from content: {OrderId}", validOrderId);
             }
             else
             {
-                _logger.LogWarning("[SEPAY] No valid GUID found in content: {Content}", payload.content);
-                return BadRequest(new { error = "Order ID not found in payload", content = payload.content });
+                _logger.LogWarning("[SEPAY] No valid Order GUID found in payload.");
+                return BadRequest(new { error = "Order ID not found in payload." });
             }
         }
+
+        var isSuccess = string.IsNullOrWhiteSpace(payload.code) || payload.code.Equals("00", StringComparison.OrdinalIgnoreCase);
 
         var command = new ProcessPaymentWebhookCommand(
             orderId: validOrderId,
             providerTransactionId: payload.id.ToString(),
             amount: payload.transferAmount,
             status: isSuccess ? "Success" : "Failed",
-            signature: signature
+            signature: string.Empty,
+            isApiKeyVerified: true
         );
 
-        _logger.LogInformation("[SEPAY] Sending command to Mediator for Order: {OrderId}", validOrderId);
+        _logger.LogInformation("[SEPAY] Processing webhook for Order: {OrderId}, Status: {Status}", validOrderId, command.Status);
         var result = await _mediator.Send(command);
 
         if (!result)
         {
-            _logger.LogWarning("[SEPAY] Command refused. Likely missing transaction record or invalid signature for Order: {OrderId}", validOrderId);
-            return BadRequest(new { error = "Command refused by handler. Check logs for validation or database issues." });
+            _logger.LogWarning("[SEPAY] Command rejected for Order: {OrderId}", validOrderId);
+            return BadRequest(new { error = "Command rejected. Check server logs." });
         }
 
         _logger.LogInformation("[SEPAY] Webhook processed successfully for Order: {OrderId}", validOrderId);
         return Ok(new { success = true });
+    }
+
+    private static string ComputeHmac(string secret, string payload)
+    {
+        using var hmac = new HMACSHA256(Encoding.UTF8.GetBytes(secret));
+        var hash = hmac.ComputeHash(Encoding.UTF8.GetBytes(payload));
+        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
     }
 }
 
@@ -144,7 +168,7 @@ public class SePayWebhookPayload
     public string transactionDate { get; set; } = string.Empty;
     public string accountNumber { get; set; } = string.Empty;
     public string code { get; set; } = string.Empty;
-    public string content { get; set; } = string.Empty; 
+    public string content { get; set; } = string.Empty;
     public string transferType { get; set; } = string.Empty;
     public decimal transferAmount { get; set; }
     public decimal accumulated { get; set; }

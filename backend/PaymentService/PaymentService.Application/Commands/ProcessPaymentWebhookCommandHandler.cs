@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -24,11 +23,14 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
 
     public async Task<bool> Handle(ProcessPaymentWebhookCommand request, CancellationToken cancellationToken)
     {
-        // 1. Verify signature
-        var payload = $"{request.OrderId}|{request.Amount}|{request.ProviderTransactionId}|{request.Status}"; // Simplified for test
-        if (!_signatureValidator.IsValid(payload, request.Signature))
+        // 1. Verify signature — skip if the webhook was already authenticated via API Key at the controller level
+        if (!request.IsApiKeyVerified)
         {
-            return false;
+            var payload = $"{request.OrderId}|{request.Amount}|{request.ProviderTransactionId}|{request.Status}";
+            if (!_signatureValidator.IsValid(payload, request.Signature))
+            {
+                return false;
+            }
         }
 
         // 2. Get transaction
@@ -38,7 +40,15 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
             return false;
         }
 
-        // 3. Update status
+        // 3. Idempotency check: skip if already in a terminal state (Success or Failed)
+        // This prevents duplicate event publishing from webhook retries.
+        if (transaction.Status == Domain.Enums.PaymentStatus.Success || transaction.Status == Domain.Enums.PaymentStatus.Failed)
+        {
+            // Already processed, return true to acknowledge to SePay so they stop retrying
+            return true;
+        }
+
+        // 4. Update status
         if (request.Status.Equals("Success", StringComparison.OrdinalIgnoreCase))
         {
             transaction.MarkAsSuccess(request.ProviderTransactionId, request.Signature);
@@ -50,13 +60,13 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
 
         await _repository.SaveChangesAsync(cancellationToken);
 
-        // 4. Publish Event
+        // 5. Publish Event (only fires once per order due to idempotency check above)
         var isSuccess = transaction.Status == Domain.Enums.PaymentStatus.Success;
         await _eventPublisher.PublishPaymentCompletedEventAsync(
-            transaction.OrderId, 
-            isSuccess, 
-            transaction.Amount, 
-            transaction.CustomerId, 
+            transaction.OrderId,
+            isSuccess,
+            transaction.Amount,
+            transaction.CustomerId,
             transaction.VoucherCode,
             cancellationToken);
 

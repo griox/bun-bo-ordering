@@ -43,7 +43,8 @@ builder.Services.AddSwaggerGen(c =>
 
 // Configure JWT Authentication
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890";
+var secretKey = jwtSettings["Secret"]
+    ?? throw new InvalidOperationException("JwtSettings:Secret is not configured. Application cannot start.");
 
 builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
