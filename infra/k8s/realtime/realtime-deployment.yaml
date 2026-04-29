@@ -62,7 +62,7 @@ spec:
             secretKeyRef:
               name: bunbo-secrets
               key: REDIS_PASSWORD
-        - name: Redis__ConnectionString
+        - name: ConnectionStrings__Redis
           value: "$(REDIS_HOST),password=$(REDIS_PASSWORD),abortConnect=false"
         - name: Services__OrderService
           value: "http://order-service"

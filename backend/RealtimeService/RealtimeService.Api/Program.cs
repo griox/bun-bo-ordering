@@ -14,7 +14,7 @@ builder.Host.AddSerilogLogging("RealtimeService");
 builder.Services.AddEndpointsApiExplorer();
 
 // Configure SignalR with Redis Backplane
-var redisConnectionString = builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
+var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
 builder.Services.AddSignalR(options => {
     options.EnableDetailedErrors = true;
     options.KeepAliveInterval = TimeSpan.FromSeconds(10);
