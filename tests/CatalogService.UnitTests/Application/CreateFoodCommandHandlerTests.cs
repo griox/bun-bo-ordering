@@ -1,6 +1,7 @@
 using CatalogService.Application.Foods.Commands;
 using CatalogService.Application.Interfaces;
 using CatalogService.Domain.Entities;
+using BunBo.SharedKernel;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Moq;
@@ -56,7 +57,7 @@ public class CreateFoodCommandHandlerTests
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>().WithMessage("Category not found");
+        await act.Should().ThrowAsync<DomainException>().WithMessage("Category not found");
     }
 
     // --- TDD: Missing Features (RED Phase) ---
@@ -80,7 +81,7 @@ public class CreateFoodCommandHandlerTests
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>().WithMessage("Food with this name already exists in this category");
+        await act.Should().ThrowAsync<DomainException>().WithMessage("Food with this name already exists in this category");
     }
 
     [Theory]
@@ -102,7 +103,7 @@ public class CreateFoodCommandHandlerTests
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        await act.Should().ThrowAsync<Exception>().WithMessage("Price must be greater than zero");
+        await act.Should().ThrowAsync<DomainException>().WithMessage("Price must be greater than zero");
     }
 
     private void SetId<TId>(object entity, TId id)
