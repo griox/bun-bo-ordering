@@ -78,10 +78,19 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         }, cancellationToken);
         _logger.LogInformation("[ORDER] OrderCreatedEvent published for Order {OrderId}", order.Id);
 
-        // Clear the cart after successful order creation
-        _logger.LogInformation("[ORDER] Clearing cart for {CartOwnerId}", cartOwnerId);
-        await _cartDataClient.ClearCartAsync(cartOwnerId);
-        _logger.LogInformation("[ORDER] Cart cleared for {CartOwnerId}", cartOwnerId);
+        // Clear the cart after successful order creation.
+        // Wrapped in try/catch: if clearing fails, the order is still valid.
+        // The cart will expire naturally after 7 days.
+        try
+        {
+            _logger.LogInformation("[ORDER] Clearing cart for {CartOwnerId}", cartOwnerId);
+            await _cartDataClient.ClearCartAsync(cartOwnerId);
+            _logger.LogInformation("[ORDER] Cart cleared for {CartOwnerId}", cartOwnerId);
+        }
+        catch (Exception clearEx)
+        {
+            _logger.LogWarning(clearEx, "[ORDER] Failed to clear cart for {CartOwnerId}. Order {OrderId} was created successfully.", cartOwnerId, order.Id);
+        }
 
         return order.Id;
     }

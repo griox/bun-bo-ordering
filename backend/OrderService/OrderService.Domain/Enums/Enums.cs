@@ -3,7 +3,8 @@ namespace OrderService.Domain.Enums;
 public enum OrderStatus
 {
     Unpaid,
-    Paid
+    Paid,
+    PaymentFailed
 }
 
 public enum PaymentStatus

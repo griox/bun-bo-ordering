@@ -22,9 +22,10 @@ builder.Services.ConfigureHttpJsonOptions(options => {
     options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
 
-// Configure JWT Authentication
+// Configure JWT Authentication (fail fast if secret is missing)
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890";
+var secretKey = jwtSettings["Secret"]
+    ?? throw new InvalidOperationException("JwtSettings:Secret is not configured. Application cannot start.");
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -53,12 +54,15 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
-// Add CORS to Order Service (as well as Gateway)
+// Add CORS: restrict to configured allowed origins only
 builder.Services.AddCors(options =>
 {
+    var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+        ?? new[] { "http://localhost:3000", "http://localhost:8000" };
+
     options.AddDefaultPolicy(policy =>
     {
-        policy.AllowAnyOrigin()
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -251,7 +255,7 @@ orderGroup.MapPut("/{id}/status", async (Guid id, OrderService.Domain.Enums.Orde
     var cmd = new OrderService.Application.Orders.Commands.UpdateOrderStatusCommand(id, status);
     var success = await mediator.Send(cmd);
     return success ? Results.NoContent() : Results.NotFound();
-});
+}).RequireAuthorization("Admin");
 
 // Auto migrate database on startup and seed data
 using (var scope = app.Services.CreateScope())

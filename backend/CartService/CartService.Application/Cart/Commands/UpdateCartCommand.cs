@@ -19,17 +19,28 @@ public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, Shopp
 
     public async Task<ShoppingCart> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
     {
-        // Call gRPC Catalog Service to verify price and availability for each item
+        if (!request.Cart.Items.Any())
+        {
+            return await _repository.UpdateCartAsync(request.Cart);
+        }
+
+        // Batch-fetch all food prices in a single parallel gRPC round-trip (fixes N+1 issue)
+        var foodIds = request.Cart.Items.Select(i => i.FoodId);
+        var catalogItems = await _catalogClient.GetFoodPricesManyAsync(foodIds);
+
         foreach (var item in request.Cart.Items)
         {
-            var catalogItem = await _catalogClient.GetFoodPriceAsync(item.FoodId);
-            
-            if (!catalogItem.IsAvailable)
+            if (!catalogItems.TryGetValue(item.FoodId, out var catalogItem))
             {
-                throw new Exception($"Food item {catalogItem.Name} is currently unavailable.");
+                throw new Exception($"Food item {item.FoodId} not found in catalog.");
             }
 
-            // Sync the price and name from the source of truth (Catalog)
+            if (!catalogItem.IsAvailable)
+            {
+                throw new Exception($"Món \"{catalogItem.Name}\" hiện không còn phục vụ.");
+            }
+
+            // Sync price and name from source of truth (Catalog)
             item.UnitPrice = catalogItem.Price;
             item.FoodName = catalogItem.Name;
         }

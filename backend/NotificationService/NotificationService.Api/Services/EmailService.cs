@@ -52,35 +52,38 @@ public class EmailService : IEmailService
                         <div style='padding: 40px; color: #444; line-height: 1.6;'>
                             <h2 style='color: #222; font-size: 24px; margin-top: 0; margin-bottom: 20px;'>Chào mừng {username}!</h2>
                             
-                            <p style='margin-bottom: 20px; font-size: 16px;'>Cảm ơn bạn đã trở thành một phần của đại gia đình <strong>Bun Bo Chung Cu</strong>. Chúng tôi rất hào hứng được phục vụ bạn những tô bún bò đậm đà, chuẩn vị nhất.</p>
+                            <p style='margin-bottom: 20px; font-size: 16px;'>Cảm ơn bạn đã đăng ký thành viên tại <strong>Bun Bo Chung Cu</strong>. Chúng tôi rất hân hạnh được phục vụ bạn những món ăn đậm đà hương vị truyền thống.</p>
                             
                             <div style='background-color: #fff9f9; border-left: 4px solid #ff4d4f; padding: 15px 20px; margin: 25px 0;'>
-                                <p style='margin: 5px 0; font-weight: 600;'>💡 Tại sao bạn sẽ thích chúng tôi?</p>
+                                <p style='margin: 5px 0; font-weight: 600;'>💡 Trải nghiệm tiện ích cùng chúng tôi:</p>
                                 <ul style='margin: 10px 0; padding-left: 20px; font-size: 14px; color: #666;'>
-                                    <li>Đặt món nhanh chóng tại bàn, không cần chờ đợi.</li>
-                                    <li>Theo dõi hành trình đơn hàng thời gian thực.</li>
-                                    <li>Tích điểm đổi quà cho mỗi lần đặt món.</li>
+                                    <li>Đặt món trực tuyến dễ dàng, không cần xếp hàng.</li>
+                                    <li>Cập nhật trạng thái đơn hàng thời gian thực.</li>
+                                    <li>Tích lũy điểm thưởng cho mọi đơn hàng.</li>
                                 </ul>
                             </div>
 
-                            <p style='margin-bottom: 30px; font-size: 16px;'>Sẵn sàng để thưởng thức chưa?</p>
-
-                            <div style='text-align: center;'>
-                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 77, 79, 0.3); transition: all 0.3s ease;'>
-                                    👉 KHÁM PHÁ THỰC ĐƠN NGAY
+                            <div style='text-align: center; margin-top: 30px;'>
+                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 77, 79, 0.3);'>
+                                    TRẢI NGHIỆM NGAY
                                 </a>
                             </div>
                         </div>
 
                         <!-- Footer -->
                         <div style='padding: 30px 40px; background-color: #fdfdfd; border-top: 1px solid #f0f0f0; text-align: center;'>
-                            <p style='font-size: 12px; color: #999; margin-bottom: 10px;'>Bạn nhận được email này vì đã đăng ký tại Bun Bo Chung Cu.</p>
-                            <p style='font-size: 12px; color: #999; margin: 0;'>© 2026 Bun Bo Chung Cu Team. All Rights Reserved.</p>
+                            <p style='font-size: 12px; color: #999; margin-bottom: 8px;'>
+                                <strong>Bún bò Chung Cư Team</strong><br/>
+                                Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa<br/>
+                                Email hỗ trợ: support@bun-bo-chung-cu.io.vn
+                            </p>
+                            <p style='font-size: 11px; color: #aaa; margin-bottom: 5px;'>Bạn nhận được email này vì đã đăng ký tài khoản tại bun-bo-chung-cu.io.vn</p>
+                            <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
                         </div>
                     </div>
                     
                     <div style='text-align: center; margin-top: 25px;'>
-                        <p style='font-size: 11px; color: #bbb;'>Nếu bạn không muốn nhận email này nữa, hãy <a href=""#"" style=""color: #bbb; text-decoration: underline;"">hủy đăng ký</a>.</p>
+                        <p style='font-size: 11px; color: #bbb;'>Bạn không muốn nhận email này? <a href=""https://bun-bo-chung-cu.io.vn/account/notifications"" style=""color: #bbb; text-decoration: underline;"">Quản lý tùy chọn thông báo</a>.</p>
                     </div>
                 </div>"
         };
@@ -91,8 +94,11 @@ public class EmailService : IEmailService
         {
             using var client = new SmtpClient();
             
-            // For testing/development, we often skip certificate validation or use specific settings
-            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            // Only skip certificate validation in development environment
+            if (_configuration["Environment"] == "Development")
+            {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            }
 
             var host = smtpSettings["Host"];
             var port = int.Parse(smtpSettings["Port"] ?? "587");
@@ -123,7 +129,7 @@ public class EmailService : IEmailService
         var senderEmail = smtpSettings["SupportSenderEmail"] ?? smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"];
         
         var message = new MimeMessage();
-        message.From.Add(new MailboxAddress("Bún bò Chung Cư", senderEmail));
+        message.From.Add(new MailboxAddress("Bún bò Chung Cư Support", senderEmail));
         message.To.Add(new MailboxAddress(username, email));
         message.Subject = "Mã xác thực khôi phục mật khẩu - Bún bò Chung Cư";
 
@@ -145,20 +151,24 @@ public class EmailService : IEmailService
                             <h2 style='color: #222; font-size: 24px; margin-top: 0; margin-bottom: 20px;'>Khôi phục mật khẩu</h2>
                             
                             <p style='margin-bottom: 20px; font-size: 16px;'>Chào <strong>{username}</strong>,</p>
-                            <p style='margin-bottom: 20px; font-size: 16px;'>Chúng tôi đã nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã OTP dưới đây để hoàn tất quá trình này:</p>
+                            <p style='margin-bottom: 20px; font-size: 16px;'>Chúng tôi đã nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã xác thực dưới đây để tiếp tục:</p>
                             
                             <div style='background-color: #fff9f9; border: 1px dashed #ff4d4f; padding: 20px; text-align: center; margin: 30px 0; border-radius: 12px;'>
                                 <span style='font-size: 36px; font-weight: 800; color: #ff4d4f; letter-spacing: 10px;'>{otpCode}</span>
                             </div>
 
-                            <p style='margin-bottom: 10px; font-size: 14px; color: #666;'>Mã này có hiệu lực trong vòng <strong>5 phút</strong>.</p>
-                            <p style='margin-bottom: 25px; font-size: 14px; color: #666;'>Nếu bạn không thực hiện yêu cầu này, vui lòng bỏ qua email này hoặc liên hệ với bộ phận hỗ trợ nếu bạn lo ngại về bảo mật tài khoản.</p>
+                            <p style='margin-bottom: 10px; font-size: 14px; color: #666;'>Mã xác thực này có hiệu lực trong vòng <strong>5 phút</strong>.</p>
+                            <p style='margin-bottom: 25px; font-size: 14px; color: #666;'>Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này hoặc liên hệ hỗ trợ nếu bạn thấy có dấu hiệu bất thường.</p>
                         </div>
 
                         <!-- Footer -->
                         <div style='padding: 30px 40px; background-color: #fdfdfd; border-top: 1px solid #f0f0f0; text-align: center;'>
-                            <p style='font-size: 12px; color: #999; margin-bottom: 10px;'>Đây là email tự động, vui lòng không trả lời.</p>
-                            <p style='font-size: 12px; color: #999; margin: 0;'>© 2026 Bun Bo Chung Cu Team. All Rights Reserved.</p>
+                            <p style='font-size: 12px; color: #999; margin-bottom: 8px;'>
+                                <strong>Bún bò Chung Cư Support Team</strong><br/>
+                                Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
+                            </p>
+                            <p style='font-size: 11px; color: #aaa; margin-bottom: 5px;'>Đây là email tự động từ hệ thống, vui lòng không phản hồi email này.</p>
+                            <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
                         </div>
                     </div>
                 </div>"
@@ -169,7 +179,10 @@ public class EmailService : IEmailService
         try
         {
             using var client = new SmtpClient();
-            client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            if (_configuration["Environment"] == "Development")
+            {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            }
 
             var host = smtpSettings["Host"];
             var port = int.Parse(smtpSettings["Port"] ?? "587");
