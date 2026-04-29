@@ -199,26 +199,19 @@ export default function DishesPage() {
     return (
         <div className="space-y-6 md:space-y-8 pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="flex items-center gap-3">
-                    <div className="size-10 bg-primary rounded-md flex items-center justify-center shadow-sm">
-                        <Plus className="size-5 text-white" />
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-bold text-slate-900 tracking-tight">Quản Lý Thực Đơn</h2>
-                        <p className="text-sm text-slate-500 font-medium tracking-tight">Hệ thống quản trị và kiểm soát dữ liệu món ăn tập trung.</p>
-                    </div>
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý thực đơn</h2>
+                    <p className="text-sm text-gray-500 mt-1">Hệ thống quản trị và kiểm soát dữ liệu món ăn tập trung.</p>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
                     setIsDialogOpen(open);
                     if (!open) resetForm();
                 }}>
                     <DialogTrigger asChild>
-                        <div className="inline-block">
-                            <Button className="h-10 px-6 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-xs gap-2 rounded-md transition-all shadow-sm" onClick={() => resetForm()}>
-                                <Plus className="size-4" />
-                                THÊM MÓN MỚI
-                            </Button>
-                        </div>
+                        <Button className="h-10 px-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl transition-all shadow-sm" onClick={() => resetForm()}>
+                            <Plus className="size-4" />
+                            THÊM MÓN MỚI
+                        </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-3xl md:max-w-4xl w-[95vw] md:w-full rounded-md border border-slate-200 shadow-2xl p-0 overflow-hidden bg-white">
                         <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood} className="flex flex-col max-h-[90vh]">
@@ -405,15 +398,15 @@ export default function DishesPage() {
                 </Dialog>
             </div>
 
-            <Card className="border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
-                <div className="p-6 bg-gray-50/30 border-b border-gray-100 flex items-center gap-6">
+            <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
+                <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex items-center gap-4">
                     <div className="relative flex-1">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-300" />
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                         <Input
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="TÌM KIẾM DỮ LIỆU THỰC ĐƠN..."
-                            className="h-14 pl-12 pr-6 border border-gray-100 rounded-2xl bg-white font-black focus:border-[#ff4d4f] transition-all uppercase text-[10px] tracking-[0.2em]"
+                            placeholder="Tìm kiếm món ăn..."
+                            className="h-10 pl-10 pr-4 border-gray-200 rounded-xl bg-white text-sm focus:border-primary focus:ring-primary/20 transition-all"
                         />
                     </div>
                 </div>
@@ -428,12 +421,12 @@ export default function DishesPage() {
                         <Table className="min-w-[800px]">
                             <TableHeader className="bg-gray-50/50">
                                 <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                    <TableHead className="w-[100px] font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Visual</TableHead>
-                                    <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Sản phẩm</TableHead>
-                                    <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Category</TableHead>
-                                    <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Price Unit</TableHead>
-                                    <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Status</TableHead>
-                                    <TableHead className="text-right font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Actions</TableHead>
+                                    <TableHead className="w-[80px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ảnh</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Sản phẩm</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Danh mục</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Giá bán</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Trạng thái</TableHead>
+                                    <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -449,41 +442,41 @@ export default function DishesPage() {
                                 ) : (
                                     filteredDishes.map((dish) => (
                                         <TableRow key={dish.id} className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group">
-                                            <TableCell className="p-6">
-                                                <div className="size-16 rounded-2xl bg-gray-50 border border-gray-100 overflow-hidden shadow-sm group-hover:scale-105 transition-transform shrink-0 mx-auto">
+                                            <TableCell className="p-4">
+                                                <div className="size-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shadow-sm group-hover:scale-105 transition-transform shrink-0 mx-auto">
                                                     {dish.imageUrl ? (
                                                         <img src={dish.imageUrl || ''} alt={dish.name} className="w-full h-full object-cover" />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                                                            <ImageIcon className="size-6 text-gray-300" />
+                                                            <ImageIcon className="size-4 text-gray-300" />
                                                         </div>
                                                     )}
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="p-6">
-                                                <div className="font-black text-black text-lg uppercase tracking-tighter mb-0.5">{dish.name}</div>
-                                                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wide line-clamp-1 italic">{dish.description || 'Chưa cấu hình mô tả...'}</div>
+                                            <TableCell className="p-4">
+                                                <div className="font-bold text-gray-900 text-sm mb-0.5">{dish.name}</div>
+                                                <div className="text-[11px] text-gray-400 font-medium line-clamp-1 italic">{dish.description || 'Chưa có mô tả'}</div>
                                             </TableCell>
-                                            <TableCell className="p-6 text-center">
-                                                <Badge variant="secondary" className="bg-gray-100 text-gray-500 font-black uppercase text-[10px] px-3 py-1 rounded-lg border border-gray-200 shadow-sm">
+                                            <TableCell className="p-4 text-center">
+                                                <Badge variant="secondary" className="bg-gray-100 text-gray-600 font-bold uppercase text-[9px] px-2 py-0.5 rounded-lg border-none">
                                                     {dish.categoryName}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell className="p-6 text-center">
-                                                <div className="font-black text-black text-xl tracking-tighter">
+                                            <TableCell className="p-4 text-center">
+                                                <div className="font-bold text-gray-900 text-sm">
                                                     {dish.price.toLocaleString('vi-VN')}
-                                                    <span className="text-[10px] ml-1 font-black text-[#ff4d4f]">đ</span>
+                                                    <span className="text-[10px] ml-0.5 font-bold text-primary">đ</span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="p-6 text-center">
-                                                <div className="flex flex-col items-center gap-1.5">
-                                                    <div className={`w-3 h-3 rounded-full border border-white/50 ${dish.isAvailable ? 'bg-green-500 shadow-[0_0_12px_rgba(34,197,94,0.5)] animate-pulse' : 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)]'}`} />
-                                                    <span className={`text-[9px] font-black uppercase tracking-widest ${dish.isAvailable ? 'text-green-600' : 'text-red-400'}`}>
-                                                        {dish.isAvailable ? 'Live' : 'Out'}
+                                            <TableCell className="p-4 text-center">
+                                                <div className="flex flex-col items-center gap-1">
+                                                    <div className={`size-2 rounded-full ${dish.isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
+                                                    <span className={`text-[9px] font-bold uppercase tracking-wider ${dish.isAvailable ? 'text-green-600' : 'text-red-400'}`}>
+                                                        {dish.isAvailable ? 'Sẵn sàng' : 'Hết hàng'}
                                                     </span>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="p-6 text-right">
+                                            <TableCell className="p-4 text-right">
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <div className="inline-block">
@@ -519,26 +512,26 @@ export default function DishesPage() {
                     </div>
                 )}
 
-                <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                    <p className="font-black text-[10px] text-gray-400 uppercase tracking-widest italic">
-                        Trang <b>{page + 1}</b> / <b>{totalPages || 1}</b> | Tổng cộng <b>{totalCount}</b> món ăn
+                <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
+                    <p className="text-xs text-gray-400 font-medium">
+                        Trang <span className="font-bold text-gray-700">{page + 1}</span> / <span className="font-bold text-gray-700">{totalPages || 1}</span> | Tổng cộng <span className="font-bold text-gray-700">{totalCount}</span> món ăn
                     </p>
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                         <Button
-                            variant="ghost"
-                            className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50"
+                            variant="outline"
+                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
                             disabled={page === 0}
                             onClick={() => setPage(prev => Math.max(0, prev - 1))}
                         >
-                            TRƯỚC đó
+                            Trước
                         </Button>
                         <Button
-                            variant="ghost"
-                            className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50"
+                            variant="outline"
+                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
                             disabled={page + 1 >= totalPages}
                             onClick={() => setPage(prev => prev + 1)}
                         >
-                            TIẾP THEO
+                            Tiếp
                         </Button>
                     </div>
                 </div>

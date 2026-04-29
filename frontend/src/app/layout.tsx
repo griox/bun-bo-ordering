@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
-import { Roboto_Mono } from "next/font/google"; // Updated to Roboto Mono
+import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google"; // Added Plus Jakarta Sans
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Providers";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
 const robotoMono = Roboto_Mono({
-  subsets: ["latin", "vietnamese"], // Vietnamese support for Bún Bò system
+  subsets: ["latin", "vietnamese"],
   variable: "--font-roboto-mono",
+  display: "swap",
+});
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin", "vietnamese"],
+  variable: "--font-jakarta",
   display: "swap",
 });
 
@@ -22,10 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", robotoMono.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("font-sans", robotoMono.variable, jakarta.variable)} suppressHydrationWarning>
       <body
-        className={`${robotoMono.variable} antialiased font-main bg-cover bg-fixed bg-center text-text`}
-        style={{ backgroundImage: "url('/images/retro-paper-texture.png')", fontFamily: "var(--font-roboto-mono)" }}
+        className={cn(
+          robotoMono.variable,
+          jakarta.variable,
+          "antialiased font-main bg-cover bg-fixed bg-center text-text"
+        )}
+        style={{ backgroundImage: "url('/images/retro-paper-texture.png')" }}
       >
         <Providers>
           <Toaster

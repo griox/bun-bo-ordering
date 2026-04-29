@@ -142,53 +142,48 @@ export default function TablesPage() {
 
     return (
         <div className="space-y-10 pb-10">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="size-14 bg-[#ff4d4f]/10 rounded-2xl flex items-center justify-center border border-[#ff4d4f]/20 shadow-sm transition-all group-hover:bg-[#ff4d4f] group-hover:text-white transition-all">
-                        <QrCode className="size-8 text-[#ff4d4f]" />
-                    </div>
-                    <div>
-                        <h2 className="text-4xl font-black text-black mb-0.5 uppercase tracking-tighter">SƠ ĐỒ BÀN</h2>
-                        <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Thiết lập vị trí & mã QR gọi món kỹ thuật số</p>
-                    </div>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý sơ đồ bàn</h2>
+                    <p className="text-sm text-gray-500 mt-1">Thiết lập vị trí & mã QR gọi món kỹ thuật số.</p>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
                     setIsDialogOpen(open);
                     if (!open) resetForm();
                 }}>
                     <DialogTrigger asChild>
-                        <Button className="h-14 px-8 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-black text-sm gap-3 rounded-2xl border-none shadow-lg active:translate-y-px transition-all uppercase tracking-widest" onClick={() => resetForm()}>
-                            <Plus className="size-5" />
+                        <Button className="h-10 px-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl transition-all shadow-sm" onClick={() => resetForm()}>
+                            <Plus className="size-4" />
                             THÊM BÀN MỚI
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md rounded-[2rem] border border-gray-100 shadow-2xl p-0 overflow-hidden bg-white">
+                    <DialogContent className="max-w-md rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
                         <form onSubmit={handleCreateOrUpdate} className="flex flex-col">
-                            <div className="p-8 border-b border-gray-100 bg-gray-50/50">
+                            <div className="p-6 border-b border-gray-100 bg-gray-50/50">
                                 <DialogHeader>
-                                    <DialogTitle className="text-3xl font-black text-black uppercase tracking-tighter">
+                                    <DialogTitle className="text-xl font-bold text-gray-900">
                                         {editingTable ? 'Cập nhật bàn' : 'Tạo bàn mới'}
                                     </DialogTitle>
-                                    <DialogDescription className="font-bold text-gray-400 text-xs uppercase tracking-widest mt-1">Gán mã định danh kỹ thuật cho bàn ăn</DialogDescription>
+                                    <DialogDescription className="text-sm text-gray-500 mt-1">Gán mã định danh kỹ thuật cho bàn ăn</DialogDescription>
                                 </DialogHeader>
                             </div>
 
-                            <div className="p-8 space-y-6">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] pl-1">Mã bàn / Table Code</label>
+                            <div className="p-6 space-y-4">
+                                <div className="space-y-1.5">
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider pl-1">Mã bàn</label>
                                     <Input
                                         required
-                                        className="h-12 border border-gray-100 rounded-xl font-black bg-gray-50/30 focus:border-[#ff4d4f] transition-all uppercase"
+                                        className="h-11 border-gray-200 rounded-xl bg-white text-sm font-bold focus:border-primary focus:ring-primary/20 transition-all"
                                         placeholder="Ví dụ: T1, VIP-01"
                                         value={formData.tableCode}
                                         onChange={e => setFormData({ ...formData, tableCode: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] pl-1">Tên hiển thị / Alias</label>
+                                <div className="space-y-1.5">
+                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider pl-1">Tên hiển thị</label>
                                     <Input
                                         required
-                                        className="h-12 border border-gray-100 rounded-xl font-black bg-gray-50/30 focus:border-[#ff4d4f] transition-all uppercase"
+                                        className="h-11 border-gray-200 rounded-xl bg-white text-sm font-bold focus:border-primary focus:ring-primary/20 transition-all"
                                         placeholder="Ví dụ: Bàn 1, Bàn cửa sổ"
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -196,10 +191,10 @@ export default function TablesPage() {
                                 </div>
                             </div>
 
-                            <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex gap-4">
-                                <Button type="button" variant="ghost" className="flex-1 h-12 border border-gray-100 bg-white font-black rounded-xl shadow-sm hover:bg-gray-100 transition-all uppercase text-[10px] tracking-widest" onClick={() => setIsDialogOpen(false)}>HỦY BỎ</Button>
-                                <Button type="submit" className="flex-[2] h-12 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-black rounded-xl border-none shadow-lg active:translate-y-px transition-all uppercase text-[10px] tracking-widest">
-                                    XÁC NHẬN LƯU
+                            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
+                                <Button type="button" variant="outline" className="flex-1 h-10 border-gray-200 bg-white font-bold rounded-xl text-xs" onClick={() => setIsDialogOpen(false)}>HỦY BỎ</Button>
+                                <Button type="submit" className="flex-[2] h-10 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-xs">
+                                    LƯU THAY ĐỔI
                                 </Button>
                             </div>
                         </form>
@@ -209,11 +204,8 @@ export default function TablesPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                 {/* Left: Table List */}
-                <Card className="lg:col-span-1 border border-gray-100 shadow-sm rounded-[2rem] p-6 h-[400px] lg:h-[650px] flex flex-col bg-white">
-                    <h3 className="font-black text-black uppercase tracking-[0.2em] text-[10px] mb-6 flex items-center gap-3">
-                        <div className="size-8 bg-[#ff4d4f]/10 rounded-lg flex items-center justify-center">
-                            <Plus className="size-4 text-[#ff4d4f]" />
-                        </div>
+                <Card className="lg:col-span-1 border-none shadow-sm rounded-2xl p-6 h-[400px] lg:h-[650px] flex flex-col bg-white">
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6 flex items-center gap-2">
                         DANH SÁCH BÀN
                     </h3>
                     <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
@@ -223,10 +215,10 @@ export default function TablesPage() {
                                 <p className="font-black text-[10px] uppercase">Đang tải...</p>
                             </div>
                         ) : tables.map(table => (
-                            <div key={table.id} className="flex items-center justify-between p-4 rounded-2xl border border-gray-50 bg-gray-50/50 group hover:border-[#ff4d4f]/30 hover:bg-[#ff4d4f]/5 transition-all">
+                            <div key={table.id} className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/30 group hover:border-primary/30 hover:bg-primary/5 transition-all">
                                 <div>
-                                    <p className="font-black text-black uppercase leading-none mb-1 tracking-tight text-sm">{table.tableCode}</p>
-                                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{table.name}</p>
+                                    <p className="font-bold text-gray-900 text-sm tracking-tight">{table.tableCode}</p>
+                                    <p className="text-[11px] text-gray-500 font-medium">{table.name}</p>
                                 </div>
                                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
                                     <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg hover:bg-blue-500 hover:text-white" onClick={() => openEditDialog(table)}>
@@ -245,13 +237,13 @@ export default function TablesPage() {
                 </Card>
 
                 {/* Right: Floor Plan (Drag & Drop area) */}
-                <Card className="lg:col-span-3 h-[500px] lg:h-[650px] relative overflow-hidden bg-white border border-gray-100 rounded-[3rem] shadow-sm">
+                <Card className="lg:col-span-3 h-[500px] lg:h-[650px] relative overflow-hidden bg-white border-none rounded-2xl shadow-sm">
                     {/* Grid Background */}
-                    <div className="absolute inset-0 opacity-[0.4]"
-                        style={{ backgroundImage: 'radial-gradient(#E5E7EB 1.5px, transparent 1.5px)', backgroundSize: '40px 40px' }} />
+                    <div className="absolute inset-0 opacity-[0.3]"
+                        style={{ backgroundImage: 'radial-gradient(#CBD5E1 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
                     {/* Visual Boundary Indicator */}
-                    <div className="absolute inset-8 border border-dashed border-gray-200 rounded-[2.5rem] pointer-events-none" />
+                    <div className="absolute inset-8 border border-dashed border-gray-100 rounded-xl pointer-events-none" />
 
                     <div ref={floorPlanRef} className="absolute inset-0 w-full h-full p-8">
                         {localTables.map(table => (
@@ -267,23 +259,23 @@ export default function TablesPage() {
                                 whileDrag={{ scale: 1.1, zIndex: 50 }}
                                 className="absolute left-0 top-0 cursor-grab active:cursor-grabbing"
                             >
-                                <div className="size-28 bg-white rounded-[2rem] shadow-xl border border-gray-100 flex flex-col items-center justify-center p-3 group hover:border-[#ff4d4f] hover:translate-y-[-4px] transition-all duration-300">
-                                    <div className="size-14 bg-gray-50 rounded-2xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:bg-[#ff4d4f] group-hover:text-white transition-all">
-                                        <span className="font-black text-lg tracking-tighter">{table.tableCode}</span>
+                                <div className="size-24 bg-white rounded-2xl shadow-lg border border-gray-100 flex flex-col items-center justify-center p-2 group hover:border-primary hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300">
+                                    <div className="size-12 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:bg-primary group-hover:text-white transition-all">
+                                        <span className="font-bold text-sm tracking-tight">{table.tableCode}</span>
                                     </div>
-                                    <p className="mt-2 text-[10px] font-black text-gray-400 uppercase tracking-widest truncate w-full text-center">{table.name}</p>
+                                    <p className="mt-1.5 text-[10px] font-bold text-gray-500 truncate w-full text-center">{table.name}</p>
 
                                     <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-all scale-0 group-hover:scale-100">
                                         <Button
                                             size="icon"
-                                            className="size-10 rounded-xl bg-[#ff4d4f] text-white border-none shadow-lg hover:bg-[#ff4d4f]/90"
+                                            className="size-8 rounded-lg bg-primary text-white shadow-lg hover:bg-primary/90"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setSelectedTableForQR(table);
                                                 setIsQRModalOpen(true);
                                             }}
                                         >
-                                            <QrCode className="size-5" />
+                                            <QrCode className="size-4" />
                                         </Button>
                                     </div>
                                 </div>
@@ -292,18 +284,18 @@ export default function TablesPage() {
                     </div>
 
                     {hasChanges && (
-                        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 z-50">
+                        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-50">
                             <Button
-                                className="h-16 px-10 bg-black hover:bg-black/90 text-white rounded-[2rem] border-none font-black text-lg gap-4 shadow-2xl active:translate-y-px transition-all uppercase tracking-widest"
+                                className="h-12 px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-2xl text-sm font-bold gap-3 shadow-2xl active:translate-y-px transition-all"
                                 onClick={handleBulkSave}
                                 disabled={updatePositionsMutation.isPending}
                             >
                                 {updatePositionsMutation.isPending ? (
-                                    <Loader2 className="size-6 animate-spin" />
+                                    <Loader2 className="size-4 animate-spin" />
                                 ) : (
-                                    <Save className="size-6" />
+                                    <Save className="size-4" />
                                 )}
-                                ĐỒNG BỘ SƠ ĐỒ
+                                ĐỒNG BỘ VỊ TRÍ
                             </Button>
                         </div>
                     )}
@@ -316,42 +308,33 @@ export default function TablesPage() {
 
             {/* QR Code Modal */}
             <Dialog open={isQRModalOpen} onOpenChange={setIsQRModalOpen}>
-                <DialogContent className="max-w-md rounded-[3rem] border border-gray-100 shadow-2xl p-0 overflow-hidden bg-white">
-                    <div className="p-8 border-b border-gray-100 bg-gray-50/50">
+                <DialogContent className="max-w-sm rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
+                    <div className="p-6 border-b border-gray-100 bg-gray-50/50">
                         <DialogHeader>
-                            <DialogTitle className="text-3xl font-black text-center text-black uppercase tracking-tighter">PHÁT HÀNH MÃ QR</DialogTitle>
-                            <DialogDescription className="text-center font-bold text-gray-400 text-xs uppercase tracking-widest mt-1">Bàn: {selectedTableForQR?.tableCode} - {selectedTableForQR?.name}</DialogDescription>
+                            <DialogTitle className="text-xl font-bold text-center text-gray-900">Mã QR Gọi món</DialogTitle>
+                            <DialogDescription className="text-center text-sm text-gray-500 mt-1">Bàn: {selectedTableForQR?.tableCode} - {selectedTableForQR?.name}</DialogDescription>
                         </DialogHeader>
                     </div>
 
-                    <div className="flex flex-col items-center gap-8 p-10">
+                    <div className="flex flex-col items-center gap-6 p-8">
                         {selectedTableForQR && (
                             <>
-                                <div className="p-10 bg-white rounded-[3.5rem] shadow-2xl border border-gray-50 relative group">
-                                    <div className="absolute inset-4 border border-dashed border-gray-100 rounded-[2.5rem] pointer-events-none" />
+                                <div className="p-6 bg-white rounded-2xl shadow-sm border border-gray-100 relative">
                                     <QRCodeCanvas
                                         id={`qr-${selectedTableForQR.id}`}
                                         value={getScanUrl(selectedTableForQR.id)}
-                                        size={220}
+                                        size={200}
                                         level={"H"}
                                         includeMargin={true}
                                         className="relative z-10"
-                                        imageSettings={{
-                                            src: "/logo.png",
-                                            x: undefined,
-                                            y: undefined,
-                                            height: 48,
-                                            width: 48,
-                                            excavate: true,
-                                        }}
                                     />
                                 </div>
-                                <div className="text-center space-y-2 opacity-50 px-6">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest break-all line-clamp-1">{getScanUrl(selectedTableForQR.id)}</p>
+                                <div className="text-center space-y-1">
+                                    <p className="text-[10px] font-medium text-gray-400 break-all line-clamp-1">{getScanUrl(selectedTableForQR.id)}</p>
                                 </div>
-                                <Button className="w-full h-14 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-black text-sm gap-3 rounded-2xl border-none shadow-lg active:translate-y-px transition-all uppercase tracking-widest" onClick={() => downloadQR(selectedTableForQR)}>
-                                    <Download className="size-5" />
-                                    TẢI MÃ XÁC THỰC
+                                <Button className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl shadow-md transition-all" onClick={() => downloadQR(selectedTableForQR)}>
+                                    <Download className="size-4" />
+                                    TẢI MÃ QR
                                 </Button>
                             </>
                         )}

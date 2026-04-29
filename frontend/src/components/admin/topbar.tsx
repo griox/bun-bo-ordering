@@ -29,60 +29,57 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
     const { user } = useAuthStore();
 
     return (
-        <header className="h-20 surface-low border-b border-border/5 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all">
-            <div className="flex items-center gap-6">
+        <header className="h-16 bg-white border-b border-gray-100 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all">
+            <div className="flex items-center gap-4">
                 {/* Mobile Menu Toggle */}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="lg:hidden size-11 surface-base border border-border/10 text-foreground/60 hover:surface-highest transition-all shadow-sm rounded-2xl"
+                    className="lg:hidden size-10 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl"
                     onClick={onToggleSidebar}
                 >
                     <Menu className="size-5" />
                 </Button>
 
-                <h1 className="hidden sm:block text-2xl font-black text-primary tracking-tighter uppercase italic">Quản Trị</h1>
+                <h1 className="hidden sm:block text-lg font-bold text-gray-900 tracking-tight">Trang quản trị</h1>
             </div>
 
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
                 {/* Notification Bell */}
                 <DropdownMenu onOpenChange={(open) => open && markAsRead()}>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative size-11 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all border border-gray-100">
-                            <Bell className="w-5 h-5 text-gray-600" />
+                        <Button variant="ghost" size="icon" className="relative size-10 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl border border-transparent hover:border-gray-100">
+                            <Bell className="w-5 h-5" />
                             {unreadCount > 0 && (
-                                <Badge className="absolute -top-1 -right-1 px-1.5 py-0.5 min-w-[1.2rem] h-[1.2rem] flex items-center justify-center bg-[#ff4d4f] text-white border-2 border-white rounded-full text-[9px] font-black shadow-lg">
-                                    {unreadCount}
-                                </Badge>
+                                <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white" />
                             )}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-96 p-0 border border-gray-100 shadow-2xl rounded-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                    <DropdownMenuContent align="end" className="w-80 p-0 border border-gray-100 shadow-xl rounded-2xl overflow-hidden">
                         <DropdownMenuGroup>
-                            <DropdownMenuLabel className="p-5 flex items-center justify-between bg-gray-50 border-b border-gray-100">
-                                <span className="font-bold text-xs tracking-widest uppercase text-gray-500">Thông báo hệ thống</span>
-                                {unreadCount > 0 && <Badge variant="secondary" className="bg-[#ff4d4f] text-white text-[9px] px-2 shadow-sm font-black border-none">{unreadCount} MỚI</Badge>}
+                            <DropdownMenuLabel className="p-4 bg-gray-50/50 border-b border-gray-100">
+                                <span className="font-bold text-xs uppercase tracking-widest text-gray-500">Thông báo hệ thống</span>
                             </DropdownMenuLabel>
                         </DropdownMenuGroup>
-                        <ScrollArea className="h-[400px]">
+                        <ScrollArea className="h-[320px]">
                             {notifications.length === 0 ? (
-                                <div className="p-12 text-center">
-                                    <Bell className="size-8 text-black/10 mx-auto mb-3" />
-                                    <p className="text-[10px] font-bold text-black/30 uppercase tracking-widest">No active logs</p>
+                                <div className="p-8 text-center">
+                                    <Bell className="size-6 text-gray-200 mx-auto mb-2" />
+                                    <p className="text-xs font-medium text-gray-400">Không có thông báo mới</p>
                                 </div>
                             ) : (
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-gray-50">
                                     {notifications.map((order, idx: number) => (
                                         <Link key={idx} href="/admin/orders">
-                                            <DropdownMenuItem className="p-5 flex flex-col items-start gap-2 cursor-pointer hover:bg-black/5 transition-colors focus:bg-black/5 outline-none">
+                                            <DropdownMenuItem className="p-4 flex flex-col items-start gap-1 cursor-pointer hover:bg-gray-50 transition-colors focus:bg-gray-50 outline-none">
                                                 <div className="flex justify-between w-full items-center">
-                                                    <span className="font-bold text-sm">ORDER_LOG #{order.tableNumber}</span>
-                                                    <span className="text-[9px] font-bold text-black/30 uppercase">
+                                                    <span className="font-bold text-xs text-gray-900">Đơn hàng #{order.tableNumber}</span>
+                                                    <span className="text-[10px] text-gray-400">
                                                         {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true, locale: vi })}
                                                     </span>
                                                 </div>
-                                                <p className="text-[11px] text-black/60 leading-relaxed">
-                                                    {order.items?.map((i: OrderItem) => `${i.quantity}x ${i.productName}`).join(', ') || 'Processing system event...'}
+                                                <p className="text-[11px] text-gray-500 line-clamp-1">
+                                                    {order.items?.map((i: OrderItem) => `${i.quantity}x ${i.productName}`).join(', ')}
                                                 </p>
                                             </DropdownMenuItem>
                                         </Link>
@@ -90,24 +87,23 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
                                 </div>
                             )}
                         </ScrollArea>
-                        <DropdownMenuSeparator className="m-0 bg-gray-100" />
                         <Link href="/admin/orders">
-                            <div className="p-4 text-center text-[10px] text-gray-500 font-black hover:bg-[#ff4d4f] hover:text-white cursor-pointer transition-all uppercase tracking-[0.2em] bg-white border-t border-gray-100">
-                                Xem tất cả lịch sử log
+                            <div className="p-3 text-center text-xs font-bold text-gray-500 hover:text-primary transition-colors bg-gray-50/50 border-t border-gray-100">
+                                Xem tất cả
                             </div>
                         </Link>
                     </DropdownMenuContent>
                 </DropdownMenu>
 
-                <div className="h-10 w-0.5 bg-black/5 rounded-full mx-1" />
+                <div className="h-6 w-px bg-gray-100 mx-1" />
 
-                <div className="flex items-center gap-4 pl-2 group cursor-pointer">
+                <div className="flex items-center gap-3 pl-1 group cursor-pointer">
                     <div className="text-right hidden sm:block">
-                        <p className="text-[11px] font-black text-black uppercase leading-none mb-1">{user?.username || 'ROOT'}</p>
-                        <p className="text-[9px] font-bold text-gray-400 uppercase tracking-[0.2em] leading-none">{user?.role || 'SYS_ADMIN'}</p>
+                        <p className="text-xs font-bold text-gray-900 leading-none mb-1">{user?.username || 'Admin'}</p>
+                        <p className="text-[10px] text-gray-400 font-medium">{user?.role || 'Administrator'}</p>
                     </div>
-                    <div className="size-11 rounded-xl bg-gray-50 border border-gray-100 text-gray-400 flex items-center justify-center shadow-sm overflow-hidden group-hover:border-gray-300 transition-all">
-                        <User className="size-6 group-hover:scale-110 transition-transform text-gray-600" />
+                    <div className="size-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center border-2 border-transparent group-hover:border-primary/20 transition-all overflow-hidden">
+                        <User className="size-5" />
                     </div>
                 </div>
             </div>

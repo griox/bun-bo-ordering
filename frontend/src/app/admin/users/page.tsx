@@ -117,28 +117,21 @@ export default function AdminUserManagement() {
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return (
-        <div className="space-y-10 pb-10 font-mono">
-            {/* Header section synchronized with other admin pages */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                <div className="flex items-center gap-4">
-                    <div className="size-14 bg-[#ff4d4f]/10 rounded-2xl flex items-center justify-center border border-[#ff4d4f]/20 shadow-sm animate-in fade-in zoom-in duration-500">
-                        <Users className="size-8 text-[#ff4d4f]" />
-                    </div>
-                    <div>
-                        <h2 className="text-4xl font-black text-black mb-0.5 uppercase tracking-tighter">Người dùng</h2>
-                        <p className="text-gray-400 font-bold text-xs tracking-widest uppercase">Quản lý thông tin & lịch sử giao dịch khách hàng</p>
-                    </div>
+        <div className="space-y-6 md:space-y-8 pb-10">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý người dùng</h2>
+                    <p className="text-sm text-gray-500 mt-1">Quản lý thông tin & lịch sử giao dịch khách hàng.</p>
                 </div>
             </div>
 
-            <Card className="border border-gray-100 shadow-sm rounded-[2.5rem] overflow-hidden bg-white">
-                <div className="p-6 bg-gray-50/30 border-b border-gray-100 flex flex-col lg:flex-row gap-6 justify-between items-center">
-
-                    <div className="relative w-full lg:w-80">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-300" />
+            <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
+                <div className="p-4 bg-gray-50/50 border-b border-gray-100">
+                    <div className="relative w-full md:w-72">
+                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                         <Input
-                            placeholder="TÌM TÊN, EMAIL..."
-                            className="h-14 pl-12 pr-6 border border-gray-100 rounded-2xl bg-white font-black focus:border-[#ff4d4f] transition-all uppercase text-[10px] tracking-[0.2em]"
+                            placeholder="Tìm tên, email..."
+                            className="h-9 pl-10 pr-4 border-gray-200 rounded-xl bg-white text-sm focus:border-primary focus:ring-primary/20 transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -149,11 +142,11 @@ export default function AdminUserManagement() {
                     <Table className="min-w-[900px]">
                         <TableHeader className="bg-gray-50/50">
                             <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                <TableHead className="w-[120px] font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">ID</TableHead>
-                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Thông tin tài khoản</TableHead>
-                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Vai trò / Role</TableHead>
-                                <TableHead className="font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest text-center">Ngày gia nhập</TableHead>
-                                <TableHead className="text-right font-black text-gray-400 uppercase p-6 text-[10px] tracking-widest">Thao tác</TableHead>
+                                <TableHead className="w-[100px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Mã</TableHead>
+                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Tài khoản</TableHead>
+                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Vai trò</TableHead>
+                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ngày gia nhập</TableHead>
+                                <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -182,38 +175,38 @@ export default function AdminUserManagement() {
                                         className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group cursor-pointer"
                                         onClick={() => handleViewHistory(user)}
                                     >
-                                        <TableCell className="p-6">
-                                            <div className="font-black text-black bg-gray-100 px-3 py-1.5 rounded-lg border border-gray-200 inline-block text-[11px] tracking-tighter shadow-sm uppercase group-hover:bg-white group-hover:border-[#ff4d4f]/20 transition-all">
-                                                ID-{user.id.slice(0, 4)}
+                                        <TableCell className="p-4">
+                                            <div className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-lg border border-gray-200 inline-block text-[10px] tracking-tight group-hover:bg-white transition-all">
+                                                ID-{user.id.slice(0, 4).toUpperCase()}
                                             </div>
                                         </TableCell>
-                                        <TableCell className="p-6">
-                                            <div className="flex flex-col gap-1">
-                                                <div className="font-black text-black text-lg uppercase tracking-tighter group-hover:text-[#ff4d4f] transition-colors">
+                                        <TableCell className="p-4">
+                                            <div className="flex flex-col">
+                                                <div className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors">
                                                     {user.username}
                                                 </div>
-                                                <div className="flex items-center gap-1.5 text-gray-400 text-[10px] font-bold">
+                                                <div className="flex items-center gap-1.5 text-gray-400 text-[11px] font-medium">
                                                     <Mail className="size-3" />
                                                     {user.email}
                                                 </div>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="p-6 text-center">
+                                        <TableCell className="p-4 text-center">
                                             <Badge
-                                                variant="outline"
-                                                className={`font-black uppercase text-[9px] px-3 py-1.5 rounded-xl border transition-all shadow-sm ${user.role === 'Admin'
-                                                    ? 'bg-purple-50/50 text-purple-600 border-purple-100'
-                                                    : 'bg-blue-50/50 text-blue-600 border-blue-100'
+                                                variant="secondary"
+                                                className={`font-bold uppercase text-[9px] px-2 py-0.5 rounded-lg border-none shadow-none ${user.role === 'Admin'
+                                                    ? 'bg-purple-50 text-purple-600'
+                                                    : 'bg-blue-50 text-blue-600'
                                                     }`}
                                             >
                                                 {user.role}
                                             </Badge>
                                         </TableCell>
-                                        <TableCell className="p-6 text-center">
-                                            <div className="font-black text-black text-sm">{format(new Date(user.createdAt), "dd/MM/yyyy")}</div>
-                                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{format(new Date(user.createdAt), "HH:mm")}</div>
+                                        <TableCell className="p-4 text-center">
+                                            <div className="font-bold text-gray-900 text-sm">{format(new Date(user.createdAt), "dd/MM/yyyy")}</div>
+                                            <div className="text-[11px] text-gray-400 font-medium">{format(new Date(user.createdAt), "HH:mm")}</div>
                                         </TableCell>
-                                        <TableCell className="p-6 text-right">
+                                        <TableCell className="p-4 text-right">
                                             <div className="flex justify-end gap-2">
                                                 <Button
                                                     variant="ghost"
@@ -268,22 +261,22 @@ export default function AdminUserManagement() {
                     </Table>
                 </div>
 
-                <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
-                    <p className="font-black text-[10px] text-gray-400 uppercase tracking-widest italic">
-                        Trang <b>{page + 1}</b> / <b>{totalPages || 1}</b> | Tổng cộng <b>{totalCount}</b> thành viên
+                <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
+                    <p className="text-xs text-gray-400 font-medium">
+                        Trang <span className="font-bold text-gray-700">{page + 1}</span> / <span className="font-bold text-gray-700">{totalPages || 1}</span> | Tổng cộng <span className="font-bold text-gray-700">{totalCount}</span> thành viên
                     </p>
-                    <div className="flex gap-3">
+                    <div className="flex gap-2">
                         <Button
-                            variant="ghost"
-                            className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50 hover:text-[#ff4d4f]"
+                            variant="outline"
+                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
                             disabled={page === 0}
                             onClick={() => setPage((prev: number) => Math.max(0, prev - 1))}
                         >
                             Trước
                         </Button>
                         <Button
-                            variant="ghost"
-                            className="h-10 border border-gray-100 bg-white rounded-xl font-black text-[10px] uppercase shadow-sm transition-all px-5 hover:bg-gray-50 hover:text-[#ff4d4f]"
+                            variant="outline"
+                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
                             disabled={!pagedData || (page + 1) * pageSize >= totalCount}
                             onClick={() => setPage((prev: number) => prev + 1)}
                         >
