@@ -21,18 +21,17 @@ jobs:
     if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     
     env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       # Use the commit SHA that triggered the CI run, or 'latest' for direct push
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.workflow_run.head_branch || github.ref }}
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
-        uses: azure/setup-kubectl@v3
+        uses: azure/setup-kubectl@v4
         with:
           version: 'latest'
 
@@ -97,8 +96,9 @@ jobs:
           
           for service in "${services[@]}"; do
             echo "Waiting for rollout of deployment/$service..."
-            if ! kubectl rollout status deployment/$service --timeout=120s; then
-              echo "::error::Rollout failed for $service"
+            if ! kubectl rollout status deployment/$service --timeout=300s; then
+              echo "::error::Rollout failed for $service. Checking logs for clues..."
+              kubectl get pods -l app=$service --no-headers | awk '{print $1}' | xargs -I{} kubectl logs {} --tail=50
               exit 1
             fi
           done
