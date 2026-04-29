@@ -23,7 +23,7 @@ public class OrderStatusUpdatedEventConsumer : IConsumer<OrderStatusUpdatedEvent
         _logger.LogInformation($"Received OrderStatusUpdatedEvent for Order {message.OrderId} -> {message.NewStatus}");
 
         // 1. Notify Admin/Kitchen group about status change to trigger refresh on Dashboard
-        await _hubContext.Clients.Group("KitchenGroup").SendAsync("OrderUpdated", new
+        await _hubContext.Clients.Group(HubConstants.KitchenGroup).SendAsync(HubConstants.Events.OrderUpdated, new
         {
             OrderId = message.OrderId,
             TableSessionId = message.TableSessionId,
@@ -34,8 +34,8 @@ public class OrderStatusUpdatedEventConsumer : IConsumer<OrderStatusUpdatedEvent
         // 2. If Paid, notify the specific Table to close their cart/lock order
         if (message.NewStatus == "Paid")
         {
-            _logger.LogInformation($"Notifying Table-{message.TableSessionId} of PaymentSuccess for Order {message.OrderId}");
-            await _hubContext.Clients.Group($"Table-{message.TableSessionId}").SendAsync("PaymentSuccess", new
+            _logger.LogInformation($"Notifying {HubConstants.TableGroup(message.TableSessionId.ToString())} of PaymentSuccess for Order {message.OrderId}");
+            await _hubContext.Clients.Group(HubConstants.TableGroup(message.TableSessionId.ToString())).SendAsync(HubConstants.Events.PaymentSuccess, new
             {
                 OrderId = message.OrderId,
                 TransactionId = "WEBHOOK_CONFIRMED"

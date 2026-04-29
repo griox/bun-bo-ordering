@@ -41,19 +41,28 @@ public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
             if (response.IsSuccessStatusCode)
             {
                 var content = await response.Content.ReadAsStringAsync();
-                var order = JsonSerializer.Deserialize<JsonElement>(content);
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                var order = JsonSerializer.Deserialize<JsonElement>(content, options);
                 
-                // Note: Ensure the JSON matches the schema we expect for Kitchen
-                var tableSessionId = order.GetProperty("tableSessionId").GetGuid();
-                var totalAmount = order.GetProperty("totalAmount").GetDecimal();
+                if (order.ValueKind == JsonValueKind.Undefined || order.ValueKind == JsonValueKind.Null)
+                {
+                    _logger.LogError($"Failed to deserialize order data for Order {message.OrderId}");
+                    return;
+                }
+
+                // Safely parse properties using TryGetProperty
+                var tableSessionId = order.TryGetProperty("tableSessionId", out var tsIdProp) ? tsIdProp.GetGuid() : Guid.Empty;
+                var totalAmount = order.TryGetProperty("totalAmount", out var taProp) ? taProp.GetDecimal() : 0m;
                 var note = order.TryGetProperty("note", out var noteProp) ? noteProp.GetString() : null;
-                var createdAt = order.GetProperty("createdAt").GetDateTime();
+                var createdAt = order.TryGetProperty("createdAt", out var caProp) ? caProp.GetDateTime() : DateTime.UtcNow;
+                var tableNumber = order.TryGetProperty("tableNumber", out var tnProp) ? tnProp.GetString() : "N/A";
 
                 // 2. Notify Admin/Kitchen
-                _logger.LogInformation($"Broadcasting ReceiveNewOrder to KitchenGroup and Admin for Order {message.OrderId}");
-                await _hubContext.Clients.Groups("KitchenGroup", "Admin").SendAsync("ReceiveNewOrder", new 
+                _logger.LogInformation($"Broadcasting ReceiveNewOrder to {HubConstants.KitchenGroup} and {HubConstants.AdminGroup} for Order {message.OrderId}");
+                await _hubContext.Clients.Groups(HubConstants.KitchenGroup, HubConstants.AdminGroup).SendAsync(HubConstants.Events.ReceiveNewOrder, new 
                 {
                     OrderId = message.OrderId,
+                    TableNumber = tableNumber,
                     TableSessionId = tableSessionId,
                     TotalAmount = totalAmount,
                     Note = note,
@@ -62,9 +71,9 @@ public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
                 });
 
                 // 3. Notify the exact Table
-                var tableGroupName = $"Table-{tableSessionId}";
+                var tableGroupName = HubConstants.TableGroup(tableSessionId.ToString());
                 _logger.LogInformation($"Broadcasting PaymentSuccess to group {tableGroupName} for Order {message.OrderId}");
-                await _hubContext.Clients.Group(tableGroupName).SendAsync("PaymentSuccess", new 
+                await _hubContext.Clients.Group(tableGroupName).SendAsync(HubConstants.Events.PaymentSuccess, new 
                 {
                     OrderId = message.OrderId,
                     TransactionId = message.TransactionId

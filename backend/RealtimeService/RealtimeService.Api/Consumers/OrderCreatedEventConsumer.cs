@@ -23,7 +23,7 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         _logger.LogInformation($"Received OrderCreatedEvent for Order {message.OrderId}");
 
         // 1. Notify the specific Table that their order was successfully placed/received
-        await _hubContext.Clients.Group($"Table-{message.TableSessionId}").SendAsync("OrderConfirmed", new 
+        await _hubContext.Clients.Group(HubConstants.TableGroup(message.TableSessionId.ToString())).SendAsync(HubConstants.Events.OrderConfirmed, new 
         {
             OrderId = message.OrderId,
             Status = "Pending"
@@ -34,7 +34,7 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         if (message.PaymentMethod == "Cash")
         {
             _logger.LogInformation($"Notifying Admin/Kitchen of new CASH order {message.OrderId}");
-            await _hubContext.Clients.Group("KitchenGroup").SendAsync("ReceiveNewOrder", new 
+            await _hubContext.Clients.Group(HubConstants.KitchenGroup).SendAsync(HubConstants.Events.ReceiveNewOrder, new 
             {
                 OrderId = message.OrderId,
                 TableNumber = message.TableNumber,

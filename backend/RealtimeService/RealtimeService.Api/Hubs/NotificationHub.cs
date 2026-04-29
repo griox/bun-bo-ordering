@@ -1,33 +1,51 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 
 namespace RealtimeService.Api.Hubs;
 
+[Authorize]
 public class NotificationHub : Hub
 {
+    private readonly ILogger<NotificationHub> _logger;
+
+    public NotificationHub(ILogger<NotificationHub> logger)
+    {
+        _logger = logger;
+    }
+
     public override async Task OnConnectedAsync()
     {
-        Console.WriteLine($"[Hub] Connection established: {Context.ConnectionId}");
+        _logger.LogInformation($"[Hub] Connection established: {Context.ConnectionId}");
         await base.OnConnectedAsync();
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        Console.WriteLine($"[Hub] Connection lost: {Context.ConnectionId}. Error: {exception?.Message}");
+        if (exception != null)
+        {
+            _logger.LogError(exception, $"[Hub] Connection lost: {Context.ConnectionId}");
+        }
+        else
+        {
+            _logger.LogInformation($"[Hub] Connection lost: {Context.ConnectionId}");
+        }
         await base.OnDisconnectedAsync(exception);
     }
+    
     // Clients can call this from Frontend to join a specific table group
     public async Task JoinTableGroup(string sessionId)
     {
         if (Guid.TryParse(sessionId, out var tableSessionId))
         {
-            var groupName = $"Table-{tableSessionId}";
-            Console.WriteLine($"[Hub] Client {Context.ConnectionId} joining group: {groupName}");
+            var groupName = HubConstants.TableGroup(tableSessionId.ToString());
+            _logger.LogInformation($"[Hub] Client {Context.ConnectionId} joining group: {groupName}");
             await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
-            await Clients.Caller.SendAsync("JoinedGroup", groupName);
+            await Clients.Caller.SendAsync(HubConstants.Events.JoinedGroup, groupName);
         }
         else
         {
-            Console.WriteLine($"[Hub] Invalid tableSessionId format: {sessionId}");
+            _logger.LogWarning($"[Hub] Invalid tableSessionId format: {sessionId}");
         }
     }
 
@@ -36,16 +54,18 @@ public class NotificationHub : Hub
     {
         if (Guid.TryParse(sessionId, out var tableSessionId))
         {
-            Console.WriteLine($"[Hub] Client {Context.ConnectionId} leaving group: Table-{tableSessionId}");
-            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"Table-{tableSessionId}");
+            var groupName = HubConstants.TableGroup(tableSessionId.ToString());
+            _logger.LogInformation($"[Hub] Client {Context.ConnectionId} leaving group: {groupName}");
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
     }
 
     // Kitchen/Admin clients can join a global kitchen group
+    [Authorize(Policy = "Admin")]
     public async Task JoinKitchenGroup()
     {
-        Console.WriteLine($"[Hub] Client {Context.ConnectionId} joining group: KitchenGroup");
-        await Groups.AddToGroupAsync(Context.ConnectionId, "KitchenGroup");
-        await Clients.Caller.SendAsync("JoinedGroup", "KitchenGroup");
+        _logger.LogInformation($"[Hub] Client {Context.ConnectionId} joining group: {HubConstants.KitchenGroup}");
+        await Groups.AddToGroupAsync(Context.ConnectionId, HubConstants.KitchenGroup);
+        await Clients.Caller.SendAsync(HubConstants.Events.JoinedGroup, HubConstants.KitchenGroup);
     }
 }

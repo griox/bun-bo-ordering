@@ -25,7 +25,7 @@ builder.Services.AddSignalR(options => {
 
 // Configure JWT Authentication (Critical for identifying Admin/Kitchen)
 var jwtSettings = builder.Configuration.GetSection("JwtSettings");
-var secretKey = jwtSettings["Secret"] ?? "SuperSecretKeyForBunBoSystem1234567890";
+var secretKey = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret is missing from configuration.");
 
 builder.Services.AddAuthentication(options => {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
