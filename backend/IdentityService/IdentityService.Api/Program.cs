@@ -111,6 +111,12 @@ authGroup.MapPost("/login", async (MediatR.IMediator mediator, IdentityService.A
     return Results.Ok(result);
 }).RequireRateLimiting("auth");
 
+authGroup.MapPost("/google-login", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.GoogleLoginCommand cmd) =>
+{
+    var result = await mediator.Send(cmd);
+    return Results.Ok(result);
+}).RequireRateLimiting("auth");
+
 authGroup.MapPost("/forgot-password", async (MediatR.IMediator mediator, IdentityService.Application.Users.Commands.ForgotPasswordCommand cmd) =>
 {
     await mediator.Send(cmd);

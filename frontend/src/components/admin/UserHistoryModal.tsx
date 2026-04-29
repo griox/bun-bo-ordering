@@ -54,79 +54,86 @@ export function UserHistoryModal({ isOpen, onClose, user, orders, isLoading, onV
     };
 
     const getStatusBadge = (status: string | number) => {
-        const baseClass = "font-black uppercase text-[8px] px-2.5 py-1 rounded-lg border transition-all bg-white shadow-sm tracking-widest";
         const isPaid = status === 'Paid' || status === 1;
 
         if (isPaid) {
-            return <Badge variant="outline" className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>ĐÃ THANH TOÁN</Badge>;
+            return <Badge variant="secondary" className="bg-green-50 text-green-600 border-none font-bold text-[10px] uppercase px-2 py-0.5">ĐÃ THANH TOÁN</Badge>;
         }
-        return <Badge variant="outline" className={`${baseClass} text-red-500 border-red-100 bg-red-50/50 animate-pulse`}>CHƯA THANH TOÁN</Badge>;
+        return <Badge variant="secondary" className="bg-red-50 text-red-600 border-none font-bold text-[10px] uppercase px-2 py-0.5 animate-pulse">CHƯA THANH TOÁN</Badge>;
     };
 
     const totalSpent = orders?.reduce((acc, o) => acc + (o.totalAmount || 0), 0) || 0;
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
-            <DialogContent className="sm:max-w-[800px] surface-base border-none shadow-ambient rounded-[3rem] p-0 overflow-hidden gap-0">
-        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
-                <DialogHeader className="p-10 border-b border-border/5 m-0 relative overflow-hidden">
+            <DialogContent className="sm:max-w-[800px] border-none shadow-2xl rounded-2xl p-0 overflow-hidden bg-white gap-0">
+                <DialogDescription className="sr-only">Chi tiết hồ sơ và lịch sử giao dịch của người dùng</DialogDescription>
+                
+                <DialogHeader className="p-8 border-b border-gray-100 m-0 bg-gray-50/50">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-                        <div className="flex items-center gap-6">
-                            <div className="size-20 surface-highest rounded-[2rem] flex flex-shrink-0 items-center justify-center border border-border/10 shadow-sm text-primary">
-                                <UserIcon className="size-10" />
+                        <div className="flex items-center gap-5">
+                            <div className="size-16 bg-white rounded-2xl flex flex-shrink-0 items-center justify-center border border-gray-200 shadow-sm text-primary">
+                                <UserIcon className="size-8" />
                             </div>
                             <div className="text-left">
-                                <DialogTitle className="text-4xl font-black text-primary uppercase tracking-tighter italic">
-                                    Hồ sơ cá nhân
+                                <DialogTitle className="text-2xl font-bold text-gray-900 tracking-tight">
+                                    Chi tiết hồ sơ
                                 </DialogTitle>
-                                <div className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mt-2 flex items-center gap-6">
-                                    <span>Tên: {user.username}</span>
-                                    <span className="flex items-center gap-1.5"><Calendar className="size-4" /> THAM GIA {format(new Date(user.createdAt), "dd/MM/yyyy")}</span>
+                                <div className="flex flex-col mt-1">
+                                    <span className="text-sm font-bold text-gray-900">{user.username}</span>
+                                    <div className="flex items-center gap-4 mt-0.5">
+                                        <span className="text-xs text-gray-500 font-medium">{user.email}</span>
+                                        <span className="flex items-center gap-1 text-[11px] text-gray-400 font-medium">
+                                            <Calendar className="size-3.5" /> 
+                                            Tham gia {format(new Date(user.createdAt), "dd/MM/yyyy")}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className="flex gap-4">
-                            <div className="surface-low border border-border/5 p-5 rounded-2xl shadow-sm min-w-[140px]">
-                                <p className="text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.3em] mb-1.5">TỔNG CHI TIÊU</p>
-                                <p className="text-2xl font-black text-primary leading-tight italic">{totalSpent.toLocaleString('vi-VN')}Đ</p>
+                            <div className="bg-white border border-gray-200 p-4 rounded-xl shadow-sm min-w-[160px]">
+                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">TỔNG CHI TIÊU</p>
+                                <p className="text-2xl font-bold text-primary tracking-tight">{totalSpent.toLocaleString('vi-VN')}đ</p>
                             </div>
                         </div>
                     </div>
                 </DialogHeader>
 
-                <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar bg-white">
+                <div className="p-6 max-h-[60vh] overflow-y-auto custom-scrollbar bg-white">
                     <div className="space-y-4">
                         <div className="flex items-center justify-between mb-2">
-                            <h3 className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Danh sách giao dịch</h3>
+                            <h3 className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Lịch sử giao dịch</h3>
+                            <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider">{orders?.length || 0} đơn hàng</span>
                         </div>
 
                         {isLoading ? (
-                            <div className="py-20 text-center flex flex-col items-center gap-4 opacity-40">
-                                <Clock className="size-10 animate-spin text-primary" />
-                                <p className="font-bold uppercase text-[10px] tracking-widest text-gray-400">Đang truy xuất dữ liệu...</p>
+                            <div className="py-20 text-center flex flex-col items-center gap-4">
+                                <Clock className="size-8 animate-spin text-primary/40" />
+                                <p className="font-bold text-[11px] uppercase tracking-wider text-gray-400">Đang tải dữ liệu...</p>
                             </div>
                         ) : !orders || orders.length === 0 ? (
-                            <div className="py-20 text-center border-4 border-dashed border-gray-50 rounded-3xl opacity-30">
-                                <p className="text-gray-400 font-bold uppercase text-xs">Chưa có giao dịch nào</p>
+                            <div className="py-20 text-center border-2 border-dashed border-gray-100 rounded-2xl">
+                                <p className="text-gray-400 font-bold text-xs uppercase">Chưa có giao dịch nào</p>
                             </div>
                         ) : (
                             <div className="grid gap-3">
                                 {orders.map((order) => (
                                     <div
                                         key={order.id}
-                                        className="group bg-gray-50/50 rounded-2xl p-4 border border-gray-100 transition-all hover:bg-white hover:shadow-md hover:border-primary/20 flex items-center justify-between gap-4 cursor-pointer"
+                                        className="group bg-white rounded-xl p-4 border border-gray-100 transition-all hover:border-primary/20 hover:bg-primary/[0.02] flex items-center justify-between gap-4 cursor-pointer"
                                         onClick={() => onViewOrder(order)}
                                     >
                                         <div className="flex items-center gap-4 flex-1">
-                                            <div className="size-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-primary transition-colors">
-                                                <Receipt size={20} />
+                                            <div className="size-10 rounded-lg bg-gray-50 border border-gray-200 flex items-center justify-center text-gray-400 group-hover:text-primary transition-colors">
+                                                <Receipt size={18} />
                                             </div>
-                                            <div className="space-y-1">
+                                            <div className="space-y-0.5">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-black text-black text-sm tracking-tighter">#{order.id.split('-')[0].toUpperCase()}</span>
+                                                    <span className="font-bold text-gray-900 text-sm tracking-tight">#{order.id.split('-')[0].toUpperCase()}</span>
                                                     {getStatusBadge(order.status)}
                                                 </div>
-                                                <div className="flex items-center gap-3 text-[10px] text-gray-400 font-bold uppercase tracking-wider">
+                                                <div className="flex items-center gap-3 text-[11px] text-gray-400 font-medium">
                                                     <span>{format(new Date(order.createdAt), "dd/MM/yyyy HH:mm")}</span>
                                                     <span>•</span>
                                                     <span>{order.tableName || 'Mang đi'}</span>
@@ -136,24 +143,22 @@ export function UserHistoryModal({ isOpen, onClose, user, orders, isLoading, onV
 
                                         <div className="flex items-center gap-6">
                                             <div className="text-right">
-                                                <p className="text-lg font-black text-black tracking-tighter">{order.totalAmount.toLocaleString('vi-VN')}đ</p>
-                                                <p className="text-[8px] font-bold text-gray-400 uppercase tracking-widest">{order.paymentMethod || 'Tiền mặt'}</p>
+                                                <p className="text-lg font-bold text-gray-900 tracking-tight">{order.totalAmount.toLocaleString('vi-VN')}đ</p>
+                                                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{order.paymentMethod || 'Tiền mặt'}</p>
                                             </div>
 
                                             <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <div className="inline-block">
-                                                            <Button variant="ghost" className="size-8 p-0 hover:bg-gray-100 rounded-lg">
-                                                                <ArrowRight className="size-4 rotate-90" />
-                                                            </Button>
-                                                        </div>
+                                                        <Button variant="ghost" className="size-8 p-0 hover:bg-gray-100 rounded-lg">
+                                                            <ArrowRight className="size-4 rotate-90 text-gray-400" />
+                                                        </Button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="rounded-xl border-gray-100 font-mono">
-                                                        <DropdownMenuLabel className="text-[8px] uppercase tracking-widest opacity-50">Trạng thái</DropdownMenuLabel>
+                                                    <DropdownMenuContent align="end" className="rounded-xl border-gray-200">
+                                                        <DropdownMenuLabel className="text-[10px] font-bold uppercase tracking-wider text-gray-400">Trạng thái</DropdownMenuLabel>
                                                         <DropdownMenuSeparator />
-                                                        <DropdownMenuItem className="text-[10px] font-bold uppercase py-2 cursor-pointer" onClick={() => handleUpdateStatus(order.id, 'Unpaid')}>Chưa thanh toán</DropdownMenuItem>
-                                                        <DropdownMenuItem className="text-[10px] font-bold uppercase py-2 cursor-pointer text-green-600" onClick={() => handleUpdateStatus(order.id, 'Paid')}>Đã thanh toán</DropdownMenuItem>
+                                                        <DropdownMenuItem className="text-xs font-bold py-2 cursor-pointer" onClick={() => handleUpdateStatus(order.id, 'Unpaid')}>Chưa thanh toán</DropdownMenuItem>
+                                                        <DropdownMenuItem className="text-xs font-bold py-2 cursor-pointer text-green-600" onClick={() => handleUpdateStatus(order.id, 'Paid')}>Đã thanh toán</DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
                                             </div>
@@ -166,8 +171,8 @@ export function UserHistoryModal({ isOpen, onClose, user, orders, isLoading, onV
                 </div>
 
                 <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex justify-end">
-                    <Button variant="outline" className="border-gray-200 font-black text-[10px] uppercase rounded-xl h-10 px-8" onClick={onClose}>
-                        Đóng cửa sổ
+                    <Button variant="outline" className="border-gray-200 font-bold text-xs rounded-xl h-10 px-8 bg-white hover:bg-gray-50" onClick={onClose}>
+                        ĐÓNG CỬA SỔ
                     </Button>
                 </div>
             </DialogContent>
