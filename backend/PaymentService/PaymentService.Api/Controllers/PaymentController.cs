@@ -31,7 +31,7 @@ public class PaymentController : ControllerBase
         Guid? customerId = null;
         if (Guid.TryParse(userIdStr, out var parsedId)) customerId = parsedId;
 
-        var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay", customerId);
+        var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay", customerId, request.VoucherCode, request.TableSessionId, request.TableNumber, request.Note);
         var result = await _mediator.Send(command);
 
         if (result == null || !result.Success)
@@ -159,6 +159,10 @@ public class CreatePaymentRequest
 {
     public Guid OrderId { get; set; }
     public decimal Amount { get; set; }
+    public string? VoucherCode { get; set; }
+    public Guid? TableSessionId { get; set; }
+    public string? TableNumber { get; set; }
+    public string? Note { get; set; }
 }
 
 public class SePayWebhookPayload

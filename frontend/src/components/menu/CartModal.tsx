@@ -119,7 +119,9 @@ export function CartModal() {
                     await axiosInstance.post('/api/payments', {
                         orderId: finalOrderId,
                         amount: total,
-                        voucherCode: appliedVoucher
+                        voucherCode: appliedVoucher,
+                        tableSessionId: session?.id,
+                        tableNumber: table?.name
                     });
                 } catch (err) {
                     console.error('Failed to initialize payment transaction', err);

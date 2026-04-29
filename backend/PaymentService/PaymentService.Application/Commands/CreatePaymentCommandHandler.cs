@@ -39,7 +39,7 @@ public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand,
         else
         {
             // Create a new pending transaction record
-            var tx = new PaymentTransaction(request.OrderId, request.Amount, request.Provider, request.CustomerId, null, request.VoucherCode);
+            var tx = new PaymentTransaction(request.OrderId, request.Amount, request.Provider, request.CustomerId, null, request.VoucherCode, request.TableSessionId, request.TableNumber, request.Note);
             await _repository.AddAsync(tx, cancellationToken);
             await _repository.SaveChangesAsync(cancellationToken);
         }

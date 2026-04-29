@@ -147,7 +147,12 @@ export function OrderBar() {
 
                 // 3a. Init payment record and get checkout URL
                 try {
-                    const payResult = await axiosInstance.post('/api/payments', { orderId: finalOrderId, amount: total });
+                    const payResult = await axiosInstance.post('/api/payments', { 
+                        orderId: finalOrderId, 
+                        amount: total,
+                        tableSessionId: session?.id,
+                        tableNumber: table?.name
+                    });
                     setCheckoutData({
                         checkoutUrl: payResult.data.checkoutUrl,
                         qrCode: payResult.data.qrCode

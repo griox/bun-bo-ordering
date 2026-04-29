@@ -68,6 +68,10 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
             transaction.Amount,
             transaction.CustomerId,
             transaction.VoucherCode,
+            transaction.TableSessionId,
+            transaction.TableNumber,
+            transaction.Note,
+            request.ProviderTransactionId,
             cancellationToken);
 
         return true;
