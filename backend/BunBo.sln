@@ -77,6 +77,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PromotionService.UnitTests"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.UnitTests", "..\tests\IdentityService.UnitTests\IdentityService.UnitTests.csproj", "{DA8CC26F-E6E9-4443-BB61-36FD86365FE4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.UnitTests", "..\tests\NotificationService.UnitTests\NotificationService.UnitTests.csproj", "{DF70BFD5-26A0-4CF4-841C-BF2D9B7405B3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -210,6 +212,10 @@ Global
 		{DA8CC26F-E6E9-4443-BB61-36FD86365FE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DA8CC26F-E6E9-4443-BB61-36FD86365FE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DA8CC26F-E6E9-4443-BB61-36FD86365FE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF70BFD5-26A0-4CF4-841C-BF2D9B7405B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF70BFD5-26A0-4CF4-841C-BF2D9B7405B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF70BFD5-26A0-4CF4-841C-BF2D9B7405B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF70BFD5-26A0-4CF4-841C-BF2D9B7405B3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BD99ECA9-FD3C-4E2B-B417-04344976C83F} = {30BA623E-989F-4D0D-B115-F77853C7B030}

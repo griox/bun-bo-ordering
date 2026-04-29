@@ -49,6 +49,16 @@ public class ProcessPaymentWebhookCommandTests
         Assert.Equal(providerTransactionId, transaction.TransactionId);
         
         mockRepo.Verify(r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
-        mockEventPublisher.Verify(p => p.PublishPaymentCompletedEventAsync(orderId, true, amount, transaction.CustomerId, It.IsAny<CancellationToken>()), Times.Once);
+        mockEventPublisher.Verify(p => p.PublishPaymentCompletedEventAsync(
+            orderId, 
+            true, 
+            amount, 
+            transaction.CustomerId, 
+            transaction.VoucherCode,
+            transaction.TableSessionId,
+            transaction.TableNumber,
+            transaction.Note,
+            providerTransactionId,
+            It.IsAny<CancellationToken>()), Times.Once);
     }
 }

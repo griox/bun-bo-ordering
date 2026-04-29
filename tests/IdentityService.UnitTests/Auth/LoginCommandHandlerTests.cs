@@ -1,9 +1,11 @@
+using BunBo.SharedKernel;
 using IdentityService.Application.Auth.Commands;
 using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
 using Moq;
 using Moq.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using FluentAssertions;
 
 namespace IdentityService.UnitTests.Auth;
 
@@ -21,7 +23,7 @@ public class LoginCommandHandlerTests
     }
 
     [Fact]
-    public async Task Handle_ShouldThrowException_WhenUserIsBlacklisted()
+    public async Task Handle_ShouldThrowDomainException_WhenUserIsBlacklisted()
     {
         // Arrange
         var username = "blacklistedUser";
@@ -35,7 +37,7 @@ public class LoginCommandHandlerTests
         var command = new LoginCommand(username, password);
 
         // Act & Assert
-        var exception = await Assert.ThrowsAsync<Exception>(() => _handler.Handle(command, CancellationToken.None));
+        var exception = await Assert.ThrowsAsync<DomainException>(() => _handler.Handle(command, CancellationToken.None));
         exception.Message.Should().Contain("Tài khoản của bạn đã bị khóa");
         exception.Message.Should().Contain("Spamming");
     }

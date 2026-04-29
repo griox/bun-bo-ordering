@@ -7,6 +7,8 @@ using BunBo.SharedKernel.Messaging;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
+using BunBo.SharedKernel;
+
 namespace OrderService.Application.Orders.Commands;
 
 public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note, string PaymentMethod, string? VoucherCode = null, decimal DiscountAmount = 0) : IRequest<Guid>;
@@ -34,11 +36,11 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
             
         if (session == null)
         {
-            throw new Exception("TableSession not found.");
+            throw new DomainException("TableSession not found.");
         }
         if (session.IsClosed)
         {
-            throw new Exception("Session is closed. Cannot place new orders.");
+            throw new DomainException("Session is closed. Cannot place new orders.");
         }
 
         var cartOwnerId = request.TableSessionId.ToString();
@@ -48,7 +50,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         if (cart == null || !cart.Items.Any())
         {
             _logger.LogWarning("[ORDER] Cart is empty for {CartOwnerId}", cartOwnerId);
-            throw new Exception("Giỏ hàng đang trống. Không thể tạo đơn.");
+            throw new DomainException("Giỏ hàng đang trống. Không thể tạo đơn.");
         }
 
         var order = new Order(request.TableSessionId, request.CustomerId, request.Note, request.PaymentMethod, request.VoucherCode, request.DiscountAmount);

@@ -49,7 +49,7 @@ public class Order : BaseEntity
     {
         if (Status == OrderStatus.Paid && newStatus == OrderStatus.Unpaid)
         {
-            throw new Exception("Cannot change status back to Unpaid once it is Paid.");
+            throw new DomainException("Cannot change status back to Unpaid once it is Paid.");
         }
         
         Status = newStatus;
