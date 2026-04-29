@@ -37,7 +37,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         else
         {
             problemDetails.Title = "Server Error";
-            problemDetails.Status = StatusCodes.Status400BadRequest; // Using 400 for business exceptions as currently handled
+            problemDetails.Status = StatusCodes.Status500InternalServerError;
             problemDetails.Detail = exception.Message;
         }
 

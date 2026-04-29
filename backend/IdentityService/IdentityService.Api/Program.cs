@@ -41,7 +41,7 @@ builder.Services.AddScoped<IdentityService.Application.Interfaces.IAppDbContext>
 // Configure Caching
 builder.Services.AddStackExchangeRedisCache(options =>
 {
-    options.Configuration = builder.Configuration["Redis:ConnectionString"] ?? "localhost:6379";
+    options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
 });
 
 builder.Services.AddHttpClient<IdentityService.Infrastructure.Services.GoogleAuthService>();
