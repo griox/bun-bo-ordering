@@ -85,27 +85,36 @@ catalogGroup.MapGet("/categories", async (MediatR.IMediator mediator) =>
 });
 
 // Food Endpoints
-catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest request) =>
+catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest request, ILogger<Program> logger) =>
 {
     try
     {
         var form = await request.ReadFormAsync();
         var name = form["Name"].ToString();
         var description = form["Description"].ToString();
-        var price = decimal.Parse(form["Price"].ToString());
-        var categoryId = int.Parse(form["CategoryId"].ToString());
+        
+        if (!decimal.TryParse(form["Price"], out var price))
+            return Results.BadRequest(new { Message = "Invalid price format" });
+            
+        if (!int.TryParse(form["CategoryId"], out var categoryId))
+            return Results.BadRequest(new { Message = "Invalid category ID format" });
+
         var file = request.Form.Files.GetFile("ImageFile");
 
         var cmd = new CatalogService.Application.Foods.Commands.CreateFoodCommand(name, description, price, categoryId, file);
         var id = await mediator.Send(cmd);
         return Results.Created($"/api/catalog/foods/{id}", new { Id = id });
     }
-    catch (Exception ex)
+    catch (DomainException ex)
     {
-        Console.WriteLine($"[ERROR] POST /foods: {ex.ToString()}");
         return Results.BadRequest(new { Message = ex.Message });
     }
-}).DisableAntiforgery().RequireAuthorization("Admin"); // Disable antiforgery for simplicity in Minimal APIs with multipart
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error creating food");
+        return Results.Problem("An unexpected error occurred while creating the food item.");
+    }
+}).DisableAntiforgery().RequireAuthorization("Admin");
 
 catalogGroup.MapGet("/foods", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
 {
@@ -119,25 +128,34 @@ catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator med
     return Results.Ok(foods);
 });
 
-catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, HttpRequest request) =>
+catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, HttpRequest request, ILogger<Program> logger) =>
 {
     try
     {
         var form = await request.ReadFormAsync();
         var name = form["Name"].ToString();
         var description = form["Description"].ToString();
-        var price = decimal.Parse(form["Price"].ToString());
-        var categoryId = int.Parse(form["CategoryId"].ToString());
+
+        if (!decimal.TryParse(form["Price"], out var price))
+            return Results.BadRequest(new { Message = "Invalid price format" });
+            
+        if (!int.TryParse(form["CategoryId"], out var categoryId))
+            return Results.BadRequest(new { Message = "Invalid category ID format" });
+
         var file = request.Form.Files.GetFile("ImageFile");
 
         var cmd = new CatalogService.Application.Foods.Commands.UpdateFoodCommand(id, name, description, price, categoryId, file);
         var success = await mediator.Send(cmd);
         return success ? Results.NoContent() : Results.NotFound();
     }
+    catch (DomainException ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
     catch (Exception ex)
     {
-        Console.WriteLine($"[ERROR] PUT /foods: {ex.ToString()}");
-        return Results.BadRequest(new { Message = ex.Message });
+        logger.LogError(ex, "Error updating food {FoodId}", id);
+        return Results.Problem("An unexpected error occurred while updating the food item.");
     }
 }).DisableAntiforgery().RequireAuthorization("Admin");
 

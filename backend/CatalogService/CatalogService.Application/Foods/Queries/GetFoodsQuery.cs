@@ -22,7 +22,7 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
 
     public async Task<PagedResult<FoodDto>> Handle(GetFoodsQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Foods.AsQueryable();
+        var query = _context.Foods.AsNoTracking().AsQueryable();
 
         var totalCount = await query.CountAsync(cancellationToken);
 

@@ -3,6 +3,7 @@ using CatalogService.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using BunBo.SharedKernel;
 
 namespace CatalogService.Application.Foods.Commands;
 
@@ -24,7 +25,7 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
         var categoryExists = await _context.Categories.AnyAsync(c => c.Id == request.CategoryId, cancellationToken);
         if (!categoryExists)
         {
-            throw new Exception("Category not found");
+            throw new DomainException("Category not found");
         }
 
         var food = await _context.Foods.FirstOrDefaultAsync(f => f.Id == request.Id, cancellationToken);
@@ -33,7 +34,7 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
 
         if (request.Price <= 0)
         {
-            throw new Exception("Price must be greater than zero");
+            throw new DomainException("Price must be greater than zero");
         }
 
         var isDuplicate = await _context.Foods.AnyAsync(f => 
@@ -43,7 +44,7 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
             
         if (isDuplicate)
         {
-            throw new Exception("Food with this name already exists in this category");
+            throw new DomainException("Food with this name already exists in this category");
         }
 
         string? imageUrl = food.ImageUrl;
