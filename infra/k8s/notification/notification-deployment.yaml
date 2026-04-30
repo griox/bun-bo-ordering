@@ -55,9 +55,9 @@ spec:
         - name: SmtpSettings__Port
           value: "465"
         - name: SmtpSettings__DefaultSenderEmail
-          value: "noreply@send.bun-bo-chung-cu.io.vn"
+          value: "noreply@bun-bo-chung-cu.io.vn"
         - name: SmtpSettings__SupportSenderEmail
-          value: "support@send.bun-bo-chung-cu.io.vn"
+          value: "support@bun-bo-chung-cu.io.vn"
         - name: SmtpSettings__Username
           valueFrom:
             secretKeyRef:

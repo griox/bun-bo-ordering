@@ -340,8 +340,8 @@ services:
       - Serilog__SeqUrl=http://bunbo-seq:5341
       - SmtpSettings__Host=smtp.resend.com
       - SmtpSettings__Port=465
-      - SmtpSettings__DefaultSenderEmail=noreply@send.bun-bo-chung-cu.io.vn
-      - SmtpSettings__SupportSenderEmail=support@send.bun-bo-chung-cu.io.vn
+      - SmtpSettings__DefaultSenderEmail=noreply@bun-bo-chung-cu.io.vn
+      - SmtpSettings__SupportSenderEmail=support@bun-bo-chung-cu.io.vn
       - SmtpSettings__Username=resend
       - SmtpSettings__Password=re_4hz7oLXi_GNk5G8ZfHp3V4Mx6rUf4vYE2
     depends_on:
