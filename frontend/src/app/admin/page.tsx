@@ -37,35 +37,35 @@ export default function AdminDashboard() {
     const stats = [
         {
             title: 'Doanh thu ngày',
-            value: `${statsData?.dailyRevenue.toLocaleString('vi-VN')}đ`,
+            value: `${statsData?.dailyRevenue?.toLocaleString('vi-VN') || 0}đ`,
             icon: DollarSign,
             trend: '+12.5%',
             trendLabel: 'so với hôm qua'
         },
         {
             title: 'Đơn hàng hôm nay',
-            value: statsData?.totalOrdersToday.toString() || '0',
+            value: statsData?.totalOrdersToday?.toString() || '0',
             icon: ShoppingCart,
             trend: '+5',
             trendLabel: 'đơn mới'
         },
         {
             title: 'Khách hàng mới',
-            value: statsData?.newCustomersToday.toString() || '0',
+            value: statsData?.newCustomersToday?.toString() || '0',
             icon: Users,
             trend: '+2',
             trendLabel: 'trong 24h'
         },
         {
             title: 'Món bán chạy nhất',
-            value: statsData?.bestSellingItem || 'N/A',
+            value: statsData?.bestSellingItem || '---',
             icon: UtensilsCrossed,
             trend: 'HOT',
             trendLabel: 'xu hướng'
         },
     ];
 
-    const chartData = statsData?.weeklyRevenue.map(d => ({
+    const chartData = statsData?.weeklyRevenue?.map(d => ({
         name: d.dayOfWeek.toUpperCase(),
         revenue: d.revenue,
         fullDate: d.date
@@ -179,10 +179,14 @@ export default function AdminDashboard() {
                     </CardHeader>
                     <CardContent className="flex-1 p-0 overflow-y-auto max-h-[450px] custom-scrollbar">
                         <div className="divide-y-2 divide-gray-100">
-                            {statsData?.recentOrders.length === 0 ? (
+                            {isLoading ? (
+                                <div className="p-10 flex items-center justify-center">
+                                    <Loader2 className="size-6 animate-spin text-gray-900" />
+                                </div>
+                            ) : !statsData?.recentOrders || statsData.recentOrders.length === 0 ? (
                                 <div className="p-10 text-center text-gray-300 font-black uppercase text-xs">Chưa có đơn hàng</div>
                             ) : (
-                                statsData?.recentOrders.map((order) => (
+                                statsData.recentOrders.map((order) => (
                                     <div key={order.id} className="flex items-center gap-4 p-6 hover:bg-gray-50 transition-all cursor-pointer group relative overflow-hidden">
                                         <div className="size-12 rounded-2xl bg-gray-900 flex items-center justify-center font-black text-[10px] text-white group-hover:bg-red-500 transition-colors z-10">
                                             #{order.tableCode}
