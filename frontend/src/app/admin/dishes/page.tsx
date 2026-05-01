@@ -211,18 +211,18 @@ export default function DishesPage() {
                             THÊM MÓN MỚI
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-4xl bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
+                    <DialogContent className="max-w-4xl bg-white border-none rounded-2xl p-0 overflow-hidden shadow-xl">
                         <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood} className="flex flex-col max-h-[90vh]">
-                            <div className="bg-gray-900 p-8 text-white shrink-0">
+                            <div className="bg-gray-900 p-6 text-white shrink-0">
                                 <div className="flex items-center gap-4">
                                     <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                                         <ImageIcon className="size-7 text-red-400" />
                                     </div>
                                     <div>
-                                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">
+                                        <DialogTitle className="text-xl font-bold tracking-tight">
                                             {editingFood ? 'Hiệu chỉnh món ăn' : 'Thêm món ăn mới'}
                                         </DialogTitle>
-                                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Cập nhật thực đơn bún bò của bạn</p>
+                                        <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Cập nhật thực đơn bún bò của bạn</p>
                                     </div>
                                 </div>
                             </div>
@@ -374,7 +374,7 @@ export default function DishesPage() {
                                 <Button
                                     type="submit"
                                     disabled={createFoodMutation.isPending || updateFoodMutation.isPending}
-                                    className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50"
+                                    className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest rounded-xl transition-all disabled:opacity-50"
                                 >
                                     {createFoodMutation.isPending || updateFoodMutation.isPending ? (
                                         <Loader2 className="size-4 animate-spin" />
@@ -474,17 +474,17 @@ export default function DishesPage() {
                                                         </div>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end" className="w-56 rounded-[1.2rem] border border-gray-100 shadow-2xl p-2 bg-white animate-in slide-in-from-top-1 duration-200">
-                                                        <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-black text-[10px] uppercase cursor-pointer hover:bg-gray-50 text-gray-600 transition-colors" onClick={() => openEditDialog(dish)}>
-                                                            <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">
+                                                        <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-bold text-[10px] uppercase cursor-pointer hover:bg-gray-50 text-gray-600 transition-colors" onClick={() => openEditDialog(dish)}>
+                                                            <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 transition-all shadow-sm">
                                                                 <Pencil className="size-4" />
                                                             </div>
                                                             Hiệu chỉnh món ăn
                                                         </DropdownMenuItem>
                                                         <DropdownMenuItem
-                                                            className="gap-3 py-3.5 rounded-xl font-black text-[10px] uppercase cursor-pointer text-red-500 hover:bg-red-50 transition-colors"
+                                                            className="gap-3 py-3.5 rounded-xl font-bold text-[10px] uppercase cursor-pointer text-red-500 hover:bg-red-50 transition-colors"
                                                             onClick={() => handleDeleteFood(dish.id)}
                                                         >
-                                                            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 border border-red-100 group-hover:bg-red-500 group-hover:text-white transition-all shadow-sm">
+                                                            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 border border-red-100 transition-all shadow-sm">
                                                                 <Trash2 className="size-4" />
                                                             </div>
                                                             Xóa khỏi hệ thống

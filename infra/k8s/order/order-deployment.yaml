@@ -71,6 +71,11 @@ spec:
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
           value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+        - name: ConnectionStrings__Redis
+          valueFrom:
+            configMapKeyRef:
+              name: bunbo-config
+              key: Redis__Host
         - name: CartServiceUrl
           value: "http://cart-service"
 ---

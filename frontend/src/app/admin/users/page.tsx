@@ -300,15 +300,15 @@ export default function AdminUserManagement() {
 
             {/* Ban Reason Dialog */}
             <Dialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
-                <DialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
-                    <div className="bg-gray-900 p-8 text-white shrink-0">
+                <DialogContent className="max-w-md bg-white border-none rounded-2xl p-0 overflow-hidden shadow-xl">
+                    <div className="bg-gray-900 p-6 text-white shrink-0">
                         <div className="flex items-center gap-4">
                             <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                                 <Ban className="size-7 text-red-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-2xl font-black uppercase tracking-tight">Chặn người dùng</DialogTitle>
-                                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Tài khoản sẽ không thể đăng nhập</p>
+                                <DialogTitle className="text-xl font-bold tracking-tight">Chặn người dùng</DialogTitle>
+                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Tài khoản sẽ không thể đăng nhập</p>
                             </div>
                         </div>
                     </div>
@@ -356,15 +356,15 @@ export default function AdminUserManagement() {
 
             {/* Unban Confirmation */}
             <AlertDialog open={isUnbanDialogOpen} onOpenChange={setIsUnbanDialogOpen}>
-                <AlertDialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
-                    <div className="bg-gray-900 p-8 text-white shrink-0">
+                <AlertDialogContent className="max-w-md bg-white border-none rounded-2xl p-0 overflow-hidden shadow-xl">
+                    <div className="bg-gray-900 p-6 text-white shrink-0">
                         <div className="flex items-center gap-4">
                             <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                                 <Unlock className="size-7 text-green-400" />
                             </div>
                             <div>
-                                <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Mở khóa tài khoản</AlertDialogTitle>
-                                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Khôi phục quyền truy cập hệ thống</p>
+                                <AlertDialogTitle className="text-xl font-bold tracking-tight">Mở khóa tài khoản</AlertDialogTitle>
+                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Khôi phục quyền truy cập hệ thống</p>
                             </div>
                         </div>
                     </div>
@@ -387,15 +387,15 @@ export default function AdminUserManagement() {
 
             {/* Delete Confirmation */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
-                    <div className="bg-gray-900 p-8 text-white shrink-0">
+                <AlertDialogContent className="max-w-md bg-white border-none rounded-2xl p-0 overflow-hidden shadow-xl">
+                    <div className="bg-gray-900 p-6 text-white shrink-0">
                         <div className="flex items-center gap-4">
                             <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
                                 <Trash2 className="size-7 text-red-500" />
                             </div>
                             <div>
-                                <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Xóa người dùng</AlertDialogTitle>
-                                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Hành động này không thể hoàn tác</p>
+                                <AlertDialogTitle className="text-xl font-bold tracking-tight">Xóa người dùng</AlertDialogTitle>
+                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Hành động này không thể hoàn tác</p>
                             </div>
                         </div>
                     </div>
