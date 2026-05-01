@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
-import { useOrderStore } from '@/store/useOrderStore';
+import { useOrderStore, CartItem } from '@/store/useOrderStore';
 import { usePlaceOrderMutation, useCart } from '@/hooks/useCart';
 import { usePromotions } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
@@ -54,6 +54,7 @@ export function OrderBar() {
         () => true,
         () => false,
     );
+
 
     const subtotal = getCartTotal();
     const total = Math.max(0, subtotal - discountAmount);
@@ -118,7 +119,7 @@ export function OrderBar() {
 
         try {
             // 1. Sync cart to backend
-            const cartItems = cart.map(item => ({
+            const cartItems = cart.map((item: CartItem) => ({
                 foodId: item.foodId,
                 foodName: item.name,
                 unitPrice: item.price,
@@ -287,24 +288,25 @@ export function OrderBar() {
                                         </div>
                                     ))}
 
+
                                     {/* Voucher Section */}
                                     <div className="pt-2">
                                         <button
                                             onClick={() => setIsVoucherListOpen(!isVoucherListOpen)}
-                                            className="w-full flex items-center justify-between p-4 bg-primary/5 hover:bg-primary/10 border-2 border-primary/20 rounded-2xl transition-all group"
+                                            className="w-full flex items-center justify-between p-4 bg-amber-50 hover:bg-amber-100 border-2 border-amber-200/50 rounded-2xl transition-all group"
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="p-2 bg-primary/10 rounded-xl group-hover:scale-110 transition-transform">
-                                                    <Ticket className="size-5 text-primary" />
+                                                <div className="p-2 bg-amber-100 rounded-xl group-hover:scale-110 transition-transform">
+                                                    <Ticket className="size-5 text-amber-600" />
                                                 </div>
                                                 <div className="text-left">
-                                                    <p className="text-xs font-black text-primary uppercase tracking-wider">Áp dụng mã giảm giá</p>
-                                                    <p className="text-[11px] text-primary/70 font-medium italic">
+                                                    <p className="text-xs font-black text-amber-600 uppercase tracking-wider">Áp dụng mã giảm giá</p>
+                                                    <p className="text-[11px] text-amber-700/70 font-medium italic">
                                                         {appliedVoucher ? `Đã chọn: ${appliedVoucher}` : 'Chọn hoặc nhập mã khuyến mãi'}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <Plus className={`size-4 text-primary transition-transform ${isVoucherListOpen ? 'rotate-45' : ''}`} />
+                                            <Plus className={`size-4 text-amber-600 transition-transform ${isVoucherListOpen ? 'rotate-45' : ''}`} />
                                         </button>
 
                                         {isVoucherListOpen && (
@@ -457,12 +459,12 @@ export function OrderBar() {
                                                     type="button"
                                                     onClick={() => setPaymentMethod('Transfer')}
                                                     className={`flex flex-col items-center gap-1.5 p-3.5 rounded-2xl border-2 transition-all ${paymentMethod === 'Transfer'
-                                                        ? 'border-primary bg-primary/8 shadow-md scale-[1.02]'
+                                                        ? 'border-blue-500 bg-blue-50 shadow-md scale-[1.02]'
                                                         : 'border-neutral-200 bg-white hover:border-neutral-300'
                                                         }`}
                                                 >
-                                                    <QrCode className={`size-5 ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-400'}`} />
-                                                    <span className={`text-[10px] font-black uppercase tracking-tight ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-500'}`}>
+                                                    <QrCode className={`size-5 ${paymentMethod === 'Transfer' ? 'text-blue-600' : 'text-neutral-400'}`} />
+                                                    <span className={`text-[10px] font-black uppercase tracking-tight ${paymentMethod === 'Transfer' ? 'text-blue-600' : 'text-neutral-500'}`}>
                                                         Chuyển khoản
                                                     </span>
                                                 </button>
@@ -470,12 +472,12 @@ export function OrderBar() {
                                                     type="button"
                                                     onClick={() => setPaymentMethod('Cash')}
                                                     className={`flex flex-col items-center gap-1.5 p-3.5 rounded-2xl border-2 transition-all ${paymentMethod === 'Cash'
-                                                        ? 'border-primary bg-primary/8 shadow-md scale-[1.02]'
+                                                        ? 'border-red-500 bg-red-50 shadow-md scale-[1.02]'
                                                         : 'border-neutral-200 bg-white hover:border-neutral-300'
                                                         }`}
                                                 >
-                                                    <Receipt className={`size-5 ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-400'}`} />
-                                                    <span className={`text-[10px] font-black uppercase tracking-tight ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-500'}`}>
+                                                    <Receipt className={`size-5 ${paymentMethod === 'Cash' ? 'text-red-600' : 'text-neutral-400'}`} />
+                                                    <span className={`text-[10px] font-black uppercase tracking-tight ${paymentMethod === 'Cash' ? 'text-red-600' : 'text-neutral-500'}`}>
                                                         Tiền mặt
                                                     </span>
                                                 </button>

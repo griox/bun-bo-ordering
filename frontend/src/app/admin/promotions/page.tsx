@@ -22,7 +22,6 @@ import { Input } from '@/components/ui/input';
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
@@ -67,7 +66,7 @@ export default function PromotionsPage() {
                             <span className="font-bold uppercase tracking-wider text-xs">Tạo mã mới</span>
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-white border-4 border-gray-900 rounded-[2rem] p-8 shadow-[20px_20px_0px_rgba(31,41,55,0.1)]">
+                    <DialogContent className="max-w-2xl bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
                         <DialogTitle className="sr-only">Tạo mã khuyến mãi</DialogTitle>
                         <CreateVoucherForm onSuccess={() => setIsCreateModalOpen(false)} />
                     </DialogContent>
@@ -201,6 +200,12 @@ export default function PromotionsPage() {
                                                     </p>
                                                 </div>
                                             </div>
+                                            {voucher.type === 'PointRedemption' && (
+                                                <div className="mt-2 flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg border border-amber-100 w-fit">
+                                                    <Ticket className="size-3" />
+                                                    <span className="text-[9px] font-black uppercase tracking-tighter">Cần {voucher.pointCost} điểm</span>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-8 py-6">
                                             <div className="space-y-1">
@@ -267,7 +272,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
         endDate: format(new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), "yyyy-MM-dd'T'HH:mm"),
         maxUsageLimit: 100,
         maxUsagePerUser: 1,
-        isActive: true
+        isActive: true,
+        type: 'Standard' as 'Standard' | 'PointRedemption' | 'Reward',
+        pointCost: 0
     }));
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -282,15 +289,20 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
     };
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <DialogHeader>
-                <DialogTitle className="text-2xl font-black text-gray-900 uppercase tracking-tight flex items-center gap-3">
-                    <div className="p-2 bg-emerald-50 rounded-xl">
-                        <Plus className="size-6 text-emerald-600" />
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+            <div className="bg-gray-900 p-8 text-white">
+                <div className="flex items-center gap-4">
+                    <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                        <Ticket className="size-7 text-red-400" />
                     </div>
-                    Tạo mã khuyến mãi bún bò
-                </DialogTitle>
-            </DialogHeader>
+                    <div>
+                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">Tạo mã khuyến mãi</DialogTitle>
+                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Thiết lập chương trình ưu đãi mới</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
 
             <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-2">
@@ -322,6 +334,40 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                         </button>
                     </div>
                 </div>
+
+                <div className="col-span-2 space-y-2">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại Voucher</label>
+                    <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
+                        <button
+                            type="button"
+                            className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'Standard' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                            onClick={() => setFormData({ ...formData, type: 'Standard', pointCost: 0 })}
+                        >
+                            Tiêu chuẩn
+                        </button>
+                        <button
+                            type="button"
+                            className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'PointRedemption' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                            onClick={() => setFormData({ ...formData, type: 'PointRedemption' })}
+                        >
+                            Đổi điểm thưởng
+                        </button>
+                    </div>
+                </div>
+
+                {formData.type === 'PointRedemption' && (
+                    <div className="col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2">
+                        <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
+                        <Input
+                            type="number"
+                            placeholder="Nhập số điểm khách cần tiêu tốn..."
+                            className="h-12 border-2 border-amber-200 bg-amber-50 rounded-xl focus:border-amber-500 font-bold text-amber-900"
+                            value={formData.pointCost || ''}
+                            onChange={(e) => setFormData({ ...formData, pointCost: e.target.value === '' ? 0 : Number(e.target.value) })}
+                            required
+                        />
+                    </div>
+                )}
 
                 <div className="col-span-2 space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả</label>
@@ -402,17 +448,38 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                 </div>
             </div>
 
-            <Button
-                type="submit"
-                disabled={createVoucherMutation.isPending}
-                className="w-full h-14 bg-gray-900 border-2 border-gray-900 hover:bg-white hover:text-gray-900 text-white font-black uppercase tracking-widest rounded-2xl transition-all shadow-xl shadow-gray-200 active:scale-95 disabled:opacity-50"
-            >
-                {createVoucherMutation.isPending ? (
-                    <><Loader2 className="size-5 mr-2 animate-spin" /> ĐANG TẠO...</>
-                ) : (
-                    'XÁC NHẬN TẠO MÃ KHUYẾN MÃI'
-                )}
-            </Button>
+                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border-2 border-gray-100">
+                    <div className="space-y-1">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Trạng thái kích hoạt</label>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase px-1">Cho phép sử dụng mã ngay lập tức</p>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
+                        className={`w-14 h-8 rounded-full transition-all relative ${formData.isActive ? 'bg-red-500' : 'bg-gray-200'}`}
+                    >
+                        <div className={`absolute top-1 size-6 bg-white rounded-full transition-all shadow-sm ${formData.isActive ? 'left-7' : 'left-1'}`} />
+                    </button>
+                </div>
+            </div>
+
+            <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onSuccess()}
+                    className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
+                >
+                    Hủy bỏ
+                </Button>
+                <Button
+                    type="submit"
+                    disabled={createVoucherMutation.isPending}
+                    className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50"
+                >
+                    {createVoucherMutation.isPending ? 'Đang đồng bộ...' : 'Tạo mã ngay'}
+                </Button>
+            </div>
         </form>
     );
 }

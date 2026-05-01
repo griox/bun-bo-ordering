@@ -79,13 +79,30 @@ public class EmailService : IEmailService
                             </p>
                             <p style='font-size: 11px; color: #aaa; margin-bottom: 5px;'>Bạn nhận được email này vì đã đăng ký tài khoản tại bun-bo-chung-cu.io.vn</p>
                             <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
+                            <p style='font-size: 11px; color: #bbb; margin-top: 15px;'>Nếu bạn không muốn nhận email này nữa, <a href=""https://bun-bo-chung-cu.io.vn/account/notifications"" style=""color: #bbb; text-decoration: underline;"">hủy đăng ký tại đây</a>.</p>
                         </div>
                     </div>
-                    
-                    <div style='text-align: center; margin-top: 25px;'>
-                        <p style='font-size: 11px; color: #bbb;'>Bạn không muốn nhận email này? <a href=""https://bun-bo-chung-cu.io.vn/account/notifications"" style=""color: #bbb; text-decoration: underline;"">Quản lý tùy chọn thông báo</a>.</p>
-                    </div>
-                </div>"
+                </div>",
+            TextBody = $@"
+                Chào mừng {username} đến với Bún bò Chung Cư!
+                
+                Cảm ơn bạn đã đăng ký thành viên tại Bun Bo Chung Cu. Chúng tôi rất hân hạnh được phục vụ bạn những món ăn đậm đà hương vị truyền thống.
+                
+                💡 Trải nghiệm tiện ích cùng chúng tôi:
+                - Đặt món trực tuyến dễ dàng, không cần xếp hàng.
+                - Cập nhật trạng thái đơn hàng thời gian thực.
+                - Tích lũy điểm thưởng cho mọi đơn hàng.
+                
+                Trải nghiệm ngay tại: https://bun-bo-chung-cu.io.vn/
+                
+                ---
+                Bún bò Chung Cư Team
+                Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
+                Email hỗ trợ: support@bun-bo-chung-cu.io.vn
+                
+                Bạn nhận được email này vì đã đăng ký tài khoản tại bun-bo-chung-cu.io.vn.
+                Để hủy đăng ký, vui lòng truy cập: https://bun-bo-chung-cu.io.vn/account/notifications
+            "
         };
 
         message.Body = bodyBuilder.ToMessageBody();
@@ -171,7 +188,24 @@ public class EmailService : IEmailService
                             <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
                         </div>
                     </div>
-                </div>"
+                </div>",
+            TextBody = $@"
+                Khôi phục mật khẩu - Bún bò Chung Cư
+                
+                Chào {username},
+                
+                Chúng tôi đã nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã xác thực dưới đây để tiếp tục:
+                
+                Mã xác thực: {otpCode}
+                
+                Mã xác thực này có hiệu lực trong vòng 5 phút.
+                
+                Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này.
+                
+                ---
+                Bún bò Chung Cư Support Team
+                Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
+            "
         };
 
         message.Body = bodyBuilder.ToMessageBody();

@@ -8,7 +8,8 @@ import {
     Save,
     Pencil,
     Move,
-    Loader2
+    Loader2,
+    LayoutDashboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -157,33 +158,38 @@ export default function TablesPage() {
                             THÊM BÀN MỚI
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
+                    <DialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
                         <form onSubmit={handleCreateOrUpdate} className="flex flex-col">
-                            <div className="p-6 border-b border-gray-100 bg-gray-50/50">
-                                <DialogHeader>
-                                    <DialogTitle className="text-xl font-bold text-gray-900">
-                                        {editingTable ? 'Cập nhật bàn' : 'Tạo bàn mới'}
-                                    </DialogTitle>
-                                    <DialogDescription className="text-sm text-gray-500 mt-1">Gán mã định danh kỹ thuật cho bàn ăn</DialogDescription>
-                                </DialogHeader>
+                            <div className="bg-gray-900 p-8 text-white shrink-0">
+                                <div className="flex items-center gap-4">
+                                    <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                        <LayoutDashboard className="size-7 text-red-400" />
+                                    </div>
+                                    <div>
+                                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">
+                                            {editingTable ? 'Cập nhật bàn' : 'Tạo bàn mới'}
+                                        </DialogTitle>
+                                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Gán mã định danh kỹ thuật cho bàn ăn</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="p-6 space-y-4">
-                                <div className="space-y-1.5">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider pl-1">Mã bàn</label>
+                            <div className="p-8 space-y-6 bg-white">
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã bàn</label>
                                     <Input
                                         required
-                                        className="h-11 border-gray-200 rounded-xl bg-white text-sm font-bold focus:border-primary focus:ring-primary/20 transition-all"
+                                        className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                         placeholder="Ví dụ: T1, VIP-01"
                                         value={formData.tableCode}
                                         onChange={e => setFormData({ ...formData, tableCode: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-1.5">
-                                    <label className="text-[11px] font-bold text-gray-400 uppercase tracking-wider pl-1">Tên hiển thị</label>
+                                <div className="space-y-2">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tên hiển thị</label>
                                     <Input
                                         required
-                                        className="h-11 border-gray-200 rounded-xl bg-white text-sm font-bold focus:border-primary focus:ring-primary/20 transition-all"
+                                        className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                         placeholder="Ví dụ: Bàn 1, Bàn cửa sổ"
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -191,10 +197,20 @@ export default function TablesPage() {
                                 </div>
                             </div>
 
-                            <div className="p-6 bg-gray-50/50 border-t border-gray-100 flex gap-3">
-                                <Button type="button" variant="outline" className="flex-1 h-10 border-gray-200 bg-white font-bold rounded-xl text-xs" onClick={() => setIsDialogOpen(false)}>HỦY BỎ</Button>
-                                <Button type="submit" className="flex-[2] h-10 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-xs">
-                                    LƯU THAY ĐỔI
+                            <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4 shrink-0">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => setIsDialogOpen(false)}
+                                    className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
+                                >
+                                    Hủy bỏ
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    className="h-12 px-8 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all"
+                                >
+                                    Lưu thay đổi
                                 </Button>
                             </div>
                         </form>

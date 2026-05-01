@@ -79,7 +79,7 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                             ) : (
                                 <Button
                                     size="icon"
-                                    className="h-12 w-12 rounded-2xl shadow-lg shadow-primary/20 hover:scale-110 transition-all duration-300"
+                                    className="h-12 w-12 rounded-2xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 hover:scale-110 transition-all duration-300"
                                     onClick={handleAdd}
                                 >
                                     <Plus className="w-6 h-6" />

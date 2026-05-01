@@ -6,7 +6,6 @@ import {
     DollarSign,
     ShoppingCart,
     Users,
-    TrendingUp,
     UtensilsCrossed,
     Loader2
 } from 'lucide-react';
@@ -37,32 +36,32 @@ export default function AdminDashboard() {
 
     const stats = [
         {
-            title: 'Daily Revenue',
+            title: 'Doanh thu ngày',
             value: `${statsData?.dailyRevenue.toLocaleString('vi-VN')}đ`,
             icon: DollarSign,
-            color: 'text-black',
-            bg: 'bg-black/5'
+            trend: '+12.5%',
+            trendLabel: 'so với hôm qua'
         },
         {
-            title: 'Total Orders',
+            title: 'Đơn hàng hôm nay',
             value: statsData?.totalOrdersToday.toString() || '0',
             icon: ShoppingCart,
-            color: 'text-black',
-            bg: 'bg-black/5'
+            trend: '+5',
+            trendLabel: 'đơn mới'
         },
         {
-            title: 'New Customers',
+            title: 'Khách hàng mới',
             value: statsData?.newCustomersToday.toString() || '0',
             icon: Users,
-            color: 'text-black',
-            bg: 'bg-black/5'
+            trend: '+2',
+            trendLabel: 'trong 24h'
         },
         {
-            title: 'Top Performer',
+            title: 'Món bán chạy nhất',
             value: statsData?.bestSellingItem || 'N/A',
             icon: UtensilsCrossed,
-            color: 'text-black',
-            bg: 'bg-black/5'
+            trend: 'HOT',
+            trendLabel: 'xu hướng'
         },
     ];
 
@@ -73,83 +72,88 @@ export default function AdminDashboard() {
     })) || [];
 
     return (
-        <div className="space-y-8 pb-10">
-            {/* Clean Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Tổng quan hệ thống</h2>
-                    <p className="text-sm text-gray-500 mt-1">
-                        Xin chào, <span className="font-semibold text-gray-700">{user?.username || 'Quản trị viên'}</span>. Đây là tình hình kinh doanh hôm nay.
+        <div className="space-y-10 pb-20 px-4 md:px-0">
+            {/* Pro Max Header */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div className="space-y-1">
+                    <h2 className="text-4xl font-black text-gray-900 tracking-tighter uppercase italic">Bảng điều khiển</h2>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-[0.3em]">
+                        Hệ thống: <span className="text-red-500 underline decoration-2 underline-offset-4">Trực tuyến</span> • Chào, {user?.username}
                     </p>
                 </div>
-                <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-gray-100 flex items-center gap-2">
-                    <div className="size-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                        Trực tuyến: {new Date().toLocaleDateString('vi-VN')}
+                <div className="flex items-center gap-3 bg-white border-4 border-gray-900 p-2 rounded-2xl shadow-[8px_8px_0px_#000]">
+                    <div className="size-3 rounded-full bg-red-500 animate-ping" />
+                    <span className="text-[10px] font-black text-gray-900 uppercase tracking-widest pr-2">
+                        {new Date().toLocaleDateString('vi-VN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                     </span>
                 </div>
             </div>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Stats Grid - Neo Brutalism */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                 {stats.map((stat, i) => (
-                    <Card key={i} className="border-none shadow-sm bg-white hover:shadow-md transition-all rounded-2xl overflow-hidden group">
-                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.title}</span>
-                            <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                <stat.icon className="w-5 h-5 text-gray-400 group-hover:text-primary transition-colors" />
+                    <Card key={i} className="border-4 border-gray-900 shadow-[12px_12px_0px_rgba(0,0,0,0.1)] rounded-[2rem] overflow-hidden bg-white hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all cursor-default">
+                        <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0 p-6">
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{stat.title}</span>
+                            <div className="size-12 rounded-2xl bg-gray-900 flex items-center justify-center border-2 border-gray-800">
+                                <stat.icon className="w-5 h-5 text-white" />
                             </div>
                         </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold text-gray-900 tracking-tight">{stat.value}</div>
-                            <div className="flex items-center gap-1.5 mt-2">
-                                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">+12.5%</span>
-                                <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">so với hôm qua</span>
+                        <CardContent className="px-6 pb-6">
+                            <div className="text-3xl font-black text-gray-900 tracking-tighter leading-none mb-3">{stat.value}</div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-black text-white bg-red-500 px-2.5 py-1 rounded-lg uppercase italic tracking-tighter">
+                                    {stat.trend}
+                                </span>
+                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">{stat.trendLabel}</span>
                             </div>
                         </CardContent>
                     </Card>
                 ))}
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-                {/* Revenue Chart */}
-                <Card className="xl:col-span-2 border-none shadow-sm rounded-2xl overflow-hidden">
-                    <CardHeader className="bg-white border-b border-gray-50 pb-4">
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+                {/* Revenue Chart - Dark Pro Max Style */}
+                <Card className="xl:col-span-2 border-4 border-gray-900 shadow-[20px_20px_0px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden bg-gray-900">
+                    <CardHeader className="bg-gray-900 border-b border-gray-800 p-8">
                         <div className="flex justify-between items-center">
                             <div>
-                                <CardTitle className="text-sm font-bold text-gray-900 flex items-center gap-2">
-                                    <TrendingUp className="w-4 h-4 text-primary" />
+                                <CardTitle className="text-lg font-black text-white uppercase tracking-tighter italic flex items-center gap-3">
+                                    <div className="size-2 bg-red-500 rounded-full" />
                                     Doanh thu tuần này
                                 </CardTitle>
-                                <CardDescription className="text-xs text-gray-500 mt-1">Thống kê doanh thu theo từng ngày</CardDescription>
+                                <CardDescription className="text-[10px] text-gray-500 font-bold uppercase tracking-[0.2em] mt-2 ml-5">Hiệu suất tài chính 7 ngày qua</CardDescription>
+                            </div>
+                            <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-xl">
+                                <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">Đơn vị: VNĐ</span>
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="h-[350px] pt-8 px-2 md:px-6">
+                    <CardContent className="h-[400px] p-8">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={chartData}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
+                                <CartesianGrid strokeDasharray="0" vertical={false} stroke="#1f2937" />
                                 <XAxis
                                     dataKey="name"
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }}
+                                    tick={{ fontSize: 10, fontWeight: 800, fill: '#4b5563', dy: 15 }}
                                 />
                                 <YAxis
                                     axisLine={false}
                                     tickLine={false}
-                                    tick={{ fontSize: 10, fontWeight: 600, fill: '#94a3b8' }}
+                                    tick={{ fontSize: 9, fontWeight: 800, fill: '#4b5563' }}
                                     tickFormatter={(value) => `${value / 1000}K`}
                                 />
                                 <Tooltip
-                                    cursor={{ fill: '#f8fafc' }}
+                                    cursor={{ fill: 'rgba(255,255,255,0.03)' }}
                                     content={({ active, payload }) => {
                                         if (active && payload && payload.length) {
                                             const p = payload[0] as { payload?: { name?: string; fullDate?: string }; value?: number };
                                             return (
-                                                <div className="bg-white p-3 shadow-xl rounded-xl border border-gray-100">
-                                                    <p className="text-[10px] font-bold text-gray-400 uppercase mb-1">{p.payload?.fullDate}</p>
-                                                    <p className="text-sm font-bold text-gray-900">{p.value?.toLocaleString('vi-VN')} VNĐ</p>
+                                                <div className="bg-white p-4 shadow-[10px_10px_0px_#ef4444] rounded-2xl border-4 border-gray-900">
+                                                    <p className="text-[9px] font-black text-gray-400 uppercase mb-1 tracking-widest">{p.payload?.fullDate}</p>
+                                                    <p className="text-lg font-black text-gray-900 italic tracking-tighter">{p.value?.toLocaleString('vi-VN')} VNĐ</p>
                                                 </div>
                                             );
                                         }
@@ -158,44 +162,72 @@ export default function AdminDashboard() {
                                 />
                                 <Bar
                                     dataKey="revenue"
-                                    fill="var(--primary)"
-                                    radius={[6, 6, 0, 0]}
-                                    barSize={32}
+                                    fill="#ffffff"
+                                    radius={[8, 8, 8, 8]}
+                                    barSize={40}
                                 />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
                 </Card>
 
-                {/* Recent Logs */}
-                <Card className="border-none shadow-sm rounded-2xl overflow-hidden flex flex-col">
-                    <CardHeader className="bg-white border-b border-gray-50">
-                        <CardTitle className="text-sm font-bold text-gray-900">Đơn hàng mới nhất</CardTitle>
-                        <CardDescription className="text-xs text-gray-500 mt-1">Theo dõi hoạt động thời gian thực</CardDescription>
+                {/* Recent Orders - High Contrast */}
+                <Card className="border-4 border-gray-900 shadow-[20px_20px_0px_rgba(0,0,0,0.05)] rounded-[2.5rem] overflow-hidden flex flex-col bg-white">
+                    <CardHeader className="bg-white border-b-4 border-gray-900 p-8">
+                        <CardTitle className="text-lg font-black text-gray-900 uppercase tracking-tighter italic">Đơn hàng gần đây</CardTitle>
+                        <CardDescription className="text-[10px] text-gray-400 font-bold uppercase tracking-[0.2em] mt-1">Dữ liệu thời gian thực</CardDescription>
                     </CardHeader>
-                    <CardContent className="flex-1 p-0 overflow-y-auto max-h-[400px]">
-                        <div className="divide-y divide-gray-50">
-                            {[1, 2, 3, 4, 5, 6].map((_, i) => (
-                                <div key={i} className="flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors cursor-pointer group">
-                                    <div className="size-10 rounded-xl bg-gray-50 flex items-center justify-center font-bold text-xs text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-all">
-                                        #{2040 + i}
+                    <CardContent className="flex-1 p-0 overflow-y-auto max-h-[450px] custom-scrollbar">
+                        <div className="divide-y-2 divide-gray-100">
+                            {statsData?.recentOrders.length === 0 ? (
+                                <div className="p-10 text-center text-gray-300 font-black uppercase text-xs">Chưa có đơn hàng</div>
+                            ) : (
+                                statsData?.recentOrders.map((order) => (
+                                    <div key={order.id} className="flex items-center gap-4 p-6 hover:bg-gray-50 transition-all cursor-pointer group relative overflow-hidden">
+                                        <div className="size-12 rounded-2xl bg-gray-900 flex items-center justify-center font-black text-[10px] text-white group-hover:bg-red-500 transition-colors z-10">
+                                            #{order.tableCode}
+                                        </div>
+                                        <div className="flex-1 z-10">
+                                            <p className="text-xs font-black text-gray-900 uppercase mb-0.5 tracking-tighter">BÀN {order.tableName}</p>
+                                            <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
+                                                {new Date(order.createdAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} • 
+                                                <span className={order.status === 2 ? "text-green-500 ml-1" : "text-orange-500 ml-1"}>
+                                                    {order.status === 2 ? "ĐÃ THANH TOÁN" : "CHỜ XỬ LÝ"}
+                                                </span>
+                                            </p>
+                                        </div>
+                                        <div className="text-sm font-black text-gray-900 z-10">
+                                            {order.totalAmount.toLocaleString('vi-VN')}đ
+                                        </div>
+                                        <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-500 translate-x-full group-hover:translate-x-0 transition-transform" />
                                     </div>
-                                    <div className="flex-1">
-                                        <p className="text-xs font-bold text-gray-900 mb-0.5">BÀN {i + 1}</p>
-                                        <p className="text-[10px] text-gray-500 font-medium uppercase tracking-wide">3 món • {10 + i}:24 AM</p>
-                                    </div>
-                                    <div className="text-sm font-bold text-primary">145k</div>
-                                </div>
-                            ))}
+                                ))
+                            )}
                         </div>
                     </CardContent>
-                    <div className="p-4 bg-gray-50/50 border-t border-gray-50">
-                        <Button variant="ghost" className="w-full text-xs font-bold text-gray-500 hover:text-primary transition-colors py-5">
-                            Xem tất cả hoạt động
+                    <div className="p-6 bg-gray-50 border-t-4 border-gray-900">
+                        <Button variant="ghost" className="w-full text-[10px] font-black text-gray-900 uppercase tracking-[0.3em] hover:bg-gray-900 hover:text-white transition-all py-6 rounded-2xl border-2 border-transparent hover:border-gray-900">
+                            Xem tất cả báo cáo
                         </Button>
                     </div>
                 </Card>
             </div>
+
+            <style jsx global>{`
+                .custom-scrollbar::-webkit-scrollbar {
+                    width: 6px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                    background: transparent;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                    background: #e5e7eb;
+                    border-radius: 10px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+                    background: #d1d5db;
+                }
+            `}</style>
         </div>
     );
 }

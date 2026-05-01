@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 
 import {
-    Users,
     Search,
     Mail,
     History,
@@ -31,15 +30,11 @@ import {
     AlertDialogAction,
     AlertDialogCancel,
     AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
-    DialogFooter,
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
@@ -305,119 +300,124 @@ export default function AdminUserManagement() {
 
             {/* Ban Reason Dialog */}
             <Dialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
-                <DialogContent className="sm:max-w-[425px] rounded-[2rem] border-0 shadow-2xl p-0 overflow-hidden font-mono translate-y-[-5%] sm:translate-y-0">
-                    <div className="bg-[#ff4d4f] p-8 text-white">
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-                                <Ban className="size-6 text-white" />
+                <DialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
+                    <div className="bg-gray-900 p-8 text-white shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                <Ban className="size-7 text-red-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-2xl font-black uppercase tracking-tighter leading-none">Chặn người dùng</DialogTitle>
-                                <DialogDescription className="text-white/70 text-[10px] font-bold uppercase tracking-widest mt-1">
-                                    Tài khoản sẽ không thể đăng nhập
-                                </DialogDescription>
+                                <DialogTitle className="text-2xl font-black uppercase tracking-tight">Chặn người dùng</DialogTitle>
+                                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Tài khoản sẽ không thể đăng nhập</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="p-8 space-y-6 bg-white">
                         <div className="space-y-4">
-                            <div className="flex items-center gap-2 px-4 py-3 bg-orange-50 border border-orange-100 rounded-xl">
-                                <AlertCircle className="size-4 text-orange-500 shrink-0" />
-                                <p className="text-[10px] font-bold text-orange-700 uppercase">
-                                    Đang thực hiện trên: <span className="text-black">{userToAction?.username}</span>
+                            <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border-2 border-red-100 rounded-2xl">
+                                <AlertCircle className="size-4 text-red-500 shrink-0" />
+                                <p className="text-[10px] font-black text-red-900 uppercase tracking-widest">
+                                    Đối tượng: <span className="text-red-500 underline decoration-2 offset-2">@{userToAction?.username}</span>
                                 </p>
                             </div>
 
                             <div className="space-y-2">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Lý do chặn</label>
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lý do chặn</label>
                                 <Textarea
                                     value={banReason}
                                     onChange={(e) => setBanReason(e.target.value)}
-                                    placeholder="Nhập lý do chặn..."
-                                    className="min-h-[120px] rounded-2xl border-gray-100 focus:border-[#ff4d4f] focus:ring-0 font-bold text-sm bg-gray-50/50"
+                                    placeholder="Nhập lý do chặn (vi phạm điều khoản, spam...)..."
+                                    className="min-h-[120px] border-2 border-gray-100 rounded-2xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 resize-none placeholder:text-gray-300"
                                 />
                             </div>
                         </div>
+                    </div>
 
-                        <DialogFooter className="flex flex-col sm:flex-row gap-3">
+                    <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4 shrink-0">
                             <Button
+                                type="button"
                                 variant="ghost"
                                 onClick={() => setIsBanDialogOpen(false)}
-                                className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 border border-gray-100"
+                                className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
                             >
-                                Hủy
+                                Hủy bỏ
                             </Button>
                             <Button
                                 onClick={handleBanUser}
                                 disabled={blacklistMutation.isPending || !banReason.trim()}
-                                className="h-12 rounded-xl bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-black uppercase text-[10px] tracking-widest flex-1 shadow-lg shadow-[#ff4d4f]/20"
+                                className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50"
                             >
                                 {blacklistMutation.isPending ? "Đang xử lý..." : "Xác nhận chặn"}
                             </Button>
-                        </DialogFooter>
-                    </div>
+                        </div>
                 </DialogContent>
             </Dialog>
 
             {/* Unban Confirmation */}
             <AlertDialog open={isUnbanDialogOpen} onOpenChange={setIsUnbanDialogOpen}>
-                <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-0 overflow-hidden font-mono translate-y-[-5%] sm:translate-y-0">
-                    <div className="bg-green-500 p-8 text-white">
-                        <div className="flex items-center gap-4 mb-2">
-                            <div className="size-12 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30">
-                                <Unlock className="size-6 text-white" />
+                <AlertDialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
+                    <div className="bg-gray-900 p-8 text-white shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                <Unlock className="size-7 text-green-400" />
                             </div>
-                            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tighter">Bỏ chặn người dùng</AlertDialogTitle>
+                            <div>
+                                <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Mở khóa tài khoản</AlertDialogTitle>
+                                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Khôi phục quyền truy cập hệ thống</p>
+                            </div>
                         </div>
                     </div>
                     <div className="p-8 space-y-6 bg-white">
-                        <AlertDialogDescription className="text-gray-500 font-bold text-sm">
-                            Bạn có chắc chắn muốn bỏ chặn cho người dùng <span className="text-black font-black">@{userToAction?.username}</span>? Họ sẽ có thể đăng nhập lại vào hệ thống ngay lập tức.
-                        </AlertDialogDescription>
-                        <AlertDialogFooter className="flex gap-3">
-                            <AlertDialogCancel className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 border border-gray-100 hover:bg-gray-50">Hủy</AlertDialogCancel>
+                        <p className="text-gray-500 font-bold text-sm leading-relaxed">
+                            Bạn có chắc chắn muốn bỏ chặn cho người dùng <span className="text-black font-black underline decoration-2 decoration-green-500/30 underline-offset-4">@{userToAction?.username}</span>? Họ sẽ có thể đăng nhập lại vào hệ thống ngay lập tức.
+                        </p>
+                        <div className="flex justify-end gap-4">
+                            <AlertDialogCancel className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all border-none shadow-none bg-transparent">Hủy bỏ</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleRemoveBan}
-                                className="h-12 rounded-xl bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[10px] tracking-widest flex-1 shadow-lg shadow-green-500/20"
+                                className="h-12 px-10 bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#14532d] active:translate-y-1 active:shadow-none transition-all"
                             >
-                                Xác nhận bỏ chặn
+                                Xác nhận mở
                             </AlertDialogAction>
-                        </AlertDialogFooter>
+                        </div>
                     </div>
                 </AlertDialogContent>
             </AlertDialog>
 
             {/* Delete Confirmation */}
             <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <AlertDialogContent className="rounded-3xl border-0 shadow-2xl p-0 overflow-hidden font-mono translate-y-[-5%] sm:translate-y-0">
-                    <div className="bg-black p-8 text-white">
-                        <div className="flex items-center gap-4 mb-2">
-                            <div className="size-12 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-                                <Trash2 className="size-6 text-red-500" />
+                <AlertDialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
+                    <div className="bg-gray-900 p-8 text-white shrink-0">
+                        <div className="flex items-center gap-4">
+                            <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                <Trash2 className="size-7 text-red-500" />
                             </div>
-                            <AlertDialogTitle className="text-2xl font-black uppercase tracking-tighter">Xóa người dùng</AlertDialogTitle>
+                            <div>
+                                <AlertDialogTitle className="text-2xl font-black uppercase tracking-tight">Xóa người dùng</AlertDialogTitle>
+                                <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Hành động này không thể hoàn tác</p>
+                            </div>
                         </div>
                     </div>
                     <div className="p-8 space-y-6 bg-white">
-                        <div className="flex items-start gap-4 p-4 bg-red-50 border border-red-100 rounded-2xl">
+                        <div className="flex items-start gap-4 p-5 bg-red-50 border-2 border-red-100 rounded-[1.5rem]">
                             <AlertCircle className="size-5 text-red-500 mt-0.5 shrink-0" />
                             <div className="space-y-1">
-                                <p className="text-sm font-black text-red-900 uppercase tracking-tight">Hành động nguy hiểm</p>
-                                <AlertDialogDescription className="text-red-700 text-xs font-bold leading-relaxed">
-                                    Dữ liệu của người dùng <span className="underline decoration-2">@{userToAction?.username}</span> sẽ bị xóa vĩnh viễn và không thể khôi phục.
-                                </AlertDialogDescription>
+                                <p className="text-[10px] font-black text-red-900 uppercase tracking-widest">Cảnh báo nguy hiểm</p>
+                                <p className="text-red-700 text-xs font-bold leading-relaxed">
+                                    Dữ liệu của <span className="underline decoration-2 underline-offset-4">@{userToAction?.username}</span> sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
+                                </p>
                             </div>
                         </div>
-                        <AlertDialogFooter className="flex gap-3">
-                            <AlertDialogCancel className="h-12 rounded-xl font-black uppercase text-[10px] tracking-widest flex-1 border border-gray-100 hover:bg-gray-50">Quay lại</AlertDialogCancel>
+                        <div className="flex justify-end gap-4">
+                            <AlertDialogCancel className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all border-none shadow-none bg-transparent">Hủy bỏ</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleDeleteUser}
-                                className="h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-widest flex-1 shadow-lg shadow-red-500/20"
+                                className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all"
                             >
-                                Tôi hiểu, xóa ngay
+                                Xác nhận xóa
                             </AlertDialogAction>
-                        </AlertDialogFooter>
+                        </div>
                     </div>
                 </AlertDialogContent>
             </AlertDialog>

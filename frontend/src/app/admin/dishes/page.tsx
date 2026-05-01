@@ -9,8 +9,7 @@ import {
     Pencil,
     Trash2,
     Image as ImageIcon,
-    Loader2,
-    DollarSign
+    Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +31,6 @@ import { Badge } from '@/components/ui/badge';
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
     DialogTrigger
 } from '@/components/ui/dialog';
@@ -213,29 +211,31 @@ export default function DishesPage() {
                             THÊM MÓN MỚI
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="sm:max-w-3xl md:max-w-4xl w-[95vw] md:w-full rounded-md border border-slate-200 shadow-2xl p-0 overflow-hidden bg-white">
+                    <DialogContent className="max-w-4xl bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
                         <form onSubmit={editingFood ? handleUpdateFood : handleCreateFood} className="flex flex-col max-h-[90vh]">
-                            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/50 shrink-0">
-                                <DialogHeader>
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <DialogTitle className="text-lg font-bold text-slate-900 tracking-tight uppercase">
-                                                {editingFood ? 'Hiệu chỉnh món ăn' : 'Tạo món ăn mới'}
-                                            </DialogTitle>
-                                        </div>
+                            <div className="bg-gray-900 p-8 text-white shrink-0">
+                                <div className="flex items-center gap-4">
+                                    <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                        <ImageIcon className="size-7 text-red-400" />
                                     </div>
-                                </DialogHeader>
+                                    <div>
+                                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">
+                                            {editingFood ? 'Hiệu chỉnh món ăn' : 'Thêm món ăn mới'}
+                                        </DialogTitle>
+                                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Cập nhật thực đơn bún bò của bạn</p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-6 md:p-8 custom-scrollbar">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16">
+                            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                     {/* Cột Trái (Trường chính) */}
                                     <div className="space-y-6">
                                         <div className="space-y-2">
-                                            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Tên món ăn </Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tên món ăn</Label>
                                             <Input
                                                 required
-                                                className="h-12 border-slate-200 rounded-md bg-white text-base md:text-lg font-semibold focus:border-[#ff4d4f] focus:ring-1 focus:ring-[#ff4d4f]/20 transition-all placeholder:text-slate-300"
+                                                className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                                 value={formData.name}
                                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                                                 placeholder="Ví dụ: Bún Bò Huế Đặc Biệt"
@@ -243,14 +243,14 @@ export default function DishesPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <div className="flex justify-between items-center pr-1">
-                                                <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Danh mục </Label>
+                                            <div className="flex justify-between items-center px-1">
+                                                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Danh mục</Label>
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
-                                                    className="text-[10px] font-bold text-[#ff4d4f] hover:text-[#ff4d4f]/80 uppercase tracking-wider transition-all"
+                                                    className="text-[9px] font-black text-red-500 hover:text-red-600 uppercase tracking-widest transition-all"
                                                 >
-                                                    {showNewCategoryInput ? 'Hủy bỏ' : '+ TẠO MỚI'}
+                                                    {showNewCategoryInput ? 'Hủy bỏ' : '+ Tạo mới'}
                                                 </button>
                                             </div>
 
@@ -295,11 +295,8 @@ export default function DishesPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label htmlFor="foodPrice" className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Giá bán (VNĐ)</Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá bán (VNĐ)</Label>
                                             <div className="relative group">
-                                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                                                    <DollarSign className="size-4 text-slate-400 group-focus-within:text-[#ff4d4f] transition-colors" />
-                                                </div>
                                                 <Input
                                                     id="foodPrice"
                                                     type="number"
@@ -307,11 +304,11 @@ export default function DishesPage() {
                                                     value={formData.price}
                                                     onChange={e => setFormData({ ...formData, price: e.target.value })}
                                                     placeholder="65000"
-                                                    className="pl-11 pr-16 h-12 border-slate-200 border-2 rounded-md bg-white text-base font-semibold font-sans focus-visible:border-[#ff4d4f] focus-visible:ring-1 focus-visible:ring-[#ff4d4f]/20 transition-all placeholder:text-slate-300 placeholder:font-normal"
+                                                    className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 pr-16"
                                                     required
                                                 />
-                                                <div className="absolute inset-y-0 right-0 max-w-fit px-4 flex items-center border-l border-slate-200 bg-slate-50 rounded-r-md">
-                                                    <span className="text-[10px] font-bold text-slate-500">VNĐ</span>
+                                                <div className="absolute inset-y-0 right-0 flex items-center pr-4">
+                                                    <span className="text-[10px] font-black text-gray-400">VNĐ</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -320,9 +317,9 @@ export default function DishesPage() {
                                     {/* Cột Phải (Trường phụ) */}
                                     <div className="space-y-6">
                                         <div className="space-y-2">
-                                            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Mô tả ngắn gọn</Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả món ăn</Label>
                                             <Textarea
-                                                className="min-h-[110px] border-slate-200 rounded-md bg-white text-sm font-medium focus:border-[#ff4d4f] focus:ring-1 focus:ring-[#ff4d4f]/20 transition-all resize-none placeholder:text-slate-300"
+                                                className="min-h-[110px] border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 resize-none placeholder:text-gray-300"
                                                 value={formData.description}
                                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
                                                 placeholder="Ghi chú về thành phần, hương vị hoặc đặc tính món ăn..."
@@ -330,54 +327,34 @@ export default function DishesPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Hình ảnh nhận diện</Label>
-                                            <div className="relative flex flex-col items-center justify-center min-h-[200px] w-full p-6 bg-slate-50/50 border-2 border-dashed border-slate-200 rounded-md group transition-all hover:border-[#ff4d4f]/40 hover:bg-white overflow-hidden">
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Hình ảnh món ăn</Label>
+                                            <div className="relative group h-[200px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden transition-all hover:border-red-500/50 hover:bg-red-50/10">
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={handleFileChange}
+                                                    className="absolute inset-0 z-20 opacity-0 cursor-pointer"
+                                                />
                                                 {filePreview ? (
                                                     <div className="absolute inset-0 z-0">
-                                                        <img src={filePreview} alt="Preview" className="w-full h-full object-cover opacity-10 blur-[1px]" />
-                                                    </div>
-                                                ) : null}
-
-                                                <div className="relative z-10 flex flex-col items-center gap-5">
-                                                    {filePreview ? (
-                                                        <div className="size-24 rounded shadow-lg border-2 border-white overflow-hidden">
-                                                            <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
-                                                        </div>
-                                                    ) : (
-                                                        <div className="size-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 group-hover:scale-110 transition-all group-hover:bg-[#ff4d4f]/5 group-hover:text-[#ff4d4f]">
-                                                            <ImageIcon className="size-8 opacity-40" />
-                                                        </div>
-                                                    )}
-
-                                                    <div className="flex flex-col items-center gap-3">
-                                                        <label className="h-10 px-6 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white text-[10px] font-bold uppercase tracking-wider rounded-sm cursor-pointer transition-all shadow-sm flex items-center gap-2">
-                                                            <Plus className="size-3" /> Chọn tệp hình ảnh
-                                                            <input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                onChange={handleFileChange}
-                                                                className="absolute top-0 left-0 opacity-0 cursor-pointer"
-                                                            />
-                                                        </label>
-                                                        <div className="max-w-[240px] px-2 text-center">
-                                                            <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider leading-relaxed">
-                                                                PNG, JPG, WEBP • Tối đa 5MB
-                                                            </p>
-                                                            <p className="text-[9px] text-slate-400 font-semibold italic mt-1 leading-tight">
-                                                                * Khuyên dùng tỷ lệ 1:1 (vuông) để hiển thị đẹp nhất trên menu
-                                                            </p>
+                                                        <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
+                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                            <div className="flex flex-col items-center gap-2 text-white">
+                                                                <ImageIcon className="size-8" />
+                                                                <span className="text-[10px] font-black uppercase tracking-widest">Thay đổi ảnh</span>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-
-                                                {filePreview && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={(e) => { e.preventDefault(); setSelectedFile(null); setFilePreview(''); }}
-                                                        className="absolute top-2 right-2 bg-slate-900/10 hover:bg-red-500 text-slate-900 hover:text-white size-7 rounded flex items-center justify-center z-20 transition-all border border-slate-200"
-                                                    >
-                                                        <Plus className="size-4 rotate-45" />
-                                                    </button>
+                                                ) : (
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                                                        <div className="size-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-gray-400">
+                                                            <Plus className="size-6" />
+                                                        </div>
+                                                        <div className="text-center">
+                                                            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Chọn tệp hình ảnh</p>
+                                                            <p className="text-[9px] text-gray-400 font-bold uppercase mt-1">PNG, JPG, WEBP • Tối đa 5MB</p>
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
@@ -385,12 +362,23 @@ export default function DishesPage() {
                                 </div>
                             </div>
 
-                            <div className="px-6 py-4 bg-slate-50/50 border-t border-slate-100 flex flex-col md:flex-row justify-end gap-3 shrink-0">
-                                <Button type="button" variant="outline" className="h-10 px-6 border-slate-200 bg-white font-bold rounded-sm hover:bg-slate-100 transition-all uppercase text-[10px] tracking-wider text-slate-600" onClick={() => setIsDialogOpen(false)}>Hủy bỏ tác vụ</Button>
-                                <Button type="submit" className="h-10 px-8 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold rounded-sm border-none shadow-md active:scale-[0.98] transition-all uppercase text-[10px] tracking-wider" disabled={createFoodMutation.isPending || updateFoodMutation.isPending}>
+                            <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4 shrink-0">
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    onClick={() => setIsDialogOpen(false)}
+                                    className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
+                                >
+                                    Hủy bỏ
+                                </Button>
+                                <Button
+                                    type="submit"
+                                    disabled={createFoodMutation.isPending || updateFoodMutation.isPending}
+                                    className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50"
+                                >
                                     {createFoodMutation.isPending || updateFoodMutation.isPending ? (
-                                        <><Loader2 className="size-4 animate-spin mr-2" /> Đang đồng bộ...</>
-                                    ) : 'Hoàn tất & Lưu thay đổi'}
+                                        <Loader2 className="size-4 animate-spin" />
+                                    ) : 'Hoàn tất & Lưu món'}
                                 </Button>
                             </div>
                         </form>

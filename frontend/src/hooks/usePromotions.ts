@@ -72,8 +72,16 @@ export function usePromotions() {
             maxUsageLimit: number;
             maxUsagePerUser: number;
             isActive: boolean;
+            type: 'Standard' | 'PointRedemption' | 'Reward';
+            pointCost?: number;
         }) => {
             // Map frontend form fields to backend C# command fields
+            const typeMap = {
+                'Standard': 0,
+                'PointRedemption': 1,
+                'Reward': 2
+            };
+
             const payload = {
                 Code: formData.code,
                 Description: formData.description,
@@ -85,8 +93,8 @@ export function usePromotions() {
                 ValidTo: new Date(formData.endDate).toISOString(),
                 TotalUsageLimit: formData.maxUsageLimit,
                 MaxUsagePerUser: formData.maxUsagePerUser,
-                Type: 0, // VoucherType.Standard
-                PointCost: null,
+                Type: typeMap[formData.type],
+                PointCost: formData.pointCost || null,
                 Conditions: null,
             };
             const { data } = await axiosInstance.post<Voucher>('/api/promotion/vouchers', payload);

@@ -12,14 +12,24 @@ public record GetDashboardStatsQuery() : IRequest<DashboardStatsDto>;
 public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQuery, DashboardStatsDto>
 {
     private readonly IAppDbContext _context;
+    private readonly ICacheService _cache;
+    private const string CacheKey = "dashboard_stats";
 
-    public GetDashboardStatsQueryHandler(IAppDbContext context)
+    public GetDashboardStatsQueryHandler(IAppDbContext context, ICacheService cache)
     {
         _context = context;
+        _cache = cache;
     }
 
     public async Task<DashboardStatsDto> Handle(GetDashboardStatsQuery request, CancellationToken cancellationToken)
     {
+        // Try get from cache first
+        var cachedData = await _cache.GetAsync<DashboardStatsDto>(CacheKey);
+        if (cachedData != null)
+        {
+            return cachedData;
+        }
+
         var today = DateTime.UtcNow.Date;
         var sevenDaysAgo = today.AddDays(-6);
 
@@ -69,13 +79,36 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             ));
         }
 
-        return new DashboardStatsDto(
+        // 6. Recent Orders (Top 10)
+        var recentOrders = await _context.Orders
+            .Include(o => o.TableSession)
+                .ThenInclude(ts => ts!.Table)
+            .OrderByDescending(o => o.CreatedAt)
+            .Take(10)
+            .Select(o => new OrderSummaryDto(
+                o.Id,
+                o.TableSession!.Table!.TableCode,
+                o.TableSession!.Table!.Name,
+                o.CreatedAt,
+                o.TotalAmount,
+                o.Status,
+                o.Note
+            ))
+            .ToListAsync(cancellationToken);
+
+        var result = new DashboardStatsDto(
             dailyRevenue,
             totalOrdersToday,
             newCustomersToday,
             bestSellingItem,
-            chartData
+            chartData,
+            recentOrders
         );
+
+        // Store in cache for 2 minutes
+        await _cache.SetAsync(CacheKey, result, TimeSpan.FromMinutes(2));
+
+        return result;
     }
 
     private string GetVietnameseDayOfWeek(DateTime date)

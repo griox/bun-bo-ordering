@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BunBo.SharedKernel;
+using StackExchange.Redis;
+using OrderService.Infrastructure.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +55,11 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
+
+// Configure Redis
+var redisConnString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnString));
+builder.Services.AddSingleton<ICacheService, RedisCacheService>();
 
 // Add CORS: restrict to configured allowed origins only
 builder.Services.AddCors(options =>

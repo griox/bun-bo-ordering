@@ -9,12 +9,23 @@ export interface WeeklyRevenue {
     revenue: number;
 }
 
+export interface OrderSummary {
+    id: string;
+    tableCode: string;
+    tableName: string;
+    createdAt: string;
+    totalAmount: number;
+    status: number;
+    note: string | null;
+}
+
 export interface DashboardStats {
     dailyRevenue: number;
     totalOrdersToday: number;
     newCustomersToday: number;
     bestSellingItem: string;
     weeklyRevenue: WeeklyRevenue[];
+    recentOrders: OrderSummary[];
 }
 
 export const useDashboardStats = () => {
@@ -24,6 +35,6 @@ export const useDashboardStats = () => {
       const response = await axiosInstance.get('/api/orders/stats');
       return response.data;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000, // 1 minute since we have Redis caching now
   });
 };
