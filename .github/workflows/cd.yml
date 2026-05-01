@@ -28,6 +28,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          clean: true
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
@@ -114,6 +117,6 @@ jobs:
           for service in "${services[@]}"; do
             echo "Rolling back deployment/$service..."
             kubectl rollout undo deployment/$service
-            kubectl rollout status deployment/$service --timeout=60s || echo "::error::Rollback confirmation failed for $service"
+            kubectl rollout status deployment/$service --timeout=180s || echo "::error::Rollback confirmation failed for $service"
           done
           exit 1
