@@ -24,6 +24,16 @@ export function StorySection() {
             alt: "Story Image 3"
         },
         {
+            type: 'image',
+            content: "/images/IMG_4330.png",
+            alt: "Story Image 3"
+        },
+        {
+            type: 'image',
+            content: "/images/IMG_4331.png",
+            alt: "Story Image 3"
+        },
+        {
             type: 'map',
             content: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3899.208107931326!2d109.19532187584102!3d12.274404087983804!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31706700617a79cf%3A0xc7be36136df2332c!2zQsO6biBCw7IgJiBDw6AgUGjDqiBQaOG7kQ!5e0!3m2!1svi!2s!4v1710226456000!5m2!1svi!2s",
             alt: "Location Map"

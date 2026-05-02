@@ -16,11 +16,12 @@ export default {
                 text: "#000000", // Black Text
             },
             fontFamily: {
-                sans: ["var(--font-roboto-mono)", "monospace"],
-                serif: ["var(--font-roboto-mono)", "monospace"],
+                sans: ["var(--font-roboto)", "sans-serif"],
+                serif: ["var(--font-roboto)", "serif"],
                 mono: ["var(--font-roboto-mono)", "monospace"],
-                display: ["var(--font-roboto-mono)", "monospace"],
-                main: ["var(--font-roboto-mono)", "monospace"],
+                display: ["var(--font-roboto)", "sans-serif"],
+                main: ["var(--font-roboto)", "sans-serif"],
+                admin: ["var(--font-jakarta)", "sans-serif"],
             },
             backgroundImage: {
                 'paper-pattern': "url('https://www.transparenttextures.com/patterns/cream-paper.png')",

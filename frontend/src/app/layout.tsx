@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Roboto_Mono, Plus_Jakarta_Sans } from "next/font/google"; // Added Plus Jakarta Sans
+import { Roboto_Mono, Roboto, Plus_Jakarta_Sans } from "next/font/google"; 
 import { Toaster } from "react-hot-toast";
 import { Providers } from "./Providers";
 import "./globals.css";
@@ -8,6 +8,13 @@ import { cn } from "@/lib/utils";
 const robotoMono = Roboto_Mono({
   subsets: ["latin", "vietnamese"],
   variable: "--font-roboto-mono",
+  display: "swap",
+});
+
+const roboto = Roboto({
+  subsets: ["latin", "vietnamese"],
+  weight: ["300", "400", "500", "700", "900"],
+  variable: "--font-roboto",
   display: "swap",
 });
 
@@ -28,10 +35,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", robotoMono.variable, jakarta.variable)} suppressHydrationWarning>
+    <html lang="en" className={cn("font-sans", robotoMono.variable, roboto.variable, jakarta.variable)} suppressHydrationWarning>
       <body
         className={cn(
           robotoMono.variable,
+          roboto.variable,
           jakarta.variable,
           "antialiased font-main bg-cover bg-fixed bg-center text-text"
         )}
