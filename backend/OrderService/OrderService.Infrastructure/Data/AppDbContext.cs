@@ -25,6 +25,7 @@ public class AppDbContext : DbContext, IAppDbContext
         builder.Entity<RestaurantTable>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp theo thời gian tạo
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
@@ -32,6 +33,7 @@ public class AppDbContext : DbContext, IAppDbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.GroupCode).HasMaxLength(10);
+            entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp theo thời gian tạo
             entity.HasOne(e => e.Table)
                   .WithMany(t => t.Sessions)
                   .HasForeignKey(e => e.TableId)
@@ -42,7 +44,9 @@ public class AppDbContext : DbContext, IAppDbContext
         builder.Entity<Order>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.HasIndex(e => e.CustomerId); // Add index for fast querying by customer
+            entity.HasIndex(e => e.CustomerId); 
+            entity.HasIndex(e => e.TableSessionId); // Tối ưu truy vấn đơn hàng theo phiên bàn
+            entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp danh sách đơn hàng mới nhất
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.DiscountAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.VoucherCode).HasMaxLength(50);

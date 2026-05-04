@@ -25,8 +25,8 @@ spec:
             cpu: "100m"
             memory: "128Mi"
           limits:
-            cpu: "300m" # Có thể burst CPU
-            memory: "256Mi" # Giới hạn RAM cứng để tránh OOM toàn node
+            cpu: "500m" # Tăng giới hạn CPU
+            memory: "512Mi" # Tăng giới hạn RAM
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -83,14 +83,14 @@ spec:
     kind: Deployment
     name: cart-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 5
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 50
   - type: Resource
     resource:
       name: memory

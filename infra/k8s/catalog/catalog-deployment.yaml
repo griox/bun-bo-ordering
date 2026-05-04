@@ -25,7 +25,7 @@ spec:
             cpu: "100m"
             memory: "128Mi"
           limits:
-            cpu: "300m" # Có thể burst CPU
+            cpu: "500m" # Tăng giới hạn CPU
             memory: "256Mi" # Giới hạn RAM cứng để tránh OOM toàn node
         livenessProbe:
           tcpSocket:
@@ -129,14 +129,14 @@ spec:
     kind: Deployment
     name: catalog-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 5
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 50
   - type: Resource
     resource:
       name: memory
