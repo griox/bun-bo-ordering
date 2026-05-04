@@ -18,24 +18,13 @@ public class OpenSessionCommandHandler : IRequestHandler<OpenSessionCommand, Ope
     public async Task<OpenSessionResponse> Handle(OpenSessionCommand request, CancellationToken cancellationToken)
     {
         var table = await _context.RestaurantTables
-            .Include(t => t.Sessions)
             .FirstOrDefaultAsync(t => t.Id == request.TableId, cancellationToken);
 
         if (table == null)
             throw new DomainException("Bàn không tồn tại.");
 
-        var activeSession = table.Sessions.FirstOrDefault(s => !s.IsClosed);
-
-        if (activeSession != null)
-        {
-            return new OpenSessionResponse
-            {
-                SessionId = activeSession.Id,
-                GroupCode = activeSession.GroupCode,
-                Message = "Bàn đang có người ăn. Bạn đã tham gia vào bàn thành công! (Dùng chung giỏ hàng)"
-            };
-        }
-
+        // Yêu cầu mới: Mỗi lần quét mã đều tạo một phiên (Session) riêng biệt
+        // Không sử dụng chung giỏ hàng nữa để tiện tính tiền riêng.
         string newGroupCode = new Random().Next(1000, 9999).ToString();
         var newSession = new TableSession(table.Id, newGroupCode);
         
@@ -47,7 +36,7 @@ public class OpenSessionCommandHandler : IRequestHandler<OpenSessionCommand, Ope
         {
             SessionId = newSession.Id,
             GroupCode = newSession.GroupCode,
-            Message = "Bàn trống. Đã mở phiên mới thành công!"
+            Message = "Đã mở phiên gọi món thành công! Bạn có thể đặt món và tính tiền riêng biệt."
         };
     }
 }
