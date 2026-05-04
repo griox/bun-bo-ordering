@@ -16,56 +16,37 @@ export const options = {
 
 const BASE_URL = 'https://api.bun-bo-chung-cu.io.vn/api';
 
-// Bước chuẩn bị: Đăng ký tài khoản test nếu chưa có
-export function setup() {
-    http.post(`${BASE_URL}/identity/register`,
-        JSON.stringify({
-            username: 'k6user',
-            email: 'k6user@test.com',
-            password: 'Test@1234',
-        }),
-        { headers: { 'Content-Type': 'application/json' } }
-    );
-}
-
 export default function () {
-    // 1. Đăng nhập để lấy Token (Cần thiết cho Cart và Order)
-    const loginRes = http.post(`${BASE_URL}/identity/login`,
-        JSON.stringify({ username: 'k6user', password: 'Test@1234' }),
-        { headers: { 'Content-Type': 'application/json' } }
-    );
-    
-    const token = loginRes.json('token');
-    const authHeaders = { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}` 
-    };
+    // Không đăng nhập, không dùng Token
+    const guestSessionId = `guest-session-${__VU}-${__ITER}`;
 
-    // 2. Xem danh sách món ăn (Public API)
+    // 1. Khách xem menu (Public API)
     const catalogRes = http.get(`${BASE_URL}/catalog/foods`);
     check(catalogRes, { 'catalog 200': (r) => r.status === 200 });
-
     sleep(1);
 
-    // 3. Thêm món vào giỏ hàng (Private API - Cần Token)
+    // 2. Khách thêm món vào giỏ hàng (Cart Service - Nay đã là Public)
     const cartPayload = JSON.stringify({
-        cartOwnerId: 'k6user', // Đồng nhất với user đăng nhập
+        cartOwnerId: guestSessionId, // Dùng Session ID thay vì User ID
         items: [{ foodId: '1', quantity: 2 }]
     });
-    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { headers: authHeaders });
-    check(cartRes, { 'cart update 200': (r) => r.status === 200 });
-
+    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { 
+        headers: { 'Content-Type': 'application/json' } 
+    });
+    check(cartRes, { 'guest cart update 200': (r) => r.status === 200 });
     sleep(1);
 
-    // 4. Đặt đơn hàng (Private API - Cần Token)
+    // 3. Khách đặt đơn hàng (Order Service - Chấp nhận Guest)
     const orderPayload = JSON.stringify({
         tableId: 'table-01',
         items: [{ foodId: '1', quantity: 2 }],
-        note: 'K6 Load Test with Token'
+        note: 'Guest Checkout Load Test'
     });
-    // Sửa lỗi typo: dùng orderPayload thay vì orderRes
-    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { headers: authHeaders });
-    check(orderRes, { 'order success 200': (r) => r.status === 200 });
-
+    
+    // Gửi request KHÔNG có header Authorization
+    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { 
+        headers: { 'Content-Type': 'application/json' } 
+    });
+    check(orderRes, { 'guest order success 200/201': (r) => r.status === 200 || r.status === 201 });
     sleep(2);
 }

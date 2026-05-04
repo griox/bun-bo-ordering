@@ -65,7 +65,7 @@ app.UseAuthorization();
 
 app.MapGet("/", () => "Cart Service is running.");
 
-var cartGroup = app.MapGroup("/api/cart").RequireAuthorization();
+var cartGroup = app.MapGroup("/api/cart");
 
 cartGroup.MapGet("/{cartOwnerId}", async (MediatR.IMediator mediator, string cartOwnerId) =>
 {
