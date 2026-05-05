@@ -9,6 +9,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ThreadPool.SetMinThreads(500, 500);
 builder.Host.AddSerilogLogging("CartService");
 
 builder.Services.AddEndpointsApiExplorer();
@@ -69,14 +70,40 @@ var cartGroup = app.MapGroup("/api/cart");
 
 cartGroup.MapGet("/{cartOwnerId}", async (MediatR.IMediator mediator, string cartOwnerId) =>
 {
-    var cart = await mediator.Send(new CartService.Application.Cart.Queries.GetCartQuery(cartOwnerId));
-    return Results.Ok(cart ?? new CartService.Domain.Entities.ShoppingCart(cartOwnerId));
+    try
+    {
+        var cart = await mediator.Send(new CartService.Application.Cart.Queries.GetCartQuery(cartOwnerId));
+        return Results.Ok(cart ?? new CartService.Domain.Entities.ShoppingCart(cartOwnerId));
+    }
+    catch (DomainException ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message, statusCode: 500);
+    }
 });
 
 cartGroup.MapPost("/", async (MediatR.IMediator mediator, CartService.Application.Cart.Commands.UpdateCartCommand cmd) =>
 {
-    var updatedCart = await mediator.Send(cmd);
-    return Results.Ok(updatedCart);
+    try
+    {
+        var updatedCart = await mediator.Send(cmd);
+        return Results.Ok(updatedCart);
+    }
+    catch (DomainException ex)
+    {
+        return Results.BadRequest(new { Message = ex.Message });
+    }
+    catch (Grpc.Core.RpcException ex)
+    {
+        return Results.Problem("Lỗi kết nối đến dịch vụ Catalog. Vui lòng thử lại sau.", statusCode: 503);
+    }
+    catch (Exception ex)
+    {
+        return Results.Problem(ex.Message, statusCode: 500);
+    }
 });
 
 app.Run();

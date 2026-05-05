@@ -11,6 +11,7 @@ using BunBo.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ThreadPool.SetMinThreads(500, 500);
 builder.Host.AddSerilogLogging("CatalogService");
 
 

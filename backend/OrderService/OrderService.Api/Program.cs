@@ -14,6 +14,7 @@ using OrderService.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ThreadPool.SetMinThreads(500, 500);
 builder.Host.AddSerilogLogging("OrderService");
 
 builder.Services.AddEndpointsApiExplorer();
@@ -80,7 +81,7 @@ builder.Services.AddApplicationServices();
 
 // Add Http Clients for external sync
 builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.SyncDataServices.Http.CartDataClient>(client => {
-    client.Timeout = TimeSpan.FromSeconds(5);
+    client.Timeout = TimeSpan.FromSeconds(15);
 });
 
 // Configure MassTransit with RabbitMQ

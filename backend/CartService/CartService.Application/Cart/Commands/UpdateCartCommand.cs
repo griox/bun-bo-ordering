@@ -1,6 +1,7 @@
 using CartService.Application.Interfaces;
 using CartService.Domain.Entities;
 using MediatR;
+using BunBo.SharedKernel;
 
 namespace CartService.Application.Cart.Commands;
 
@@ -32,12 +33,12 @@ public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, Shopp
         {
             if (!catalogItems.TryGetValue(item.FoodId, out var catalogItem))
             {
-                throw new Exception($"Food item {item.FoodId} not found in catalog.");
+                throw new DomainException($"Food item {item.FoodId} not found in catalog.");
             }
 
             if (!catalogItem.IsAvailable)
             {
-                throw new Exception($"Món \"{catalogItem.Name}\" hiện không còn phục vụ.");
+                throw new DomainException($"Món \"{catalogItem.Name}\" hiện không còn phục vụ.");
             }
 
             // Sync price and name from source of truth (Catalog)

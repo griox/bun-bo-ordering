@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+ThreadPool.SetMinThreads(500, 500);
 builder.Host.AddSerilogLogging("PromotionService");
 
 builder.Services.AddEndpointsApiExplorer();
