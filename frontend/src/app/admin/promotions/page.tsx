@@ -360,10 +360,11 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                         <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
                         <Input
                             type="number"
+                            min="0"
                             placeholder="Nhập số điểm khách cần tiêu tốn..."
                             className="h-12 border-2 border-amber-200 bg-amber-50 rounded-xl focus:border-amber-500 font-bold text-amber-900"
                             value={formData.pointCost || ''}
-                            onChange={(e) => setFormData({ ...formData, pointCost: e.target.value === '' ? 0 : Number(e.target.value) })}
+                            onChange={(e) => setFormData({ ...formData, pointCost: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
                             required
                         />
                     </div>
@@ -384,10 +385,11 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá trị giảm</label>
                     <Input
                         type="number"
+                        min="0"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
                         value={formData.discountValue || ''}
                         placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, discountValue: e.target.value === '' ? 0 : Number(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, discountValue: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
                         required
                     />
                 </div>
@@ -395,10 +397,11 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Đơn tối thiểu</label>
                     <Input
                         type="number"
+                        min="0"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
                         value={formData.minOrderValue || ''}
                         placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value === '' ? 0 : Number(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
                         required
                     />
                 </div>
@@ -428,10 +431,11 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
                     <Input
                         type="number"
+                        min="0"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
                         value={formData.maxUsageLimit || ''}
                         placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, maxUsageLimit: e.target.value === '' ? 0 : Number(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, maxUsageLimit: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
                         required
                     />
                 </div>
@@ -439,10 +443,11 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lượt dùng / user</label>
                     <Input
                         type="number"
+                        min="0"
                         className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
                         value={formData.maxUsagePerUser || ''}
                         placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, maxUsagePerUser: e.target.value === '' ? 0 : Number(e.target.value) })}
+                        onChange={(e) => setFormData({ ...formData, maxUsagePerUser: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
                         required
                     />
                 </div>
