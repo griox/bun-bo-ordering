@@ -15,12 +15,18 @@ export const options = {
 
 const BASE_URL = 'https://api.bun-bo-chung-cu.io.vn/api';
 
-// Bàn cố định được lấy từ Database Production
-const TABLE_ID = 'dfdab3f3-163d-4535-9f07-321da5991b57';
-// Món ăn có thực từ Catalog
-const FOOD_ID = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f';
+// Danh sách bàn được lấy từ Production
+const TABLE_IDS = [
+    'f962d655-e0a5-4d64-b40a-d989921dfaf5',
+    '9395339b-f83e-4482-b215-48e9e428a922',
+    'dfdab3f3-163d-4535-9f07-321da5991b57',
+    'cf39f952-53c0-4a6b-ac25-8e64cb816612'
+];
 
 export default function () {
+    // Chọn ngẫu nhiên 1 bàn
+    const TABLE_ID = TABLE_IDS[Math.floor(Math.random() * TABLE_IDS.length)];
+
     // 1. Quét mã QR tại bàn để mở Session (Guest bắt đầu gọi món)
     const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`);
     
@@ -31,15 +37,27 @@ export default function () {
         }
     })) {
         console.error(`Scan Failed: ${scanRes.status} - ${scanRes.body}`);
-        return; // Dừng lại nếu không lấy được session
+        return;
     }
     
     const tableSessionId = scanRes.json('sessionId');
 
     // 2. Khách xem menu (Public API)
     const catalogRes = http.get(`${BASE_URL}/catalog/foods`);
-    if (!check(catalogRes, { 'catalog 200': (r) => r.status === 200 })) {
-        console.error(`Catalog Failed: ${catalogRes.status} - ${catalogRes.body}`);
+    let foodId = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f'; // Fallback
+
+    if (check(catalogRes, { 'catalog 200': (r) => r.status === 200 })) {
+        try {
+            const foods = catalogRes.json();
+            if (foods && foods.length > 0) {
+                // Chọn ngẫu nhiên 1 món từ menu thật
+                foodId = foods[Math.floor(Math.random() * foods.length)].id;
+            }
+        } catch (e) {
+            console.warn("Failed to parse catalog JSON, using fallback foodId");
+        }
+    } else {
+        console.error(`Catalog Failed: ${catalogRes.status}`);
     }
     sleep(1);
 
@@ -47,7 +65,7 @@ export default function () {
     const cartPayload = JSON.stringify({
         cart: {
             cartOwnerId: tableSessionId,
-            items: [{ foodId: FOOD_ID, quantity: 2 }]
+            items: [{ foodId: foodId, quantity: Math.floor(Math.random() * 3) + 1 }]
         }
     });
     const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { 
