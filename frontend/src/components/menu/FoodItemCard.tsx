@@ -54,6 +54,9 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                         <span className="font-display text-primary text-2xl font-black">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
                         </span>
+                        <span className="text-[8px] text-neutral-300 font-mono mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            ID: {item.id}
+                        </span>
                     </div>
 
                     {item.isAvailable && session && (

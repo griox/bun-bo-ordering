@@ -235,6 +235,7 @@ export default function TablesPage() {
                                 <div>
                                     <p className="font-bold text-gray-900 text-sm tracking-tight">{table.tableCode}</p>
                                     <p className="text-[11px] text-gray-500 font-medium">{table.name}</p>
+                                    <p className="text-[8px] text-gray-300 font-mono mt-1">ID: {table.id}</p>
                                 </div>
                                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
                                     <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg hover:bg-blue-500 hover:text-white" onClick={() => openEditDialog(table)}>
