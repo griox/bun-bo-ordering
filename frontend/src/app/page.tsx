@@ -1,5 +1,3 @@
-'use client';
-
 import { FeaturedMenu } from "@/components/landing/FeaturedMenu";
 import { Footer } from "@/components/landing/Footer";
 import { HeroSection } from "@/components/landing/HeroSection";

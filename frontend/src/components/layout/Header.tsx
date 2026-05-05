@@ -1,9 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound, Star } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePromotions } from '@/hooks/usePromotions';
@@ -55,7 +55,13 @@ export function Header() {
                 {/* Brand Logo */}
                 <Link href="/" className="flex items-center gap-2 group z-50 relative">
                     <div className="w-24 h-24 relative group-hover:rotate-12 transition-transform shrink-0">
-                        <img src="/images/logo.png" alt="Logo" className="w-full h-full object-contain drop-shadow-sm" />
+                        <Image 
+                            src="/images/logo.png" 
+                            alt="Logo" 
+                            fill
+                            className="object-contain drop-shadow-sm" 
+                            priority
+                        />
                     </div>
                     <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
                         <span className="font-display text-lg md:text-xl text-paper leading-none">BÚN BÒ</span>

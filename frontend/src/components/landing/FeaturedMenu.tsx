@@ -1,13 +1,35 @@
-/* eslint-disable @next/next/no-img-element */
-'use client';
-
-import { ArrowRight, Star, Loader2 } from "lucide-react";
+import { ArrowRight, Star } from "lucide-react";
 import Link from "next/link";
-import { useAllFoods } from "@/hooks/useCatalog";
+import Image from "next/image";
 
-export function FeaturedMenu() {
-    const { data: pagedData, isLoading } = useAllFoods(0, 3);
-    const featuredItems = pagedData?.items || [];
+interface Food {
+    id: string;
+    name: string;
+    description?: string;
+    price: number;
+    imageUrl?: string;
+    isAvailable: boolean;
+    categoryId: number;
+    categoryName?: string;
+}
+
+async function getFeaturedFoods() {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    try {
+        const res = await fetch(`${apiUrl}/api/catalog/foods?skip=0&take=3`, {
+            next: { revalidate: 3600 } // Cache for 1 hour
+        });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : (data.items || []);
+    } catch (error) {
+        console.error("Error fetching featured foods:", error);
+        return [];
+    }
+}
+
+export async function FeaturedMenu() {
+    const featuredItems: Food[] = await getFeaturedFoods();
 
     return (
         <section className="py-20 bg-background relative overflow-hidden transition-colors duration-300">
@@ -25,42 +47,37 @@ export function FeaturedMenu() {
                     </h2>
                 </div>
 
-                {isLoading ? (
-                    <div className="flex flex-col items-center justify-center py-20 gap-4">
-                        <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                        <p className="text-neutral-500 italic">Đang tải món ngon...</p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {featuredItems.map((item) => (
-                            <div key={item.id} className="group relative bg-white rounded-2xl border-4 border-dashed border-primary/20 p-4 hover:border-primary transition-colors cursor-pointer">
-                                <div className="aspect-square relative overflow-hidden rounded-xl mb-4 border-2 border-text bg-gray-100">
-                                    <img
-                                        src={item.imageUrl || '/images/dish-placeholder.png'}
-                                        alt={item.name}
-                                        className="object-cover w-full h-full transform group-hover:scale-110 transition-transform duration-500"
-                                    />
-                                </div>
-
-                                <h3 className="font-display text-black font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
-                                <p className="font-main text-gray-600 line-clamp-2 mb-4 h-12">{item.description}</p>
-
-                                <div className="flex justify-between items-center">
-                                    <div className="flex gap-1 text-yellow-500 text-lg font-bold">
-                                        {item.price.toLocaleString('vi-VN')}đ
-                                    </div>
-                                    <Link href="/menu" className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center border-2 border-text shadow-[2px_2px_0px_#2D2D2D] md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0 transition-all">
-                                        <ArrowRight size={20} />
-                                    </Link>
-                                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {featuredItems.map((item) => (
+                        <div key={item.id} className="group relative bg-white rounded-2xl border-4 border-dashed border-primary/20 p-4 hover:border-primary transition-colors cursor-pointer">
+                            <div className="aspect-square relative overflow-hidden rounded-xl mb-4 border-2 border-text bg-gray-100">
+                                <Image
+                                    src={item.imageUrl || '/images/dish-placeholder.png'}
+                                    alt={item.name}
+                                    fill
+                                    className="object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                    sizes="(max-width: 768px) 100vw, 33vw"
+                                />
                             </div>
-                        ))}
-                    </div>
-                )}
+
+                            <h3 className="font-display text-black font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
+                            <p className="font-main text-gray-600 line-clamp-2 mb-4 h-12">{item.description}</p>
+
+                            <div className="flex justify-between items-center">
+                                <div className="flex gap-1 text-yellow-500 text-lg font-bold">
+                                    {item.price.toLocaleString('vi-VN')}đ
+                                </div>
+                                <Link href="/menu" className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center border-2 border-text shadow-[2px_2px_0px_#2D2D2D] md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0 transition-all">
+                                    <ArrowRight size={20} />
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
 
                 <div className="mt-12 text-center">
                     <Link href="/menu" className="inline-block border-b-2 border-text font-display text-text hover:text-primary hover:border-primary transition-colors pb-1 text-xl">
-                        XEM TOÀN BỘ MEMU →
+                        XEM TOÀN BỘ MENU →
                     </Link>
                 </div>
             </div>

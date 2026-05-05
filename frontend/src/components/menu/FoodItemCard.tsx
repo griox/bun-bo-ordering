@@ -1,4 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
+import Image from 'next/image';
 import { Food } from '@/hooks/useCatalog';
 import { useOrderStore } from '@/store/useOrderStore';
 import { Plus, Minus } from 'lucide-react';
@@ -26,10 +26,12 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
         <div className="flex flex-row md:flex-col gap-4 p-4 bg-white rounded-3xl shadow-sm hover:shadow-xl transition-all duration-500 md:h-full border border-gray-100 group">
             {/* Image Container */}
             <div className="md:order-1 w-28 h-28 md:w-full md:h-52 flex-shrink-0 relative overflow-hidden rounded-2xl bg-neutral-100">
-                <img
+                <Image
                     src={item.imageUrl || '/images/dish-placeholder.png'}
                     alt={item.name}
+                    fill
                     className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                    sizes="(max-width: 768px) 112px, 300px"
                 />
                 {!item.isAvailable && (
                     <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px] flex items-center justify-center">

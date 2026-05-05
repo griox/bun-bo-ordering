@@ -1,7 +1,16 @@
 'use client';
 
 import { Soup } from 'lucide-react';
-import { ScannerModal } from './ScannerModal';
+import dynamic from 'next/dynamic';
+
+const ScannerModal = dynamic(() => import('./ScannerModal').then(mod => mod.ScannerModal), {
+    ssr: false,
+    loading: () => (
+        <button className="inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[2px_2px_0px_#2D2D2D] opacity-70 cursor-wait border-2 border-[#2D2D2D]">
+            ĐANG TẢI...
+        </button>
+    )
+});
 
 export function HeroSection() {
     return (
