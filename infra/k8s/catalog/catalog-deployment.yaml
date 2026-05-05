@@ -22,10 +22,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
-            memory: "128Mi"
+            cpu: "20m"
+            memory: "64Mi"
           limits:
-            cpu: "500m" # Tăng giới hạn CPU
+            cpu: "300m" # Giảm lại CPU limit
             memory: "256Mi" # Giới hạn RAM cứng để tránh OOM toàn node
         livenessProbe:
           tcpSocket:
@@ -129,7 +129,7 @@ spec:
     kind: Deployment
     name: catalog-service
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 4
   metrics:
   - type: Resource
     resource:

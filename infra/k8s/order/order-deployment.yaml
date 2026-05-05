@@ -22,11 +22,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
-            memory: "128Mi"
+            cpu: "20m" # Giảm mạnh request để Pod dễ được Schedule
+            memory: "64Mi"
           limits:
-            cpu: "500m" # Tăng giới hạn CPU để xử lý Request nhanh hơn
-            memory: "512Mi" # Tăng giới hạn RAM để tránh OOM khi tải cao
+            cpu: "300m" # Giới hạn lại để tránh làm nghẽn CPU vật lý
+            memory: "384Mi"
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -115,7 +115,7 @@ spec:
     kind: Deployment
     name: order-service
   minReplicas: 1
-  maxReplicas: 5
+  maxReplicas: 4
   metrics:
   - type: Resource
     resource:
