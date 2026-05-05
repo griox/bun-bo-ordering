@@ -116,6 +116,16 @@ spec:
     name: order-service
   minReplicas: 1
   maxReplicas: 4
+  behavior:
+    scaleUp:
+      policies:
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      selectPolicy: Max
   metrics:
   - type: Resource
     resource:

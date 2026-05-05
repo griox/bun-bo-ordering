@@ -22,11 +22,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
-            memory: "128Mi"
+            cpu: "20m" # Đồng nhất với các service khác để dễ Schedule
+            memory: "64Mi"
           limits:
-            cpu: "300m" # Có thể burst CPU
-            memory: "256Mi" # Giới hạn RAM cứng để tránh OOM toàn node
+            cpu: "300m"
+            memory: "384Mi"
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -102,14 +102,24 @@ spec:
     kind: Deployment
     name: api-gateway
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 5
+  behavior:
+    scaleUp:
+      policies:
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      selectPolicy: Max
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 70
+        averageUtilization: 50
   - type: Resource
     resource:
       name: memory

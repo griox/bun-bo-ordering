@@ -45,6 +45,6 @@ public class CartRepository : ICartRepository
             throw new Exception("Could not update cart in Redis.");
         }
 
-        return await GetCartAsync(cart.CartOwnerId) ?? cart;
+        return cart;
     }
 }

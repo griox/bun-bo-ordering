@@ -21,6 +21,8 @@ public class AppDbContext : DbContext, IAppDbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            entity.HasIndex(e => e.Name); // Tối ưu tìm kiếm/sắp xếp theo tên
+            entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp theo thời gian tạo
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
 
@@ -28,6 +30,8 @@ public class AppDbContext : DbContext, IAppDbContext
         {
             entity.HasKey(e => e.Id);
             entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.HasIndex(e => e.Name); // Tối ưu tìm kiếm/sắp xếp theo tên món
+            entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp theo món mới nhất
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
             entity.HasOne(e => e.Category)
                   .WithMany(c => c.Foods)
