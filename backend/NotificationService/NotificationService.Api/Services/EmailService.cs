@@ -24,7 +24,7 @@ public class EmailService : IEmailService
     public async Task SendWelcomeEmailAsync(string email, string username)
     {
         var smtpSettings = _configuration.GetSection("SmtpSettings");
-        var senderEmail = smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"];
+        var senderEmail = smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"] ?? "noreply@bun-bo-chung-cu.io.vn";
         
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Bún bò Chung Cư", senderEmail));
@@ -143,7 +143,7 @@ public class EmailService : IEmailService
     public async Task SendForgotPasswordEmailAsync(string email, string username, string otpCode)
     {
         var smtpSettings = _configuration.GetSection("SmtpSettings");
-        var senderEmail = smtpSettings["SupportSenderEmail"] ?? smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"];
+        var senderEmail = smtpSettings["SupportSenderEmail"] ?? smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"] ?? "support@bun-bo-chung-cu.io.vn";
         
         var message = new MimeMessage();
         message.From.Add(new MailboxAddress("Bún bò Chung Cư Support", senderEmail));

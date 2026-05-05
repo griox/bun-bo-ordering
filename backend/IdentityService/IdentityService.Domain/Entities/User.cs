@@ -18,7 +18,12 @@ public class User : BaseEntity
     public DateTimeOffset? LockoutEnd { get; private set; }
 
     // For EF Core
-    protected User() { }
+    protected User() 
+    { 
+        Username = null!;
+        Email = null!;
+        Role = null!;
+    }
 
     // Constructor for normal registration
     public User(string username, string email, string passwordHash, string role)

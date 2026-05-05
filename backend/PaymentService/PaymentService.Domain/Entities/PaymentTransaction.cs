@@ -19,7 +19,10 @@ public class PaymentTransaction : BaseEntity
     public string? PaymentUrl { get; private set; }
     public string? Note { get; private set; }
 
-    protected PaymentTransaction() { } // EF Core
+    protected PaymentTransaction() 
+    { 
+        Provider = null!;
+    } // EF Core
 
     public PaymentTransaction(Guid orderId, decimal amount, string provider, Guid? customerId = null, string? paymentUrl = null, string? voucherCode = null, Guid? tableSessionId = null, string? tableNumber = null, string? note = null)
     {

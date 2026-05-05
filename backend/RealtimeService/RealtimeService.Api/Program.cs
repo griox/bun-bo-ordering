@@ -20,7 +20,7 @@ builder.Services.AddSignalR(options => {
     options.KeepAliveInterval = TimeSpan.FromSeconds(10);
     options.HandshakeTimeout = TimeSpan.FromSeconds(30);
 }).AddStackExchangeRedis(redisConnectionString, options => {
-    options.Configuration.ChannelPrefix = "BunBoSignalR";
+    options.Configuration.ChannelPrefix = StackExchange.Redis.RedisChannel.Literal("BunBoSignalR");
 });
 
 // Configure JWT Authentication (Critical for identifying Admin/Kitchen)
