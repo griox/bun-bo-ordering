@@ -32,22 +32,30 @@ public class CatalogDataClient : ISyncCatalogClient
     }
 
     /// <summary>
-    /// Batch-fetches multiple food items using parallel gRPC calls.
-    /// Replaces the N+1 pattern — consolidates all items into concurrent requests.
+    /// Batch-fetches multiple food items using a single gRPC call.
+    /// Replaces the N+1 pattern — significantly more efficient under load.
     /// </summary>
     public async Task<Dictionary<Guid, FoodItemInfo>> GetFoodPricesManyAsync(IEnumerable<Guid> foodIds)
     {
         var ids = foodIds.Distinct().ToList();
         _logger.LogInformation("--> Batch-fetching {Count} food items from CatalogService via gRPC.", ids.Count);
 
-        var tasks = ids.Select(async id =>
+        try
         {
-            var req = new GetFoodPriceRequest { FoodId = id.ToString() };
-            var res = await _client.GetFoodPriceAsync(req);
-            return (id, new FoodItemInfo((decimal)res.Price, res.IsAvailable, res.Name));
-        });
+            var request = new GetFoodPricesRequest();
+            request.FoodIds.AddRange(ids.Select(id => id.ToString()));
 
-        var results = await Task.WhenAll(tasks);
-        return results.ToDictionary(r => r.id, r => r.Item2);
+            var response = await _client.GetFoodPricesAsync(request);
+
+            return response.FoodPrices.ToDictionary(
+                kvp => Guid.Parse(kvp.Key),
+                kvp => new FoodItemInfo((decimal)kvp.Value.Price, kvp.Value.IsAvailable, kvp.Value.Name)
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "--> Batch gRPC call failed for {Count} IDs", ids.Count);
+            throw;
+        }
     }
 }

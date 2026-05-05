@@ -6,6 +6,7 @@ package catalog;
 
 service CatalogGrpc {
   rpc GetFoodPrice (GetFoodPriceRequest) returns (GetFoodPriceResponse);
+  rpc GetFoodPrices (GetFoodPricesRequest) returns (GetFoodPricesResponse);
 }
 
 message GetFoodPriceRequest {
@@ -16,4 +17,12 @@ message GetFoodPriceResponse {
   double price = 1;
   bool isAvailable = 2;
   string name = 3;
+}
+
+message GetFoodPricesRequest {
+  repeated string foodIds = 1;
+}
+
+message GetFoodPricesResponse {
+  map<string, GetFoodPriceResponse> foodPrices = 1;
 }

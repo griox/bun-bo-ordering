@@ -2,12 +2,14 @@ import http from 'k6/http';
 import { sleep, check, fail } from 'k6';
 
 export const options = {
-    // Run a short, light test to see the result quickly and apply TDD
-    vus: 5,
-    duration: '10s',
+    stages: [
+        { duration: '2m', target: 200 }, // Ramp up to 200 VUs
+        { duration: '5m', target: 200 }, // Stay at 200 VUs for 5 minutes
+        { duration: '1m', target: 0 },   // Ramp down to 0 VUs
+    ],
     thresholds: {
-        http_req_duration: ['p(95)<2000'],
-        http_req_failed: ['rate<0.05'],
+        http_req_duration: ['p(95)<3000'], // Expect 95% of requests to complete within 3s
+        http_req_failed: ['rate<0.05'],    // Less than 5% failure rate
     },
 };
 
@@ -43,8 +45,10 @@ export default function () {
 
     // 3. Khách thêm món vào giỏ hàng (Cart Service - Public)
     const cartPayload = JSON.stringify({
-        cartOwnerId: tableSessionId,
-        items: [{ foodId: FOOD_ID, quantity: 2 }]
+        cart: {
+            cartOwnerId: tableSessionId,
+            items: [{ foodId: FOOD_ID, quantity: 2 }]
+        }
     });
     const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { 
         headers: { 'Content-Type': 'application/json' } 

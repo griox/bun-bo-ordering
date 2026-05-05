@@ -35,4 +35,34 @@ public class CatalogGrpcService : CatalogGrpc.CatalogGrpcBase
             Name = food.Name
         };
     }
+
+    public override async Task<GetFoodPricesResponse> GetFoodPrices(GetFoodPricesRequest request, ServerCallContext context)
+    {
+        var validGuids = request.FoodIds
+            .Select(id => Guid.TryParse(id, out var g) ? g : Guid.Empty)
+            .Where(g => g != Guid.Empty)
+            .ToList();
+
+        if (!validGuids.Any())
+        {
+            return new GetFoodPricesResponse();
+        }
+
+        var foods = await _context.Foods
+            .Where(f => validGuids.Contains(f.Id))
+            .ToListAsync();
+
+        var response = new GetFoodPricesResponse();
+        foreach (var food in foods)
+        {
+            response.FoodPrices.Add(food.Id.ToString(), new GetFoodPriceResponse
+            {
+                Price = (double)food.Price,
+                IsAvailable = food.IsAvailable,
+                Name = food.Name
+            });
+        }
+
+        return response;
+    }
 }

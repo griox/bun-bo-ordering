@@ -20,6 +20,11 @@ public class UpdateCartCommandHandler : IRequestHandler<UpdateCartCommand, Shopp
 
     public async Task<ShoppingCart> Handle(UpdateCartCommand request, CancellationToken cancellationToken)
     {
+        if (request.Cart == null)
+        {
+            throw new DomainException("Dữ liệu giỏ hàng không hợp lệ.");
+        }
+
         if (!request.Cart.Items.Any())
         {
             return await _repository.UpdateCartAsync(request.Cart);
