@@ -34,6 +34,7 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.HasKey(e => e.Id);
             entity.Property(e => e.GroupCode).HasMaxLength(10);
             entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp theo thời gian tạo
+            entity.HasIndex(e => e.TableId); // Tối ưu truy vấn tìm session theo bàn
             entity.HasOne(e => e.Table)
                   .WithMany(t => t.Sessions)
                   .HasForeignKey(e => e.TableId)

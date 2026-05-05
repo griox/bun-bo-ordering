@@ -37,6 +37,7 @@ export default function () {
         }
     })) {
         console.error(`Scan Failed: ${scanRes.status} - ${scanRes.body}`);
+        sleep(1); // Ngăn chặn vòng lặp DDoS nếu server lỗi
         return;
     }
     
@@ -74,6 +75,7 @@ export default function () {
     
     if (!check(cartRes, { 'guest cart update 200': (r) => r.status === 200 })) {
         console.error(`Cart Update Failed: ${cartRes.status} - ${cartRes.body}`);
+        sleep(1); // Ngăn chặn vòng lặp DDoS nếu server lỗi
         return; // Dừng lại nếu không thêm giỏ hàng được
     }
     sleep(1);
