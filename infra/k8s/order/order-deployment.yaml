@@ -22,11 +22,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "20m" # Giảm mạnh request để Pod dễ được Schedule
-            memory: "64Mi"
+            cpu: "150m"
+            memory: "256Mi"
           limits:
-            cpu: "300m" # Giới hạn lại để tránh làm nghẽn CPU vật lý
-            memory: "384Mi"
+            cpu: "600m"
+            memory: "512Mi"
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -117,10 +117,17 @@ spec:
   minReplicas: 1
   maxReplicas: 4
   behavior:
-    scaleUp:
+    scaleDown:
+      stabilizationWindowSeconds: 120
       policies:
       - type: Pods
-        value: 4
+        value: 1
+        periodSeconds: 60
+    scaleUp:
+      stabilizationWindowSeconds: 30
+      policies:
+      - type: Pods
+        value: 2
         periodSeconds: 15
       - type: Percent
         value: 100
@@ -132,10 +139,10 @@ spec:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
+        averageUtilization: 70
   - type: Resource
     resource:
       name: memory
       target:
         type: Utilization
-        averageUtilization: 80
+        averageUtilization: 85
