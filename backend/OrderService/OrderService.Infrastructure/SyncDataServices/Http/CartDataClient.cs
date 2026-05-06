@@ -22,7 +22,8 @@ public class CartDataClient : ICartDataClient
 
     public async Task<CartDto?> GetCartAsync(string cartOwnerId)
     {
-        var cartServiceUrl = _configuration["CartServiceUrl"] ?? "http://cart-service:8080";
+        // Default to port 80 (standard K8s service port) instead of 8080
+        var cartServiceUrl = _configuration["CartServiceUrl"] ?? "http://cart-service";
         try 
         {
             _logger.LogInformation("Attempting to get cart from {Url}", $"{cartServiceUrl}/api/cart/{cartOwnerId}");
@@ -47,7 +48,7 @@ public class CartDataClient : ICartDataClient
 
     public async Task ClearCartAsync(string cartOwnerId)
     {
-        var cartServiceUrl = _configuration["CartServiceUrl"] ?? "http://cart-service:8080";
+        var cartServiceUrl = _configuration["CartServiceUrl"] ?? "http://cart-service";
         var emptyCartPayload = new { cart = new { cartOwnerId = cartOwnerId, items = new object[] {} } };
         var httpContent = new StringContent(
             JsonSerializer.Serialize(emptyCartPayload),
