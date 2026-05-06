@@ -22,14 +22,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
-// Configure Rate Limiting
+// Configure Rate Limiting — chỉ chặn abuse thực sự, không chặn load test
 builder.Services.AddRateLimiter(options =>
 {
+    // 300 req/phút/IP — đủ cho 200 concurrent users mà vẫn chặn abuse
     options.AddFixedWindowLimiter("cart-update", opt =>
     {
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 30; // 30 updates per minute per user is generous
-        opt.QueueLimit = 0;
+        opt.Window = TimeSpan.FromSeconds(60);
+        opt.PermitLimit = 300;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 50;
     });
 
     options.OnRejected = async (context, token) =>
@@ -37,7 +39,7 @@ builder.Services.AddRateLimiter(options =>
         context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
         await context.HttpContext.Response.WriteAsJsonAsync(new
         {
-            Message = "Bạn đang cập nhật giỏ hàng quá nhanh. Vui lòng chậm lại một chút."
+            Message = "Hệ thống đang bận. Vui lòng thử lại sau."
         }, token);
     };
 });
@@ -64,9 +66,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
-// Configure Redis
+// Configure Redis — cấu hình timeout và retry để chịu tải cao
 var redisConnString = builder.Configuration.GetConnectionString("Redis");
-builder.Services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnString!));
+var redisOptions = ConfigurationOptions.Parse(redisConnString!);
+redisOptions.ConnectTimeout = 5000;       // 5s để thiết lập kết nối
+redisOptions.SyncTimeout = 3000;          // 3s cho sync ops
+redisOptions.AsyncTimeout = 3000;         // 3s cho async ops
+redisOptions.ConnectRetry = 3;            // Retry kết nối 3 lần trước khi từ bỏ
+redisOptions.ReconnectRetryPolicy = new ExponentialRetry(deltaBackOffMilliseconds: 1000, maximumDeltaBackOffMilliseconds: 10000);
+redisOptions.AbortOnConnectFail = false;  // Không crash app khi Redis tạm thời mất kết nối
+builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
+    ConnectionMultiplexer.Connect(redisOptions));
 
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ISyncCatalogClient, CartService.Infrastructure.SyncDataServices.Grpc.CatalogDataClient>();
