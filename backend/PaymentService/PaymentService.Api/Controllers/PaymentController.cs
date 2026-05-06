@@ -8,6 +8,7 @@ using PaymentService.Application.Commands;
 using Microsoft.Extensions.Logging;
 
 using Microsoft.AspNetCore.RateLimiting;
+using BunBo.SharedKernel;
 
 namespace PaymentService.Api.Controllers;
 

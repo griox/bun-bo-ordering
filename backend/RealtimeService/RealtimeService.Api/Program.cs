@@ -1,6 +1,13 @@
 using RealtimeService.Api.Middlewares;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using MassTransit;
+using RealtimeService.Api.Consumers;
+using RealtimeService.Api.Hubs;
+using BunBo.SharedKernel;
 
 var builder = WebApplication.CreateBuilder(args);
 
