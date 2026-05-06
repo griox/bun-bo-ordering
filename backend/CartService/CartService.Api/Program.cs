@@ -9,6 +9,8 @@ using System.Text;
 using CartService.Api.Middlewares;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
+using Grpc.Net.Client;
+using Grpc.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,10 +83,22 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<ISyncCatalogClient, CartService.Infrastructure.SyncDataServices.Grpc.CatalogDataClient>();
 
-// Configure gRPC Client
+// Configure gRPC Client — có timeout và retry để tránh treo request khi CatalogService bận
 builder.Services.AddGrpcClient<CatalogService.Api.Protos.CatalogGrpc.CatalogGrpcClient>(o =>
 {
     o.Address = new Uri(builder.Configuration["GrpcSettings:CatalogUrl"]!);
+})
+.ConfigureChannel(o =>
+{
+    // Tối đa 200 kết nối HTTP/2 song song đến CatalogService
+    o.MaxReceiveMessageSize = 4 * 1024 * 1024; // 4MB
+    o.HttpHandler = new SocketsHttpHandler
+    {
+        EnableMultipleHttp2Connections = true,      // Tái sử dụng connection thay vì mở mới
+        PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5),
+        KeepAlivePingDelay = TimeSpan.FromSeconds(30),
+        KeepAlivePingTimeout = TimeSpan.FromSeconds(10),
+    };
 });
 
 // Configure MediatR

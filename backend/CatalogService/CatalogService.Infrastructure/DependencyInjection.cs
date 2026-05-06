@@ -11,7 +11,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=15;MinPoolSize=2;Connection Lifetime=300;";
+        // MaxPoolSize=8: tối đa 4 pods × 8 = 32 connections từ CatalogService
+        var connectionString = configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=8;MinPoolSize=1;Connection Lifetime=300;Connection Idle Lifetime=60;";
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString,
                 npgsqlOptionsAction: sqlOptions =>
