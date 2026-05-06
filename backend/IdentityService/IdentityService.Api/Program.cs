@@ -43,13 +43,14 @@ builder.Services.AddRateLimiter(options =>
 });
 
 // Configure Database
+var identityConnStr = builder.Configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=15;MinPoolSize=2;Connection Lifetime=300;";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseNpgsql(identityConnStr,
         npgsqlOptionsAction: sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
                 errorCodesToAdd: null);
         }));
 

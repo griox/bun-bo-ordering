@@ -79,13 +79,14 @@ builder.Services.AddAuthorization(options =>
 
 
 // Configure Database
+var orderConnStr = builder.Configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=15;MinPoolSize=2;Connection Lifetime=300;";
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    options.UseNpgsql(orderConnStr,
         npgsqlOptionsAction: sqlOptions =>
         {
             sqlOptions.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(30),
+                maxRetryCount: 3,
+                maxRetryDelay: TimeSpan.FromSeconds(10),
                 errorCodesToAdd: null);
         }));
 
