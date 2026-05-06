@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using BunBo.SharedKernel;
 
 namespace RealtimeService.Api.Middlewares;
 
