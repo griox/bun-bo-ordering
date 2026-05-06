@@ -73,7 +73,7 @@ redisOptions.ConnectTimeout = 5000;       // 5s để thiết lập kết nối
 redisOptions.SyncTimeout = 3000;          // 3s cho sync ops
 redisOptions.AsyncTimeout = 3000;         // 3s cho async ops
 redisOptions.ConnectRetry = 3;            // Retry kết nối 3 lần trước khi từ bỏ
-redisOptions.ReconnectRetryPolicy = new ExponentialRetry(deltaBackOffMilliseconds: 1000, maximumDeltaBackOffMilliseconds: 10000);
+redisOptions.ReconnectRetryPolicy = new ExponentialRetry(5000); // Backoff tối đa 5s giữa các lần retry
 redisOptions.AbortOnConnectFail = false;  // Không crash app khi Redis tạm thời mất kết nối
 builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
     ConnectionMultiplexer.Connect(redisOptions));
