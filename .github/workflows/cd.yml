@@ -31,6 +31,8 @@ jobs:
         with:
           fetch-depth: 1
           clean: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
@@ -99,7 +101,7 @@ jobs:
           
           for service in "${services[@]}"; do
             echo "Waiting for rollout of deployment/$service..."
-            if ! kubectl rollout status deployment/$service --timeout=300s; then
+            if ! kubectl rollout status deployment/$service --timeout=420s; then
               echo "::error::Rollout failed for $service. Checking logs for clues..."
               kubectl get pods -l app=$service --no-headers | awk '{print $1}' | xargs -I{} kubectl logs {} --tail=50
               exit 1
