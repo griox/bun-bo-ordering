@@ -75,6 +75,9 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure CORS
+builder.Services.AddCors();
+
 // Configure gRPC
 builder.Services.AddGrpc();
 

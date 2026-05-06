@@ -80,6 +80,9 @@ builder.Services.AddGrpcClient<CatalogService.Api.Protos.CatalogGrpc.CatalogGrpc
 // Configure MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(DependencyInjection).Assembly));
 
+// Configure CORS
+builder.Services.AddCors();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
