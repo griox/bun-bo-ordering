@@ -5,6 +5,9 @@ using PaymentService.Application;
 using PaymentService.Infrastructure.Data;
 using Microsoft.Extensions.DependencyInjection;
 using BunBo.SharedKernel;
+using PaymentService.Api.Middlewares;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +42,30 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+});
+
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("payment-request", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 10; // Limit payment link creation
+        opt.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            Message = "Bạn đang yêu cầu thanh toán quá nhanh. Vui lòng đợi 1 phút."
+        }, token);
+    };
 });
 
 // Configure JWT Authentication
@@ -88,8 +115,15 @@ if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docke
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapGet("/", () => "Payment Service is running.");
+app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "PaymentService" }));
+
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())

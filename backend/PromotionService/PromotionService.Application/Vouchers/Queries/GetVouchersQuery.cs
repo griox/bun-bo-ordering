@@ -5,9 +5,11 @@ using PromotionService.Application.Vouchers.Dtos;
 
 namespace PromotionService.Application.Vouchers.Queries;
 
-public record GetVouchersQuery() : IRequest<List<VoucherDto>>;
+public record GetVouchersQuery(int Skip = 0, int Take = 50) : IRequest<VoucherListDto>;
 
-public class GetVouchersQueryHandler : IRequestHandler<GetVouchersQuery, List<VoucherDto>>
+public record VoucherListDto(List<VoucherDto> Items, int TotalCount);
+
+public class GetVouchersQueryHandler : IRequestHandler<GetVouchersQuery, VoucherListDto>
 {
     private readonly IAppDbContext _context;
 
@@ -16,9 +18,15 @@ public class GetVouchersQueryHandler : IRequestHandler<GetVouchersQuery, List<Vo
         _context = context;
     }
 
-    public async Task<List<VoucherDto>> Handle(GetVouchersQuery request, CancellationToken cancellationToken)
+    public async Task<VoucherListDto> Handle(GetVouchersQuery request, CancellationToken cancellationToken)
     {
-        return await _context.Vouchers
+        var query = _context.Vouchers.AsNoTracking();
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderByDescending(v => v.CreatedAt)
+            .Skip(request.Skip)
+            .Take(request.Take)
             .Select(v => new VoucherDto(
                 v.Id,
                 v.Code,
@@ -38,5 +46,7 @@ public class GetVouchersQueryHandler : IRequestHandler<GetVouchersQuery, List<Vo
                 v.Conditions
             ))
             .ToListAsync(cancellationToken);
+
+        return new VoucherListDto(items, totalCount);
     }
 }

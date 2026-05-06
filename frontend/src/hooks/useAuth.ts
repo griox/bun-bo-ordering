@@ -7,16 +7,8 @@ import { useAuthStore } from '@/store/useAuthStore';
 import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
-const getErrorMessage = (err: any) => {
-  const data = err.response?.data;
-  if (data?.errors) {
-    // Get the first validation error message
-    const firstErrorKey = Object.keys(data.errors)[0];
-    const errors = data.errors[firstErrorKey];
-    return Array.isArray(errors) ? errors[0] : errors;
-  }
-  return data?.detail || data?.message || (typeof data === 'string' ? data : null);
-};
+import { getErrorMessage } from '@/lib/errorUtils';
+
 
 export const useLoginMutation = (onSuccessCallback?: () => void, onErrorCallback?: (errData: any) => void) => {
   const loginAction = useAuthStore((state) => state.login);

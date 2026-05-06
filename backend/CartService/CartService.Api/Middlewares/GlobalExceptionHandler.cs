@@ -1,8 +1,8 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using BunBo.SharedKernel;
 
-namespace IdentityService.Api.Middlewares;
+namespace CartService.Api.Middlewares;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
@@ -15,36 +15,30 @@ public class GlobalExceptionHandler : IExceptionHandler
 
     public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
     {
-        _logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
+        _logger.LogError(exception, "An unhandled exception occurred in CartService: {Message}", exception.Message);
 
         var problemDetails = new ProblemDetails
         {
             Instance = httpContext.Request.Path
         };
 
-        if (exception is ValidationException validationException)
+        if (exception is DomainException domainException)
         {
-            problemDetails.Title = "Validation Error";
-            problemDetails.Status = StatusCodes.Status400BadRequest;
-            problemDetails.Detail = "One or more validation failures have occurred.";
-            problemDetails.Extensions["errors"] = validationException.Errors
-                .GroupBy(e => e.PropertyName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(e => e.ErrorMessage).ToArray()
-                );
-        }
-        else if (exception is DomainException domainException)
-        {
-            problemDetails.Title = "Business Logic Error";
+            problemDetails.Title = "Domain Error";
             problemDetails.Status = StatusCodes.Status400BadRequest;
             problemDetails.Detail = domainException.Message;
+        }
+        else if (exception is Grpc.Core.RpcException)
+        {
+            problemDetails.Title = "Service Unavailable";
+            problemDetails.Status = StatusCodes.Status503ServiceUnavailable;
+            problemDetails.Detail = "Lỗi kết nối đến dịch vụ Catalog. Vui lòng thử lại sau.";
         }
         else
         {
             problemDetails.Title = "Server Error";
             problemDetails.Status = StatusCodes.Status500InternalServerError;
-            problemDetails.Detail = "An unexpected error occurred in IdentityService.";
+            problemDetails.Detail = "An unexpected error occurred in CartService.";
             
             if (httpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
             {

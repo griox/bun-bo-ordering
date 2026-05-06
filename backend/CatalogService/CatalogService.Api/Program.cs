@@ -8,6 +8,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BunBo.SharedKernel;
+using CatalogService.Api.Middlewares;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +22,30 @@ builder.Host.AddSerilogLogging("CatalogService");
 builder.WebHost.ConfigureKestrel(options =>
 {
     options.ConfigureEndpointDefaults(o => o.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2);
+});
+
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("catalog-admin", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 60; // 1 request per second average
+        opt.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            Message = "Bạn đang thực hiện thao tác quá nhanh. Vui lòng thử lại sau 1 phút."
+        }, token);
+    };
 });
 
 // Configure JWT Authentication
@@ -65,10 +92,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
+app.UseCors(policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Catalog Service is running.");
+app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "CatalogService" }));
 
 var catalogGroup = app.MapGroup("/api/catalog");
 
@@ -77,7 +108,7 @@ catalogGroup.MapPost("/categories", async (MediatR.IMediator mediator, CatalogSe
 {
     var id = await mediator.Send(cmd);
     return Results.Created($"/api/catalog/categories/{id}", new { Id = id });
-}).RequireAuthorization("Admin");
+}).RequireAuthorization("Admin").RequireRateLimiting("catalog-admin");
 
 catalogGroup.MapGet("/categories", async (MediatR.IMediator mediator) =>
 {
@@ -86,36 +117,24 @@ catalogGroup.MapGet("/categories", async (MediatR.IMediator mediator) =>
 });
 
 // Food Endpoints
-catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest request, ILogger<Program> logger) =>
+catalogGroup.MapPost("/foods", async (MediatR.IMediator mediator, HttpRequest request) =>
 {
-    try
-    {
-        var form = await request.ReadFormAsync();
-        var name = form["Name"].ToString();
-        var description = form["Description"].ToString();
+    var form = await request.ReadFormAsync();
+    var name = form["Name"].ToString();
+    var description = form["Description"].ToString();
+    
+    if (!decimal.TryParse(form["Price"], out var price))
+        throw new DomainException("Định dạng giá tiền không hợp lệ.");
         
-        if (!decimal.TryParse(form["Price"], out var price))
-            return Results.BadRequest(new { Message = "Invalid price format" });
-            
-        if (!int.TryParse(form["CategoryId"], out var categoryId))
-            return Results.BadRequest(new { Message = "Invalid category ID format" });
+    if (!int.TryParse(form["CategoryId"], out var categoryId))
+        throw new DomainException("Định dạng danh mục không hợp lệ.");
 
-        var file = request.Form.Files.GetFile("ImageFile");
+    var file = request.Form.Files.GetFile("ImageFile");
 
-        var cmd = new CatalogService.Application.Foods.Commands.CreateFoodCommand(name, description, price, categoryId, file);
-        var id = await mediator.Send(cmd);
-        return Results.Created($"/api/catalog/foods/{id}", new { Id = id });
-    }
-    catch (DomainException ex)
-    {
-        return Results.BadRequest(new { Message = ex.Message });
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Error creating food");
-        return Results.Problem("An unexpected error occurred while creating the food item.");
-    }
-}).DisableAntiforgery().RequireAuthorization("Admin");
+    var cmd = new CatalogService.Application.Foods.Commands.CreateFoodCommand(name, description, price, categoryId, file);
+    var id = await mediator.Send(cmd);
+    return Results.Created($"/api/catalog/foods/{id}", new { Id = id });
+}).DisableAntiforgery().RequireAuthorization("Admin").RequireRateLimiting("catalog-admin");
 
 catalogGroup.MapGet("/foods", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
 {
@@ -129,42 +148,30 @@ catalogGroup.MapGet("/foods/category/{categoryId}", async (MediatR.IMediator med
     return Results.Ok(foods);
 });
 
-catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, HttpRequest request, ILogger<Program> logger) =>
+catalogGroup.MapPut("/foods/{id}", async (MediatR.IMediator mediator, Guid id, HttpRequest request) =>
 {
-    try
-    {
-        var form = await request.ReadFormAsync();
-        var name = form["Name"].ToString();
-        var description = form["Description"].ToString();
+    var form = await request.ReadFormAsync();
+    var name = form["Name"].ToString();
+    var description = form["Description"].ToString();
 
-        if (!decimal.TryParse(form["Price"], out var price))
-            return Results.BadRequest(new { Message = "Invalid price format" });
-            
-        if (!int.TryParse(form["CategoryId"], out var categoryId))
-            return Results.BadRequest(new { Message = "Invalid category ID format" });
+    if (!decimal.TryParse(form["Price"], out var price))
+        throw new DomainException("Định dạng giá tiền không hợp lệ.");
+        
+    if (!int.TryParse(form["CategoryId"], out var categoryId))
+        throw new DomainException("Định dạng danh mục không hợp lệ.");
 
-        var file = request.Form.Files.GetFile("ImageFile");
+    var file = request.Form.Files.GetFile("ImageFile");
 
-        var cmd = new CatalogService.Application.Foods.Commands.UpdateFoodCommand(id, name, description, price, categoryId, file);
-        var success = await mediator.Send(cmd);
-        return success ? Results.NoContent() : Results.NotFound();
-    }
-    catch (DomainException ex)
-    {
-        return Results.BadRequest(new { Message = ex.Message });
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Error updating food {FoodId}", id);
-        return Results.Problem("An unexpected error occurred while updating the food item.");
-    }
-}).DisableAntiforgery().RequireAuthorization("Admin");
+    var cmd = new CatalogService.Application.Foods.Commands.UpdateFoodCommand(id, name, description, price, categoryId, file);
+    var success = await mediator.Send(cmd);
+    return success ? Results.NoContent() : Results.NotFound();
+}).DisableAntiforgery().RequireAuthorization("Admin").RequireRateLimiting("catalog-admin");
 
 catalogGroup.MapDelete("/foods/{id}", async (MediatR.IMediator mediator, Guid id) =>
 {
     var success = await mediator.Send(new CatalogService.Application.Foods.Commands.DeleteFoodCommand(id));
     return success ? Results.NoContent() : Results.NotFound();
-}).RequireAuthorization("Admin");
+}).RequireAuthorization("Admin").RequireRateLimiting("catalog-admin");
 
 // Auto migrate database on startup
 using (var scope = app.Services.CreateScope())

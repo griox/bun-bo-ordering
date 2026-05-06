@@ -5,6 +5,8 @@ import axiosInstance from '@/lib/axiosInstance';
 import { useOrderStore } from '@/store/useOrderStore';
 import { toast } from 'sonner';
 
+import { getErrorMessage } from '@/lib/errorUtils';
+
 export interface CartItemDto {
     foodId: string;
     foodName: string;
@@ -79,8 +81,8 @@ export const usePlaceOrderMutation = () => {
             toast.info("Đơn hàng đã được tạo. Vui lòng thanh toán!");
         },
         onError: (error: unknown) => {
-            const err = error as { response?: { data?: { message?: string } } };
-            toast.error(err.response?.data?.message || "Không thể đặt món. Vui lòng thử lại.");
+            const msg = getErrorMessage(error);
+            toast.error(msg || "Không thể đặt món. Vui lòng thử lại.");
         }
     });
 };

@@ -28,14 +28,30 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("auth", opt =>
     {
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 10;
+        opt.PermitLimit = 15; // Increased slightly for better UX
         opt.QueueLimit = 0;
     });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            Message = "Bạn đã thực hiện quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút."
+        }, token);
+    };
 });
 
 // Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        npgsqlOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorCodesToAdd: null);
+        }));
 
 builder.Services.AddScoped<IdentityService.Application.Interfaces.IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
@@ -103,7 +119,7 @@ var authGroup = app.MapGroup("/api/identity");
 authGroup.MapPost("/register", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.RegisterCommand cmd) =>
 {
     var userId = await mediator.Send(cmd);
-    return Results.Ok(new { UserId = userId, Message = "Registration successful. Please login to get your token." });
+    return Results.Ok(new { UserId = userId, Message = "Đăng ký thành công. Vui lòng đăng nhập." });
 }).RequireRateLimiting("auth");
 
 authGroup.MapPost("/login", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.LoginCommand cmd) =>
@@ -129,7 +145,7 @@ authGroup.MapPost("/verify-otp", async (MediatR.IMediator mediator, IdentityServ
     var isValid = await mediator.Send(cmd);
     if (!isValid)
     {
-        return Results.BadRequest(new { Message = "Mã OTP không hợp lệ hoặc đã hết hạn." });
+        throw new DomainException("Mã OTP không hợp lệ hoặc đã hết hạn.");
     }
     return Results.Ok(new { Message = "Mã OTP hợp lệ." });
 }).RequireRateLimiting("auth");
@@ -142,8 +158,7 @@ authGroup.MapPost("/reset-password", async (MediatR.IMediator mediator, Identity
 
 authGroup.MapPost("/logout", () =>
 {
-    // Client-side logout strategy
-    return Results.Ok(new { Message = "Logged out successfully. Please remove the token from your client storage." });
+    return Results.Ok(new { Message = "Đăng xuất thành công." });
 });
 
 authGroup.MapGet("/users", async (int? pageNumber, int? pageSize, string? searchTerm, MediatR.IMediator mediator) =>
@@ -170,19 +185,10 @@ authGroup.MapDelete("/users/{id:guid}/blacklist", async (Guid id, MediatR.IMedia
     return Results.Ok(new { Message = "User removed from blacklist successfully" });
 }).RequireAuthorization("Admin");
 
-authGroup.MapDelete("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator, ILogger<Program> logger) =>
+authGroup.MapDelete("/users/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
 {
-    try
-    {
-        logger.LogInformation("Received request to delete user: {UserId}", id);
-        await mediator.Send(new IdentityService.Application.Users.Commands.DeleteUserCommand(id));
-        return Results.Ok(new { Message = "User deleted successfully" });
-    }
-    catch (Exception ex)
-    {
-        logger.LogError(ex, "Failed to delete user: {UserId}", id);
-        return Results.BadRequest(ex.Message);
-    }
+    await mediator.Send(new IdentityService.Application.Users.Commands.DeleteUserCommand(id));
+    return Results.Ok(new { Message = "User deleted successfully" });
 }).RequireAuthorization("Admin");
 
 authGroup.Map("{**catchall}", (string catchall, HttpContext context, ILogger<Program> logger) =>

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using PaymentService.Application.Commands;
 using Microsoft.Extensions.Logging;
 
+using Microsoft.AspNetCore.RateLimiting;
+
 namespace PaymentService.Api.Controllers;
 
 [ApiController]
@@ -25,6 +27,7 @@ public class PaymentController : ControllerBase
     }
 
     [HttpPost]
+    [EnableRateLimiting("payment-request")]
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
     {
         var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -36,7 +39,7 @@ public class PaymentController : ControllerBase
 
         if (result == null || !result.Success)
         {
-            return BadRequest(new { success = false, message = result?.Message ?? "Failed to create SePay checkout" });
+            throw new DomainException(result?.Message ?? "Không thể tạo liên kết thanh toán. Vui lòng thử lại sau.");
         }
 
         return Ok(result);

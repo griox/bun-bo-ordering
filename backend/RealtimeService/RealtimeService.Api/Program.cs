@@ -1,10 +1,6 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using MassTransit;
-using RealtimeService.Api.Consumers;
-using RealtimeService.Api.Hubs;
-using BunBo.SharedKernel;
+using RealtimeService.Api.Middlewares;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,10 +9,34 @@ builder.Host.AddSerilogLogging("RealtimeService");
 
 builder.Services.AddEndpointsApiExplorer();
 
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Configure Rate Limiting (Crucial for SignalR handshakes)
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("signalr-hub", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 50; // Max 50 connections/handshakes per minute per IP/User
+        opt.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            Message = "Bạn đang kết nối quá nhanh. Vui lòng đợi một lát."
+        }, token);
+    };
+});
+
 // Configure SignalR with Redis Backplane
 var redisConnectionString = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
 builder.Services.AddSignalR(options => {
-    options.EnableDetailedErrors = true;
+    options.EnableDetailedErrors = builder.Environment.IsDevelopment();
     options.KeepAliveInterval = TimeSpan.FromSeconds(10);
     options.HandshakeTimeout = TimeSpan.FromSeconds(30);
 }).AddStackExchangeRedis(redisConnectionString, options => {
@@ -107,11 +127,15 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
 app.UseCors("CorsPolicy");
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/", () => "Realtime Service is running.");
-app.MapHub<NotificationHub>("/hub/notifications");
+app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "RealtimeService" }));
+
+app.MapHub<NotificationHub>("/hub/notifications").RequireRateLimiting("signalr-hub");
 
 app.Run();

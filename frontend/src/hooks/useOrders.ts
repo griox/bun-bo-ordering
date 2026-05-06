@@ -5,6 +5,8 @@ import axiosInstance from '@/lib/axiosInstance';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/store/useAuthStore';
 
+import { getErrorMessage } from '@/lib/errorUtils';
+
 export interface OrderItem {
   id: string;
   orderId?: string;
@@ -44,11 +46,12 @@ export const useUpdateOrderStatusMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
     },
     onError: (error: unknown) => {
-      const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Không thể cập nhật trạng thái đơn hàng");
+      const msg = getErrorMessage(error);
+      toast.error(msg || "Không thể cập nhật trạng thái đơn hàng");
     }
   });
 };
+
 
 export interface PagedResult<T> {
   items: T[];

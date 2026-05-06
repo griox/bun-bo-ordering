@@ -31,11 +31,13 @@ import { vi } from 'date-fns/locale';
 
 export default function PromotionsPage() {
     const { useVouchers } = usePromotions();
-    const { data: vouchers, isLoading } = useVouchers();
+    const [page, setPage] = useState(0);
+    const [take] = useState(10);
+    const { data: vouchersData, isLoading } = useVouchers(page * take, take);
     const [searchTerm, setSearchTerm] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
-    const filteredVouchers = vouchers?.filter(v =>
+    const filteredVouchers = vouchersData?.items?.filter(v =>
         v.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -82,7 +84,7 @@ export default function PromotionsPage() {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tổng số mã</p>
-                            <p className="text-2xl font-black text-gray-900">{vouchers?.length || 0}</p>
+                            <p className="text-2xl font-black text-gray-900">{vouchersData?.totalCount || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -93,7 +95,7 @@ export default function PromotionsPage() {
                         </div>
                         <div>
                             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đang hoạt động</p>
-                            <p className="text-2xl font-black text-gray-900">{vouchers?.filter(v => v.isActive).length || 0}</p>
+                            <p className="text-2xl font-black text-gray-900">{vouchersData?.items?.filter(v => v.isActive).length || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -103,8 +105,8 @@ export default function PromotionsPage() {
                             <Users className="size-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đã sử dụng</p>
-                            <p className="text-2xl font-black text-gray-900">{vouchers?.reduce((acc, v) => acc + v.usageCount, 0) || 0}</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đã sử dụng (Trang này)</p>
+                            <p className="text-2xl font-black text-gray-900">{vouchersData?.items?.reduce((acc, v) => acc + v.usageCount, 0) || 0}</p>
                         </div>
                     </div>
                 </div>
@@ -254,6 +256,33 @@ export default function PromotionsPage() {
                         </table>
                     )}
                 </div>
+
+                {/* Pagination Controls */}
+                {vouchersData && vouchersData.totalCount > take && (
+                    <div className="p-8 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
+                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                            Hiển thị {page * take + 1} - {Math.min((page + 1) * take, vouchersData.totalCount)} trong tổng số {vouchersData.totalCount} mã
+                        </p>
+                        <div className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                disabled={page === 0}
+                                onClick={() => setPage(page - 1)}
+                                className="h-10 px-4 border-2 border-gray-100 rounded-xl font-bold text-xs uppercase"
+                            >
+                                Trước
+                            </Button>
+                            <Button
+                                variant="outline"
+                                disabled={(page + 1) * take >= vouchersData.totalCount}
+                                onClick={() => setPage(page + 1)}
+                                className="h-10 px-4 border-2 border-gray-100 rounded-xl font-bold text-xs uppercase"
+                            >
+                                Tiếp theo
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -283,8 +312,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
             await createVoucherMutation.mutateAsync(formData);
             toast.success('Đã tạo mã khuyến mãi thành công!');
             onSuccess();
-        } catch {
-            toast.error('Lỗi khi tạo mã khuyến mãi.');
+        } catch (error: any) {
+            const serverMessage = error.response?.data?.detail || error.response?.data?.message || 'Lỗi khi tạo mã khuyến mãi.';
+            toast.error(serverMessage);
         }
     };
 

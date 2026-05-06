@@ -13,7 +13,14 @@ public static class DependencyInjection
     {
         services.AddDbContext<PaymentDbContext>(options =>
             // Using standard DefaultConnection from docker-compose.yml
-            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+            options.UseNpgsql(configuration.GetConnectionString("DefaultConnection"),
+                npgsqlOptionsAction: sqlOptions =>
+                {
+                    sqlOptions.EnableRetryOnFailure(
+                        maxRetryCount: 5,
+                        maxRetryDelay: TimeSpan.FromSeconds(30),
+                        errorCodesToAdd: null);
+                }));
 
         services.AddScoped<IPaymentTransactionRepository, PaymentTransactionRepository>();
         

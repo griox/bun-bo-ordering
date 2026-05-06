@@ -4,6 +4,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axiosInstance from '@/lib/axiosInstance';
 import { toast } from 'sonner';
 
+import { getErrorMessage } from '@/lib/errorUtils';
+
 export interface Category {
   id: number;
   name: string;
@@ -88,8 +90,8 @@ export const useCreateFoodMutation = () => {
       toast.success("Thêm món ăn thành công!");
     },
     onError: (error: unknown) => {
-      const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Có lỗi xảy ra khi tạo món");
+      const msg = getErrorMessage(error);
+      toast.error(msg || "Có lỗi xảy ra khi tạo món");
     }
   });
 };
@@ -111,8 +113,8 @@ export const useUpdateFoodMutation = () => {
       toast.success("Cập nhật món ăn thành công!");
     },
     onError: (error: unknown) => {
-      const err = error as { response?: { data?: { message?: string } } };
-      toast.error(err.response?.data?.message || "Có lỗi xảy ra khi cập nhật món");
+      const msg = getErrorMessage(error);
+      toast.error(msg || "Có lỗi xảy ra khi cập nhật món");
     }
   });
 };
@@ -129,8 +131,9 @@ export const useDeleteFoodMutation = () => {
       queryClient.invalidateQueries({ queryKey: ['foods-category'] });
       toast.success("Đã xóa món ăn");
     },
-    onError: () => {
-      toast.error("Lỗi khi xóa món ăn");
+    onError: (error: unknown) => {
+      const msg = getErrorMessage(error);
+      toast.error(msg || "Lỗi khi xóa món ăn");
     }
   });
 };
@@ -148,9 +151,9 @@ export const useCreateCategoryMutation = () => {
       toast.success("Thêm danh mục thành công!");
     },
     onError: (error: unknown) => {
-      const axiosError = error as { response?: { data?: { message?: string } } };
-      const message = axiosError.response?.data?.message || "Có lỗi xảy ra khi tạo danh mục";
-      toast.error(message);
+      const msg = getErrorMessage(error);
+      toast.error(msg || "Có lỗi xảy ra khi tạo danh mục");
     }
   });
 };
+

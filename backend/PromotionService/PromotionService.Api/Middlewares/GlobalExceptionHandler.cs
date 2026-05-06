@@ -1,8 +1,8 @@
-using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using BunBo.SharedKernel;
 
-namespace IdentityService.Api.Middlewares;
+namespace PromotionService.Api.Middlewares;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
@@ -22,21 +22,9 @@ public class GlobalExceptionHandler : IExceptionHandler
             Instance = httpContext.Request.Path
         };
 
-        if (exception is ValidationException validationException)
+        if (exception is DomainException domainException)
         {
-            problemDetails.Title = "Validation Error";
-            problemDetails.Status = StatusCodes.Status400BadRequest;
-            problemDetails.Detail = "One or more validation failures have occurred.";
-            problemDetails.Extensions["errors"] = validationException.Errors
-                .GroupBy(e => e.PropertyName)
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.Select(e => e.ErrorMessage).ToArray()
-                );
-        }
-        else if (exception is DomainException domainException)
-        {
-            problemDetails.Title = "Business Logic Error";
+            problemDetails.Title = "Domain Error";
             problemDetails.Status = StatusCodes.Status400BadRequest;
             problemDetails.Detail = domainException.Message;
         }
@@ -44,8 +32,9 @@ public class GlobalExceptionHandler : IExceptionHandler
         {
             problemDetails.Title = "Server Error";
             problemDetails.Status = StatusCodes.Status500InternalServerError;
-            problemDetails.Detail = "An unexpected error occurred in IdentityService.";
-            
+            problemDetails.Detail = "An unexpected error occurred. Please try again later.";
+            // In development, we might want to show the full message, but for security we hide it in production.
+            // For this project, we'll keep it simple.
             if (httpContext.RequestServices.GetRequiredService<IWebHostEnvironment>().IsDevelopment())
             {
                 problemDetails.Detail = exception.Message;

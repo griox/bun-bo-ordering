@@ -10,6 +10,9 @@ using System.Text;
 using BunBo.SharedKernel;
 using StackExchange.Redis;
 using OrderService.Infrastructure.Services;
+using OrderService.Api.Middlewares;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +26,30 @@ builder.Services.AddSwaggerGen();
 // Configure JSON options to ignore circular references (Order -> OrderItems -> Order)
 builder.Services.ConfigureHttpJsonOptions(options => {
     options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
+
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("order-creation", opt =>
+    {
+        opt.Window = TimeSpan.FromSeconds(30);
+        opt.PermitLimit = 5;
+        opt.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            Message = "Bạn đang đặt hàng quá nhanh. Vui lòng đợi 30 giây."
+        }, token);
+    };
 });
 
 // Configure JWT Authentication (fail fast if secret is missing)
@@ -53,7 +80,14 @@ builder.Services.AddAuthorization(options =>
 
 // Configure Database
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"),
+        npgsqlOptionsAction: sqlOptions =>
+        {
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 5,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorCodesToAdd: null);
+        }));
 
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
@@ -110,7 +144,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseCors();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -136,28 +172,14 @@ orderGroup.MapGet("/tables/{tableId}", async (Guid tableId, MediatR.IMediator me
 // Admin Table Management - Move specific routes before generic {id}
 orderGroup.MapPost("/tables/positions", async (MediatR.IMediator mediator, OrderService.Application.Tables.Commands.UpdateTablePositionsCommand cmd) =>
 {
-    try 
-    {
-        var success = await mediator.Send(cmd);
-        return success ? Results.NoContent() : Results.NotFound();
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { Message = ex.Message });
-    }
+    var success = await mediator.Send(cmd);
+    return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin");
 
 orderGroup.MapPost("/tables", async (MediatR.IMediator mediator, OrderService.Application.Tables.Commands.CreateTableCommand cmd) =>
 {
-    try
-    {
-        var id = await mediator.Send(cmd);
-        return Results.Created($"/api/orders/tables/{id}", new { Id = id });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { Message = ex.Message });
-    }
+    var id = await mediator.Send(cmd);
+    return Results.Created($"/api/orders/tables/{id}", new { Id = id });
 }).RequireAuthorization("Admin");
 
 orderGroup.MapGet("/tables", async (MediatR.IMediator mediator) =>
@@ -169,15 +191,8 @@ orderGroup.MapGet("/tables", async (MediatR.IMediator mediator) =>
 orderGroup.MapPut("/tables/{id:guid}", async (MediatR.IMediator mediator, Guid id, OrderService.Application.Tables.Commands.UpdateTableCommand cmd) =>
 {
     if (id != cmd.Id) return Results.BadRequest("ID mismatch.");
-    try
-    {
-        var success = await mediator.Send(cmd);
-        return success ? Results.NoContent() : Results.NotFound();
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { Message = ex.Message });
-    }
+    var success = await mediator.Send(cmd);
+    return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin");
 
 orderGroup.MapPatch("/tables/{id:guid}/position", async (MediatR.IMediator mediator, Guid id, [Microsoft.AspNetCore.Mvc.FromQuery] int posX, [Microsoft.AspNetCore.Mvc.FromQuery] int posY) =>
@@ -195,25 +210,17 @@ orderGroup.MapDelete("/tables/{id:guid}", async (MediatR.IMediator mediator, Gui
 
 orderGroup.MapPost("/", async (Microsoft.AspNetCore.Http.HttpContext httpContext, MediatR.IMediator mediator, OrderService.Application.Orders.Commands.CreateOrderCommand cmd) =>
 {
-    try
+    // Try to identify if the customer is logged in
+    var userIdString = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    
+    if (Guid.TryParse(userIdString, out Guid customerId))
     {
-        // Try to identify if the customer is logged in
-        // In JWT, the user's ID is typically stored in the NameIdentifier claim
-        var userIdString = httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-        
-        if (Guid.TryParse(userIdString, out Guid customerId))
-        {
-            cmd = cmd with { CustomerId = customerId };
-        }
+        cmd = cmd with { CustomerId = customerId };
+    }
 
-        var id = await mediator.Send(cmd);
-        return Results.Created($"/api/orders/{id}", new { Id = id });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(new { Message = ex.Message });
-    }
-});
+    var id = await mediator.Send(cmd);
+    return Results.Created($"/api/orders/{id}", new { Id = id });
+}).RequireRateLimiting("order-creation");
 
 orderGroup.MapGet("/{id}", async (Guid id, MediatR.IMediator mediator) =>
 {

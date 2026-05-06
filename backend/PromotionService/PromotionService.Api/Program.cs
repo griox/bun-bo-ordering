@@ -7,10 +7,11 @@ using System.Text;
 using PromotionService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
-using MS = Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using Serilog;
 using System.Text.Json.Serialization;
+using PromotionService.Api.Middlewares;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,30 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.PropertyNameCaseInsensitive = true;
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+// Configure Global Exception Handling
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.AddFixedWindowLimiter("voucher-validation", opt =>
+    {
+        opt.Window = TimeSpan.FromMinutes(1);
+        opt.PermitLimit = 10;
+        opt.QueueLimit = 0;
+    });
+
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new
+        {
+            Message = "Quá nhiều yêu cầu. Vui lòng thử lại sau 1 phút."
+        }, token);
+    };
 });
 
 // Configure JWT Authentication
@@ -43,25 +68,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
             RoleClaimType = ClaimTypes.Role
-        };
-        
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = context =>
-            {
-                Console.WriteLine($"[JWT Error] Authentication failed: {context.Exception}");
-                return Task.CompletedTask;
-            },
-            OnTokenValidated = context =>
-            {
-                Console.WriteLine($"[JWT Success] Token validated successfully for {context.Principal?.Identity?.Name}");
-                return Task.CompletedTask;
-            },
-            OnMessageReceived = context =>
-            {
-                Console.WriteLine($"[JWT Info] Token received: {context.Token?.Substring(0, Math.Min(10, context.Token?.Length ?? 0))}...");
-                return Task.CompletedTask;
-            }
         };
     });
 
@@ -107,7 +113,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseExceptionHandler();
 app.UseCors();
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -118,21 +126,14 @@ var promotionGroup = app.MapGroup("/api/promotion");
 // Admin APIs
 promotionGroup.MapPost("/vouchers", async (MediatR.IMediator mediator, PromotionService.Application.Vouchers.Commands.CreateVoucherCommand cmd) =>
 {
-    try
-    {
-        var id = await mediator.Send(cmd);
-        return Results.Ok(new { Id = id, Message = "Voucher created successfully." });
-    }
-    catch (Exception ex)
-    {
-        return Results.BadRequest(ex.Message);
-    }
+    var id = await mediator.Send(cmd);
+    return Results.Ok(new { Id = id, Message = "Voucher created successfully." });
 }).RequireAuthorization("Admin");
 
-promotionGroup.MapGet("/vouchers", async (MediatR.IMediator mediator) =>
+promotionGroup.MapGet("/vouchers", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
 {
-    var vouchers = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetVouchersQuery());
-    return Results.Ok(vouchers);
+    var result = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetVouchersQuery(skip, take));
+    return Results.Ok(result);
 }).RequireAuthorization("Admin");
 
 promotionGroup.MapGet("/vouchers/active", async (MediatR.IMediator mediator) =>
@@ -142,20 +143,20 @@ promotionGroup.MapGet("/vouchers/active", async (MediatR.IMediator mediator) =>
 }).RequireAuthorization();
 
 // Client APIs
-promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, ValidateVoucherRequest req, System.Security.Claims.ClaimsPrincipal user) =>
+promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, ValidateVoucherRequest req, ClaimsPrincipal user) =>
 {
-    var userIdStr = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);
     var result = await mediator.Send(new PromotionService.Application.Vouchers.Queries.ValidateVoucherQuery(req.Code, userId, req.OrderValue));
     
     return result.IsValid ? Results.Ok(result) : Results.BadRequest(result);
-}).RequireAuthorization();
+}).RequireAuthorization().RequireRateLimiting("voucher-validation");
 
-promotionGroup.MapGet("/points", async (MediatR.IMediator mediator, System.Security.Claims.ClaimsPrincipal user) =>
+promotionGroup.MapGet("/points", async (MediatR.IMediator mediator, ClaimsPrincipal user) =>
 {
-    var userIdStr = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);

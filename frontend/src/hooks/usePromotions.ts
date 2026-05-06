@@ -39,11 +39,11 @@ export function usePromotions() {
     const queryClient = useQueryClient();
 
     // Admin: Get all vouchers
-    const useVouchers = () => useQuery({
-        queryKey: ['vouchers'],
+    const useVouchers = (skip: number = 0, take: number = 50) => useQuery({
+        queryKey: ['vouchers', skip, take],
         enabled: !!token,
         queryFn: async () => {
-            const { data } = await axiosInstance.get<Voucher[]>('/api/promotion/vouchers');
+            const { data } = await axiosInstance.get<{ items: Voucher[], totalCount: number }>(`/api/promotion/vouchers?skip=${skip}&take=${take}`);
             return data;
         }
     });
