@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using BunBo.SharedKernel;
 
 namespace IdentityService.Api.Middlewares;
 
