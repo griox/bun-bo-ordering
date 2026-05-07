@@ -22,11 +22,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
-            memory: "192Mi"
+            cpu: "200m"
+            memory: "256Mi"
           limits:
-            cpu: "500m"
-            memory: "384Mi"
+            cpu: "1000m"
+            memory: "512Mi"
         livenessProbe:
           tcpSocket:
             port: 5002

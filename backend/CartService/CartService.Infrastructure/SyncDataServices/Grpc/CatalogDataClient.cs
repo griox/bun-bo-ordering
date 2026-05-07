@@ -11,7 +11,7 @@ public class CatalogDataClient : ISyncCatalogClient
     private readonly ILogger<CatalogDataClient> _logger;
 
     // Timeout cứng cho mỗi gRPC call — tránh block request khi CatalogService bận
-    private static readonly TimeSpan GrpcDeadline = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan GrpcDeadline = TimeSpan.FromSeconds(15);
 
     public CatalogDataClient(CatalogGrpc.CatalogGrpcClient client, ILogger<CatalogDataClient> logger)
     {

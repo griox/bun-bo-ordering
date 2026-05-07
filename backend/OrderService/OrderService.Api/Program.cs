@@ -38,8 +38,8 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("order-creation", opt =>
     {
         opt.Window = TimeSpan.FromSeconds(30);
-        opt.PermitLimit = 5;
-        opt.QueueLimit = 0;
+        opt.PermitLimit = 500; // Tăng lên 500 để phục vụ load test
+        opt.QueueLimit = 100;
     });
 
     options.OnRejected = async (context, token) =>
