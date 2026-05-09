@@ -6,21 +6,22 @@ using PromotionService.Domain.Enums;
 
 namespace PromotionService.Application.Vouchers.Commands;
 
-public record CreateVoucherCommand(
-    string Code,
-    string Description,
-    DiscountType DiscountType,
-    decimal DiscountValue,
-    decimal? MaxDiscountAmount,
-    decimal MinOrderValue,
-    DateTime ValidFrom,
-    DateTime ValidTo,
-    int TotalUsageLimit,
-    int MaxUsagePerUser,
-    VoucherType Type,
-    int? PointCost,
-    string? Conditions
-) : IRequest<Guid>;
+public class CreateVoucherCommand : IRequest<Guid>
+{
+    public string Code { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DiscountType DiscountType { get; set; }
+    public decimal DiscountValue { get; set; }
+    public decimal? MaxDiscountAmount { get; set; }
+    public decimal MinOrderValue { get; set; }
+    public DateTime? ValidFrom { get; set; }
+    public DateTime? ValidTo { get; set; }
+    public int TotalUsageLimit { get; set; }
+    public int MaxUsagePerUser { get; set; }
+    public VoucherType Type { get; set; }
+    public int? PointCost { get; set; }
+    public string? Conditions { get; set; }
+}
 
 public class CreateVoucherCommandHandler : IRequestHandler<CreateVoucherCommand, Guid>
 {

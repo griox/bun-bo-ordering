@@ -152,6 +152,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoOrderDb;Username=root;Password=rootpassword
+      - ConnectionStrings__Redis=redis:6379,abortConnect=false
       - RabbitMq__Host=rabbitmq
       - RabbitMq__Username=guest
       - RabbitMq__Password=guest

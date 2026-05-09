@@ -19,7 +19,10 @@ public class GetPublicVouchersQueryHandler : IRequestHandler<GetPublicVouchersQu
     public async Task<List<VoucherDto>> Handle(GetPublicVouchersQuery request, CancellationToken cancellationToken)
     {
         return await _context.Vouchers
-            .Where(v => v.IsActive && v.ValidFrom <= DateTime.UtcNow && v.ValidTo >= DateTime.UtcNow && v.UsageCount < v.TotalUsageLimit)
+            .Where(v => v.IsActive && 
+                        (v.ValidFrom == null || v.ValidFrom <= DateTime.UtcNow) && 
+                        (v.ValidTo == null || v.ValidTo >= DateTime.UtcNow) && 
+                        v.UsageCount < v.TotalUsageLimit)
             .Select(v => new VoucherDto(
                 v.Id,
                 v.Code,

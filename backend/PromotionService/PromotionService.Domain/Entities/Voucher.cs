@@ -15,8 +15,8 @@ public class Voucher : BaseEntity
     public int? PointCost { get; private set; }
     public string? Conditions { get; private set; }
     
-    public DateTime ValidFrom { get; private set; }
-    public DateTime ValidTo { get; private set; }
+    public DateTime? ValidFrom { get; private set; }
+    public DateTime? ValidTo { get; private set; }
     
     public int TotalUsageLimit { get; private set; }
     public int UsageCount { get; private set; }
@@ -34,8 +34,8 @@ public class Voucher : BaseEntity
         decimal discountValue, 
         decimal? maxDiscountAmount, 
         decimal minOrderValue,
-        DateTime validFrom,
-        DateTime validTo,
+        DateTime? validFrom,
+        DateTime? validTo,
         int totalUsageLimit,
         int maxUsagePerUser,
         VoucherType type = VoucherType.Standard,
@@ -71,7 +71,8 @@ public class Voucher : BaseEntity
     public bool CanBeUsed(decimal orderAmount, Guid userId, int userUsageCount)
     {
         if (!IsActive) return false;
-        if (DateTime.UtcNow < ValidFrom || DateTime.UtcNow > ValidTo) return false;
+        if (ValidFrom.HasValue && DateTime.UtcNow < ValidFrom.Value) return false;
+        if (ValidTo.HasValue && DateTime.UtcNow > ValidTo.Value) return false;
         if (orderAmount < MinOrderValue) return false;
         if (UsageCount >= TotalUsageLimit) return false;
         if (userUsageCount >= MaxUsagePerUser) return false;

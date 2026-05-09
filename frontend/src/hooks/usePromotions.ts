@@ -82,20 +82,25 @@ export function usePromotions() {
                 'Reward': 2
             };
 
+            const discountTypeMap = {
+                'Percentage': 0,
+                'FixedAmount': 1
+            };
+
             const payload = {
-                Code: formData.code,
-                Description: formData.description,
-                DiscountType: formData.discountType,
-                DiscountValue: formData.discountValue,
-                MinOrderValue: formData.minOrderValue,
-                MaxDiscountAmount: formData.maxDiscountAmount || null,
-                ValidFrom: new Date(formData.startDate).toISOString(),
-                ValidTo: new Date(formData.endDate).toISOString(),
-                TotalUsageLimit: formData.maxUsageLimit,
-                MaxUsagePerUser: formData.maxUsagePerUser,
-                Type: typeMap[formData.type],
-                PointCost: formData.pointCost || null,
-                Conditions: null,
+                code: formData.code,
+                description: formData.description,
+                discountType: discountTypeMap[formData.discountType],
+                discountValue: Number(formData.discountValue),
+                minOrderValue: Number(formData.minOrderValue),
+                maxDiscountAmount: formData.discountType === 'Percentage' ? (formData.maxDiscountAmount || null) : null,
+                validFrom: formData.type === 'PointRedemption' ? null : new Date(formData.startDate).toISOString(),
+                validTo: formData.type === 'PointRedemption' ? null : new Date(formData.endDate).toISOString(),
+                totalUsageLimit: Number(formData.maxUsageLimit),
+                maxUsagePerUser: Number(formData.maxUsagePerUser),
+                type: typeMap[formData.type],
+                pointCost: formData.type === 'PointRedemption' ? Number(formData.pointCost) : null,
+                conditions: null,
             };
             const { data } = await axiosInstance.post<Voucher>('/api/promotion/vouchers', payload);
             return data;
@@ -123,11 +128,26 @@ export function usePromotions() {
         }
     });
 
+    // Client: Redeem voucher
+    const useRedeemVoucherMutation = () => {
+        return useMutation({
+            mutationFn: async (voucherId: string) => {
+                const { data } = await axiosInstance.post(`/api/promotion/vouchers/redeem?voucherId=${voucherId}`);
+                return data;
+            },
+            onSuccess: () => {
+                queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+                queryClient.invalidateQueries({ queryKey: ['my-points'] });
+            }
+        });
+    };
+
     return {
         useVouchers,
         useActiveVouchers,
         createVoucherMutation,
         useMyPoints,
-        validateVoucherMutation
+        validateVoucherMutation,
+        useRedeemVoucherMutation
     };
 }

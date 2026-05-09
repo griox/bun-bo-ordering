@@ -11,6 +11,7 @@ import {
     Loader2,
     LayoutDashboard
 } from 'lucide-react';
+import { AdminPagination } from '@/components/admin/pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
@@ -35,6 +36,12 @@ export default function TablesPage() {
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTable, setEditingTable] = useState<RestaurantTable | null>(null);
     const [formData, setFormData] = useState({ tableCode: '', name: '' });
+
+    // Pagination State
+    const [page, setPage] = useState(0);
+    const pageSize = 6;
+    const totalPages = Math.ceil(tables.length / pageSize);
+    const paginatedTables = tables.slice(page * pageSize, (page + 1) * pageSize);
 
     // Local state for table positions across the floor plan
     const [localTables, setLocalTables] = useState<RestaurantTable[]>([]);
@@ -158,38 +165,38 @@ export default function TablesPage() {
                             THÊM BÀN MỚI
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-md bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
+                    <DialogContent className="max-w-md bg-white border-none rounded-3xl p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
                         <form onSubmit={handleCreateOrUpdate} className="flex flex-col">
-                            <div className="bg-gray-900 p-8 text-white shrink-0">
+                            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 text-white shrink-0">
                                 <div className="flex items-center gap-4">
-                                    <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                                    <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
                                         <LayoutDashboard className="size-7 text-red-400" />
                                     </div>
                                     <div>
                                         <DialogTitle className="text-2xl font-black uppercase tracking-tight">
                                             {editingTable ? 'Cập nhật bàn' : 'Tạo bàn mới'}
                                         </DialogTitle>
-                                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Gán mã định danh kỹ thuật cho bàn ăn</p>
+                                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Gán mã định danh kỹ thuật cho bàn ăn</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="p-8 space-y-6 bg-white">
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã bàn</label>
+                            <div className="p-8 space-y-8 bg-white">
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã định danh bàn</label>
                                     <Input
                                         required
-                                        className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                                        className="h-14 border-2 border-gray-100 rounded-2xl bg-gray-50/30 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-bold text-gray-900 placeholder:text-gray-300 text-base"
                                         placeholder="Ví dụ: T1, VIP-01"
                                         value={formData.tableCode}
                                         onChange={e => setFormData({ ...formData, tableCode: e.target.value })}
                                     />
                                 </div>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tên hiển thị</label>
+                                <div className="space-y-3">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tên hiển thị nội bộ</label>
                                     <Input
                                         required
-                                        className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
+                                        className="h-14 border-2 border-gray-100 rounded-2xl bg-gray-50/30 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-bold text-gray-900 placeholder:text-gray-300 text-base"
                                         placeholder="Ví dụ: Bàn 1, Bàn cửa sổ"
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -197,7 +204,7 @@ export default function TablesPage() {
                                 </div>
                             </div>
 
-                            <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4 shrink-0">
+                            <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-4 shrink-0">
                                 <Button
                                     type="button"
                                     variant="ghost"
@@ -208,9 +215,9 @@ export default function TablesPage() {
                                 </Button>
                                 <Button
                                     type="submit"
-                                    className="h-12 px-8 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all"
+                                    className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                                 >
-                                    Lưu thay đổi
+                                    {editingTable ? 'Lưu thay đổi' : 'Tạo bàn ngay'}
                                 </Button>
                             </div>
                         </form>
@@ -230,7 +237,7 @@ export default function TablesPage() {
                                 <Loader2 className="size-8 animate-spin text-[#ff4d4f]" />
                                 <p className="font-black text-[10px] uppercase">Đang tải...</p>
                             </div>
-                        ) : tables.map(table => (
+                        ) : paginatedTables.map(table => (
                             <div key={table.id} className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/30 group hover:border-primary/30 hover:bg-primary/5 transition-all">
                                 <div>
                                     <p className="font-bold text-gray-900 text-sm tracking-tight">{table.tableCode}</p>
@@ -250,6 +257,18 @@ export default function TablesPage() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+                    
+                    {/* Pagination for table list */}
+                    <div className="pt-4 mt-auto border-t border-gray-50 flex flex-col items-center gap-2">
+                        <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest">
+                            Trang {page + 1} / {totalPages || 1}
+                        </p>
+                        <AdminPagination 
+                            currentPage={page} 
+                            totalPages={totalPages} 
+                            onPageChange={setPage} 
+                        />
                     </div>
                 </Card>
 

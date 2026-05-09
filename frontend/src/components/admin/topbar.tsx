@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Bell, User, Menu } from 'lucide-react';
+import { Bell, User, Menu, Receipt } from 'lucide-react';
 import { useOrderNotificationStore, OrderItem } from '@/store/useOrderNotificationStore';
 import {
     DropdownMenu,
@@ -46,38 +46,52 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
                 {/* Notification Bell */}
                 <DropdownMenu onOpenChange={(open) => open && markAsRead()}>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative size-10 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl border border-transparent hover:border-gray-100">
+                        <Button variant="ghost" size="icon" className="relative size-10 text-gray-400 hover:text-red-500 hover:bg-red-50/50 rounded-xl border border-transparent hover:border-red-100 transition-all">
                             <Bell className="w-5 h-5" />
                             {unreadCount > 0 && (
-                                <span className="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white" />
+                                <span className="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border-2 border-white animate-pulse" />
                             )}
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-80 p-0 border border-gray-100 shadow-xl rounded-2xl overflow-hidden">
+                    <DropdownMenuContent align="end" className="w-80 p-0 border border-gray-100 shadow-2xl rounded-2xl overflow-hidden bg-white animate-in slide-in-from-top-1 duration-200">
                         <DropdownMenuGroup>
-                            <DropdownMenuLabel className="p-4 bg-gray-50/50 border-b border-gray-100">
-                                <span className="font-bold text-xs uppercase tracking-widest text-gray-500">Thông báo hệ thống</span>
+                            <DropdownMenuLabel className="p-4 bg-gray-50/80 border-b border-gray-100">
+                                <div className="flex justify-between items-center">
+                                    <span className="font-black text-[10px] uppercase tracking-[0.2em] text-gray-400">Thông báo mới</span>
+                                    {unreadCount > 0 && (
+                                        <span className="bg-red-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-tighter animate-bounce">
+                                            {unreadCount} đơn mới
+                                        </span>
+                                    )}
+                                </div>
                             </DropdownMenuLabel>
                         </DropdownMenuGroup>
-                        <ScrollArea className="h-[320px]">
+                        <ScrollArea className="h-[380px]">
                             {notifications.length === 0 ? (
-                                <div className="p-8 text-center">
-                                    <Bell className="size-6 text-gray-200 mx-auto mb-2" />
-                                    <p className="text-xs font-medium text-gray-400">Không có thông báo mới</p>
+                                <div className="p-12 text-center">
+                                    <div className="size-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                                        <Bell className="size-8 text-gray-200" />
+                                    </div>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Không có thông báo mới</p>
                                 </div>
                             ) : (
                                 <div className="divide-y divide-gray-50">
-                                    {notifications.map((order, idx: number) => (
+                                    {[...notifications].reverse().map((order, idx: number) => (
                                         <Link key={idx} href="/admin/orders">
-                                            <DropdownMenuItem className="p-4 flex flex-col items-start gap-1 cursor-pointer hover:bg-gray-50 transition-colors focus:bg-gray-50 outline-none">
+                                            <DropdownMenuItem className="p-4 flex flex-col items-start gap-2 cursor-pointer hover:bg-red-50/30 transition-all focus:bg-red-50/30 outline-none group border-l-4 border-transparent hover:border-red-500">
                                                 <div className="flex justify-between w-full items-center">
-                                                    <span className="font-bold text-xs text-gray-900">Đơn hàng #{order.tableNumber}</span>
-                                                    <span className="text-[10px] text-gray-400">
+                                                    <div className="flex items-center gap-2">
+                                                        <div className="size-8 bg-gray-100 rounded-lg flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                                                            <Receipt className="size-4 text-gray-400 group-hover:text-red-500" />
+                                                        </div>
+                                                        <span className="font-bold text-xs text-gray-900">BÀN {order.tableNumber}</span>
+                                                    </div>
+                                                    <span className="text-[10px] font-medium text-gray-400 group-hover:text-red-400">
                                                         {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true, locale: vi })}
                                                     </span>
                                                 </div>
-                                                <p className="text-[11px] text-gray-500 line-clamp-1">
-                                                    {order.items?.map((i: OrderItem) => `${i.quantity}x ${i.productName}`).join(', ')}
+                                                <p className="text-[11px] text-gray-500 line-clamp-2 leading-relaxed pl-10">
+                                                    Đã đặt: {order.items?.map((i: OrderItem) => `${i.quantity}x ${i.productName}`).join(', ')}
                                                 </p>
                                             </DropdownMenuItem>
                                         </Link>
@@ -86,8 +100,8 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
                             )}
                         </ScrollArea>
                         <Link href="/admin/orders">
-                            <div className="p-3 text-center text-xs font-bold text-gray-500 hover:text-primary transition-colors bg-gray-50/50 border-t border-gray-100">
-                                Xem tất cả
+                            <div className="p-3.5 text-center text-[10px] font-black uppercase tracking-[0.2em] text-gray-400 hover:text-red-500 transition-all bg-gray-50/50 border-t border-gray-100 hover:bg-white cursor-pointer">
+                                Xem tất cả lịch sử đơn hàng
                             </div>
                         </Link>
                     </DropdownMenuContent>

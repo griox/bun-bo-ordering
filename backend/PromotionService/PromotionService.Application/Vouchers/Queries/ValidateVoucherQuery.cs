@@ -26,9 +26,16 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
         if (voucher == null)
             return new VoucherValidationResult(false, "Mã giảm giá không tồn tại.");
 
-        var userUsageCount = await _context.UserVouchers
-            .CountAsync(uv => uv.UserId == request.UserId && uv.VoucherId == voucher.Id && uv.IsUsed, cancellationToken);
+        var userVoucher = await _context.UserVouchers
+            .FirstOrDefaultAsync(uv => uv.UserId == request.UserId && uv.VoucherId == voucher.Id && !uv.IsUsed, cancellationToken);
 
+        if (voucher.Type == Domain.Enums.VoucherType.PointRedemption && userVoucher == null)
+            return new VoucherValidationResult(false, "Bạn phải đổi điểm lấy mã này trước khi sử dụng.");
+
+        if (userVoucher != null && userVoucher.ExpiryDate.HasValue && DateTime.UtcNow > userVoucher.ExpiryDate.Value)
+            return new VoucherValidationResult(false, "Mã giảm giá đã hết hạn sử dụng (7 ngày kể từ lúc đổi).");
+
+        var userUsageCount = await _context.UserVouchers.CountAsync(uv => uv.UserId == request.UserId && uv.VoucherId == voucher.Id && uv.IsUsed, cancellationToken);
         if (!voucher.CanBeUsed(request.OrderAmount, request.UserId, userUsageCount))
         {
             if (!voucher.IsActive) return new VoucherValidationResult(false, "Mã giảm giá đã bị tạm ngừng.");

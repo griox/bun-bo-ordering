@@ -24,6 +24,13 @@ public class LoyaltyPoint : BaseEntity
         UpdateTier();
     }
 
+    public void RedeemPoints(int points)
+    {
+        if (TotalPoints < points) throw new DomainException("Không đủ điểm để đổi voucher này.");
+        TotalPoints -= points;
+        UpdateTier();
+    }
+
     private void UpdateTier()
     {
         if (TotalPoints >= 2000) Tier = "Diamond";

@@ -12,6 +12,7 @@ import {
     Unlock,
     AlertCircle
 } from 'lucide-react';
+import { AdminPagination } from '@/components/admin/pagination';
 import { useUsers, User, useBlacklistUser, useRemoveBlacklist, useDeleteUser } from '@/hooks/useUsers';
 import { useCustomerOrders, Order } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
@@ -47,7 +48,7 @@ export default function AdminUserManagement() {
     const [page, setPage] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
-    const pageSize = 10;
+    const pageSize = 6;
 
     const { data: pagedData, isLoading: usersLoading } = useUsers(page + 1, pageSize, searchQuery);
     const users = pagedData?.items || [];
@@ -257,27 +258,14 @@ export default function AdminUserManagement() {
                 </div>
 
                 <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
-                    <p className="text-xs text-gray-400 font-medium">
-                        Trang <span className="font-bold text-gray-700">{page + 1}</span> / <span className="font-bold text-gray-700">{totalPages || 1}</span> | Tổng cộng <span className="font-bold text-gray-700">{totalCount}</span> thành viên
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                        Trang <span className="text-gray-900">{page + 1}</span> / {totalPages || 1} — Tổng <span className="text-gray-900">{totalCount}</span> thành viên
                     </p>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
-                            disabled={page === 0}
-                            onClick={() => setPage((prev: number) => Math.max(0, prev - 1))}
-                        >
-                            Trước
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
-                            disabled={!pagedData || (page + 1) * pageSize >= totalCount}
-                            onClick={() => setPage((prev: number) => prev + 1)}
-                        >
-                            Tiếp theo
-                        </Button>
-                    </div>
+                    <AdminPagination 
+                        currentPage={page} 
+                        totalPages={totalPages} 
+                        onPageChange={setPage} 
+                    />
                 </div>
             </Card>
 
@@ -298,17 +286,16 @@ export default function AdminUserManagement() {
                 order={selectedOrder}
             />
 
-            {/* Ban Reason Dialog */}
             <Dialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
-                <DialogContent className="max-w-md bg-white border-none rounded-2xl p-0 overflow-hidden shadow-xl">
-                    <div className="bg-gray-900 p-6 text-white shrink-0">
+                <DialogContent className="max-w-md bg-white border-none rounded-3xl p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+                    <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-8 text-white shrink-0">
                         <div className="flex items-center gap-4">
-                            <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
+                            <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
                                 <Ban className="size-7 text-red-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-xl font-bold tracking-tight">Chặn người dùng</DialogTitle>
-                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Tài khoản sẽ không thể đăng nhập</p>
+                                <DialogTitle className="text-2xl font-black uppercase tracking-tight">Chặn người dùng</DialogTitle>
+                                <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Tài khoản sẽ không thể đăng nhập</p>
                             </div>
                         </div>
                     </div>
@@ -322,35 +309,35 @@ export default function AdminUserManagement() {
                                 </p>
                             </div>
 
-                            <div className="space-y-2">
+                            <div className="space-y-3">
                                 <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lý do chặn</label>
                                 <Textarea
                                     value={banReason}
                                     onChange={(e) => setBanReason(e.target.value)}
                                     placeholder="Nhập lý do chặn (vi phạm điều khoản, spam...)..."
-                                    className="min-h-[120px] border-2 border-gray-100 rounded-2xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 resize-none placeholder:text-gray-300"
+                                    className="min-h-[140px] border-2 border-gray-100 rounded-2xl bg-gray-50/30 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-bold text-gray-900 resize-none placeholder:text-gray-300 text-base p-4"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4 shrink-0">
-                            <Button
-                                type="button"
-                                variant="ghost"
-                                onClick={() => setIsBanDialogOpen(false)}
-                                className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
-                            >
-                                Hủy bỏ
-                            </Button>
-                            <Button
-                                onClick={handleBanUser}
-                                disabled={blacklistMutation.isPending || !banReason.trim()}
-                                className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50"
-                            >
-                                {blacklistMutation.isPending ? "Đang xử lý..." : "Xác nhận chặn"}
-                            </Button>
-                        </div>
+                    <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-4 shrink-0">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => setIsBanDialogOpen(false)}
+                            className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
+                        >
+                            Hủy bỏ
+                        </Button>
+                        <Button
+                            onClick={handleBanUser}
+                            disabled={blacklistMutation.isPending || !banReason.trim()}
+                            className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-red-500/20 active:scale-95 transition-all"
+                        >
+                            {blacklistMutation.isPending ? "Đang xử lý..." : "Xác nhận chặn ngay"}
+                        </Button>
+                    </div>
                 </DialogContent>
             </Dialog>
 

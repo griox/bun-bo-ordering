@@ -10,18 +10,20 @@ public class UserVoucher : BaseEntity
     public Guid? OrderId { get; private set; }
     public DateTime ClaimedAt { get; private set; }
     public DateTime? UsedAt { get; private set; }
+    public DateTime? ExpiryDate { get; private set; }
 
     // Navigation (Optional for EF Core)
     // public Voucher Voucher { get; private set; }
 
     protected UserVoucher() { }
 
-    public UserVoucher(Guid userId, Guid voucherId)
+    public UserVoucher(Guid userId, Guid voucherId, DateTime? expiryDate = null)
     {
         UserId = userId;
         VoucherId = voucherId;
         IsUsed = false;
         ClaimedAt = DateTime.UtcNow;
+        ExpiryDate = expiryDate;
     }
 
     public UserVoucher(Guid userId, Guid voucherId, Guid orderId)

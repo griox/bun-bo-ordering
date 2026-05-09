@@ -12,6 +12,7 @@ import {
     Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { AdminPagination } from '@/components/admin/pagination';
 import { Input } from '@/components/ui/input';
 import {
     Table,
@@ -56,7 +57,7 @@ export default function DishesPage() {
 
     // Pagination State
     const [page, setPage] = useState(0);
-    const pageSize = 10;
+    const pageSize = 6;
 
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
@@ -501,27 +502,14 @@ export default function DishesPage() {
                 )}
 
                 <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
-                    <p className="text-xs text-gray-400 font-medium">
-                        Trang <span className="font-bold text-gray-700">{page + 1}</span> / <span className="font-bold text-gray-700">{totalPages || 1}</span> | Tổng cộng <span className="font-bold text-gray-700">{totalCount}</span> món ăn
+                    <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                        Trang <span className="text-gray-900">{page + 1}</span> / {totalPages || 1} — Tổng <span className="text-gray-900">{totalCount}</span> món ăn
                     </p>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
-                            disabled={page === 0}
-                            onClick={() => setPage(prev => Math.max(0, prev - 1))}
-                        >
-                            Trước
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="h-9 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50"
-                            disabled={page + 1 >= totalPages}
-                            onClick={() => setPage(prev => prev + 1)}
-                        >
-                            Tiếp
-                        </Button>
-                    </div>
+                    <AdminPagination 
+                        currentPage={page} 
+                        totalPages={totalPages} 
+                        onPageChange={setPage} 
+                    />
                 </div>
             </Card>
         </div >

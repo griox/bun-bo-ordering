@@ -130,6 +130,16 @@ promotionGroup.MapPost("/vouchers", async (MediatR.IMediator mediator, Promotion
     return Results.Ok(new { Id = id, Message = "Voucher created successfully." });
 }).RequireAuthorization("Admin");
 
+promotionGroup.MapPost("/vouchers/redeem", async (MediatR.IMediator mediator, Guid voucherId, ClaimsPrincipal user) =>
+{
+    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
+    
+    var userId = Guid.Parse(userIdStr);
+    var id = await mediator.Send(new PromotionService.Application.Vouchers.Commands.RedeemVoucherCommand(userId, voucherId));
+    return Results.Ok(new { Id = id, Message = "Voucher redeemed successfully." });
+}).RequireAuthorization();
+
 promotionGroup.MapGet("/vouchers", async (MediatR.IMediator mediator, int skip = 0, int take = 50) =>
 {
     var result = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetVouchersQuery(skip, take));

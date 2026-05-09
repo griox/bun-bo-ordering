@@ -16,6 +16,7 @@ import {
     Percent,
     Banknote
 } from 'lucide-react';
+import { AdminPagination } from '@/components/admin/pagination';
 import { usePromotions } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +33,7 @@ import { vi } from 'date-fns/locale';
 export default function PromotionsPage() {
     const { useVouchers } = usePromotions();
     const [page, setPage] = useState(0);
-    const [take] = useState(10);
+    const take = 6;
     const { data: vouchersData, isLoading } = useVouchers(page * take, take);
     const [searchTerm, setSearchTerm] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -68,7 +69,7 @@ export default function PromotionsPage() {
                             <span className="font-bold uppercase tracking-wider text-xs">Tạo mã mới</span>
                         </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-2xl bg-white border-4 border-gray-900 rounded-[2.5rem] p-0 overflow-hidden shadow-[30px_30px_0px_rgba(0,0,0,0.1)]">
+                    <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
                         <DialogTitle className="sr-only">Tạo mã khuyến mãi</DialogTitle>
                         <CreateVoucherForm onSuccess={() => setIsCreateModalOpen(false)} />
                     </DialogContent>
@@ -213,12 +214,12 @@ export default function PromotionsPage() {
                                             <div className="space-y-1">
                                                 <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-tighter text-gray-500">
                                                     <span>{voucher.usageCount} / {voucher.totalUsageLimit}</span>
-                                                    <span>{Math.round((voucher.usageCount / voucher.totalUsageLimit) * 100)}%</span>
+                                                    <span>{voucher.totalUsageLimit > 0 ? Math.round((voucher.usageCount / voucher.totalUsageLimit) * 100) : 0}%</span>
                                                 </div>
                                                 <div className="w-24 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                                     <div
                                                         className="h-full bg-[#ff4d4f] rounded-full transition-all duration-1000"
-                                                        style={{ width: `${Math.min((voucher.usageCount / voucher.totalUsageLimit) * 100, 100)}%` }}
+                                                        style={{ width: `${voucher.totalUsageLimit > 0 ? Math.min((voucher.usageCount / voucher.totalUsageLimit) * 100, 100) : 0}%` }}
                                                     />
                                                 </div>
                                             </div>
@@ -257,30 +258,16 @@ export default function PromotionsPage() {
                     )}
                 </div>
 
-                {/* Pagination Controls */}
-                {vouchersData && vouchersData.totalCount > take && (
+                {vouchersData && (
                     <div className="p-8 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
-                        <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
-                            Hiển thị {page * take + 1} - {Math.min((page + 1) * take, vouchersData.totalCount)} trong tổng số {vouchersData.totalCount} mã
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                            Trang <span className="text-gray-900">{page + 1}</span> / {Math.ceil((vouchersData.totalCount || 0) / take) || 1} — Tổng <span className="text-gray-900">{vouchersData.totalCount || 0}</span> mã khuyến mãi
                         </p>
-                        <div className="flex gap-2">
-                            <Button
-                                variant="outline"
-                                disabled={page === 0}
-                                onClick={() => setPage(page - 1)}
-                                className="h-10 px-4 border-2 border-gray-100 rounded-xl font-bold text-xs uppercase"
-                            >
-                                Trước
-                            </Button>
-                            <Button
-                                variant="outline"
-                                disabled={(page + 1) * take >= vouchersData.totalCount}
-                                onClick={() => setPage(page + 1)}
-                                className="h-10 px-4 border-2 border-gray-100 rounded-xl font-bold text-xs uppercase"
-                            >
-                                Tiếp theo
-                            </Button>
-                        </div>
+                        <AdminPagination 
+                            currentPage={page} 
+                            totalPages={Math.ceil((vouchersData.totalCount || 0) / take)} 
+                            onPageChange={setPage} 
+                        />
                     </div>
                 )}
             </div>
@@ -312,22 +299,24 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
             await createVoucherMutation.mutateAsync(formData);
             toast.success('Đã tạo mã khuyến mãi thành công!');
             onSuccess();
-        } catch (error: any) {
-            const serverMessage = error.response?.data?.detail || error.response?.data?.message || 'Lỗi khi tạo mã khuyến mãi.';
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { detail?: string; message?: string } } };
+            const serverMessage = err.response?.data?.detail || err.response?.data?.message || 'Lỗi khi tạo mã khuyến mãi.';
             toast.error(serverMessage);
         }
     };
 
     return (
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
-            <div className="bg-gray-900 p-8 text-white">
-                <div className="flex items-center gap-4">
-                    <div className="size-14 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/20">
-                        <Ticket className="size-7 text-red-400" />
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-10 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                <div className="relative flex items-center gap-6">
+                    <div className="size-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner">
+                        <Ticket className="size-8 text-red-400" />
                     </div>
                     <div>
-                        <DialogTitle className="text-2xl font-black uppercase tracking-tight">Tạo mã khuyến mãi</DialogTitle>
-                        <p className="text-white/50 text-[10px] font-bold uppercase tracking-[0.2em] mt-1">Thiết lập chương trình ưu đãi mới</p>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tight">Tạo mã khuyến mãi</DialogTitle>
+                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Thiết lập chương trình ưu đãi mới cho khách hàng</p>
                     </div>
                 </div>
             </div>
@@ -436,26 +425,30 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     />
                 </div>
 
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày bắt đầu</label>
-                    <Input
-                        type="datetime-local"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.startDate}
-                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày kết thúc</label>
-                    <Input
-                        type="datetime-local"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.endDate}
-                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                        required
-                    />
-                </div>
+                {formData.type !== 'PointRedemption' && (
+                    <div className="grid grid-cols-2 gap-4 col-span-2">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày bắt đầu</label>
+                            <Input
+                                type="datetime-local"
+                                className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
+                                value={formData.startDate}
+                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày kết thúc</label>
+                            <Input
+                                type="datetime-local"
+                                className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
+                                value={formData.endDate}
+                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                required
+                            />
+                        </div>
+                    </div>
+                )}
 
                 <div className="space-y-2">
                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
@@ -483,22 +476,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                 </div>
             </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border-2 border-gray-100">
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Trạng thái kích hoạt</label>
-                        <p className="text-[9px] text-gray-400 font-bold uppercase px-1">Cho phép sử dụng mã ngay lập tức</p>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => setFormData({ ...formData, isActive: !formData.isActive })}
-                        className={`w-14 h-8 rounded-full transition-all relative ${formData.isActive ? 'bg-red-500' : 'bg-gray-200'}`}
-                    >
-                        <div className={`absolute top-1 size-6 bg-white rounded-full transition-all shadow-sm ${formData.isActive ? 'left-7' : 'left-1'}`} />
-                    </button>
-                </div>
             </div>
 
-            <div className="p-8 bg-gray-50 border-t-2 border-gray-100 flex justify-end gap-4">
+            <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-4">
                 <Button
                     type="button"
                     variant="ghost"
@@ -510,7 +490,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                 <Button
                     type="submit"
                     disabled={createVoucherMutation.isPending}
-                    className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all disabled:opacity-50"
+                    className="h-12 px-12 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                 >
                     {createVoucherMutation.isPending ? 'Đang đồng bộ...' : 'Tạo mã ngay'}
                 </Button>

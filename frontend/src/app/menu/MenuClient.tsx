@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { CategoryNav } from '@/components/menu/CategoryNav';
 import { FoodItemCard } from '@/components/menu/FoodItemCard';
 import { OrderBar } from '@/components/order/OrderBar';
@@ -88,7 +88,7 @@ export function MenuClient({ initialCategories, initialFoods }: MenuClientProps)
                                         ...item,
                                         image: item.imageUrl || '/images/dish-placeholder.png',
                                         category: item.categoryName || 'Món ăn'
-                                    } as any} />
+                                    } as Food} />
                                 ))}
                             </div>
                         )}

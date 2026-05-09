@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound, Star } from 'lucide-react';
+import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound, Star, BadgePercent, ChevronDown } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePromotions } from '@/hooks/usePromotions';
 import toast from 'react-hot-toast';
@@ -117,12 +117,20 @@ export function Header() {
                                             </Link>
                                         )}
                                         {user.role === 'Client' && (
-                                            <Link
-                                                href="/history"
-                                                className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
-                                            >
-                                                LỊCH SỬ GIAO DỊCH
-                                            </Link>
+                                            <>
+                                                <Link
+                                                    href="/history"
+                                                    className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
+                                                >
+                                                    LỊCH SỬ ĐƠN HÀNG
+                                                </Link>
+                                                <Link
+                                                    href="/vouchers"
+                                                    className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
+                                                >
+                                                    ƯU ĐÃI CỦA TÔI
+                                                </Link>
+                                            </>
                                         )}
                                         <button
                                             onClick={() => { logout(); toast.success('Đã đăng xuất!'); }}
@@ -188,11 +196,24 @@ export function Header() {
                                     )}
 
                                     {mounted && user && user.role === 'Client' && (
-                                        <DropdownMenuItem asChild id="mobile-history">
-                                            <Link href="/history" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
-                                                <span className="flex items-center gap-2.5"><ScrollText size={15} className="text-neutral-500" /> LỊCH SỬ GIAO DỊCH</span>
-                                            </Link>
-                                        </DropdownMenuItem>
+                                        <>
+                                            <DropdownMenuItem asChild id="mobile-history">
+                                                <Link href="/history" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-all focus:bg-black/5 flex items-center justify-between group" >
+                                                    <span className="flex items-center gap-2.5"><ScrollText size={16} className="text-primary" /> LỊCH SỬ ĐƠN HÀNG</span>
+                                                    <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <ChevronDown size={10} className="-rotate-90 text-primary" />
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem asChild id="mobile-vouchers">
+                                                <Link href="/vouchers" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-all focus:bg-black/5 flex items-center justify-between group" >
+                                                    <span className="flex items-center gap-2.5"><BadgePercent size={16} className="text-secondary" /> ƯU ĐÃI CỦA TÔI</span>
+                                                    <div className="size-5 rounded-full bg-secondary/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <ChevronDown size={10} className="-rotate-90 text-secondary" />
+                                                    </div>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        </>
                                     )}
 
                                     <DropdownMenuSeparator className="bg-text/10 my-1" />
@@ -232,7 +253,7 @@ export function Header() {
             {/* Global Login Dialog */}
             {!user && (
                 <Dialog open={isLoginOpen} onOpenChange={setIsLoginOpen}>
-                    <DialogContent className="w-[92vw] max-w-lg bg-background border-2 border-black box-border p-0 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.1)] rounded-[2rem]">
+                    <DialogContent className="w-[92vw] max-w-lg bg-background border-2 border-black box-border p-0 overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,0.1)] rounded-[2rem] font-admin">
         <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
                         <DialogHeader>
                             <DialogTitle className="sr-only">Đăng nhập</DialogTitle>
