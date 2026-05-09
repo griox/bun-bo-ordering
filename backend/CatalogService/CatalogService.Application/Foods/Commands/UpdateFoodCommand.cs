@@ -50,8 +50,10 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
         string? imageUrl = food.ImageUrl;
         if (request.ImageFile != null)
         {
-            // Optional: Delete old image if needed
-            // if (!string.IsNullOrEmpty(food.ImageUrl)) await _storageService.DeleteFileAsync(food.ImageUrl);
+            if (!string.IsNullOrEmpty(food.ImageUrl)) 
+            {
+                await _storageService.DeleteFileAsync(food.ImageUrl);
+            }
             
             imageUrl = await _storageService.UploadFileAsync(request.ImageFile, request.Name);
         }

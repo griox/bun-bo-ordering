@@ -43,4 +43,23 @@ public class UserRegisteredEventConsumerTests
         // Assert
         _emailServiceMock.Verify(x => x.SendWelcomeEmailAsync(@event.Email, @event.Username), Times.Once);
     }
+
+    [Fact]
+    public async Task Consume_EmailServiceFails_ShouldThrowException()
+    {
+        // Arrange
+        var @event = new UserRegisteredEvent { Email = "test@example.com", Username = "user" };
+        var contextMock = new Mock<ConsumeContext<UserRegisteredEvent>>();
+        contextMock.Setup(x => x.Message).Returns(@event);
+
+        _emailServiceMock.Setup(x => x.SendWelcomeEmailAsync(It.IsAny<string>(), It.IsAny<string>()))
+            .ThrowsAsync(new Exception("SMTP Down"));
+
+        // Act
+        Func<Task> act = () => _consumer.Consume(contextMock.Object);
+
+        // Assert
+        // MassTransit consumers should throw so the message can be retried or moved to dead-letter queue
+        await act.Should().ThrowAsync<Exception>().WithMessage("SMTP Down");
+    }
 }

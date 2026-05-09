@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using PromotionService.Application.Interfaces;
 using PromotionService.Domain.Entities;
 using PromotionService.Domain.Enums;
@@ -32,6 +33,10 @@ public class CreateVoucherCommandHandler : IRequestHandler<CreateVoucherCommand,
 
     public async Task<Guid> Handle(CreateVoucherCommand request, CancellationToken cancellationToken)
     {
+        var normalizedCode = request.Code.ToUpper();
+        if (await _context.Vouchers.AnyAsync(v => v.Code == normalizedCode, cancellationToken))
+            throw new Exception("Mã giảm giá này đã tồn tại.");
+
         var voucher = new Voucher(
             request.Code,
             request.Description,

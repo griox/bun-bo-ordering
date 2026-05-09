@@ -11,20 +11,23 @@ namespace CatalogService.UnitTests.Application;
 public class DeleteFoodCommandHandlerTests
 {
     private readonly Mock<IAppDbContext> _contextMock;
+    private readonly Mock<IFileStorageService> _storageServiceMock;
     private readonly DeleteFoodCommandHandler _handler;
 
     public DeleteFoodCommandHandlerTests()
     {
         _contextMock = new Mock<IAppDbContext>();
-        _handler = new DeleteFoodCommandHandler(_contextMock.Object);
+        _storageServiceMock = new Mock<IFileStorageService>();
+        _handler = new DeleteFoodCommandHandler(_contextMock.Object, _storageServiceMock.Object);
     }
 
     [Fact]
-    public async Task Handle_ValidRequest_ShouldRemoveFoodAndReturnTrue()
+    public async Task Handle_ValidRequestWithImage_ShouldDeleteImageAndRemoveFood()
     {
         // Arrange
         var foodId = Guid.NewGuid();
-        var food = new Food("Name", null, null, 50000, 1);
+        var imageUrl = "http://s3.com/food.jpg";
+        var food = new Food("Name", null, imageUrl, 50000, 1);
         SetId(food, foodId);
 
         _contextMock.Setup(x => x.Foods).ReturnsDbSet(new List<Food> { food });
@@ -36,6 +39,7 @@ public class DeleteFoodCommandHandlerTests
 
         // Assert
         result.Should().BeTrue();
+        _storageServiceMock.Verify(x => x.DeleteFileAsync(imageUrl), Times.Once);
         _contextMock.Verify(x => x.Foods.Remove(It.Is<Food>(f => f.Id == foodId)), Times.Once);
         _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }

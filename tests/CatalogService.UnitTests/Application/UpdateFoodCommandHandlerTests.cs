@@ -125,6 +125,39 @@ public class UpdateFoodCommandHandlerTests
         await act.Should().ThrowAsync<DomainException>().WithMessage("Price must be greater than zero");
     }
 
+    [Fact]
+    public async Task Handle_ValidRequestWithImage_ShouldUploadImageAndUpdateFood()
+    {
+        // Arrange
+        var foodId = Guid.NewGuid();
+        var categoryId = 1;
+        var category = new Category("Noodle");
+        SetId(category, categoryId);
+
+        var food = new Food("Original Name", "Desc", "old-url.jpg", 50000, categoryId);
+        SetId(food, foodId);
+
+        _contextMock.Setup(x => x.Categories).ReturnsDbSet(new List<Category> { category });
+        _contextMock.Setup(x => x.Foods).ReturnsDbSet(new List<Food> { food });
+
+        var fileMock = new Mock<IFormFile>();
+        fileMock.Setup(f => f.FileName).Returns("new.png");
+        
+        _storageServiceMock.Setup(x => x.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()))
+            .ReturnsAsync("http://s3.com/new.png");
+
+        var command = new UpdateFoodCommand(foodId, "Updated", "Desc", 60000, categoryId, fileMock.Object);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().BeTrue();
+        food.ImageUrl.Should().Be("http://s3.com/new.png");
+        _storageServiceMock.Verify(x => x.DeleteFileAsync("old-url.jpg"), Times.Once);
+        _storageServiceMock.Verify(x => x.UploadFileAsync(fileMock.Object, command.Name), Times.Once);
+    }
+
     private void SetId<TId>(object entity, TId id)
     {
         var property = entity.GetType().GetProperty("Id");

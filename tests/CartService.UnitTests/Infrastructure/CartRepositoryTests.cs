@@ -4,6 +4,7 @@ using Moq;
 using StackExchange.Redis;
 using FluentAssertions;
 using System.Text.Json;
+using Microsoft.Extensions.Logging;
 
 namespace CartService.UnitTests.Infrastructure;
 
@@ -11,14 +12,16 @@ public class CartRepositoryTests
 {
     private readonly Mock<IConnectionMultiplexer> _redisMock;
     private readonly Mock<IDatabase> _databaseMock;
+    private readonly Mock<ILogger<CartRepository>> _loggerMock;
     private readonly CartRepository _repository;
 
     public CartRepositoryTests()
     {
         _redisMock = new Mock<IConnectionMultiplexer>();
         _databaseMock = new Mock<IDatabase>();
+        _loggerMock = new Mock<ILogger<CartRepository>>();
         _redisMock.Setup(x => x.GetDatabase(It.IsAny<int>(), It.IsAny<object>())).Returns(_databaseMock.Object);
-        _repository = new CartRepository(_redisMock.Object);
+        _repository = new CartRepository(_redisMock.Object, _loggerMock.Object);
     }
 
     [Fact]
@@ -84,9 +87,8 @@ public class CartRepositoryTests
             $"cart:{cart.CartOwnerId}",
             It.IsAny<RedisValue>(),
             It.IsAny<TimeSpan?>(),
-            false,
-            When.Always,
-            CommandFlags.None), Times.Once);
+            It.IsAny<When>(),
+            It.IsAny<CommandFlags>()), Times.Once);
     }
 
     [Fact]

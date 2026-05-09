@@ -140,6 +140,85 @@ public class CreateOrderCommandHandlerTests
         await act.Should().ThrowAsync<DomainException>().WithMessage("Giỏ hàng đang trống. Không thể tạo đơn.");
     }
 
+    [Fact]
+    public async Task Handle_CartClearFails_ShouldStillReturnOrderId()
+    {
+        // Arrange
+        var table = new RestaurantTable("T1", "Table 1");
+        _context.RestaurantTables.Add(table);
+        await _context.SaveChangesAsync();
+
+        var sessionId = Guid.NewGuid();
+        var session = new TableSession(table.Id, "1234");
+        SetId(session, sessionId);
+        _context.TableSessions.Add(session);
+        await _context.SaveChangesAsync();
+
+        var cart = new CartDto
+        {
+            CartOwnerId = sessionId.ToString(),
+            Items = new List<CartItemDto> { new CartItemDto { FoodId = Guid.NewGuid(), FoodName = "Bun Bo", Quantity = 1, UnitPrice = 50000 } }
+        };
+
+        _cartDataClientMock.Setup(x => x.GetCartAsync(sessionId.ToString())).ReturnsAsync(cart);
+        
+        // Mock failure in ClearCartAsync
+        _cartDataClientMock.Setup(x => x.ClearCartAsync(sessionId.ToString()))
+            .ThrowsAsync(new Exception("Redis connection failed"));
+
+        var command = new CreateOrderCommand(sessionId, null, null, "Cash");
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeEmpty();
+        var order = await _context.Orders.FindAsync(result);
+        order.Should().NotBeNull();
+        // Handler should log a warning but not throw
+        _cartDataClientMock.Verify(x => x.ClearCartAsync(sessionId.ToString()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_WithVoucher_ShouldStoreDiscountAndPublishEvent()
+    {
+        // Arrange
+        var table = new RestaurantTable("T1", "Table 1");
+        _context.RestaurantTables.Add(table);
+        await _context.SaveChangesAsync();
+
+        var sessionId = Guid.NewGuid();
+        var session = new TableSession(table.Id, "1234");
+        SetId(session, sessionId);
+        _context.TableSessions.Add(session);
+        await _context.SaveChangesAsync();
+
+        var cart = new CartDto
+        {
+            CartOwnerId = sessionId.ToString(),
+            Items = new List<CartItemDto> { new CartItemDto { FoodId = Guid.NewGuid(), FoodName = "Bun Bo", Quantity = 1, UnitPrice = 50000 } }
+        };
+
+        _cartDataClientMock.Setup(x => x.GetCartAsync(sessionId.ToString())).ReturnsAsync(cart);
+
+        var command = new CreateOrderCommand(sessionId, null, null, "Cash", "VOUCHER10", 10000);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        var order = await _context.Orders.FindAsync(result);
+        order!.VoucherCode.Should().Be("VOUCHER10");
+        order.DiscountAmount.Should().Be(10000);
+        order.TotalAmount.Should().Be(40000); // 50000 - 10000
+
+        _publishEndpointMock.Verify(x => x.Publish(It.Is<OrderCreatedEvent>(e => 
+            e.OrderId == result && 
+            e.VoucherCode == "VOUCHER10" && 
+            e.DiscountAmount == 10000 &&
+            e.TotalAmount == 40000), It.IsAny<CancellationToken>()), Times.Once);
+    }
+
     private void SetId<TId>(object entity, TId id)
     {
         var property = entity.GetType().GetProperty("Id");

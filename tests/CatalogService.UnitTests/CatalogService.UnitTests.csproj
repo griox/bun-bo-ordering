@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\backend\CatalogService\CatalogService.Application\CatalogService.Application.csproj" />
     <ProjectReference Include="..\..\backend\CatalogService\CatalogService.Domain\CatalogService.Domain.csproj" />
+    <ProjectReference Include="..\..\backend\CatalogService\CatalogService.Infrastructure\CatalogService.Infrastructure.csproj" />
     <ProjectReference Include="..\..\backend\BunBo.SharedKernel\BunBo.SharedKernel.csproj" />
   </ItemGroup>
 

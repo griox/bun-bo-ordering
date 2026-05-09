@@ -106,6 +106,59 @@ public class CreateFoodCommandHandlerTests
         await act.Should().ThrowAsync<DomainException>().WithMessage("Price must be greater than zero");
     }
 
+    [Fact]
+    public async Task Handle_ValidRequestWithImage_ShouldUploadImageAndCreateFood()
+    {
+        // Arrange
+        var categoryId = 1;
+        var category = new Category("Noodle");
+        SetId(category, categoryId);
+        
+        _contextMock.Setup(x => x.Categories).ReturnsDbSet(new List<Category> { category });
+        _contextMock.Setup(x => x.Foods).ReturnsDbSet(new List<Food>());
+
+        var fileMock = new Mock<IFormFile>();
+        fileMock.Setup(f => f.FileName).Returns("test.jpg");
+        fileMock.Setup(f => f.Length).Returns(1024);
+
+        _storageServiceMock.Setup(x => x.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()))
+            .ReturnsAsync("http://s3.com/test.jpg");
+
+        var command = new CreateFoodCommand("Bun Bo Hue", "Special", 55000, categoryId, fileMock.Object);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.Should().NotBeEmpty();
+        _storageServiceMock.Verify(x => x.UploadFileAsync(fileMock.Object, command.Name), Times.Once);
+        _contextMock.Verify(x => x.Foods.Add(It.Is<Food>(f => f.ImageUrl == "http://s3.com/test.jpg")), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_StorageServiceThrowsException_ShouldPropagateException()
+    {
+        // Arrange
+        var categoryId = 1;
+        var category = new Category("Noodle");
+        SetId(category, categoryId);
+        
+        _contextMock.Setup(x => x.Categories).ReturnsDbSet(new List<Category> { category });
+        _contextMock.Setup(x => x.Foods).ReturnsDbSet(new List<Food>());
+
+        var fileMock = new Mock<IFormFile>();
+        _storageServiceMock.Setup(x => x.UploadFileAsync(It.IsAny<IFormFile>(), It.IsAny<string>()))
+            .ThrowsAsync(new Exception("Invalid file format"));
+
+        var command = new CreateFoodCommand("Bun Bo", null, 50000, categoryId, fileMock.Object);
+
+        // Act
+        Func<Task> act = () => _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        await act.Should().ThrowAsync<Exception>().WithMessage("Invalid file format");
+    }
+
     private void SetId<TId>(object entity, TId id)
     {
         var property = entity.GetType().GetProperty("Id");
