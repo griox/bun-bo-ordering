@@ -38,6 +38,12 @@ The current system has basic validation logic but lacks a formal "Use Voucher" c
     - Use it once successfully.
     - Attempt to use it again.
     - Verify it fails with "No more uses left" message.
+- **Scenario 4: Per-User Usage Limit**
+    - Create voucher with `MaxUsagePerUser = 2`.
+    - User A uses it twice successfully.
+    - User A attempts to use it a third time.
+    - Verify it fails with "You have reached your usage limit for this voucher" message.
+    - Verify that User B can still use it if `TotalUsageLimit` is not reached.
 - **Scenario 3: High Concurrency (Race Condition)**
     - Create voucher with `TotalUsageLimit = 10`.
     - Spawn 20 parallel tasks calling `UseVoucherCommand` for the same `VoucherId`.
