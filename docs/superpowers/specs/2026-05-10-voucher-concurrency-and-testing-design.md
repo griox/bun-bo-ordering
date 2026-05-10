@@ -21,7 +21,8 @@ The current system has basic validation logic but lacks a formal "Use Voucher" c
         - `IsActive == true`
         - `ValidFrom <= UtcNow <= ValidTo`
         - `UsageCount < TotalUsageLimit`
-        - Per-user limit not reached.
+        - Per-user usage limit not reached (`MaxUsagePerUser`).
+        - Per-user redemption limit not reached (`MaxRedemptionsPerUser` - for point redemption).
     4. If valid, increment `UsageCount` and create/update `UserVoucher` record.
     5. Commit transaction.
 
@@ -44,6 +45,11 @@ The current system has basic validation logic but lacks a formal "Use Voucher" c
     - User A attempts to use it a third time.
     - Verify it fails with "You have reached your usage limit for this voucher" message.
     - Verify that User B can still use it if `TotalUsageLimit` is not reached.
+- **Scenario 5: Redemption Limit (Point-based)**
+    - Create a point-redemption voucher with `MaxRedemptionsPerUser = 1`.
+    - User A redeems points for the voucher -> Success.
+    - User A attempts to redeem points again for the same voucher.
+    - Verify it fails with "Redemption limit reached" message.
 - **Scenario 3: High Concurrency (Race Condition)**
     - Create voucher with `TotalUsageLimit = 10`.
     - Spawn 20 parallel tasks calling `UseVoucherCommand` for the same `VoucherId`.
