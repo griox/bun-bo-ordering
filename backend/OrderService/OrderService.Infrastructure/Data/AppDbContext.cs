@@ -16,6 +16,7 @@ public class AppDbContext : DbContext, IAppDbContext
     public DbSet<Order> Orders => Set<Order>();
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Payment> Payments => Set<Payment>();
+    public DbSet<UserOrderPreference> UserOrderPreferences => Set<UserOrderPreference>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
@@ -86,6 +87,13 @@ public class AppDbContext : DbContext, IAppDbContext
                   .HasForeignKey(e => e.OrderId)
                   .OnDelete(DeleteBehavior.Restrict);
 
+            entity.HasQueryFilter(e => !e.IsDeleted);
+        });
+
+        builder.Entity<UserOrderPreference>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.HasIndex(e => e.UserId).IsUnique();
             entity.HasQueryFilter(e => !e.IsDeleted);
         });
     }

@@ -273,6 +273,37 @@ orderGroup.MapPut("/{id}/status", async (Guid id, OrderService.Domain.Enums.Orde
     return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin");
 
+// Reorder preference endpoints
+orderGroup.MapGet("/preferences/reorder", async (
+    Microsoft.AspNetCore.Http.HttpContext httpContext,
+    MediatR.IMediator mediator) =>
+{
+    var userIdClaim = httpContext.User.FindFirst("sub")
+        ?? httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        return Results.Unauthorized();
+
+    var preferredOrderId = await mediator.Send(
+        new OrderService.Application.Orders.Queries.GetReorderPreferenceQuery(userId));
+    return Results.Ok(new { preferredOrderId });
+}).RequireAuthorization();
+
+orderGroup.MapPut("/preferences/reorder", async (
+    Microsoft.AspNetCore.Http.HttpContext httpContext,
+    MediatR.IMediator mediator,
+    SavePreferenceRequest body) =>
+{
+    var userIdClaim = httpContext.User.FindFirst("sub")
+        ?? httpContext.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim is null || !Guid.TryParse(userIdClaim.Value, out var userId))
+        return Results.Unauthorized();
+
+    await mediator.Send(
+        new OrderService.Application.Orders.Commands.SaveReorderPreferenceCommand(
+            userId, body.PreferredOrderId));
+    return Results.Ok();
+}).RequireAuthorization();
+
 // Auto migrate database on startup and seed data
 using (var scope = app.Services.CreateScope())
 {
@@ -300,3 +331,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+record SavePreferenceRequest(Guid PreferredOrderId);

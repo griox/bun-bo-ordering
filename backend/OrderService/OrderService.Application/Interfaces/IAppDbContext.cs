@@ -10,6 +10,7 @@ public interface IAppDbContext
     DbSet<Order> Orders { get; }
     DbSet<OrderItem> OrderItems { get; }
     DbSet<Payment> Payments { get; }
+    DbSet<UserOrderPreference> UserOrderPreferences { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
