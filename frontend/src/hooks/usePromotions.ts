@@ -71,6 +71,7 @@ export function usePromotions() {
     const useMyVouchers = () => useQuery({
         queryKey: ['vouchers', 'my'],
         enabled: !!token,
+        refetchInterval: 30000, // Refresh every 30 seconds for real-time status
         queryFn: async () => {
             const { data } = await axiosInstance.get<UserVoucher[]>('/api/promotion/vouchers/my');
             return data;
@@ -133,6 +134,7 @@ export function usePromotions() {
     const useMyPoints = () => useQuery({
         queryKey: ['my-points'],
         enabled: !!token,
+        refetchInterval: 30000, // Refresh every 30 seconds
         queryFn: async () => {
             const { data } = await axiosInstance.get<LoyaltyPoints>('/api/promotion/points');
             return data;
@@ -164,7 +166,7 @@ export function usePromotions() {
 
     // Admin: Update voucher
     const updateVoucherMutation = useMutation({
-        mutationFn: async ({ id, formData }: { id: string, formData: any }) => {
+        mutationFn: async ({ id, formData }: { id: string, formData: { description: string; discountType: string; discountValue: number; minOrderValue: number; maxDiscountAmount?: number; startDate?: string; endDate?: string; maxUsageLimit: number; maxUsagePerUser: number; isActive: boolean; type: string; pointCost?: number; } }) => {
             const typeMap = { 'Standard': 0, 'PointRedemption': 1, 'Reward': 2 };
             const discountTypeMap = { 'Percentage': 0, 'FixedAmount': 1 };
 

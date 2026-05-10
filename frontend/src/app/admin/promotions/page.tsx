@@ -8,7 +8,6 @@ import {
     Filter,
     Calendar,
     Users,
-    ChevronRight,
     Loader2,
     CheckCircle2,
     XCircle,
@@ -39,7 +38,6 @@ import {
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
@@ -64,7 +62,7 @@ export default function PromotionsPage() {
             await deleteVoucherMutation.mutateAsync(id);
             toast.success('Đã xóa mã khuyến mãi thành công');
             setDeletingVoucherId(null);
-        } catch (error) {
+        } catch {
             toast.error('Lỗi khi xóa mã khuyến mãi');
         }
     };
@@ -377,8 +375,9 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
             await updateVoucherMutation.mutateAsync({ id: voucher.id, formData });
             toast.success('Đã cập nhật mã khuyến mãi thành công!');
             onSuccess();
-        } catch (error: any) {
-            toast.error(error.response?.data?.detail || 'Lỗi khi cập nhật mã khuyến mãi.');
+        } catch (error: unknown) {
+            const err = error as { response?: { data?: { detail?: string; message?: string } } };
+            toast.error(err.response?.data?.detail || 'Lỗi khi cập nhật mã khuyến mãi.');
         }
     };
 
