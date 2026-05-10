@@ -80,6 +80,43 @@ public class Voucher : BaseEntity
         return true;
     }
 
+    public void Update(
+        string description,
+        DiscountType discountType,
+        decimal discountValue,
+        decimal? maxDiscountAmount,
+        decimal minOrderValue,
+        DateTime? validFrom,
+        DateTime? validTo,
+        int totalUsageLimit,
+        int maxUsagePerUser,
+        bool isActive,
+        VoucherType type,
+        int? pointCost,
+        string? conditions)
+    {
+        if (discountValue < 0) throw new DomainException("Giá trị giảm không được nhỏ hơn 0.");
+        if (minOrderValue < 0) throw new DomainException("Đơn tối thiểu không được nhỏ hơn 0.");
+        if (maxDiscountAmount.HasValue && maxDiscountAmount.Value < 0) throw new DomainException("Giá trị giảm tối đa không được nhỏ hơn 0.");
+        if (totalUsageLimit < 0) throw new DomainException("Tổng số lượt sử dụng không được nhỏ hơn 0.");
+        if (maxUsagePerUser < 0) throw new DomainException("Số lượt sử dụng mỗi người không được nhỏ hơn 0.");
+        if (pointCost.HasValue && pointCost.Value < 0) throw new DomainException("Số điểm quy đổi không được nhỏ hơn 0.");
+
+        Description = description;
+        DiscountType = discountType;
+        DiscountValue = discountValue;
+        MaxDiscountAmount = maxDiscountAmount;
+        MinOrderValue = minOrderValue;
+        ValidFrom = validFrom;
+        ValidTo = validTo;
+        TotalUsageLimit = totalUsageLimit;
+        MaxUsagePerUser = maxUsagePerUser;
+        IsActive = isActive;
+        Type = type;
+        PointCost = pointCost;
+        Conditions = conditions;
+    }
+
     public void IncrementUsage()
     {
         if (UsageCount >= TotalUsageLimit)

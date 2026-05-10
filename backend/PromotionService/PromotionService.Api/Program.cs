@@ -146,6 +146,19 @@ promotionGroup.MapGet("/vouchers", async (MediatR.IMediator mediator, int skip =
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 
+promotionGroup.MapPut("/vouchers/{id}", async (MediatR.IMediator mediator, Guid id, PromotionService.Application.Vouchers.Commands.UpdateVoucherCommand cmd) =>
+{
+    cmd.Id = id;
+    var result = await mediator.Send(cmd);
+    return result ? Results.Ok(new { Message = "Voucher updated successfully." }) : Results.NotFound();
+}).RequireAuthorization("Admin");
+
+promotionGroup.MapDelete("/vouchers/{id}", async (MediatR.IMediator mediator, Guid id) =>
+{
+    var result = await mediator.Send(new PromotionService.Application.Vouchers.Commands.DeleteVoucherCommand(id));
+    return result ? Results.Ok(new { Message = "Voucher deleted successfully." }) : Results.NotFound();
+}).RequireAuthorization("Admin");
+
 promotionGroup.MapGet("/vouchers/active", async (MediatR.IMediator mediator) =>
 {
     var vouchers = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetPublicVouchersQuery());
@@ -172,6 +185,16 @@ promotionGroup.MapGet("/points", async (MediatR.IMediator mediator, ClaimsPrinci
     var userId = Guid.Parse(userIdStr);
     var points = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetUserLoyaltyPointsQuery(userId));
     return Results.Ok(points);
+}).RequireAuthorization();
+
+promotionGroup.MapGet("/vouchers/my", async (MediatR.IMediator mediator, ClaimsPrincipal user) =>
+{
+    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
+    
+    var userId = Guid.Parse(userIdStr);
+    var vouchers = await mediator.Send(new PromotionService.Application.Vouchers.Queries.GetUserVouchersQuery(userId));
+    return Results.Ok(vouchers);
 }).RequireAuthorization();
 
 promotionGroup.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }));

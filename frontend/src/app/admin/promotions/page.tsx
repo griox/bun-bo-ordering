@@ -14,10 +14,13 @@ import {
     XCircle,
     Copy,
     Percent,
-    Banknote
+    Banknote,
+    Edit,
+    Trash2,
+    AlertCircle
 } from 'lucide-react';
 import { AdminPagination } from '@/components/admin/pagination';
-import { usePromotions } from '@/hooks/usePromotions';
+import { usePromotions, Voucher } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -29,19 +32,42 @@ import {
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export default function PromotionsPage() {
-    const { useVouchers } = usePromotions();
+    const { useVouchers, deleteVoucherMutation } = usePromotions();
     const [page, setPage] = useState(0);
-    const take = 6;
+    const take = 10; // Changed to 10 for better view
     const { data: vouchersData, isLoading } = useVouchers(page * take, take);
     const [searchTerm, setSearchTerm] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [editingVoucher, setEditingVoucher] = useState<Voucher | null>(null);
+    const [deletingVoucherId, setDeletingVoucherId] = useState<string | null>(null);
 
     const filteredVouchers = vouchersData?.items?.filter(v =>
         v.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         v.description.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const handleDelete = async (id: string) => {
+        try {
+            await deleteVoucherMutation.mutateAsync(id);
+            toast.success('Đã xóa mã khuyến mãi thành công');
+            setDeletingVoucherId(null);
+        } catch (error) {
+            toast.error('Lỗi khi xóa mã khuyến mãi');
+        }
+    };
 
     const handleCopyCode = (code: string) => {
         navigator.clipboard.writeText(code);
@@ -247,9 +273,49 @@ export default function PromotionsPage() {
                                             )}
                                         </td>
                                         <td className="px-8 py-6 text-right">
-                                            <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all text-gray-400 hover:text-gray-900 group/btn">
-                                                <ChevronRight className="size-5 group-hover/btn:translate-x-0.5 transition-transform" />
-                                            </Button>
+                                            <div className="flex items-center justify-end gap-2">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    onClick={() => setEditingVoucher(voucher)}
+                                                    className="size-10 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-all"
+                                                >
+                                                    <Edit className="size-4" />
+                                                </Button>
+
+                                                <AlertDialog open={deletingVoucherId === voucher.id} onOpenChange={(open) => !open && setDeletingVoucherId(null)}>
+                                                    <AlertDialogTrigger asChild>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            onClick={() => setDeletingVoucherId(voucher.id)}
+                                                            className="size-10 rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-600 transition-all"
+                                                        >
+                                                            <Trash2 className="size-4" />
+                                                        </Button>
+                                                    </AlertDialogTrigger>
+                                                    <AlertDialogContent className="bg-white rounded-[2rem] border-none shadow-2xl overflow-hidden p-0">
+                                                        <div className="bg-red-50 p-8 flex items-center gap-4">
+                                                            <div className="size-12 bg-red-100 rounded-2xl flex items-center justify-center text-red-600">
+                                                                <AlertCircle className="size-6" />
+                                                            </div>
+                                                            <div>
+                                                                <AlertDialogTitle className="text-xl font-black text-gray-900 uppercase tracking-tight">Xác nhận xóa?</AlertDialogTitle>
+                                                                <AlertDialogDescription className="text-gray-500 font-medium">Hành động này không thể hoàn tác. Mã <b>{voucher.code}</b> sẽ biến mất khỏi hệ thống.</AlertDialogDescription>
+                                                            </div>
+                                                        </div>
+                                                        <AlertDialogFooter className="p-6 bg-gray-50/50 gap-3">
+                                                            <AlertDialogCancel className="h-12 px-6 rounded-xl border-2 border-gray-100 font-bold uppercase text-[10px] tracking-widest">Hủy bỏ</AlertDialogCancel>
+                                                            <AlertDialogAction
+                                                                onClick={() => handleDelete(voucher.id)}
+                                                                className="h-12 px-8 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-red-500/20"
+                                                            >
+                                                                Xóa vĩnh viễn
+                                                            </AlertDialogAction>
+                                                        </AlertDialogFooter>
+                                                    </AlertDialogContent>
+                                                </AlertDialog>
+                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -263,15 +329,242 @@ export default function PromotionsPage() {
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             Trang <span className="text-gray-900">{page + 1}</span> / {Math.ceil((vouchersData.totalCount || 0) / take) || 1} — Tổng <span className="text-gray-900">{vouchersData.totalCount || 0}</span> mã khuyến mãi
                         </p>
-                        <AdminPagination 
-                            currentPage={page} 
-                            totalPages={Math.ceil((vouchersData.totalCount || 0) / take)} 
-                            onPageChange={setPage} 
+                        <AdminPagination
+                            currentPage={page}
+                            totalPages={Math.ceil((vouchersData.totalCount || 0) / take)}
+                            onPageChange={setPage}
                         />
                     </div>
                 )}
             </div>
+
+            {/* Edit Modal */}
+            <Dialog open={!!editingVoucher} onOpenChange={(open) => !open && setEditingVoucher(null)}>
+                <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
+                    <DialogTitle className="sr-only">Chỉnh sửa mã khuyến mãi</DialogTitle>
+                    {editingVoucher && (
+                        <UpdateVoucherForm
+                            voucher={editingVoucher as Voucher}
+                            onSuccess={() => setEditingVoucher(null)}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
+    );
+}
+
+function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess: () => void }) {
+    const { updateVoucherMutation } = usePromotions();
+    const [formData, setFormData] = useState(() => ({
+        description: voucher.description,
+        discountType: voucher.discountType,
+        discountValue: voucher.discountValue,
+        minOrderValue: voucher.minOrderValue,
+        maxDiscountAmount: voucher.maxDiscountAmount || 0,
+        startDate: voucher.validFrom ? format(new Date(voucher.validFrom), "yyyy-MM-dd'T'HH:mm") : '',
+        endDate: voucher.validTo ? format(new Date(voucher.validTo), "yyyy-MM-dd'T'HH:mm") : '',
+        maxUsageLimit: voucher.totalUsageLimit,
+        maxUsagePerUser: voucher.maxUsagePerUser,
+        isActive: voucher.isActive,
+        type: voucher.type,
+        pointCost: voucher.pointCost || 0
+    }));
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            await updateVoucherMutation.mutateAsync({ id: voucher.id, formData });
+            toast.success('Đã cập nhật mã khuyến mãi thành công!');
+            onSuccess();
+        } catch (error: any) {
+            toast.error(error.response?.data?.detail || 'Lỗi khi cập nhật mã khuyến mãi.');
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
+            <div className="bg-gradient-to-br from-gray-900 to-gray-800 p-10 text-white relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+                <div className="relative flex items-center gap-6">
+                    <div className="size-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-inner text-blue-400">
+                        <Edit className="size-8" />
+                    </div>
+                    <div>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tight">Cập nhật mã: {voucher.code}</DialogTitle>
+                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Chỉnh sửa thông số chương trình khuyến mãi</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả</label>
+                        <Input
+                            placeholder="VD: Giảm 30% cho đơn hàng đầu tiên"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-medium"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại giảm</label>
+                        <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'Percentage' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, discountType: 'Percentage' })}
+                            >
+                                Phần trăm (%)
+                            </button>
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'FixedAmount' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, discountType: 'FixedAmount' })}
+                            >
+                                Số tiền (VND)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2 flex flex-col justify-end">
+                        <label className="flex items-center gap-2 cursor-pointer p-3 bg-gray-50 rounded-xl border-2 border-gray-100 transition-all hover:bg-gray-100">
+                            <input
+                                type="checkbox"
+                                checked={formData.isActive}
+                                onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                                className="size-5 rounded-lg border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Kích hoạt mã</span>
+                        </label>
+                    </div>
+
+                    <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại Voucher</label>
+                        <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'Standard' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, type: 'Standard', pointCost: 0 })}
+                            >
+                                Tiêu chuẩn
+                            </button>
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'PointRedemption' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, type: 'PointRedemption' })}
+                            >
+                                Đổi điểm thưởng
+                            </button>
+                        </div>
+                    </div>
+
+                    {formData.type === 'PointRedemption' && (
+                        <div className="col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2">
+                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
+                            <Input
+                                type="number"
+                                min="0"
+                                className="h-12 border-2 border-amber-200 bg-amber-50 rounded-xl focus:border-amber-500 font-bold text-amber-900"
+                                value={formData.pointCost}
+                                onChange={(e) => setFormData({ ...formData, pointCost: Math.max(0, Number(e.target.value)) })}
+                                required
+                            />
+                        </div>
+                    )}
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá trị giảm</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
+                            value={formData.discountValue}
+                            onChange={(e) => setFormData({ ...formData, discountValue: Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Đơn tối thiểu</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
+                            value={formData.minOrderValue}
+                            onChange={(e) => setFormData({ ...formData, minOrderValue: Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 col-span-2">
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày bắt đầu</label>
+                            <Input
+                                type="datetime-local"
+                                className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
+                                value={formData.startDate}
+                                onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày kết thúc</label>
+                            <Input
+                                type="datetime-local"
+                                className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
+                                value={formData.endDate}
+                                onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                required
+                            />
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
+                            value={formData.maxUsageLimit}
+                            onChange={(e) => setFormData({ ...formData, maxUsageLimit: Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lượt dùng / user</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
+                            value={formData.maxUsagePerUser}
+                            onChange={(e) => setFormData({ ...formData, maxUsagePerUser: Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-4">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => onSuccess()}
+                    className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
+                >
+                    Hủy bỏ
+                </Button>
+                <Button
+                    type="submit"
+                    disabled={updateVoucherMutation.isPending}
+                    className="h-12 px-12 bg-blue-500 hover:bg-blue-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
+                >
+                    {updateVoucherMutation.isPending ? 'Đang cập nhật...' : 'Cập nhật ngay'}
+                </Button>
+            </div>
+        </form>
     );
 }
 
@@ -322,110 +615,108 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
             </div>
 
             <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
-
-            <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã Code</label>
-                    <Input
-                        placeholder="VD: BUNBO30"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-black uppercase"
-                        value={formData.code}
-                        onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại giảm</label>
-                    <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
-                        <button
-                            type="button"
-                            className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'Percentage' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
-                            onClick={() => setFormData({ ...formData, discountType: 'Percentage' })}
-                        >
-                            Phần trăm (%)
-                        </button>
-                        <button
-                            type="button"
-                            className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'FixedAmount' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
-                            onClick={() => setFormData({ ...formData, discountType: 'FixedAmount' })}
-                        >
-                            Số tiền (VND)
-                        </button>
-                    </div>
-                </div>
-
-                <div className="col-span-2 space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại Voucher</label>
-                    <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
-                        <button
-                            type="button"
-                            className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'Standard' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
-                            onClick={() => setFormData({ ...formData, type: 'Standard', pointCost: 0 })}
-                        >
-                            Tiêu chuẩn
-                        </button>
-                        <button
-                            type="button"
-                            className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'PointRedemption' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
-                            onClick={() => setFormData({ ...formData, type: 'PointRedemption' })}
-                        >
-                            Đổi điểm thưởng
-                        </button>
-                    </div>
-                </div>
-
-                {formData.type === 'PointRedemption' && (
-                    <div className="col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2">
-                        <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
+                <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã Code</label>
                         <Input
-                            type="number"
-                            min="0"
-                            placeholder="Nhập số điểm khách cần tiêu tốn..."
-                            className="h-12 border-2 border-amber-200 bg-amber-50 rounded-xl focus:border-amber-500 font-bold text-amber-900"
-                            value={formData.pointCost || ''}
-                            onChange={(e) => setFormData({ ...formData, pointCost: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
+                            placeholder="VD: BUNBO30"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-black uppercase"
+                            value={formData.code}
+                            onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
                             required
                         />
                     </div>
-                )}
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại giảm</label>
+                        <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'Percentage' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, discountType: 'Percentage' })}
+                            >
+                                Phần trăm (%)
+                            </button>
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'FixedAmount' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, discountType: 'FixedAmount' })}
+                            >
+                                Số tiền (VND)
+                            </button>
+                        </div>
+                    </div>
 
-                <div className="col-span-2 space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả</label>
-                    <Input
-                        placeholder="VD: Giảm 30% cho đơn hàng đầu tiên"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-medium"
-                        value={formData.description}
-                        onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                        required
-                    />
-                </div>
+                    <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại Voucher</label>
+                        <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'Standard' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, type: 'Standard', pointCost: 0 })}
+                            >
+                                Tiêu chuẩn
+                            </button>
+                            <button
+                                type="button"
+                                className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'PointRedemption' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
+                                onClick={() => setFormData({ ...formData, type: 'PointRedemption' })}
+                            >
+                                Đổi điểm thưởng
+                            </button>
+                        </div>
+                    </div>
 
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá trị giảm</label>
-                    <Input
-                        type="number"
-                        min="0"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.discountValue || ''}
-                        placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, discountValue: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
-                        required
-                    />
-                </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Đơn tối thiểu</label>
-                    <Input
-                        type="number"
-                        min="0"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.minOrderValue || ''}
-                        placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
-                        required
-                    />
-                </div>
+                    {formData.type === 'PointRedemption' && (
+                        <div className="col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2">
+                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
+                            <Input
+                                type="number"
+                                min="0"
+                                placeholder="Nhập số điểm khách cần tiêu tốn..."
+                                className="h-12 border-2 border-amber-200 bg-amber-50 rounded-xl focus:border-amber-500 font-bold text-amber-900"
+                                value={formData.pointCost || ''}
+                                onChange={(e) => setFormData({ ...formData, pointCost: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
+                                required
+                            />
+                        </div>
+                    )}
 
-                {formData.type !== 'PointRedemption' && (
+                    <div className="col-span-2 space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả</label>
+                        <Input
+                            placeholder="VD: Giảm 30% cho đơn hàng đầu tiên"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-medium"
+                            value={formData.description}
+                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                            required
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá trị giảm</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
+                            value={formData.discountValue || ''}
+                            placeholder="0"
+                            onChange={(e) => setFormData({ ...formData, discountValue: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Đơn tối thiểu</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
+                            value={formData.minOrderValue || ''}
+                            placeholder="0"
+                            onChange={(e) => setFormData({ ...formData, minOrderValue: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4 col-span-2">
                         <div className="space-y-2">
                             <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày bắt đầu</label>
@@ -448,34 +739,32 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                             />
                         </div>
                     </div>
-                )}
 
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
-                    <Input
-                        type="number"
-                        min="0"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.maxUsageLimit || ''}
-                        placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, maxUsageLimit: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
-                        required
-                    />
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
+                            value={formData.maxUsageLimit || ''}
+                            placeholder="0"
+                            onChange={(e) => setFormData({ ...formData, maxUsageLimit: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lượt dùng / user</label>
+                        <Input
+                            type="number"
+                            min="0"
+                            className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
+                            value={formData.maxUsagePerUser || ''}
+                            placeholder="0"
+                            onChange={(e) => setFormData({ ...formData, maxUsagePerUser: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
+                            required
+                        />
+                    </div>
                 </div>
-                <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lượt dùng / user</label>
-                    <Input
-                        type="number"
-                        min="0"
-                        className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
-                        value={formData.maxUsagePerUser || ''}
-                        placeholder="0"
-                        onChange={(e) => setFormData({ ...formData, maxUsagePerUser: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
-                        required
-                    />
-                </div>
-            </div>
-
             </div>
 
             <div className="p-8 bg-gray-50/50 border-t border-gray-100 flex justify-end gap-4">

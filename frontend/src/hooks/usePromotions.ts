@@ -34,6 +34,15 @@ export interface LoyaltyPoints {
     }[];
 }
 
+export interface UserVoucher {
+    id: string;
+    code: string;
+    description: string;
+    status: 'Unused' | 'Used' | 'Expired';
+    expiryDate?: string;
+    voucherId: string;
+}
+
 export function usePromotions() {
     const { token } = useAuthStore();
     const queryClient = useQueryClient();
@@ -54,6 +63,16 @@ export function usePromotions() {
         enabled: !!token,
         queryFn: async () => {
             const { data } = await axiosInstance.get<Voucher[]>('/api/promotion/vouchers/active');
+            return data;
+        }
+    });
+
+    // Client: Get my vouchers (claimed)
+    const useMyVouchers = () => useQuery({
+        queryKey: ['vouchers', 'my'],
+        enabled: !!token,
+        queryFn: async () => {
+            const { data } = await axiosInstance.get<UserVoucher[]>('/api/promotion/vouchers/my');
             return data;
         }
     });
@@ -136,16 +155,63 @@ export function usePromotions() {
                 return data;
             },
             onSuccess: () => {
-                queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+                queryClient.invalidateQueries({ queryKey: ['vouchers', 'my'] });
+                queryClient.invalidateQueries({ queryKey: ['vouchers', 'active'] });
                 queryClient.invalidateQueries({ queryKey: ['my-points'] });
             }
         });
     };
 
+    // Admin: Update voucher
+    const updateVoucherMutation = useMutation({
+        mutationFn: async ({ id, formData }: { id: string, formData: any }) => {
+            const typeMap = { 'Standard': 0, 'PointRedemption': 1, 'Reward': 2 };
+            const discountTypeMap = { 'Percentage': 0, 'FixedAmount': 1 };
+
+            const payload = {
+                id: id,
+                description: formData.description,
+                discountType: discountTypeMap[formData.discountType as 'Percentage' | 'FixedAmount'],
+                discountValue: Number(formData.discountValue),
+                minOrderValue: Number(formData.minOrderValue),
+                maxDiscountAmount: formData.discountType === 'Percentage' ? (formData.maxDiscountAmount || null) : null,
+                validFrom: formData.startDate ? new Date(formData.startDate).toISOString() : null,
+                validTo: formData.endDate ? new Date(formData.endDate).toISOString() : null,
+                totalUsageLimit: Number(formData.maxUsageLimit),
+                maxUsagePerUser: Number(formData.maxUsagePerUser),
+                isActive: formData.isActive,
+                type: typeMap[formData.type as 'Standard' | 'PointRedemption' | 'Reward'],
+                pointCost: formData.type === 'PointRedemption' ? Number(formData.pointCost) : null,
+                conditions: null,
+            };
+            const { data } = await axiosInstance.put(`/api/promotion/vouchers/${id}`, payload);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+            queryClient.invalidateQueries({ queryKey: ['vouchers', 'active'] });
+        }
+    });
+
+    // Admin: Delete voucher
+    const deleteVoucherMutation = useMutation({
+        mutationFn: async (id: string) => {
+            const { data } = await axiosInstance.delete(`/api/promotion/vouchers/${id}`);
+            return data;
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['vouchers'] });
+            queryClient.invalidateQueries({ queryKey: ['vouchers', 'active'] });
+        }
+    });
+
     return {
         useVouchers,
         useActiveVouchers,
+        useMyVouchers,
         createVoucherMutation,
+        updateVoucherMutation,
+        deleteVoucherMutation,
         useMyPoints,
         validateVoucherMutation,
         useRedeemVoucherMutation
