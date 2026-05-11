@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone, Ticket, MessageSquare } from 'lucide-react';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
@@ -20,8 +20,40 @@ export function CartModal() {
     const { cart, getCartTotal, updateQuantity, updateNote, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
-    const { validateVoucherMutation, useActiveVouchers } = usePromotions();
+    const { validateVoucherMutation, useActiveVouchers, useMyVouchers } = usePromotions();
     const { data: availableVouchers } = useActiveVouchers();
+    const { data: myVouchers } = useMyVouchers();
+
+    const displayVouchers = useMemo(() => {
+        const list: any[] = [];
+        
+        if (availableVouchers) {
+            // Add active Standard vouchers (Handle both string and integer enum serialization)
+            list.push(...availableVouchers.filter(v => v.isActive && (v.type === 'Standard' || String(v.type) === '0')));
+        }
+
+        if (myVouchers) {
+            const unusedVouchers = myVouchers.filter(v => v.status === 'Unused');
+            for (const myV of unusedVouchers) {
+                if (!list.find(v => v.code === myV.code)) {
+                    const fullDetails = availableVouchers?.find(v => v.code === myV.code);
+                    if (fullDetails) {
+                        list.push(fullDetails);
+                    } else {
+                        // If not in availableVouchers but user has it, mock details so it can be rendered
+                        list.push({
+                            id: myV.voucherId,
+                            code: myV.code,
+                            description: myV.description,
+                            minOrderValue: 0,
+                            isActive: true,
+                        });
+                    }
+                }
+            }
+        }
+        return list;
+    }, [availableVouchers, myVouchers]);
 
     const [isOpen, setIsOpen] = useState(false);
     const [paymentOrderId, setPaymentOrderId] = useState<string | null>(null);
@@ -392,7 +424,7 @@ export function CartModal() {
                                             {/* List of Available Vouchers */}
                                             <div className="space-y-2 max-h-40 overflow-y-auto no-scrollbar pt-2">
                                                 <p className="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-2">Mã có sẵn</p>
-                                                {availableVouchers?.filter(v => v.isActive).map(voucher => {
+                                                {displayVouchers.map(voucher => {
                                                     const isSelected = appliedVoucher === voucher.code;
                                                     const isEligible = subtotal >= voucher.minOrderValue;
 
@@ -436,7 +468,7 @@ export function CartModal() {
                                                         </button>
                                                     );
                                                 })}
-                                                {(!availableVouchers || availableVouchers.length === 0) && (
+                                                {displayVouchers.length === 0 && (
                                                     <p className="text-[10px] text-neutral-400 italic text-center py-2">Không có mã giảm giá nào khác</p>
                                                 )}
                                             </div>

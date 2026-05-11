@@ -144,8 +144,15 @@ export function usePromotions() {
     // Client: Validate voucher
     const validateVoucherMutation = useMutation({
         mutationFn: async ({ code, orderValue }: { code: string, orderValue: number }) => {
-            const { data } = await axiosInstance.post('/api/promotion/vouchers/validate', { code, orderValue });
-            return data as { isValid: boolean, discountAmount: number, message: string };
+            try {
+                const { data } = await axiosInstance.post('/api/promotion/vouchers/validate', { code, orderValue });
+                return data as { isValid: boolean, discountAmount: number, message: string };
+            } catch (error: any) {
+                if (error.response && error.response.data) {
+                    return error.response.data as { isValid: boolean, discountAmount: number, message: string };
+                }
+                throw error;
+            }
         }
     });
 

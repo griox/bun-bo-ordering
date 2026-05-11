@@ -46,7 +46,7 @@ export function OrderDetailModal({
                                 <DialogTitle className="text-base font-bold text-[#450A0A] uppercase tracking-wide leading-none mb-0.5">
                                     Chi tiết hóa đơn
                                 </DialogTitle>
-                                <p className="text-xs text-[#7f1d1d]/50">Bún Bò System · Nha Trang</p>
+                                <p className="text-xs text-[#7f1d1d]/50">Bún Bò Chung Cư · Nha Trang</p>
                             </div>
                         </div>
 
@@ -167,9 +167,7 @@ export function OrderDetailModal({
                         </div>
                     </div>
 
-                    <p className="text-center text-[10px] text-[#7f1d1d]/30 mt-4 tracking-[0.5em] uppercase">
-                        ✦ Cảm ơn bạn đã tin tưởng ✦
-                    </p>
+                   
                 </div>
             </DialogContent>
         </Dialog>
