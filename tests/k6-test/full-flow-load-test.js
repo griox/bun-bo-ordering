@@ -1,21 +1,39 @@
 import http from 'k6/http';
-import { sleep, check, fail } from 'k6';
+import { sleep, check } from 'k6';
 
 export const options = {
-    stages: [
-        { duration: '2m', target: 200 }, // Ramp up to 200 VUs
-        { duration: '5m', target: 200 }, // Stay at 200 VUs for 5 minutes
-        { duration: '1m', target: 0 },   // Ramp down to 0 VUs
-    ],
+    scenarios: {
+        guest_flow: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '30s', target: 35 }, // 70% của 50 VUs
+                { duration: '1m', target: 35 },
+                { duration: '30s', target: 0 },
+            ],
+            exec: 'guestFlow',
+        },
+        member_flow: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '30s', target: 15 }, // 30% của 50 VUs
+                { duration: '1m', target: 15 },
+                { duration: '30s', target: 0 },
+            ],
+            exec: 'memberFlow',
+        },
+    },
     thresholds: {
-        http_req_duration: ['p(95)<3000'], // Expect 95% of requests to complete within 3s
+        http_req_duration: ['p(95)<2000'], // Expect 95% of requests to complete within 2s
         http_req_failed: ['rate<0.05'],    // Less than 5% failure rate
     },
 };
 
-const BASE_URL = 'https://api.bun-bo-chung-cu.io.vn/api';
+const BASE_URL = __ENV.BASE_URL || 'http://localhost:8000/api';
+const SEPAY_API_KEY = 'TEST_SEPAY_SECRET_KEY_12345'; // Giống cấu hình trong docker-compose.yml
 
-// Danh sách bàn được lấy từ Production
+// Danh sách bàn ngẫu nhiên
 const TABLE_IDS = [
     'f962d655-e0a5-4d64-b40a-d989921dfaf5',
     '9395339b-f83e-4482-b215-48e9e428a922',
@@ -23,76 +41,212 @@ const TABLE_IDS = [
     'cf39f952-53c0-4a6b-ac25-8e64cb816612'
 ];
 
-export default function () {
-    // Chọn ngẫu nhiên 1 bàn
-    const TABLE_ID = TABLE_IDS[Math.floor(Math.random() * TABLE_IDS.length)];
+function getRandomTableId() {
+    return TABLE_IDS[Math.floor(Math.random() * TABLE_IDS.length)];
+}
 
-    // 1. Quét mã QR tại bàn để mở Session (Guest bắt đầu gọi món)
-    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`);
+export function setup() {
+    // Attempt to login to get a JWT for the member flow
+    const loginPayload = JSON.stringify({
+        email: 'admin@bunbo.com',
+        password: 'Admin@123'
+    });
     
-    if (!check(scanRes, { 
-        'table scanned 200': (r) => r.status === 200,
-        'has sessionId': (r) => {
-            try { return r.json('sessionId') !== undefined; } catch(e) { return false; }
-        }
-    })) {
-        console.error(`Scan Failed: ${scanRes.status} - ${scanRes.body}`);
-        sleep(1); // Ngăn chặn vòng lặp DDoS nếu server lỗi
-        return;
+    const loginRes = http.post(`${BASE_URL}/identity/login`, loginPayload, {
+        headers: { 'Content-Type': 'application/json' }
+    });
+    
+    let token = '';
+    if (loginRes.status === 200) {
+        token = loginRes.json('token');
+        console.log("Setup Login Success: Retrieved JWT Token.");
+    } else {
+        console.warn(`Setup Login Failed: ${loginRes.status} - ${loginRes.body}`);
     }
     
+    return { token: token };
+}
+
+// ============================================
+// GUEST FLOW (No Authentication, Cash Payment)
+// ============================================
+export function guestFlow() {
+    const TABLE_ID = getRandomTableId();
+
+    // 1. Scan Table
+    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`);
+    if (!check(scanRes, { 'guest table scanned 200': (r) => r.status === 200 })) {
+        sleep(1); return;
+    }
     const tableSessionId = scanRes.json('sessionId');
 
-    // 2. Khách xem menu (Public API)
+    // 2. View Catalog
     const catalogRes = http.get(`${BASE_URL}/catalog/foods`);
-    let foodId = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f'; // Fallback
-
-    if (check(catalogRes, { 'catalog 200': (r) => r.status === 200 })) {
+    let foodId = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f';
+    if (catalogRes.status === 200) {
         try {
             const foods = catalogRes.json();
             if (foods && foods.length > 0) {
-                // Chọn ngẫu nhiên 1 món từ menu thật
-                foodId = foods[Math.floor(Math.random() * foods.length)].id;
+                const selectedFood = foods[Math.floor(Math.random() * foods.length)];
+                foodId = selectedFood.id;
             }
-        } catch (e) {
-            console.warn("Failed to parse catalog JSON, using fallback foodId");
-        }
-    } else {
-        console.error(`Catalog Failed: ${catalogRes.status}`);
+        } catch (e) { /* ignore */ }
     }
     sleep(1);
 
-    // 3. Khách thêm món vào giỏ hàng (Cart Service - Public)
+    // 3. Add to Cart
+    const qty = Math.floor(Math.random() * 3) + 1;
     const cartPayload = JSON.stringify({
         cart: {
             cartOwnerId: tableSessionId,
-            items: [{ foodId: foodId, quantity: Math.floor(Math.random() * 3) + 1 }]
+            items: [{ foodId: foodId, quantity: qty }]
         }
     });
-    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { 
-        headers: { 'Content-Type': 'application/json' } 
-    });
-    
-    if (!check(cartRes, { 'guest cart update 200': (r) => r.status === 200 })) {
-        console.error(`Cart Update Failed: ${cartRes.status} - ${cartRes.body}`);
-        sleep(1); // Ngăn chặn vòng lặp DDoS nếu server lỗi
-        return; // Dừng lại nếu không thêm giỏ hàng được
-    }
+    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { headers: { 'Content-Type': 'application/json' } });
+    if (!check(cartRes, { 'guest cart 200': (r) => r.status === 200 })) { sleep(1); return; }
     sleep(1);
 
-    // 4. Khách đặt đơn hàng (Order Service)
+    // 4. Place Order (Cash)
     const orderPayload = JSON.stringify({
         tableSessionId: tableSessionId,
         paymentMethod: 'Cash',
         note: 'Guest Checkout Load Test'
     });
+    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { headers: { 'Content-Type': 'application/json' } });
+    check(orderRes, { 'guest order 201': (r) => r.status === 201 });
+    sleep(2);
+}
+
+// ============================================
+// MEMBER FLOW (JWT Auth, Voucher, Transfer + Webhook)
+// ============================================
+export function memberFlow(data) {
+    const TABLE_ID = getRandomTableId();
+    const token = data.token;
     
-    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { 
-        headers: { 'Content-Type': 'application/json' } 
-    });
-    
-    if (!check(orderRes, { 'guest order success 201': (r) => r.status === 201 })) {
-        console.error(`Order Failed: ${orderRes.status} - ${orderRes.body}`);
+    if (!token) {
+        console.warn("Skipping member flow due to missing token.");
+        sleep(2);
+        return;
     }
+
+    const authHeaders = { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+    };
+
+    // 1. Scan Table
+    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`);
+    if (!check(scanRes, { 'member table scanned 200': (r) => r.status === 200 })) {
+        sleep(1); return;
+    }
+    const tableSessionId = scanRes.json('sessionId');
+
+    // 2. View Catalog
+    const catalogRes = http.get(`${BASE_URL}/catalog/foods`);
+    let foodId = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f';
+    let foodPrice = 50000;
+    if (catalogRes.status === 200) {
+        try {
+            const foods = catalogRes.json();
+            if (foods && foods.length > 0) {
+                const selectedFood = foods[Math.floor(Math.random() * foods.length)];
+                foodId = selectedFood.id;
+                foodPrice = selectedFood.price;
+            }
+        } catch (e) {}
+    }
+    sleep(1);
+
+    // 3. Add to Cart
+    const qty = 2; // Cố định mua 2 món
+    const cartPayload = JSON.stringify({
+        cart: {
+            cartOwnerId: tableSessionId,
+            items: [{ foodId: foodId, quantity: qty }]
+        }
+    });
+    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { headers: authHeaders });
+    if (!check(cartRes, { 'member cart 200': (r) => r.status === 200 })) { sleep(1); return; }
+    sleep(1);
+
+    // 4. Check active vouchers
+    const activeVouchersRes = http.get(`${BASE_URL}/promotion/vouchers/active`, { headers: authHeaders });
+    check(activeVouchersRes, { 'member active vouchers 200': (r) => r.status === 200 });
+    
+    let voucherCode = null;
+    if (activeVouchersRes.status === 200) {
+        try {
+            const vouchers = activeVouchersRes.json();
+            if (vouchers && vouchers.length > 0) {
+                voucherCode = vouchers[0].code;
+            }
+        } catch(e) {}
+    }
+
+    // 5. Validate Voucher (if any)
+    const orderTotal = foodPrice * qty;
+    if (voucherCode) {
+        const validatePayload = JSON.stringify({
+            code: voucherCode,
+            orderValue: orderTotal
+        });
+        const valRes = http.post(`${BASE_URL}/promotion/vouchers/validate`, validatePayload, { headers: authHeaders });
+        check(valRes, { 'member voucher validation 200 or 400': (r) => r.status === 200 || r.status === 400 });
+    }
+    sleep(1);
+
+    // 6. Create Order (Transfer)
+    const orderPayload = JSON.stringify({
+        tableSessionId: tableSessionId,
+        paymentMethod: 'Transfer',
+        voucherCode: voucherCode,
+        note: 'Member Checkout Load Test'
+    });
+    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { headers: authHeaders });
+    if (!check(orderRes, { 'member order 201': (r) => r.status === 201 })) {
+        sleep(1); return;
+    }
+    const orderId = orderRes.json('id');
+    const finalTotal = orderRes.json('finalAmount') || orderTotal;
+
+    // 7. Initialize Payment
+    const paymentPayload = JSON.stringify({
+        orderId: orderId,
+        amount: finalTotal,
+        voucherCode: voucherCode,
+        tableSessionId: tableSessionId,
+        tableNumber: 'TEST-TABLE',
+        note: 'SePay Payment Init'
+    });
+    const payRes = http.post(`${BASE_URL}/payments`, paymentPayload, { headers: authHeaders });
+    if (!check(payRes, { 'member payment initialized 200': (r) => r.status === 200 })) {
+        sleep(1); return;
+    }
+    sleep(1);
+
+    // 8. Mock SePay Webhook
+    const webhookPayload = JSON.stringify({
+        id: Math.floor(Math.random() * 1000000),
+        gateway: "VietQR",
+        transactionDate: new Date().toISOString(),
+        accountNumber: "123456789",
+        code: "00", // "00" is success
+        content: `SEVQR ${orderId}`,
+        transferType: "in",
+        transferAmount: finalTotal,
+        accumulated: 100000,
+        subAccount: "Sub1",
+        referenceCode: orderId, // Thường SePay có thể đọc mã từ đây hoặc content
+        description: "Payment successful"
+    });
+
+    const webhookHeaders = {
+        'Content-Type': 'application/json',
+        'Authorization': `Apikey ${SEPAY_API_KEY}`
+    };
+    const webhookRes = http.post(`${BASE_URL}/payments/webhook/sepay`, webhookPayload, { headers: webhookHeaders });
+    check(webhookRes, { 'sepay webhook mock 200': (r) => r.status === 200 });
+
     sleep(2);
 }
