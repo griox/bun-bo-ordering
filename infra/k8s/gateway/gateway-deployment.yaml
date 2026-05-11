@@ -25,8 +25,8 @@ spec:
             cpu: "80m"
             memory: "128Mi"
           limits:
-            cpu: "400m"
-            memory: "256Mi"
+            cpu: "800m"
+            memory: "384Mi"
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -74,6 +74,10 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/use-gzip: "true"
+    nginx.ingress.kubernetes.io/gzip-level: "6"
+    nginx.ingress.kubernetes.io/upstream-keepalive-connections: "64"
+    nginx.ingress.kubernetes.io/limit-rps: "100"
 spec:
   tls:
   - hosts:
@@ -101,7 +105,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-gateway
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 5
   behavior:
     scaleDown:

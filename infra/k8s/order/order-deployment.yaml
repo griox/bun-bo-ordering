@@ -70,7 +70,7 @@ spec:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
+          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);Max Pool Size=150;Min Pool Size=10;"
         - name: REDIS_HOST
           valueFrom:
             configMapKeyRef:
@@ -114,7 +114,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: order-service
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 4
   behavior:
     scaleDown:

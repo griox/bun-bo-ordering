@@ -7,9 +7,9 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '30s', target: 35 }, // 70% của 50 VUs
-                { duration: '1m', target: 35 },
-                { duration: '30s', target: 0 },
+                { duration: '2m', target: 140 }, // 70% của 200 VUs
+                { duration: '5m', target: 140 },
+                { duration: '1m', target: 0 },
             ],
             exec: 'guestFlow',
         },
@@ -17,9 +17,9 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '30s', target: 15 }, // 30% của 50 VUs
-                { duration: '1m', target: 15 },
-                { duration: '30s', target: 0 },
+                { duration: '2m', target: 60 }, // 30% của 200 VUs
+                { duration: '5m', target: 60 },
+                { duration: '1m', target: 0 },
             ],
             exec: 'memberFlow',
         },
@@ -30,8 +30,8 @@ export const options = {
     },
 };
 
-const BASE_URL = __ENV.BASE_URL || 'http://localhost:8000/api';
-const SEPAY_API_KEY = 'TEST_SEPAY_SECRET_KEY_12345'; // Giống cấu hình trong docker-compose.yml
+const BASE_URL = __ENV.BASE_URL || 'https://api.bun-bo-chung-cu.io.vn/api';
+const SEPAY_API_KEY = 'TEST_SEPAY_SECRET_KEY_12345'; // Giống cấu hình trong K8s/Docker
 
 // Danh sách bàn ngẫu nhiên
 const TABLE_IDS = [
@@ -48,7 +48,7 @@ function getRandomTableId() {
 export function setup() {
     // Attempt to login to get a JWT for the member flow
     const loginPayload = JSON.stringify({
-        email: 'admin@bunbo.com',
+        username: 'admin',
         password: 'Admin@123'
     });
     
