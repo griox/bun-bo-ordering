@@ -31,7 +31,7 @@ export const options = {
 };
 
 const BASE_URL = __ENV.BASE_URL || 'https://api.bun-bo-chung-cu.io.vn/api';
-const SEPAY_API_KEY = 'NPR1CIVNUDYXEMV6OLZAVGWXXSN5S83J1BZM36BT9ORWKHOMTZRD0MCLOUPKAKBS'; // Lấy từ bunbo-secrets
+const SEPAY_API_KEY = 'Bunbopaymentsupersecret16032004@'; // Lấy từ bunbo-secrets (SEPAY_SECRET_KEY)
 
 // Danh sách bàn ngẫu nhiên
 const TABLE_IDS = [
