@@ -70,7 +70,7 @@ spec:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);Max Pool Size=150;Min Pool Size=10;"
+          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD)"
         - name: REDIS_HOST
           valueFrom:
             configMapKeyRef:

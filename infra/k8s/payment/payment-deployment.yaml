@@ -49,7 +49,7 @@ spec:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=postgresql.postgresql.svc.cluster.local;Database=payment_db;Username=postgres;Password=$(Postgres__Password);Max Pool Size=150;Min Pool Size=10;"
+          value: "Host=postgresql.postgresql.svc.cluster.local;Database=payment_db;Username=postgres;Password=$(Postgres__Password)"
         - name: SePay__SecretKey
           valueFrom:
             secretKeyRef:

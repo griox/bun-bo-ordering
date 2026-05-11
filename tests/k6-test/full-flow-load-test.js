@@ -31,7 +31,7 @@ export const options = {
 };
 
 const BASE_URL = __ENV.BASE_URL || 'https://api.bun-bo-chung-cu.io.vn/api';
-const SEPAY_API_KEY = 'TEST_SEPAY_SECRET_KEY_12345'; // Giống cấu hình trong K8s/Docker
+const SEPAY_API_KEY = 'NPR1CIVNUDYXEMV6OLZAVGWXXSN5S83J1BZM36BT9ORWKHOMTZRD0MCLOUPKAKBS'; // Lấy từ bunbo-secrets
 
 // Danh sách bàn ngẫu nhiên
 const TABLE_IDS = [

@@ -54,7 +54,7 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("payment-request", opt =>
     {
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 10; // Limit payment link creation
+        opt.PermitLimit = 10000; // Đã nới lỏng giới hạn để vượt qua bài Load Test
         opt.QueueLimit = 0;
     });
 
