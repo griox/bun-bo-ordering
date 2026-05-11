@@ -24,9 +24,23 @@ public class CreateVoucherCommandHandlerTests
     public async Task Handle_ValidRequest_ShouldCreateVoucher()
     {
         // Arrange
-        var command = new CreateVoucherCommand(
-            "VOUCHER10", "10% off", DiscountType.Percentage, 10, 50000, 100000,
-            DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(7), 100, 1, VoucherType.Standard, null, null);
+        var command = new CreateVoucherCommand
+        {
+            Code = "VOUCHER10",
+            Description = "10% off",
+            DiscountType = DiscountType.Percentage,
+            DiscountValue = 10,
+            MaxDiscountAmount = 50000,
+            MinOrderValue = 100000,
+            ValidFrom = DateTime.UtcNow.AddDays(-1),
+            ValidTo = DateTime.UtcNow.AddDays(7),
+            TotalUsageLimit = 100,
+            MaxUsagePerUser = 1,
+            Type = VoucherType.Standard,
+            PointCost = null,
+            Conditions = null,
+            MaxRedemptionsPerUser = 1
+        };
             
         _contextMock.Setup(x => x.Vouchers).ReturnsDbSet(new List<Voucher>());
 
@@ -46,9 +60,23 @@ public class CreateVoucherCommandHandlerTests
         var existingVoucher = new Voucher("VOUCHER10", "desc", DiscountType.FixedAmount, 10, null, 0, DateTime.UtcNow, DateTime.UtcNow.AddDays(1), 1, 1);
         _contextMock.Setup(x => x.Vouchers).ReturnsDbSet(new List<Voucher> { existingVoucher });
 
-        var command = new CreateVoucherCommand(
-            "VOUCHER10", "10% off", DiscountType.Percentage, 10, 50000, 100000,
-            DateTime.UtcNow.AddDays(-1), DateTime.UtcNow.AddDays(7), 100, 1, VoucherType.Standard, null, null);
+        var command = new CreateVoucherCommand
+        {
+            Code = "VOUCHER10",
+            Description = "10% off",
+            DiscountType = DiscountType.Percentage,
+            DiscountValue = 10,
+            MaxDiscountAmount = 50000,
+            MinOrderValue = 100000,
+            ValidFrom = DateTime.UtcNow.AddDays(-1),
+            ValidTo = DateTime.UtcNow.AddDays(7),
+            TotalUsageLimit = 100,
+            MaxUsagePerUser = 1,
+            Type = VoucherType.Standard,
+            PointCost = null,
+            Conditions = null,
+            MaxRedemptionsPerUser = 1
+        };
 
         // Act
         Func<Task> act = () => _handler.Handle(command, CancellationToken.None);

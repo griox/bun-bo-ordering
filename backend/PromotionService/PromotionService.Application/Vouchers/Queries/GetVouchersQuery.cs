@@ -43,7 +43,8 @@ public class GetVouchersQueryHandler : IRequestHandler<GetVouchersQuery, Voucher
                 v.IsActive,
                 v.Type,
                 v.PointCost,
-                v.Conditions
+                v.Conditions,
+                v.MaxRedemptionsPerUser
             ))
             .ToListAsync(cancellationToken);
 

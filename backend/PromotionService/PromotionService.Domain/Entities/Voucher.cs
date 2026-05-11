@@ -21,6 +21,7 @@ public class Voucher : BaseEntity
     public int TotalUsageLimit { get; private set; }
     public int UsageCount { get; private set; }
     public int MaxUsagePerUser { get; private set; }
+    public int MaxRedemptionsPerUser { get; private set; }
     
     public bool IsActive { get; private set; }
 
@@ -40,7 +41,8 @@ public class Voucher : BaseEntity
         int maxUsagePerUser,
         VoucherType type = VoucherType.Standard,
         int? pointCost = null,
-        string? conditions = null)
+        string? conditions = null,
+        int maxRedemptionsPerUser = 1)
     {
         if (discountValue < 0) throw new DomainException("Giá trị giảm không được nhỏ hơn 0.");
         if (minOrderValue < 0) throw new DomainException("Đơn tối thiểu không được nhỏ hơn 0.");
@@ -48,6 +50,7 @@ public class Voucher : BaseEntity
         if (totalUsageLimit < 0) throw new DomainException("Tổng số lượt sử dụng không được nhỏ hơn 0.");
         if (maxUsagePerUser < 0) throw new DomainException("Số lượt sử dụng mỗi người không được nhỏ hơn 0.");
         if (pointCost.HasValue && pointCost.Value < 0) throw new DomainException("Số điểm quy đổi không được nhỏ hơn 0.");
+        if (maxRedemptionsPerUser < 0) throw new DomainException("Giới hạn số lần đổi không được nhỏ hơn 0.");
 
         Code = code.ToUpper();
         Description = description;
@@ -59,6 +62,7 @@ public class Voucher : BaseEntity
         ValidTo = validTo;
         TotalUsageLimit = totalUsageLimit;
         MaxUsagePerUser = maxUsagePerUser;
+        MaxRedemptionsPerUser = maxRedemptionsPerUser;
         UsageCount = 0;
         IsActive = true;
         Type = type;
@@ -93,7 +97,8 @@ public class Voucher : BaseEntity
         bool isActive,
         VoucherType type,
         int? pointCost,
-        string? conditions)
+        string? conditions,
+        int maxRedemptionsPerUser)
     {
         if (discountValue < 0) throw new DomainException("Giá trị giảm không được nhỏ hơn 0.");
         if (minOrderValue < 0) throw new DomainException("Đơn tối thiểu không được nhỏ hơn 0.");
@@ -101,6 +106,7 @@ public class Voucher : BaseEntity
         if (totalUsageLimit < 0) throw new DomainException("Tổng số lượt sử dụng không được nhỏ hơn 0.");
         if (maxUsagePerUser < 0) throw new DomainException("Số lượt sử dụng mỗi người không được nhỏ hơn 0.");
         if (pointCost.HasValue && pointCost.Value < 0) throw new DomainException("Số điểm quy đổi không được nhỏ hơn 0.");
+        if (maxRedemptionsPerUser < 0) throw new DomainException("Giới hạn số lần đổi không được nhỏ hơn 0.");
 
         Description = description;
         DiscountType = discountType;
@@ -111,6 +117,7 @@ public class Voucher : BaseEntity
         ValidTo = validTo;
         TotalUsageLimit = totalUsageLimit;
         MaxUsagePerUser = maxUsagePerUser;
+        MaxRedemptionsPerUser = maxRedemptionsPerUser;
         IsActive = isActive;
         Type = type;
         PointCost = pointCost;

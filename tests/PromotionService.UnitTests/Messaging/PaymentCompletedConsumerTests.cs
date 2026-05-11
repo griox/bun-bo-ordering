@@ -1,5 +1,6 @@
 using BunBo.SharedKernel.Messaging;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using PromotionService.Application.Interfaces;
 using PromotionService.Domain.Entities;
 using PromotionService.Domain.Enums;
 using PromotionService.Infrastructure.Messaging.Consumers;
+using Xunit;
 
 namespace PromotionService.UnitTests.Messaging;
 
@@ -20,6 +22,13 @@ public class PaymentCompletedConsumerTests
     {
         _contextMock = new Mock<IAppDbContext>();
         _loggerMock = new Mock<ILogger<PaymentCompletedConsumer>>();
+        
+        var databaseMock = new Mock<Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade>(Mock.Of<DbContext>());
+        _contextMock.Setup(x => x.Database).Returns(databaseMock.Object);
+        
+        databaseMock.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
+            .ReturnsAsync(Mock.Of<Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction>());
+
         _consumer = new PaymentCompletedConsumer(_contextMock.Object, _loggerMock.Object);
     }
 

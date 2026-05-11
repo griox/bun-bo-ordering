@@ -9,6 +9,7 @@ public interface IAppDbContext
     DbSet<UserVoucher> UserVouchers { get; }
     DbSet<LoyaltyPoint> LoyaltyPoints { get; }
     DbSet<PointTransaction> PointTransactions { get; }
+    Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

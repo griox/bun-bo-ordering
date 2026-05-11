@@ -17,6 +17,7 @@ public class UpdateVoucherCommand : IRequest<bool>
     public DateTime? ValidTo { get; set; }
     public int TotalUsageLimit { get; set; }
     public int MaxUsagePerUser { get; set; }
+    public int MaxRedemptionsPerUser { get; set; }
     public bool IsActive { get; set; }
     public VoucherType Type { get; set; }
     public int? PointCost { get; set; }
@@ -50,7 +51,8 @@ public class UpdateVoucherCommandHandler : IRequestHandler<UpdateVoucherCommand,
             request.IsActive,
             request.Type,
             request.PointCost,
-            request.Conditions
+            request.Conditions,
+            request.MaxRedemptionsPerUser
         );
 
         await _context.SaveChangesAsync(cancellationToken);

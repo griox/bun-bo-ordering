@@ -18,5 +18,6 @@ public record VoucherDto(
     bool IsActive,
     VoucherType Type,
     int? PointCost,
-    string? Conditions
+    string? Conditions,
+    int MaxRedemptionsPerUser
 );
