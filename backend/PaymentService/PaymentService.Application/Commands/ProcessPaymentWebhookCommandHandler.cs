@@ -2,38 +2,26 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using PaymentService.Application.Interfaces;
+using System;
 
 namespace PaymentService.Application.Commands;
 
 public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymentWebhookCommand, bool>
 {
     private readonly IPaymentTransactionRepository _repository;
-    private readonly ISignatureValidator _signatureValidator;
     private readonly IEventPublisher _eventPublisher;
 
     public ProcessPaymentWebhookCommandHandler(
         IPaymentTransactionRepository repository,
-        ISignatureValidator signatureValidator,
         IEventPublisher eventPublisher)
     {
         _repository = repository;
-        _signatureValidator = signatureValidator;
         _eventPublisher = eventPublisher;
     }
 
     public async Task<bool> Handle(ProcessPaymentWebhookCommand request, CancellationToken cancellationToken)
     {
-        // 1. Verify signature — skip if the webhook was already authenticated via API Key at the controller level
-        if (!request.IsApiKeyVerified)
-        {
-            var payload = $"{request.OrderId}|{request.Amount}|{request.ProviderTransactionId}|{request.Status}";
-            if (!_signatureValidator.IsValid(payload, request.Signature))
-            {
-                return false;
-            }
-        }
-
-        // 2. Get transaction
+        // 1. Get transaction
         var transaction = await _repository.GetByOrderIdAsync(request.OrderId, cancellationToken);
         if (transaction == null)
         {

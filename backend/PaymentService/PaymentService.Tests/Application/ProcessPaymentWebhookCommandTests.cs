@@ -27,15 +27,10 @@ public class ProcessPaymentWebhookCommandTests
         mockRepo.Setup(r => r.GetByOrderIdAsync(orderId, It.IsAny<CancellationToken>()))
                 .ReturnsAsync(transaction);
 
-        var mockSignatureValidator = new Mock<ISignatureValidator>();
-        mockSignatureValidator.Setup(v => v.IsValid(It.IsAny<string>(), It.IsAny<string>()))
-                              .Returns(true);
-
         var mockEventPublisher = new Mock<IEventPublisher>();
 
         var handler = new ProcessPaymentWebhookCommandHandler(
             mockRepo.Object, 
-            mockSignatureValidator.Object, 
             mockEventPublisher.Object);
 
         var command = new ProcessPaymentWebhookCommand(orderId, providerTransactionId, amount, "Success", signature);

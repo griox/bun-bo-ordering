@@ -91,6 +91,7 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer
 // Add Clean Architecture dependencies
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddScoped<PaymentService.Api.Filters.SePayWebhookAuthFilter>();
 
 // Configure MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>

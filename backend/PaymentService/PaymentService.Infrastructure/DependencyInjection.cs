@@ -28,6 +28,7 @@ public static class DependencyInjection
         // Use Real validators & publishers
         services.AddScoped<ISignatureValidator, SePaySignatureValidator>();
         services.AddScoped<IEventPublisher, MassTransitEventPublisher>();
+        services.AddScoped<IWebhookParserService, Infrastructure.Services.SePayWebhookParserService>();
 
         // SePay Checkout API
         services.AddHttpClient<ISePayService, Infrastructure.Services.SePayService>();
