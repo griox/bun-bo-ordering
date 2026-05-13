@@ -122,6 +122,12 @@ builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.Sync
 // Configure MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
+    x.AddEntityFrameworkOutbox<AppDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
     x.AddConsumer<OrderService.Application.Messaging.PaymentCompletedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>

@@ -96,6 +96,12 @@ builder.Services.AddScoped<PaymentService.Api.Filters.SePayWebhookAuthFilter>();
 // Configure MassTransit with RabbitMQ
 builder.Services.AddMassTransit(x =>
 {
+    x.AddEntityFrameworkOutbox<PaymentDbContext>(o =>
+    {
+        o.UsePostgres();
+        o.UseBusOutbox();
+    });
+
     x.UsingRabbitMq((context, cfg) =>
     {
         var rabbitMqHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";

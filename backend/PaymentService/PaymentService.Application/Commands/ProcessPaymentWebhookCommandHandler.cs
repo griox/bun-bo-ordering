@@ -46,21 +46,30 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
             transaction.MarkAsFailed();
         }
 
-        await _repository.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await _repository.SaveChangesAsync(cancellationToken);
 
-        // 5. Publish Event (only fires once per order due to idempotency check above)
-        var isSuccess = transaction.Status == Domain.Enums.PaymentStatus.Success;
-        await _eventPublisher.PublishPaymentCompletedEventAsync(
-            transaction.OrderId,
-            isSuccess,
-            transaction.Amount,
-            transaction.CustomerId,
-            transaction.VoucherCode,
-            transaction.TableSessionId,
-            transaction.TableNumber,
-            transaction.Note,
-            request.ProviderTransactionId,
-            cancellationToken);
+            // 5. Publish Event (only fires once per order due to idempotency check above)
+            var isSuccess = transaction.Status == Domain.Enums.PaymentStatus.Success;
+            await _eventPublisher.PublishPaymentCompletedEventAsync(
+                transaction.OrderId,
+                isSuccess,
+                transaction.Amount,
+                transaction.CustomerId,
+                transaction.VoucherCode,
+                transaction.TableSessionId,
+                transaction.TableNumber,
+                transaction.Note,
+                request.ProviderTransactionId,
+                cancellationToken);
+        }
+        catch (Exception ex) when (ex.GetType().Name.Contains("DbUpdateException"))
+        {
+            // Giao dịch đã được xử lý thành công bởi một luồng Webhook đồng thời (vi phạm unique constraint của TransactionId)
+            // Trả về true để ACK với SePay, tránh việc họ tiếp tục retry
+            return true;
+        }
 
         return true;
     }

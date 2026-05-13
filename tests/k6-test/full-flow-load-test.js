@@ -227,7 +227,7 @@ export function memberFlow(data) {
 
     // 8. Mock SePay Webhook
     const webhookPayload = JSON.stringify({
-        id: Math.floor(Math.random() * 1000000000000), // Tăng giới hạn random để tránh trùng lặp Transaction ID
+        id: Date.now() * 1000 + Math.floor(Math.random() * 1000), // Đảm bảo ID giao dịch duy nhất tuyệt đối bằng Timestamp + Random
         gateway: "VietQR",
         transactionDate: new Date().toISOString(),
         accountNumber: "123456789",
