@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using MassTransit;
 
 namespace IdentityService.IntegrationTests;
 
 public class IdentityServiceFactory : WebApplicationFactory<Program>
 {
+    private readonly string _dbName = Guid.NewGuid().ToString();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.ConfigureServices(services =>
@@ -38,16 +40,19 @@ public class IdentityServiceFactory : WebApplicationFactory<Program>
             // Add In-Memory database for testing
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseInMemoryDatabase("IdentityIntegrationTestDb");
+                options.UseInMemoryDatabase(_dbName);
             });
+        });
+    }
 
-            // Add basic API Explorer which Swagger needs (if we keep it) or just stub it
-            // For now, let's just make sure the DB is initialized
-
-            // Ensure DB is created
-            using var scope = services.BuildServiceProvider().CreateScope();
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+        using (var scope = host.Services.CreateScope())
+        {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             db.Database.EnsureCreated();
-        });
+        }
+        return host;
     }
 }

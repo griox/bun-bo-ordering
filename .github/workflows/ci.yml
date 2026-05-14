@@ -2,17 +2,13 @@ name: BunBo System Microservices CI
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'backend/**'
-      - 'tests/**'
+    branches: [ "main" ]
   pull_request:
-    branches:
-      - main
-    paths:
-      - 'backend/**'
-      - 'tests/**'
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+  packages: write
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -33,14 +29,17 @@ jobs:
       - name: Restore Dependencies
         run: dotnet restore backend/BunBo.sln
 
-      - name: Build
+      - name: Build Solution
         run: dotnet build backend/BunBo.sln -c Release --no-restore
 
-      - name: Run Unit Tests
-        run: dotnet test tests/IdentityService.UnitTests/IdentityService.UnitTests.csproj -c Release --no-build
+      - name: Run Catalog Unit Tests
+        run: dotnet test tests/CatalogService.UnitTests/CatalogService.UnitTests.csproj --no-build -c Release
 
-      - name: Run Integration Tests
-        run: dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj -c Release --no-build
+      - name: Run Identity Unit Tests
+        run: dotnet test tests/IdentityService.UnitTests/IdentityService.UnitTests.csproj --no-build -c Release
+
+      - name: Run Identity Integration Tests
+        run: dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj --no-build -c Release
 
   build-and-push:
     name: Build and Push
