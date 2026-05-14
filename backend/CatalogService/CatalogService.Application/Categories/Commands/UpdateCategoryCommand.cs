@@ -10,10 +10,12 @@ public record UpdateCategoryCommand(int Id, string Name) : IRequest<bool>;
 public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand, bool>
 {
     private readonly IAppDbContext _context;
+    private readonly ICacheService _cacheService;
 
-    public UpdateCategoryCommandHandler(IAppDbContext context)
+    public UpdateCategoryCommandHandler(IAppDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<bool> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
@@ -26,6 +28,9 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
         category.Update(request.Name);
         
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Invalidate cache
+        await _cacheService.RemoveByPrefixAsync("categories_", cancellationToken);
 
         return true;
     }

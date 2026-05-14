@@ -13,15 +13,18 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
 {
     private readonly IAppDbContext _context;
     private readonly IFileStorageService _storageService;
+    private readonly ICacheService _cacheService;
 
-    public UpdateFoodCommandHandler(IAppDbContext context, IFileStorageService storageService)
+    public UpdateFoodCommandHandler(IAppDbContext context, IFileStorageService storageService, ICacheService cacheService)
     {
         _context = context;
         _storageService = storageService;
+        _cacheService = cacheService;
     }
 
     public async Task<bool> Handle(UpdateFoodCommand request, CancellationToken cancellationToken)
     {
+        // ... (validation and update logic)
         var categoryExists = await _context.Categories.AnyAsync(c => c.Id == request.CategoryId, cancellationToken);
         if (!categoryExists)
         {
@@ -61,6 +64,9 @@ public class UpdateFoodCommandHandler : IRequestHandler<UpdateFoodCommand, bool>
         food.Update(request.Name, request.Description, imageUrl, request.Price, request.CategoryId);
         
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Invalidate cache
+        await _cacheService.RemoveByPrefixAsync("foods_", cancellationToken);
 
         return true;
     }

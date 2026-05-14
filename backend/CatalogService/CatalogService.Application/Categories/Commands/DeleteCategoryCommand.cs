@@ -10,10 +10,12 @@ public record DeleteCategoryCommand(int Id) : IRequest<bool>;
 public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand, bool>
 {
     private readonly IAppDbContext _context;
+    private readonly ICacheService _cacheService;
 
-    public DeleteCategoryCommandHandler(IAppDbContext context)
+    public DeleteCategoryCommandHandler(IAppDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<bool> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
@@ -25,6 +27,9 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
 
         _context.Categories.Remove(category);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Invalidate cache
+        await _cacheService.RemoveByPrefixAsync("categories_", cancellationToken);
 
         return true;
     }

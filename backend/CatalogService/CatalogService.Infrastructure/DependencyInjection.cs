@@ -4,6 +4,7 @@ using CatalogService.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace CatalogService.Infrastructure;
 
@@ -11,6 +12,14 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
+        var redisConnectionString = configuration.GetConnectionString("Redis");
+        
+        // Register ConnectionMultiplexer for pattern-based clearing
+        services.AddSingleton<IConnectionMultiplexer>(sp => 
+            ConnectionMultiplexer.Connect(redisConnectionString!));
+
+        services.AddScoped<ICacheService, RedisCacheService>();
+
         // MaxPoolSize=8: tối đa 4 pods × 8 = 32 connections từ CatalogService
         var connectionString = configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=8;MinPoolSize=1;Connection Lifetime=300;Connection Idle Lifetime=60;";
         services.AddDbContext<AppDbContext>(options =>
@@ -27,6 +36,13 @@ public static class DependencyInjection
         
         // Register S3 Storage
         services.AddScoped<IFileStorageService, S3StorageService>();
+
+        // Register Redis Cache
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisConnectionString;
+            options.InstanceName = "Catalog_";
+        });
 
         return services;
     }

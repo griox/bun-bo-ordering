@@ -2,6 +2,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using CatalogService.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text.Json;
 
 namespace CatalogService.Application.Foods.Queries;
 
@@ -13,15 +15,25 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
 {
     private readonly IAppDbContext _context;
     private readonly string _publicUrl;
+    private readonly IDistributedCache _cache;
 
-    public GetFoodsQueryHandler(IAppDbContext context, IConfiguration configuration)
+    public GetFoodsQueryHandler(IAppDbContext context, IConfiguration configuration, IDistributedCache cache)
     {
         _context = context;
+        _cache = cache;
         _publicUrl = configuration["S3Settings:PublicUrl"] ?? "http://localhost:9000";
     }
 
     public async Task<PagedResult<FoodDto>> Handle(GetFoodsQuery request, CancellationToken cancellationToken)
     {
+        string cacheKey = $"foods_skip_{request.Skip}_take_{request.Take}";
+        var cachedData = await _cache.GetStringAsync(cacheKey, cancellationToken);
+
+        if (!string.IsNullOrEmpty(cachedData))
+        {
+            return JsonSerializer.Deserialize<PagedResult<FoodDto>>(cachedData)!;
+        }
+
         var query = _context.Foods.AsNoTracking().AsQueryable();
 
         var totalCount = await query.CountAsync(cancellationToken);
@@ -44,7 +56,16 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
             f.Category?.Name
         )).ToList();
 
-        return new PagedResult<FoodDto>(items, totalCount, request.Skip, request.Take);
+        var result = new PagedResult<FoodDto>(items, totalCount, request.Skip, request.Take);
+
+        // Cache for 10 minutes
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+        };
+        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), cacheOptions, cancellationToken);
+
+        return result;
     }
 
     private string? FixImageUrl(string? imageUrl)

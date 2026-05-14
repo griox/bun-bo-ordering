@@ -13,11 +13,13 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Guid>
 {
     private readonly IAppDbContext _context;
     private readonly IFileStorageService _storageService;
+    private readonly ICacheService _cacheService;
 
-    public CreateFoodCommandHandler(IAppDbContext context, IFileStorageService storageService)
+    public CreateFoodCommandHandler(IAppDbContext context, IFileStorageService storageService, ICacheService cacheService)
     {
         _context = context;
         _storageService = storageService;
+        _cacheService = cacheService;
     }
 
     public async Task<Guid> Handle(CreateFoodCommand request, CancellationToken cancellationToken)
@@ -49,6 +51,9 @@ public class CreateFoodCommandHandler : IRequestHandler<CreateFoodCommand, Guid>
         
         _context.Foods.Add(food);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Invalidate cache
+        await _cacheService.RemoveByPrefixAsync("foods_", cancellationToken);
 
         return food.Id;
     }

@@ -9,10 +9,12 @@ public record CreateCategoryCommand(string Name) : IRequest<int>;
 public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>
 {
     private readonly IAppDbContext _context;
+    private readonly ICacheService _cacheService;
 
-    public CreateCategoryCommandHandler(IAppDbContext context)
+    public CreateCategoryCommandHandler(IAppDbContext context, ICacheService cacheService)
     {
         _context = context;
+        _cacheService = cacheService;
     }
 
     public async Task<int> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
@@ -21,6 +23,9 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
         
         _context.Categories.Add(category);
         await _context.SaveChangesAsync(cancellationToken);
+
+        // Invalidate cache
+        await _cacheService.RemoveByPrefixAsync("categories_", cancellationToken);
 
         return category.Id;
     }
