@@ -33,18 +33,11 @@ public class IdentityServiceFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // Aggressively remove DB related services
+            // Remove existing DB context and options
             var dbDescriptors = services.Where(d => 
                 d.ServiceType == typeof(AppDbContext) || 
-                d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
-                d.ServiceType == typeof(DbContextOptions)).ToList();
+                d.ServiceType == typeof(DbContextOptions<AppDbContext>)).ToList();
             foreach (var d in dbDescriptors) services.Remove(d);
-
-            // Remove Swagger/OpenAPI
-            var swaggerDescriptors = services.Where(d => 
-                d.ServiceType.Name.Contains("Swagger") || 
-                d.ServiceType.Name.Contains("OpenApi")).ToList();
-            foreach (var d in swaggerDescriptors) services.Remove(d);
 
             // Remove MassTransit
             var massTransitDescriptors = services.Where(d => 
