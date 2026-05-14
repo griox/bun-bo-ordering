@@ -8,7 +8,7 @@ public class LoyaltyPoint : BaseEntity
     public int TotalPoints { get; private set; }
     public string Tier { get; private set; }
 
-    protected LoyaltyPoint() { }
+    protected LoyaltyPoint() { Tier = null!; }
 
     public LoyaltyPoint(Guid userId)
     {

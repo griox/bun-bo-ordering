@@ -11,7 +11,7 @@ public class PointTransaction : BaseEntity
     public Guid? OrderId { get; private set; }
     public string Reason { get; private set; }
 
-    protected PointTransaction() { }
+    protected PointTransaction() { Reason = null!; }
 
     public PointTransaction(Guid userId, int points, TransactionType type, Guid? orderId, string reason)
     {

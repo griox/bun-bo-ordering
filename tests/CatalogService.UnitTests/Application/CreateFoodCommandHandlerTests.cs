@@ -14,13 +14,15 @@ public class CreateFoodCommandHandlerTests
 {
     private readonly Mock<IAppDbContext> _contextMock;
     private readonly Mock<IFileStorageService> _storageServiceMock;
+    private readonly Mock<ICacheService> _cacheServiceMock;
     private readonly CreateFoodCommandHandler _handler;
 
     public CreateFoodCommandHandlerTests()
     {
         _contextMock = new Mock<IAppDbContext>();
         _storageServiceMock = new Mock<IFileStorageService>();
-        _handler = new CreateFoodCommandHandler(_contextMock.Object, _storageServiceMock.Object);
+        _cacheServiceMock = new Mock<ICacheService>();
+        _handler = new CreateFoodCommandHandler(_contextMock.Object, _storageServiceMock.Object, _cacheServiceMock.Object);
     }
 
     [Fact]

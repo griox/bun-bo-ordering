@@ -26,7 +26,7 @@ public class Voucher : BaseEntity
     public bool IsActive { get; private set; }
 
     // For EF Core
-    protected Voucher() { }
+    protected Voucher() { Code = null!; Description = null!; }
 
     public Voucher(
         string code, 
