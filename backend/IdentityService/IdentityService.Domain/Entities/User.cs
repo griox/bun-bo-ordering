@@ -17,6 +17,21 @@ public class User : BaseEntity
     public int FailedLoginAttempts { get; private set; }
     public DateTimeOffset? LockoutEnd { get; private set; }
 
+    public string? RefreshToken { get; private set; }
+    public DateTime? RefreshTokenExpiryTime { get; private set; }
+
+    public void UpdateRefreshToken(string token, DateTime expiryTime)
+    {
+        RefreshToken = token;
+        RefreshTokenExpiryTime = expiryTime;
+    }
+
+    public void RevokeRefreshToken()
+    {
+        RefreshToken = null;
+        RefreshTokenExpiryTime = null;
+    }
+
     // For EF Core
     protected User() 
     { 

@@ -129,6 +129,12 @@ authGroup.MapPost("/login", async (MediatR.IMediator mediator, IdentityService.A
     return Results.Ok(result);
 }).RequireRateLimiting("auth");
 
+authGroup.MapPost("/refresh-token", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.RefreshTokenCommand cmd) =>
+{
+    var result = await mediator.Send(cmd);
+    return Results.Ok(result);
+}).RequireRateLimiting("auth");
+
 authGroup.MapPost("/google-login", async (MediatR.IMediator mediator, IdentityService.Application.Auth.Commands.GoogleLoginCommand cmd) =>
 {
     var result = await mediator.Send(cmd);
@@ -157,10 +163,15 @@ authGroup.MapPost("/reset-password", async (MediatR.IMediator mediator, Identity
     return Results.Ok(new { Message = "Mật khẩu đã được đặt lại thành công." });
 }).RequireRateLimiting("auth");
 
-authGroup.MapPost("/logout", () =>
+authGroup.MapPost("/logout", async (MediatR.IMediator mediator, System.Security.Claims.ClaimsPrincipal user) =>
 {
-    return Results.Ok(new { Message = "Đăng xuất thành công." });
-});
+    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (Guid.TryParse(userIdClaim, out var userId))
+    {
+        await mediator.Send(new IdentityService.Application.Auth.Commands.LogoutCommand(userId));
+    }
+    return Results.Ok(new { Message = "Đăng xuất thành công và token đã bị hủy." });
+}).RequireAuthorization();
 
 authGroup.MapGet("/users", async (int? pageNumber, int? pageSize, string? searchTerm, MediatR.IMediator mediator) =>
 {
@@ -178,6 +189,12 @@ authGroup.MapPost("/users/{id:guid}/blacklist", async (Guid id, string reason, M
 {
     await mediator.Send(new IdentityService.Application.Users.Commands.BlacklistUserCommand(id, reason));
     return Results.Ok(new { Message = "User blacklisted successfully" });
+}).RequireAuthorization("Admin");
+
+authGroup.MapPost("/users/{id:guid}/revoke-all", async (Guid id, MediatR.IMediator mediator) =>
+{
+    var success = await mediator.Send(new IdentityService.Application.Auth.Commands.RevokeAllTokensCommand(id));
+    return success ? Results.Ok(new { Message = "Đã thu hồi toàn bộ token của người dùng này." }) : Results.NotFound();
 }).RequireAuthorization("Admin");
 
 authGroup.MapDelete("/users/{id:guid}/blacklist", async (Guid id, MediatR.IMediator mediator) =>

@@ -53,6 +53,7 @@ public class LoginCommandHandlerTests
 
         _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });
         _tokenServiceMock.Setup(x => x.GenerateToken(It.IsAny<User>())).Returns("fake-token");
+        _tokenServiceMock.Setup(x => x.GenerateRefreshToken()).Returns("fake-refresh-token");
 
         var command = new LoginCommand(username, password);
 
@@ -62,6 +63,8 @@ public class LoginCommandHandlerTests
         // Assert
         result.Should().NotBeNull();
         result.token.Should().Be("fake-token");
+        result.refreshToken.Should().Be("fake-refresh-token");
         result.username.Should().Be(username);
+        _dbContextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.AtLeastOnce);
     }
 }

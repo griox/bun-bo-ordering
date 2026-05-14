@@ -55,6 +55,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         var token = _tokenService.GenerateToken(user);
-        return new LoginResult(token, user.Id.ToString(), user.Username, user.Email, user.Role);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        user.UpdateRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new LoginResult(token, refreshToken, user.Id.ToString(), user.Username, user.Email, user.Role);
     }
 }

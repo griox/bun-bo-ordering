@@ -21,12 +21,13 @@ export const useLoginMutation = (onSuccessCallback?: () => void, onErrorCallback
     },
     onSuccess: (data) => {
       const token = data.token || data.Token;
+      const refreshToken = data.refreshToken || data.RefreshToken;
       const userId = data.userId || data.UserId;
       const username = data.username || data.Username;
       const email = data.email || data.Email;
       const role = data.role || data.Role;
 
-      loginAction(token, { userId, username, email, role });
+      loginAction(token, refreshToken, { userId, username, email, role });
       toast.success(`Chào mừng, ${username || 'bạn'}!`);
       onSuccessCallback?.();
       router.push(role === 'Admin' ? '/admin' : '/');
@@ -72,12 +73,13 @@ export const useGoogleLoginMutation = (onSuccessCallback?: () => void) => {
     },
     onSuccess: (data) => {
       const token = data.token || data.Token;
+      const refreshToken = data.refreshToken || data.RefreshToken;
       const userId = data.userId || data.UserId;
       const username = data.username || data.Username;
       const email = data.email || data.Email;
       const role = data.role || data.Role;
 
-      loginAction(token, { userId, username, email, role });
+      loginAction(token, refreshToken, { userId, username, email, role });
       toast.success(`Chào mừng, ${username || 'bạn'}!`);
       onSuccessCallback?.();
       router.push(role === 'Admin' ? '/admin' : '/');

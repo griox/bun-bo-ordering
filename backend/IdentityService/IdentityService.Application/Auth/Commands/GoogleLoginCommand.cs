@@ -69,6 +69,11 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
             throw new Exception($"Tài khoản của bạn đã bị khóa! Lý do: {user.BlacklistReason ?? "Không có lý do cụ thể"}. Liên hệ Admin để được hỗ trợ.");
 
         var token = _tokenService.GenerateToken(user);
-        return new LoginResult(token, user.Id.ToString(), user.Username, user.Email, user.Role);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        user.UpdateRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        return new LoginResult(token, refreshToken, user.Id.ToString(), user.Username, user.Email, user.Role);
     }
 }
