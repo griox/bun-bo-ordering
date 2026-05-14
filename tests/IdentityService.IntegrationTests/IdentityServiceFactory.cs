@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using System.Collections.Generic;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace IdentityService.IntegrationTests;
 
