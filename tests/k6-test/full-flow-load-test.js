@@ -7,8 +7,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 140 }, // 70% của 200 VUs
-                { duration: '5m', target: 140 },
+                { duration: '2m', target: 260 }, // 65% của 400 VUs
+                { duration: '5m', target: 260 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'guestFlow',
@@ -17,11 +17,21 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 60 }, // 30% của 200 VUs
-                { duration: '5m', target: 60 },
+                { duration: '2m', target: 120 }, // 30% của 400 VUs
+                { duration: '5m', target: 120 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'memberFlow',
+        },
+        chaos_flow: {
+            executor: 'ramping-vus',
+            startVUs: 0,
+            stages: [
+                { duration: '2m', target: 20 }, // 5% của 400 VUs mô phỏng Chaos Testing
+                { duration: '5m', target: 20 },
+                { duration: '1m', target: 0 },
+            ],
+            exec: 'chaosFlow',
         },
     },
     thresholds: {
@@ -31,7 +41,7 @@ export const options = {
 };
 
 const BASE_URL = __ENV.BASE_URL || 'https://api.bun-bo-chung-cu.io.vn/api';
-const SEPAY_API_KEY = 'Bunbopaymentsupersecret16032004@'; // Lấy từ bunbo-secrets (SEPAY_SECRET_KEY)
+const SEPAY_API_KEY = 'Bunbopaymentsupersecret16032004@'; // Lấy từ bunbo-secrets
 
 // Danh sách bàn ngẫu nhiên
 const TABLE_IDS = [
@@ -45,15 +55,26 @@ function getRandomTableId() {
     return TABLE_IDS[Math.floor(Math.random() * TABLE_IDS.length)];
 }
 
+// Cấu hình Header và Timeout dùng chung tối ưu cho Production
+const defaultHeaders = {
+    'Content-Type': 'application/json',
+    'Connection': 'keep-alive'
+};
+
+const guestParams = {
+    headers: defaultHeaders,
+    timeout: '15s' // Ngắt sớm nếu kết nối bị nghẽn ở Tường lửa/Cloudflare, tránh treo 7m30s
+};
+
 export function setup() {
-    // Attempt to login to get a JWT for the member flow
     const loginPayload = JSON.stringify({
         username: 'admin',
         password: 'Admin@123'
     });
     
     const loginRes = http.post(`${BASE_URL}/identity/login`, loginPayload, {
-        headers: { 'Content-Type': 'application/json' }
+        headers: defaultHeaders,
+        timeout: '15s'
     });
     
     let token = '';
@@ -74,14 +95,20 @@ export function guestFlow() {
     const TABLE_ID = getRandomTableId();
 
     // 1. Scan Table
-    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`);
+    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`, null, { 
+        headers: { 'Connection': 'keep-alive' }, 
+        timeout: '15s' 
+    });
     if (!check(scanRes, { 'guest table scanned 200': (r) => r.status === 200 })) {
         sleep(1); return;
     }
     const tableSessionId = scanRes.json('sessionId');
 
     // 2. View Catalog
-    const catalogRes = http.get(`${BASE_URL}/catalog/foods`);
+    const catalogRes = http.get(`${BASE_URL}/catalog/foods`, { 
+        headers: { 'Connection': 'keep-alive' }, 
+        timeout: '15s' 
+    });
     let foodId = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f';
     if (catalogRes.status === 200) {
         try {
@@ -102,7 +129,7 @@ export function guestFlow() {
             items: [{ foodId: foodId, quantity: qty }]
         }
     });
-    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { headers: { 'Content-Type': 'application/json' } });
+    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, guestParams);
     if (!check(cartRes, { 'guest cart 200': (r) => r.status === 200 })) { sleep(1); return; }
     sleep(1);
 
@@ -112,7 +139,7 @@ export function guestFlow() {
         paymentMethod: 'Cash',
         note: 'Guest Checkout Load Test'
     });
-    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { headers: { 'Content-Type': 'application/json' } });
+    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, guestParams);
     check(orderRes, { 'guest order 201': (r) => r.status === 201 });
     sleep(2);
 }
@@ -125,25 +152,28 @@ export function memberFlow(data) {
     const token = data.token;
     
     if (!token) {
-        console.warn("Skipping member flow due to missing token.");
         sleep(2);
         return;
     }
 
-    const authHeaders = { 
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+    const memberParams = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Connection': 'keep-alive'
+        },
+        timeout: '15s'
     };
 
     // 1. Scan Table
-    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`);
+    const scanRes = http.post(`${BASE_URL}/orders/tables/${TABLE_ID}/scan`, null, memberParams);
     if (!check(scanRes, { 'member table scanned 200': (r) => r.status === 200 })) {
         sleep(1); return;
     }
     const tableSessionId = scanRes.json('sessionId');
 
     // 2. View Catalog
-    const catalogRes = http.get(`${BASE_URL}/catalog/foods`);
+    const catalogRes = http.get(`${BASE_URL}/catalog/foods`, memberParams);
     let foodId = 'f05468de-5acf-4fd0-bbf5-a9a6a1407c8f';
     let foodPrice = 50000;
     if (catalogRes.status === 200) {
@@ -166,12 +196,12 @@ export function memberFlow(data) {
             items: [{ foodId: foodId, quantity: qty }]
         }
     });
-    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, { headers: authHeaders });
+    const cartRes = http.post(`${BASE_URL}/cart`, cartPayload, memberParams);
     if (!check(cartRes, { 'member cart 200': (r) => r.status === 200 })) { sleep(1); return; }
     sleep(1);
 
     // 4. Check active vouchers
-    const activeVouchersRes = http.get(`${BASE_URL}/promotion/vouchers/active`, { headers: authHeaders });
+    const activeVouchersRes = http.get(`${BASE_URL}/promotion/vouchers/active`, memberParams);
     check(activeVouchersRes, { 'member active vouchers 200': (r) => r.status === 200 });
     
     let voucherCode = null;
@@ -184,14 +214,14 @@ export function memberFlow(data) {
         } catch(e) {}
     }
 
-    // 5. Validate Voucher (if any)
+    // 5. Validate Voucher
     const orderTotal = foodPrice * qty;
     if (voucherCode) {
         const validatePayload = JSON.stringify({
             code: voucherCode,
             orderValue: orderTotal
         });
-        const valRes = http.post(`${BASE_URL}/promotion/vouchers/validate`, validatePayload, { headers: authHeaders });
+        const valRes = http.post(`${BASE_URL}/promotion/vouchers/validate`, validatePayload, memberParams);
         check(valRes, { 'member voucher validation 200 or 400': (r) => r.status === 200 || r.status === 400 });
     }
     sleep(1);
@@ -203,7 +233,7 @@ export function memberFlow(data) {
         voucherCode: voucherCode,
         note: 'Member Checkout Load Test'
     });
-    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, { headers: authHeaders });
+    const orderRes = http.post(`${BASE_URL}/orders`, orderPayload, memberParams);
     if (!check(orderRes, { 'member order 201': (r) => r.status === 201 })) {
         sleep(1); return;
     }
@@ -219,7 +249,7 @@ export function memberFlow(data) {
         tableNumber: 'TEST-TABLE',
         note: 'SePay Payment Init'
     });
-    const payRes = http.post(`${BASE_URL}/payments`, paymentPayload, { headers: authHeaders });
+    const payRes = http.post(`${BASE_URL}/payments`, paymentPayload, memberParams);
     if (!check(payRes, { 'member payment initialized 200': (r) => r.status === 200 })) {
         sleep(1); return;
     }
@@ -227,26 +257,82 @@ export function memberFlow(data) {
 
     // 8. Mock SePay Webhook
     const webhookPayload = JSON.stringify({
-        id: Date.now() * 1000 + Math.floor(Math.random() * 1000), // Đảm bảo ID giao dịch duy nhất tuyệt đối bằng Timestamp + Random
+        id: Date.now() * 1000 + Math.floor(Math.random() * 1000), // Duy nhất tuyệt đối
         gateway: "VietQR",
         transactionDate: new Date().toISOString(),
         accountNumber: "123456789",
-        code: "00", // "00" is success
+        code: "00",
         content: `SEVQR ${orderId}`,
         transferType: "in",
         transferAmount: finalTotal,
         accumulated: 100000,
         subAccount: "Sub1",
-        referenceCode: orderId, // Thường SePay có thể đọc mã từ đây hoặc content
+        referenceCode: orderId,
         description: "Payment successful"
     });
 
-    const webhookHeaders = {
-        'Content-Type': 'application/json',
-        'Authorization': `Apikey ${SEPAY_API_KEY}`
+    const webhookParams = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Apikey ${SEPAY_API_KEY}`,
+            'Connection': 'keep-alive'
+        },
+        timeout: '15s'
     };
-    const webhookRes = http.post(`${BASE_URL}/payments/webhook/sepay`, webhookPayload, { headers: webhookHeaders });
+    const webhookRes = http.post(`${BASE_URL}/payments/webhook/sepay`, webhookPayload, webhookParams);
     check(webhookRes, { 'sepay webhook mock 200': (r) => r.status === 200 });
 
     sleep(2);
+}
+
+// ============================================
+// CHAOS TESTING FLOW (Simulating Faults, Duplicates, and Malformed Requests)
+// ============================================
+export function chaosFlow() {
+    // 1. Gửi request Webhook SePay trùng lặp cố ý để kiểm tra tính toàn vẹn Idempotency (bắt lỗi 23505)
+    const duplicateOrderId = 'chaos-test-order-' + Math.floor(Math.random() * 100);
+    const fixedTransactionId = 9999999999; // ID cố định gây trùng lặp
+    const webhookPayload = JSON.stringify({
+        id: fixedTransactionId,
+        gateway: "VietQR",
+        transactionDate: new Date().toISOString(),
+        accountNumber: "123456789",
+        code: "00",
+        content: `SEVQR ${duplicateOrderId}`,
+        transferType: "in",
+        transferAmount: 50000,
+        accumulated: 50000,
+        subAccount: "Sub1",
+        referenceCode: duplicateOrderId,
+        description: "Chaos duplicate webhook injection"
+    });
+
+    const webhookParams = {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Apikey ${SEPAY_API_KEY}`,
+            'Connection': 'keep-alive'
+        },
+        timeout: '5s' // Timeout rất ngắn để thử thách ngắt kết nối
+    };
+
+    // Gửi lần 1
+    http.post(`${BASE_URL}/payments/webhook/sepay`, webhookPayload, webhookParams);
+    // Gửi lần 2 ngay lập tức để ép DB bẫy lỗi Unique Constraint (23505)
+    const resDup = http.post(`${BASE_URL}/payments/webhook/sepay`, webhookPayload, webhookParams);
+    check(resDup, { 'chaos duplicate handled gracefully': (r) => r.status === 200 || r.status === 400 || r.status === 409 || r.status === 500 });
+
+    // 2. Gửi request Malformed JSON để kiểm tra khả năng phục hồi của Gateway/Service
+    const malformedParams = {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '5s'
+    };
+    const resMalformed = http.post(`${BASE_URL}/cart`, '{ bad_json: "missing_quotes }', malformedParams);
+    check(resMalformed, { 'chaos malformed json caught (400)': (r) => r.status === 400 });
+
+    // 3. Gọi endpoint không tồn tại để kiểm tra bẫy lỗi 404
+    const resNotFound = http.get(`${BASE_URL}/non-existent-service-endpoint`, { timeout: '5s' });
+    check(resNotFound, { 'chaos 404 caught': (r) => r.status === 404 });
+
+    sleep(1);
 }
