@@ -32,36 +32,42 @@ public class IdentityServiceFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // Remove existing AppDbContext registration
-            var dbDescriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
+            // Aggressively remove DB related services
+            var dbDescriptors = services.Where(d => 
+                d.ServiceType == typeof(AppDbContext) || 
+                d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
+                d.ServiceType == typeof(DbContextOptions)).ToList();
+            foreach (var d in dbDescriptors) services.Remove(d);
 
-            if (dbDescriptor != null)
-            {
-                services.Remove(dbDescriptor);
-            }
+            // Remove Swagger/OpenAPI
+            var swaggerDescriptors = services.Where(d => 
+                d.ServiceType.Name.Contains("Swagger") || 
+                d.ServiceType.Name.Contains("OpenApi")).ToList();
+            foreach (var d in swaggerDescriptors) services.Remove(d);
 
-            // Remove Swagger to avoid DI issues in tests
-            var swaggerDescriptor = services.SingleOrDefault(
-                d => d.ServiceType.Name.Contains("SwaggerGenOptions"));
-            if (swaggerDescriptor != null) services.Remove(swaggerDescriptor);
-
-            var massTransitDescriptors = services.Where(d => d.ServiceType.Namespace != null && d.ServiceType.Namespace.Contains("MassTransit")).ToList();
+            // Remove MassTransit
+            var massTransitDescriptors = services.Where(d => 
+                d.ServiceType.Namespace != null && d.ServiceType.Namespace.Contains("MassTransit")).ToList();
             foreach (var d in massTransitDescriptors) services.Remove(d);
             
-            // Remove Redis to avoid connection issues
-            var redisDescriptor = services.SingleOrDefault(d => d.ServiceType.Name.Contains("IDistributedCache"));
-            if (redisDescriptor != null) services.Remove(redisDescriptor);
-            services.AddDistributedMemoryCache();
+            // Remove Redis
+            var cacheDescriptors = services.Where(d => 
+                d.ServiceType == typeof(IDistributedCache) || 
+                d.ServiceType.Name.Contains("Redis")).ToList();
+            foreach (var d in cacheDescriptors) services.Remove(d);
 
-            // Add MassTransit In-Memory for testing
+            // Add Mocks/Testing Services
+            services.AddDistributedMemoryCache();
             services.AddMassTransitTestHarness();
 
-            // Add In-Memory database for testing
             services.AddDbContext<AppDbContext>(options =>
             {
                 options.UseInMemoryDatabase(_dbName);
             });
+            
+            // Add IAppDbContext for the application
+            services.AddScoped<IdentityService.Application.Interfaces.IAppDbContext>(provider => 
+                provider.GetRequiredService<AppDbContext>());
         });
     }
 
