@@ -6,20 +6,47 @@ on:
       - main
     paths:
       - 'backend/**'
+      - 'tests/**'
   pull_request:
     branches:
       - main
     paths:
       - 'backend/**'
+      - 'tests/**'
 
 env:
-  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-  REGISTRY: docker.io
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build-and-push:
+  test:
+    name: Run Tests
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore Dependencies
+        run: dotnet restore backend/BunBo.sln
+
+      - name: Build
+        run: dotnet build backend/BunBo.sln -c Release --no-restore
+
+      - name: Run Unit Tests
+        run: dotnet test tests/IdentityService.UnitTests/IdentityService.UnitTests.csproj -c Release --no-build
+
+      - name: Run Integration Tests
+        run: dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj -c Release --no-build
+
+  build-and-push:
+    name: Build and Push
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     
     strategy:
       matrix:
@@ -37,19 +64,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
 
       - name: Log in to Docker Hub
-        # Only log in when pushing to main (skip credentials for untrusted PRs)
-        if: github.event_name == 'push'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}

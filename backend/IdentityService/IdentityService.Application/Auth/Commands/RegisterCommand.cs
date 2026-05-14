@@ -3,6 +3,7 @@ using IdentityService.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
+using BunBo.SharedKernel;
 using BunBo.SharedKernel.Messaging;
 using MediatR;
 
@@ -24,10 +25,10 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Guid>
     public async Task<Guid> Handle(RegisterCommand request, CancellationToken cancellationToken)
     {
         if (await _dbContext.Users.AnyAsync(u => u.Username == request.Username, cancellationToken))
-            throw new Exception("Tên đăng nhập đã được sử dụng.");
+            throw new DomainException("Tên đăng nhập đã được sử dụng.");
 
         if (await _dbContext.Users.AnyAsync(u => u.Email == request.Email, cancellationToken))
-            throw new Exception("Email đã được đăng ký.");
+            throw new DomainException("Email đã được đăng ký.");
 
         var passwordHasher = new PasswordHasher<User>();
         var user = new User(request.Username, request.Email, "", "Client");

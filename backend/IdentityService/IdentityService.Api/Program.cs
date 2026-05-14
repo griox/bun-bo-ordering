@@ -13,6 +13,7 @@ ThreadPool.SetMinThreads(500, 500);
 builder.Host.AddSerilogLogging("IdentityService");
 
 
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Configure Application Services
@@ -250,3 +251,5 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+public partial class Program { }
