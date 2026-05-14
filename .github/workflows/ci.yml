@@ -39,7 +39,7 @@ jobs:
         run: dotnet test tests/IdentityService.UnitTests/IdentityService.UnitTests.csproj --no-build -c Release
 
       - name: Run Identity Integration Tests
-        run: dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj --no-build -c Release
+        run: dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj --no-build -c Release --logger "console;verbosity=normal"
 
   build-and-push:
     name: Build and Push
