@@ -191,10 +191,15 @@ using (var scope = app.Services.CreateScope())
     try
     {
         db.Database.Migrate();
+
+        // Cache Pre-warming
+        var mediator = scope.ServiceProvider.GetRequiredService<MediatR.IMediator>();
+        await mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsQuery(0, 50));
+        Console.WriteLine("Cache pre-warmed successfully.");
     } 
     catch(Exception ex) 
     {
-        Console.WriteLine($"DB Migration failed: {ex.Message}");
+        Console.WriteLine($"Startup task failed: {ex.Message}");
     }
 }
 

@@ -16,6 +16,7 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
     private readonly IAppDbContext _context;
     private readonly string _publicUrl;
     private readonly IDistributedCache _cache;
+    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
     public GetFoodsQueryHandler(IAppDbContext context, IConfiguration configuration, IDistributedCache cache)
     {
@@ -34,38 +35,53 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
             return JsonSerializer.Deserialize<PagedResult<FoodDto>>(cachedData)!;
         }
 
-        var query = _context.Foods.AsNoTracking().AsQueryable();
-
-        var totalCount = await query.CountAsync(cancellationToken);
-
-        var foods = await query
-            .Include(f => f.Category)
-            .OrderBy(f => f.Name)
-            .Skip(request.Skip)
-            .Take(request.Take)
-            .ToListAsync(cancellationToken);
-
-        var items = foods.Select(f => new FoodDto(
-            f.Id,
-            f.Name,
-            f.Description,
-            FixImageUrl(f.ImageUrl),
-            f.Price,
-            f.IsAvailable,
-            f.CategoryId,
-            f.Category?.Name
-        )).ToList();
-
-        var result = new PagedResult<FoodDto>(items, totalCount, request.Skip, request.Take);
-
-        // Cache for 10 minutes
-        var cacheOptions = new DistributedCacheEntryOptions
+        await _semaphore.WaitAsync(cancellationToken);
+        try
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
-        };
-        await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), cacheOptions, cancellationToken);
+            // Re-check cache inside lock (Double-check locking pattern)
+            cachedData = await _cache.GetStringAsync(cacheKey, cancellationToken);
+            if (!string.IsNullOrEmpty(cachedData))
+            {
+                return JsonSerializer.Deserialize<PagedResult<FoodDto>>(cachedData)!;
+            }
 
-        return result;
+            var query = _context.Foods.AsNoTracking().AsQueryable();
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var foods = await query
+                .Include(f => f.Category)
+                .OrderBy(f => f.Name)
+                .Skip(request.Skip)
+                .Take(request.Take)
+                .ToListAsync(cancellationToken);
+
+            var items = foods.Select(f => new FoodDto(
+                f.Id,
+                f.Name,
+                f.Description,
+                FixImageUrl(f.ImageUrl),
+                f.Price,
+                f.IsAvailable,
+                f.CategoryId,
+                f.Category?.Name
+            )).ToList();
+
+            var result = new PagedResult<FoodDto>(items, totalCount, request.Skip, request.Take);
+
+            // Cache for 10 minutes
+            var cacheOptions = new DistributedCacheEntryOptions
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(10)
+            };
+            await _cache.SetStringAsync(cacheKey, JsonSerializer.Serialize(result), cacheOptions, cancellationToken);
+
+            return result;
+        }
+        finally
+        {
+            _semaphore.Release();
+        }
     }
 
     private string? FixImageUrl(string? imageUrl)
