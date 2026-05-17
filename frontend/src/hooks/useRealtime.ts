@@ -31,6 +31,18 @@ export const useRealtime = () => {
     const queryClient = useQueryClient();
 
     useEffect(() => {
+        // Don't attempt SignalR connection without a valid token
+        // The hub requires [Authorize], so connecting without token = 401 infinite retry
+        if (!token) {
+            // If user logged out and connection exists, stop it
+            if (globalConnection && globalConnection.state !== signalR.HubConnectionState.Disconnected) {
+                globalConnection.stop().catch(() => {});
+                globalConnection = null;
+            }
+            setConnectionStatus(signalR.HubConnectionState.Disconnected);
+            return;
+        }
+
         console.log("SignalR Effect Sync:", {
             hasToken: !!token,
             role: user?.role,

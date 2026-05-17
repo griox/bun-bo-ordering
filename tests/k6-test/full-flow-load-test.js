@@ -7,8 +7,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 260 }, // 65% của 400 VUs
-                { duration: '5m', target: 260 },
+                { duration: '2m', target: 195 }, // 65% của 300 VUs
+                { duration: '5m', target: 195 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'guestFlow',
@@ -17,8 +17,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 120 }, // 30% của 400 VUs
-                { duration: '5m', target: 120 },
+                { duration: '2m', target: 90 }, // 30% của 300 VUs
+                { duration: '5m', target: 90 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'memberFlow',
@@ -27,8 +27,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 20 }, // 5% của 400 VUs mô phỏng Chaos Testing
-                { duration: '5m', target: 20 },
+                { duration: '2m', target: 15 }, // 5% của 300 VUs mô phỏng Chaos Testing
+                { duration: '5m', target: 15 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'chaosFlow',

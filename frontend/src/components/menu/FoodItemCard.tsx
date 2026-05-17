@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { Food } from '@/hooks/useCatalog';
 import { useOrderStore } from '@/store/useOrderStore';

@@ -1,3 +1,5 @@
+'use client';
+
 import { Category } from '@/data/mockData';
 import { useRef, useEffect } from 'react';
 

@@ -1,5 +1,3 @@
-'use client';
-
 import { Facebook, Instagram, MapPin, Phone } from "lucide-react";
 
 export function Footer() {
