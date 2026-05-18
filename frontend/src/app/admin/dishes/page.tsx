@@ -1,7 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import {
     Plus,
     Search,
@@ -338,7 +338,7 @@ export default function DishesPage() {
                                                 />
                                                 {filePreview ? (
                                                     <div className="absolute inset-0 z-0">
-                                                        <img src={filePreview} alt="Preview" className="w-full h-full object-cover" />
+                                                        <Image src={filePreview} alt="Preview" fill className="object-cover" unoptimized />
                                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                             <div className="flex flex-col items-center gap-2 text-white">
                                                                 <ImageIcon className="size-8" />
@@ -432,9 +432,9 @@ export default function DishesPage() {
                                     filteredDishes.map((dish) => (
                                         <TableRow key={dish.id} className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group">
                                             <TableCell className="p-4">
-                                                <div className="size-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shadow-sm group-hover:scale-105 transition-transform shrink-0 mx-auto">
+                                                <div className="relative size-12 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shadow-sm group-hover:scale-105 transition-transform shrink-0 mx-auto">
                                                     {dish.imageUrl ? (
-                                                        <img src={dish.imageUrl || ''} alt={dish.name} className="w-full h-full object-cover" />
+                                                        <Image src={dish.imageUrl || ''} alt={dish.name} fill className="object-cover" unoptimized />
                                                     ) : (
                                                         <div className="w-full h-full flex items-center justify-center bg-gray-100">
                                                             <ImageIcon className="size-4 text-gray-300" />

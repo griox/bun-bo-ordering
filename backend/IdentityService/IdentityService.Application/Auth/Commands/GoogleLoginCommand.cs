@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using BunBo.SharedKernel.Messaging;
+using BunBo.SharedKernel;
 
 namespace IdentityService.Application.Auth.Commands;
 
@@ -31,7 +32,7 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
     public async Task<LoginResult> Handle(GoogleLoginCommand request, CancellationToken cancellationToken)
     {
         var googleUser = await _googleAuthService.GetUserInfoAsync(request.AccessToken, cancellationToken)
-            ?? throw new Exception("Invalid Google access token.");
+            ?? throw new DomainException("Invalid Google access token.");
 
         var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.GoogleId == googleUser.Sub, cancellationToken);
 
@@ -40,7 +41,7 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
             user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == googleUser.Email, cancellationToken);
             if (user != null)
             {
-                throw new Exception("Tài khoản với email này đã tồn tại. Vui lòng đăng nhập bằng mật khẩu.");
+                throw new DomainException("Tài khoản với email này đã tồn tại. Vui lòng đăng nhập bằng mật khẩu.");
             }
 
             user = User.CreateGoogleUser(googleUser.Email, googleUser.Sub);
@@ -66,7 +67,7 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
         }
 
         if (user.IsBlacklisted)
-            throw new Exception($"Tài khoản của bạn đã bị khóa! Lý do: {user.BlacklistReason ?? "Không có lý do cụ thể"}. Liên hệ Admin để được hỗ trợ.");
+            throw new DomainException($"Tài khoản của bạn đã bị khóa! Lý do: {user.BlacklistReason ?? "Không có lý do cụ thể"}. Liên hệ Admin để được hỗ trợ.");
 
         var token = _tokenService.GenerateToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();

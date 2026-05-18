@@ -3,6 +3,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -537,7 +538,7 @@ export function LoginForm({
             className="w-full h-16 bg-white text-black font-display font-black text-sm tracking-[0.2em] rounded-2xl border-2 border-black transition-all hover:bg-neutral-50 shadow-[3px_3px_0px_rgba(0,0,0,0.12)] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.15)] active:translate-y-[2px] active:shadow-none !shadow-[3px_3px_0px_rgba(0,0,0,0.12)]"
             onClick={() => handleGoogleLogin()}
           >
-            <img src="https://www.google.com/favicon.ico" alt="G" className="mr-3 h-5 w-5" />
+            <Image src="https://www.google.com/favicon.ico" alt="G" width={20} height={20} className="mr-3" />
             GOOGLE
           </Button>
         </div>

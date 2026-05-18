@@ -91,6 +91,7 @@ builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<PromotionService.Infrastructure.Messaging.Consumers.PaymentCompletedConsumer>();
+    x.AddConsumer<PromotionService.Infrastructure.Messaging.Consumers.OrderCreatedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {

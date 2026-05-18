@@ -1,5 +1,15 @@
 import { LoginForm } from "@/components/login-form"
+import type { Metadata } from 'next';
 
+export const metadata: Metadata = {
+  title: 'Đăng Nhập | Bún Bò Chung Cư',
+  description: 'Đăng nhập vào hệ thống Bún Bò Chung Cư để đặt món, quản lý đơn hàng và nhận các ưu đãi hấp dẫn dành riêng cho thành viên.',
+  openGraph: {
+    title: 'Đăng Nhập | Bún Bò Chung Cư',
+    description: 'Đăng nhập vào hệ thống Bún Bò Chung Cư để trải nghiệm đặt món tiện lợi.',
+    url: 'https://bunbochungcu.com/login',
+  },
+};
 export default function LoginPage() {
   return (
     <main className="relative min-h-screen flex items-center justify-center p-6 md:p-10 overflow-hidden bg-background">

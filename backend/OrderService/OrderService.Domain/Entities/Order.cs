@@ -43,6 +43,11 @@ public class Order : BaseEntity
     {
         var itemsTotal = OrderItems.Sum(x => x.TotalPrice);
         TotalAmount = Math.Max(0, itemsTotal - DiscountAmount);
+
+        if (TotalAmount == 0)
+        {
+            Status = OrderStatus.Paid;
+        }
     }
 
     public void UpdateStatus(OrderStatus newStatus)

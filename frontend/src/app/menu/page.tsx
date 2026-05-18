@@ -30,6 +30,17 @@ async function getFoodsByCategory(categoryId: number) {
     }
 }
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Thực Đơn | Bún Bò Chung Cư',
+  description: 'Khám phá thực đơn bún bò đa dạng, hấp dẫn và dễ dàng đặt món online tại Bún Bò Chung Cư.',
+  openGraph: {
+    title: 'Thực Đơn | Bún Bò Chung Cư',
+    description: 'Khám phá thực đơn bún bò đa dạng, hấp dẫn và dễ dàng đặt món online tại Bún Bò Chung Cư.',
+  }
+};
+
 export default async function MenuPage() {
     const categories = await getCategories();
     const initialFoods = categories.length > 0 ? await getFoodsByCategory(categories[0].id) : [];

@@ -28,6 +28,31 @@ export const metadata: Metadata = {
   title: "Bún Bò Chung Cư & Cà Phê - Hương Vị Truyền Thống",
   description: "Trải nghiệm bún bò đậm đà và cà phê sữa đá Nha Trang chuẩn vị trong không gian Retro giữa lòng thành phố.",
   keywords: ["bún bò", "cà phê", "nha trang", "ẩm thực việt", "đặt món online"],
+  openGraph: {
+    title: "Bún Bò Chung Cư & Cà Phê - Hương Vị Truyền Thống",
+    description: "Trải nghiệm bún bò đậm đà và cà phê sữa đá Nha Trang chuẩn vị trong không gian Retro giữa lòng thành phố.",
+    url: "https://bunbo.vn",
+    siteName: "Bún Bò Chung Cư & Cà Phê",
+    images: [
+      {
+        url: "/images/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Bún Bò Chung Cư & Cà Phê",
+      },
+    ],
+    locale: "vi_VN",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bún Bò Chung Cư & Cà Phê",
+    description: "Trải nghiệm bún bò đậm đà và cà phê sữa đá Nha Trang chuẩn vị trong không gian Retro giữa lòng thành phố.",
+    images: ["/images/og-image.jpg"],
+  },
+  alternates: {
+    canonical: "https://bunbo.vn",
+  },
 };
 
 export default function RootLayout({

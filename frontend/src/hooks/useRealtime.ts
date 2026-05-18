@@ -154,6 +154,9 @@ export const useRealtime = () => {
         syncGroups();
 
         const startConnection = async () => {
+            const currentToken = useAuthStore.getState().token;
+            if (!currentToken) return; // Abort if logged out
+
             if (connection.state === signalR.HubConnectionState.Disconnected) {
                 try {
                     await connection.start();

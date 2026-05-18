@@ -49,11 +49,14 @@ export default function VouchersPage() {
                         description: v.description,
                         status: 'Unused',
                         expiryDate: v.validTo,
-                        voucherId: v.id
+                        voucherId: v.id,
+                        maxUsagePerUser: v.maxUsagePerUser
                     }));
                 
                 standardVouchers.forEach(sv => {
-                    if (!results.find(rv => rv.voucherId === sv.id)) {
+                    const usedCount = redemptionCounts[sv.voucherId] || 0;
+                    const limit = sv.maxUsagePerUser ?? 999;
+                    if (usedCount < limit && !results.find(rv => rv.voucherId === sv.voucherId)) {
                         results.push(sv);
                     }
                 });
@@ -67,7 +70,7 @@ export default function VouchersPage() {
             'expired': 'Expired'
         };
         return myVouchers.filter(v => v.status === statusMap[activeTab]);
-    }, [myVouchers, activeVouchers, activeTab]);
+    }, [myVouchers, activeVouchers, activeTab, redemptionCounts]);
 
     // 3. Filter point-based vouchers for the redeem modal
     const redeemableVouchers = React.useMemo(() => {
@@ -182,7 +185,7 @@ export default function VouchersPage() {
                                         <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-400">
                                             <Clock size={12} className="text-gray-300" />
                                             <span>
-                                                Hết hạn vào 23:59 {v.expiryDate ? new Date(v.expiryDate).toLocaleDateString('vi-VN') : 'Không giới hạn'}
+                                                Hết hạn vào {v.expiryDate ? `${new Date(v.expiryDate).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} ngày ${new Date(v.expiryDate).toLocaleDateString('vi-VN')}` : 'Không giới hạn'}
                                             </span>
                                         </div>
                                     </div>

@@ -31,87 +31,67 @@ public class PaymentCompletedConsumer : IConsumer<PaymentCompletedEvent>
 
         var userId = @event.CustomerId.Value;
 
-        using var transaction = await _context.Database.BeginTransactionAsync();
-        try
+        var strategy = _context.Database.CreateExecutionStrategy();
+        await strategy.ExecuteAsync(async () =>
         {
-            // Anti-cheat: Check if this transaction has already been processed (idempotency)
-            var exists = await _context.PointTransactions
-                .AnyAsync(t => t.OrderId == @event.OrderId && t.Type == TransactionType.Earn);
-            
-            if (exists)
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
             {
-                _logger.LogInformation("Points for Order {OrderId} already awarded.", @event.OrderId);
-                await transaction.RollbackAsync();
-                return;
-            }
-
-            // Calculate Points: 1 point per 10,000 VND
-            int pointsToEarn = (int)(@event.Amount / 10000);
-            if (pointsToEarn > 0)
-            {
-                _logger.LogInformation("Awarding {Points} points to User {UserId} for Order {OrderId}", 
-                    pointsToEarn, userId, @event.OrderId);
-
-                // Get or Create LoyaltyPoint record for user
-                var loyaltyPoint = await _context.LoyaltyPoints
-                    .SingleOrDefaultAsync(lp => lp.UserId == userId);
-
-                if (loyaltyPoint == null)
-                {
-                    loyaltyPoint = new LoyaltyPoint(userId);
-                    _context.LoyaltyPoints.Add(loyaltyPoint);
-                }
-
-                // Append to Ledger
-                var pt = new PointTransaction(
-                    userId,
-                    pointsToEarn,
-                    TransactionType.Earn,
-                    @event.OrderId,
-                    $"Tích điểm từ đơn hàng {@event.OrderId}"
-                );
-
-                loyaltyPoint.AddPoints(pointsToEarn);
-                _context.PointTransactions.Add(pt);
-            }
-
-            // Voucher usage consumption
-            if (!string.IsNullOrEmpty(@event.VoucherCode))
-            {
-                _logger.LogInformation("Processing voucher usage for Code {VoucherCode} for Order {OrderId}", 
-                    @event.VoucherCode, @event.OrderId);
+                // Anti-cheat: Check if this transaction has already been processed (idempotency)
+                var exists = await _context.PointTransactions
+                    .AnyAsync(t => t.OrderId == @event.OrderId && t.Type == TransactionType.Earn);
                 
-                // Lock voucher for update to prevent race conditions in IncrementUsage
-                var voucher = await _context.Vouchers
-                    .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Code\" = {0} FOR UPDATE", @event.VoucherCode)
-                    .SingleOrDefaultAsync();
+                if (exists)
+                {
+                    _logger.LogInformation("Points for Order {OrderId} already awarded.", @event.OrderId);
+                    await transaction.RollbackAsync();
+                    return;
+                }
 
-                if (voucher != null)
+                // Calculate Points: 1 point per 10,000 VND
+                int pointsToEarn = (int)(@event.Amount / 10000);
+                if (pointsToEarn > 0)
                 {
-                    voucher.IncrementUsage();
-                    _logger.LogInformation("Incremented usage for Voucher {VoucherCode}", @event.VoucherCode);
-                    
-                    // Record user voucher mapping if customer is logged in
-                    var userVoucher = new UserVoucher(userId, voucher.Id, @event.OrderId);
-                    _context.UserVouchers.Add(userVoucher);
+                    _logger.LogInformation("Awarding {Points} points to User {UserId} for Order {OrderId}", 
+                        pointsToEarn, userId, @event.OrderId);
+
+                    // Get or Create LoyaltyPoint record for user
+                    var loyaltyPoint = await _context.LoyaltyPoints
+                        .SingleOrDefaultAsync(lp => lp.UserId == userId);
+
+                    if (loyaltyPoint == null)
+                    {
+                        loyaltyPoint = new LoyaltyPoint(userId);
+                        _context.LoyaltyPoints.Add(loyaltyPoint);
+                    }
+
+                    // Append to Ledger
+                    var pt = new PointTransaction(
+                        userId,
+                        pointsToEarn,
+                        TransactionType.Earn,
+                        @event.OrderId,
+                        $"Tích điểm từ đơn hàng {@event.OrderId}"
+                    );
+
+                    loyaltyPoint.AddPoints(pointsToEarn);
+                    _context.PointTransactions.Add(pt);
                 }
-                else
-                {
-                    _logger.LogWarning("Voucher {VoucherCode} not found in database.", @event.VoucherCode);
-                }
+
+                // Voucher usage is now handled by OrderCreatedEventConsumer.
+
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync();
+                
+                _logger.LogInformation("Successfully awarded points and processed voucher for User {UserId} (Order {OrderId})", 
+                    userId, @event.OrderId);
             }
-
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-            
-            _logger.LogInformation("Successfully awarded points and processed voucher for User {UserId} (Order {OrderId})", 
-                userId, @event.OrderId);
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync();
-            _logger.LogError(ex, "Error processing PaymentCompletedEvent for Order {OrderId}", @event.OrderId);
-            throw; // Re-throw for MassTransit retry
-        }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                _logger.LogError(ex, "Error processing PaymentCompletedEvent for Order {OrderId}", @event.OrderId);
+                throw; // Re-throw for MassTransit retry
+            }
+        });
     }
 }

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using PromotionService.Application.Interfaces;
 using PromotionService.Domain.Entities;
 using PromotionService.Domain.Enums;
+using MassTransit;
+using BunBo.SharedKernel.Messaging;
 
 namespace PromotionService.Application.Vouchers.Commands;
 
@@ -27,10 +29,12 @@ public class CreateVoucherCommand : IRequest<Guid>
 public class CreateVoucherCommandHandler : IRequestHandler<CreateVoucherCommand, Guid>
 {
     private readonly IAppDbContext _context;
+    private readonly IPublishEndpoint _publishEndpoint;
 
-    public CreateVoucherCommandHandler(IAppDbContext context)
+    public CreateVoucherCommandHandler(IAppDbContext context, IPublishEndpoint publishEndpoint)
     {
         _context = context;
+        _publishEndpoint = publishEndpoint;
     }
 
     public async Task<Guid> Handle(CreateVoucherCommand request, CancellationToken cancellationToken)
@@ -58,6 +62,21 @@ public class CreateVoucherCommandHandler : IRequestHandler<CreateVoucherCommand,
 
         _context.Vouchers.Add(voucher);
         await _context.SaveChangesAsync(cancellationToken);
+
+        if (voucher.Type == VoucherType.Standard)
+        {
+            await _publishEndpoint.Publish(new VoucherCreatedEvent
+            {
+                VoucherId = voucher.Id,
+                Code = voucher.Code,
+                Description = voucher.Description,
+                DiscountValue = voucher.DiscountValue,
+                DiscountType = (int)voucher.DiscountType,
+                TotalUsageLimit = voucher.TotalUsageLimit,
+                ValidFrom = voucher.ValidFrom,
+                ValidTo = voucher.ValidTo
+            }, cancellationToken);
+        }
 
         return voucher.Id;
     }

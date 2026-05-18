@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useMemo } from 'react';
 import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone, Ticket, MessageSquare } from 'lucide-react';
+import Image from 'next/image';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
 import { usePromotions } from '@/hooks/usePromotions';
@@ -17,7 +18,7 @@ import {
     DialogTrigger, DialogDescription } from "@/components/ui/dialog";
 
 export function CartModal() {
-    const { cart, getCartTotal, updateQuantity, updateNote, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart } = useOrderStore();
+    const { cart, getCartTotal, updateQuantity, updateNote, removeFromCart, session, table, paymentSuccessOrderId, setPaymentSuccess, clearCart, extendSession } = useOrderStore();
     const { syncCart, isSyncing } = useCart();
     const placeOrderMutation = usePlaceOrderMutation();
     const { validateVoucherMutation, useActiveVouchers, useMyVouchers } = usePromotions();
@@ -100,8 +101,9 @@ export function CartModal() {
             if (isMatch) {
                 toast.success("Thanh toán thành công! Nhà bếp đang chuẩn bị món ăn.");
 
-                // Clear the cart on payment success
+                // Clear the cart on payment success and extend session
                 clearCart();
+                extendSession();
 
                 // Defer these to next tick to avoid "cascading render" lint warning
                 Promise.resolve().then(() => {
@@ -114,10 +116,12 @@ export function CartModal() {
     }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen, clearCart]);
 
     const handleConfirm = async () => {
-        if (!paymentMethod) {
+        if (!paymentMethod && total > 0) {
             toast.error("Vui lòng chọn phương thức thanh toán");
             return;
         }
+
+        const finalPaymentMethod = total === 0 ? 'Cash' : (paymentMethod || 'Cash');
 
         try {
             // Sync the local cart state to the backend Redis session first
@@ -133,7 +137,7 @@ export function CartModal() {
 
             // Place the order
             const orderIdResult = await placeOrderMutation.mutateAsync({
-                paymentMethod: paymentMethod,
+                paymentMethod: finalPaymentMethod,
                 voucherCode: appliedVoucher,
                 discountAmount: discountAmount
             });
@@ -145,7 +149,7 @@ export function CartModal() {
                 return;
             }
 
-            if (paymentMethod === 'Transfer') {
+            if (finalPaymentMethod === 'Transfer') {
                 try {
                     console.log("Creating pending payment for order:", finalOrderId);
                     await axiosInstance.post('/api/payments', {
@@ -161,9 +165,14 @@ export function CartModal() {
                 // Switch to Payment QR View
                 setPaymentOrderId(finalOrderId);
             } else {
-                // CASH FLOW: Just clear cart and close
-                toast.success("Đơn hàng đã được ghi nhận. Vui lòng thanh toán tại quầy!");
+                // CASH FLOW or 0đ FLOW: Just clear cart and close
+                if (total === 0) {
+                    toast.success("Đặt món thành công! Nhà bếp đang chuẩn bị món ăn.");
+                } else {
+                    toast.success("Đơn hàng đã được ghi nhận. Vui lòng thanh toán tại quầy!");
+                }
                 clearCart();
+                extendSession();
                 setIsOpen(false);
             }
         } catch (error) {
@@ -260,10 +269,13 @@ export function CartModal() {
 
                                 return (
                                     <div className="flex flex-col items-center gap-4">
-                                        <img
+                                        <Image
                                             src={vietQrUrl}
                                             alt="VietQR Code"
-                                            className="w-[200px] h-[200px] object-cover"
+                                            width={200}
+                                            height={200}
+                                            className="object-cover"
+                                            unoptimized
                                         />
 
                                         {isMobile && (
@@ -497,39 +509,41 @@ export function CartModal() {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-4 mb-6">
-                                    <button
-                                        type="button"
-                                        onClick={() => setPaymentMethod('Transfer')}
-                                        className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === 'Transfer'
-                                            ? 'border-primary bg-primary/5 shadow-md scale-[1.02]'
-                                            : 'border-neutral-200 bg-white hover:border-neutral-300'
-                                            }`}
-                                    >
-                                        <QrCode className={`size-6 ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-400'}`} />
-                                        <span className={`text-[10px] font-black uppercase tracking-tighter ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-500'}`}>
-                                            Chuyển khoản
-                                        </span>
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setPaymentMethod('Cash')}
-                                        className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === 'Cash'
-                                            ? 'border-primary bg-primary/5 shadow-md scale-[1.02]'
-                                            : 'border-neutral-200 bg-white hover:border-neutral-300'
-                                            }`}
-                                    >
-                                        <Receipt className={`size-6 ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-400'}`} />
-                                        <span className={`text-[10px] font-black uppercase tracking-tighter ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-500'}`}>
-                                            Tiền mặt
-                                        </span>
-                                    </button>
-                                </div>
+                                {total > 0 && (
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentMethod('Transfer')}
+                                            className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === 'Transfer'
+                                                ? 'border-primary bg-primary/5 shadow-md scale-[1.02]'
+                                                : 'border-neutral-200 bg-white hover:border-neutral-300'
+                                                }`}
+                                        >
+                                            <QrCode className={`size-6 ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-400'}`} />
+                                            <span className={`text-[10px] font-black uppercase tracking-tighter ${paymentMethod === 'Transfer' ? 'text-primary' : 'text-neutral-500'}`}>
+                                                Chuyển khoản
+                                            </span>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setPaymentMethod('Cash')}
+                                            className={`flex flex-col items-center gap-2 p-4 rounded-2xl border-2 transition-all ${paymentMethod === 'Cash'
+                                                ? 'border-primary bg-primary/5 shadow-md scale-[1.02]'
+                                                : 'border-neutral-200 bg-white hover:border-neutral-300'
+                                                }`}
+                                        >
+                                            <Receipt className={`size-6 ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-400'}`} />
+                                            <span className={`text-[10px] font-black uppercase tracking-tighter ${paymentMethod === 'Cash' ? 'text-primary' : 'text-neutral-500'}`}>
+                                                Tiền mặt
+                                            </span>
+                                        </button>
+                                    </div>
+                                )}
 
                                 <Button
                                     onClick={handleConfirm}
-                                    disabled={placeOrderMutation.isPending || isSyncing || !paymentMethod}
-                                    className="w-full h-14 bg-primary hover:bg-primary/90 text-white font-display text-lg uppercase tracking-widest rounded-2xl border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 disabled:grayscale"
+                                    disabled={placeOrderMutation.isPending || isSyncing || (total > 0 && !paymentMethod)}
+                                    className="w-full h-14 bg-neutral-900 hover:bg-black text-white dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 font-display text-lg uppercase tracking-widest rounded-2xl border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all disabled:opacity-50 disabled:grayscale"
                                 >
                                     {placeOrderMutation.isPending || isSyncing ? (
                                         <><Loader2 className="w-5 h-5 mr-2 animate-spin" /> ĐANG TẠO ĐƠN...</>

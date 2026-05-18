@@ -18,6 +18,7 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<UserRegisteredEventConsumer>();
     x.AddConsumer<ForgotPasswordRequestedConsumer>();
+    x.AddConsumer<VoucherHuntNotificationEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -39,6 +40,13 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("forgot_password_email_queue", e =>
         {
             e.ConfigureConsumer<ForgotPasswordRequestedConsumer>(context);
+            e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
+        });
+        
+        // Unique queue for voucher hunt notifications
+        cfg.ReceiveEndpoint("voucher_hunt_email_queue", e =>
+        {
+            e.ConfigureConsumer<VoucherHuntNotificationEventConsumer>(context);
             e.UseMessageRetry(r => r.Interval(3, TimeSpan.FromSeconds(5)));
         });
     });

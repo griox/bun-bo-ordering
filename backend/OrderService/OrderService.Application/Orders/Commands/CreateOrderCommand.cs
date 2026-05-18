@@ -69,6 +69,7 @@ public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Gui
         await _publishEndpoint.Publish(new OrderCreatedEvent
         {
             OrderId = order.Id,
+            CustomerId = order.CustomerId,
             TableSessionId = order.TableSessionId,
             TableNumber = session.Table?.Name ?? "N/A",
             TotalAmount = order.TotalAmount,

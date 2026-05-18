@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDevice } from '@/hooks/useDevice';
 import { QrCode, AlertCircle, Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface SePayCheckoutProps {
     qrCode: string; // Base64 or URL
@@ -72,11 +73,13 @@ export function SePayCheckout({ qrCode, amount }: SePayCheckoutProps) {
 
             <div className="flex flex-col items-center gap-4 w-full">
                 <div className="p-4 bg-white border-4 border-neutral-100 rounded-3xl shadow-xl">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <Image
                         src={qrCode}
                         alt="Scan to pay"
-                        className="w-[240px] h-[240px] object-cover"
+                        width={240}
+                        height={240}
+                        className="object-cover"
+                        unoptimized
                     />
                 </div>
 
@@ -100,8 +103,7 @@ export function SePayCheckout({ qrCode, amount }: SePayCheckoutProps) {
                                         title={bank.appName}
                                     >
                                         <div className="w-12 h-12 rounded-xl border border-gray-100 shadow-sm overflow-hidden bg-white flex items-center justify-center p-1">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src={bank.appLogo} alt={bank.appId} className="w-full h-full object-contain rounded-lg" />
+                                            <Image src={bank.appLogo} alt={bank.appId} width={48} height={48} className="object-contain rounded-lg" unoptimized />
                                         </div>
                                     </button>
                                 ))}

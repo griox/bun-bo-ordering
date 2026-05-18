@@ -8,6 +8,7 @@ public interface IEmailService
 {
     Task SendWelcomeEmailAsync(string email, string username);
     Task SendForgotPasswordEmailAsync(string email, string username, string otpCode);
+    Task SendVoucherHuntEmailAsync(string email, string username, string code, string description, decimal discountValue, int discountType, int totalUsageLimit, DateTime? validFrom, DateTime? validTo);
 }
 
 public class EmailService : IEmailService
@@ -238,6 +239,127 @@ public class EmailService : IEmailService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to send forgot password email to {Email}", email);
+        }
+    }
+
+    public async Task SendVoucherHuntEmailAsync(string email, string username, string code, string description, decimal discountValue, int discountType, int totalUsageLimit, DateTime? validFrom, DateTime? validTo)
+    {
+        var smtpSettings = _configuration.GetSection("SmtpSettings");
+        var senderEmail = smtpSettings["DefaultSenderEmail"] ?? smtpSettings["SenderEmail"] ?? "noreply@bun-bo-chung-cu.io.vn";
+        
+        var message = new MimeMessage();
+        message.From.Add(new MailboxAddress("Bún bò Chung Cư", senderEmail));
+        message.To.Add(new MailboxAddress(username, email));
+        message.Subject = "🔥 SĂN MÃ ƯU ĐÃI: " + code + " - SỐ LƯỢNG CÓ HẠN!";
+
+        string discountText = discountType == 0 ? $"{discountValue}%" : $"{discountValue:N0}đ";
+        string validFromStr = validFrom.HasValue ? validFrom.Value.ToString("dd/MM/yyyy HH:mm") : "Ngay bây giờ";
+        string validToStr = validTo.HasValue ? validTo.Value.ToString("dd/MM/yyyy HH:mm") : "Không giới hạn";
+
+        var bodyBuilder = new BodyBuilder
+        {
+            HtmlBody = $@"
+                <div style='background-color: #f9f9f9; padding: 40px 0; font-family: ""Segoe UI"", Roboto, Helvetica, Arial, sans-serif;'>
+                    <div style='max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.05);'>
+                        
+                        <!-- Header with Brand -->
+                        <div style='background-color: #ffffff; padding: 25px; text-align: center; border-bottom: 1px solid #f0f0f0;'>
+                            <h1 style='color: #ff4d4f; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
+                                <span style='font-weight: 300; color: #333;'>BUN BO</span> CHUNG CU
+                            </h1>
+                        </div>
+
+                        <!-- Hero Banner -->
+                        <div style='background-color: #ff4d4f; padding: 40px 20px; text-align: center; color: white;'>
+                            <h2 style='margin: 0; font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;'>MÃ GIẢM GIÁ MỚI!</h2>
+                            <p style='margin: 10px 0 0; font-size: 18px; opacity: 0.9;'>{description}</p>
+                        </div>
+
+                        <!-- Content Body -->
+                        <div style='padding: 40px; color: #444; line-height: 1.6;'>
+                            <h3 style='color: #222; font-size: 22px; margin-top: 0; margin-bottom: 15px;'>Chào {username}!</h3>
+                            
+                            <p style='margin-bottom: 25px; font-size: 16px;'>Hệ thống vừa tung ra một mã ưu đãi cực sốc. Nhanh tay đặt món để không bỏ lỡ vì số lượng có hạn!</p>
+                            
+                            <!-- Voucher Info Card -->
+                            <div style='background-color: #fff9f9; border: 2px dashed #ff4d4f; border-radius: 12px; padding: 25px; text-align: center; margin: 30px 0;'>
+                                <p style='margin: 0 0 10px; font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px;'>Nhập mã thanh toán</p>
+                                <span style='display: inline-block; font-size: 42px; font-weight: 900; color: #ff4d4f; letter-spacing: 5px; margin-bottom: 15px;'>{code}</span>
+                                <div style='font-size: 20px; font-weight: bold; color: #333; margin-bottom: 15px;'>Giảm: <span style='color: #ff4d4f;'>{discountText}</span></div>
+                                <div style='display: inline-block; background-color: #ff4d4f; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold;'>
+                                    Chỉ có {totalUsageLimit} lượt
+                                </div>
+                            </div>
+
+                            <p style='margin-bottom: 10px; font-size: 14px; color: #555;'><strong>⏳ Thời gian áp dụng:</strong><br>Từ {validFromStr} đến {validToStr}</p>
+
+                            <div style='text-align: center; margin-top: 40px;'>
+                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%); color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 77, 79, 0.4); text-transform: uppercase;'>
+                                    ĐẶT MÓN NGAY
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Footer -->
+                        <div style='padding: 30px 40px; background-color: #fdfdfd; border-top: 1px solid #f0f0f0; text-align: center;'>
+                            <p style='font-size: 12px; color: #999; margin-bottom: 8px;'>
+                                <strong>Bún bò Chung Cư Team</strong><br/>
+                                Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
+                            </p>
+                            <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
+                        </div>
+                    </div>
+                </div>",
+            TextBody = $@"
+                SĂN MÃ ƯU ĐÃI: {code} - SỐ LƯỢNG CÓ HẠN!
+                
+                Chào {username},
+                
+                Hệ thống vừa tung ra một mã ưu đãi cực sốc. Nhanh tay đặt món để không bỏ lỡ vì số lượng có hạn!
+                
+                MÃ: {code}
+                Ưu đãi: Giảm {discountText} ({description})
+                Số lượng: Chỉ có {totalUsageLimit} lượt
+                Thời gian: Từ {validFromStr} đến {validToStr}
+                
+                ĐẶT MÓN NGAY: https://bun-bo-chung-cu.io.vn/
+                
+                ---
+                Bún bò Chung Cư Team
+                Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
+            "
+        };
+
+        message.Body = bodyBuilder.ToMessageBody();
+
+        try
+        {
+            using var client = new SmtpClient();
+            if (_configuration["Environment"] == "Development")
+            {
+                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
+            }
+
+            var host = smtpSettings["Host"];
+            var port = int.Parse(smtpSettings["Port"] ?? "587");
+            var user = smtpSettings["Username"];
+            var pass = smtpSettings["Password"];
+
+            await client.ConnectAsync(host, port, SecureSocketOptions.Auto);
+            
+            if (!string.IsNullOrEmpty(user) && !string.IsNullOrEmpty(pass))
+            {
+                await client.AuthenticateAsync(user, pass);
+            }
+
+            await client.SendAsync(message);
+            await client.DisconnectAsync(true);
+            
+            _logger.LogInformation("Voucher hunt email sent successfully to {Email} for code {Code}", email, code);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send voucher hunt email to {Email}", email);
         }
     }
 }

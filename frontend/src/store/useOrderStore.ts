@@ -16,6 +16,9 @@ interface OrderState {
   session: TableSessionResponseDto | null;
   cart: CartItem[];
 
+  sessionExpiresAt: number | null;
+  extendSession: () => void;
+
   _hasHydrated: boolean;
   setHasHydrated: (val: boolean) => void;
 
@@ -41,6 +44,7 @@ export const useOrderStore = create<OrderState>()(
     (set, get) => ({
       table: null,
       session: null,
+      sessionExpiresAt: null,
       cart: [],
       paymentSuccessOrderId: null,
       _hasHydrated: false,
@@ -49,6 +53,8 @@ export const useOrderStore = create<OrderState>()(
       setTable: (table) => set({ table }),
       setSession: (session) => set({ session }),
       setPaymentSuccess: (id) => set({ paymentSuccessOrderId: id }),
+
+      extendSession: () => set({ sessionExpiresAt: Date.now() + 20 * 60 * 1000 }),
 
       addToCart: (item) => set((state) => {
         const existing = state.cart.find(x => x.foodId === item.foodId);
@@ -95,10 +101,21 @@ export const useOrderStore = create<OrderState>()(
       partialize: (state) => ({
         cart: state.cart,
         paymentSuccessOrderId: state.paymentSuccessOrderId,
-        // ⚠️ table & session are NOT persisted — must be re-validated via QR scan
+        table: state.table,
+        session: state.session,
+        sessionExpiresAt: state.sessionExpiresAt
       }),
       onRehydrateStorage: () => (state) => {
-        state?.setHasHydrated(true);
+        if (state) {
+          state.setHasHydrated(true);
+          // Check if session has expired
+          if (state.sessionExpiresAt && Date.now() > state.sessionExpiresAt) {
+            state.setTable(null);
+            state.setSession(null);
+            // Optionally clear session ID from local storage too
+            localStorage.removeItem('bunbo_session_id');
+          }
+        }
       },
     }
   )

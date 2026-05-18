@@ -92,13 +92,20 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddMassTransit(x =>
 {
-    x.UsingRabbitMq((_, cfg) =>
+    x.AddConsumer<IdentityService.Application.Consumers.VoucherCreatedEventConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
     {
         var rabbitHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
         cfg.Host(rabbitHost, "/", h =>
         {
             h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
             h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
+        });
+
+        cfg.ReceiveEndpoint("voucher_created_identity_queue", e =>
+        {
+            e.ConfigureConsumer<IdentityService.Application.Consumers.VoucherCreatedEventConsumer>(context);
         });
     });
 });

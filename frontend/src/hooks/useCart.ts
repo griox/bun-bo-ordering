@@ -76,6 +76,7 @@ export const usePlaceOrderMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['cart', session?.id] });
             queryClient.invalidateQueries({ queryKey: ['orders'] });
+            queryClient.invalidateQueries({ queryKey: ['vouchers'] });
             // Note: clearCart is deliberately NOT called here because we want to keep
             // the state open for the Payment QR UI. The UI will call it once payment completes.
             toast.info("Đơn hàng đã được tạo. Vui lòng thanh toán!");

@@ -56,6 +56,9 @@ export function useTableSession(tableCode: string) {
                     // No session -> Open New
                     await openNewSession(tableData.id);
                 }
+                
+                // Always extend session when verified or opened
+                useOrderStore.getState().extendSession();
 
             } catch (err: unknown) {
                 const errorMsg = err instanceof Error ? err.message : 'Failed to access table';

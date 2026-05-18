@@ -155,7 +155,8 @@ export default function TransactionHistoryPage() {
                                 mode="single"
                                 selected={dateFilter}
                                 onSelect={setDateFilter}
-                                className="p-4 pointer-events-auto bg-white font-main [--cell-size:2.8rem]"
+                                className="p-4 pointer-events-auto bg-white font-main"
+                                style={{ '--cell-size': '2.8rem' } as React.CSSProperties}
                             />
                         </PopoverContent>
                     </Popover>
