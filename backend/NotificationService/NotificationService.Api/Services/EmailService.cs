@@ -80,7 +80,7 @@ public class EmailService : IEmailService
                             </p>
                             <p style='font-size: 11px; color: #aaa; margin-bottom: 5px;'>Bạn nhận được email này vì đã đăng ký tài khoản tại bun-bo-chung-cu.io.vn</p>
                             <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
-                            <p style='font-size: 11px; color: #bbb; margin-top: 15px;'>Nếu bạn không muốn nhận email này nữa, <a href=""https://bun-bo-chung-cu.io.vn/account/notifications"" style=""color: #bbb; text-decoration: underline;"">hủy đăng ký tại đây</a>.</p>
+                            <p style='font-size: 11px; color: #bbb; margin-top: 15px;'>Nếu bạn không muốn nhận email này nữa, <a href=""mailto:support@bun-bo-chung-cu.io.vn?subject=Unsubscribe"" style=""color: #bbb; text-decoration: underline;"">hủy đăng ký tại đây</a>.</p>
                         </div>
                     </div>
                 </div>",
@@ -102,7 +102,7 @@ public class EmailService : IEmailService
                 Email hỗ trợ: support@bun-bo-chung-cu.io.vn
                 
                 Bạn nhận được email này vì đã đăng ký tài khoản tại bun-bo-chung-cu.io.vn.
-                Để hủy đăng ký, vui lòng truy cập: https://bun-bo-chung-cu.io.vn/account/notifications
+                Để hủy đăng ký, vui lòng gửi email đến: support@bun-bo-chung-cu.io.vn với tiêu đề ""Unsubscribe"".
             "
         };
 
@@ -307,6 +307,7 @@ public class EmailService : IEmailService
                                 Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
                             </p>
                             <p style='font-size: 11px; color: #aaa; margin: 0;'>© 2026 Bun Bo Chung Cu. All Rights Reserved.</p>
+                            <p style='font-size: 11px; color: #bbb; margin-top: 15px;'>Nếu bạn không muốn nhận email khuyến mãi nữa, <a href=""mailto:support@bun-bo-chung-cu.io.vn?subject=Unsubscribe"" style=""color: #bbb; text-decoration: underline;"">hủy đăng ký tại đây</a>.</p>
                         </div>
                     </div>
                 </div>",
@@ -327,6 +328,8 @@ public class EmailService : IEmailService
                 ---
                 Bún bò Chung Cư Team
                 Địa chỉ: 634 Đ.2/4, Chung cư Vĩnh Phước,khu B, Bắc Nha Trang, Khánh Hòa
+                
+                Nếu bạn không muốn nhận email khuyến mãi nữa, vui lòng gửi email đến support@bun-bo-chung-cu.io.vn với tiêu đề ""Unsubscribe"".
             "
         };
 

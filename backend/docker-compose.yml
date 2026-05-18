@@ -341,12 +341,12 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMq__Host=rabbitmq
       - Serilog__SeqUrl=http://bunbo-seq:5341
-      - SmtpSettings__Host=smtp.resend.com
-      - SmtpSettings__Port=465
+      - SmtpSettings__Host=smtp-relay.brevo.com
+      - SmtpSettings__Port=587
       - SmtpSettings__DefaultSenderEmail=noreply@bun-bo-chung-cu.io.vn
       - SmtpSettings__SupportSenderEmail=support@bun-bo-chung-cu.io.vn
-      - SmtpSettings__Username=resend
-      - SmtpSettings__Password=re_4hz7oLXi_GNk5G8ZfHp3V4Mx6rUf4vYE2
+      - SmtpSettings__Username=aba245001@smtp-brevo.com
+      - SmtpSettings__Password=${BREVO_SMTP_KEY}
     depends_on:
       rabbitmq:
         condition: service_healthy

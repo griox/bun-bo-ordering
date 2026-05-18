@@ -51,9 +51,9 @@ spec:
         - name: Serilog__SeqUrl
           value: "http://seq-service.default.svc.cluster.local:5341"
         - name: SmtpSettings__Host
-          value: "smtp.resend.com"
+          value: "smtp-relay.brevo.com"
         - name: SmtpSettings__Port
-          value: "465"
+          value: "587"
         - name: SmtpSettings__DefaultSenderEmail
           value: "noreply@bun-bo-chung-cu.io.vn"
         - name: SmtpSettings__SupportSenderEmail
