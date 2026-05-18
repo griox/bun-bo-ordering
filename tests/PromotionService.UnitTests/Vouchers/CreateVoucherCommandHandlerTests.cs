@@ -5,6 +5,7 @@ using PromotionService.Application.Interfaces;
 using PromotionService.Application.Vouchers.Commands;
 using PromotionService.Domain.Entities;
 using PromotionService.Domain.Enums;
+using MassTransit;
 using Xunit;
 
 namespace PromotionService.UnitTests.Vouchers;
@@ -12,12 +13,14 @@ namespace PromotionService.UnitTests.Vouchers;
 public class CreateVoucherCommandHandlerTests
 {
     private readonly Mock<IAppDbContext> _contextMock;
+    private readonly Mock<IPublishEndpoint> _publishEndpointMock;
     private readonly CreateVoucherCommandHandler _handler;
 
     public CreateVoucherCommandHandlerTests()
     {
         _contextMock = new Mock<IAppDbContext>();
-        _handler = new CreateVoucherCommandHandler(_contextMock.Object);
+        _publishEndpointMock = new Mock<IPublishEndpoint>();
+        _handler = new CreateVoucherCommandHandler(_contextMock.Object, _publishEndpointMock.Object);
     }
 
     [Fact]

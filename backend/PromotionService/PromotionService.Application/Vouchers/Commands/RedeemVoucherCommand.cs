@@ -20,27 +20,24 @@ public class RedeemVoucherCommandHandler : IRequestHandler<RedeemVoucherCommand,
 
     public async Task<Guid> Handle(RedeemVoucherCommand request, CancellationToken cancellationToken)
     {
-        var strategy = _context.Database.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
+        using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        try
         {
-            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
-            try
-            {
-                // Lock the voucher record (FOR UPDATE would be better in production with raw SQL)
-                var voucher = await _context.Vouchers
-                    .SingleOrDefaultAsync(v => v.Id == request.VoucherId, cancellationToken);
+            // Lock the voucher record (FOR UPDATE would be better in production with raw SQL)
+            var voucher = await _context.Vouchers
+                .SingleOrDefaultAsync(v => v.Id == request.VoucherId, cancellationToken);
 
-                if (voucher == null)
-                    throw new Exception("Mã giảm giá không tồn tại.");
+            if (voucher == null)
+                throw new Exception("Mã giảm giá không tồn tại.");
 
-                if (voucher.Type != VoucherType.PointRedemption || !voucher.PointCost.HasValue)
-                    throw new Exception("Mã này không phải loại đổi điểm.");
+            if (voucher.Type != VoucherType.PointRedemption || !voucher.PointCost.HasValue)
+                throw new Exception("Mã này không phải loại đổi điểm.");
 
-                if (!voucher.IsActive)
-                    throw new Exception("Mã giảm giá này hiện không khả dụng.");
+            if (!voucher.IsActive)
+                throw new Exception("Mã giảm giá này hiện không khả dụng.");
 
-                if (voucher.UsageCount >= voucher.TotalUsageLimit)
-                    throw new Exception("Mã giảm giá này đã hết lượt sử dụng.");
+            if (voucher.UsageCount >= voucher.TotalUsageLimit)
+                throw new Exception("Mã giảm giá này đã hết lượt sử dụng.");
 
             // Check if user already has this voucher and it's not used
             var existingVoucher = await _context.UserVouchers
@@ -82,15 +79,14 @@ public class RedeemVoucherCommandHandler : IRequestHandler<RedeemVoucherCommand,
             _context.UserVouchers.Add(userVoucher);
 
             await _context.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
 
-                return userVoucher.Id;
-            }
-            catch
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
-        });
+            return userVoucher.Id;
+        }
+        catch
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            throw;
+        }
     }
 }
