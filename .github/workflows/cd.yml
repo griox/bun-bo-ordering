@@ -84,24 +84,20 @@ jobs:
           kubectl apply -f infra/k8s/promotion/
           kubectl apply -f infra/k8s/gateway/
 
-      - name: Force Rollout Restart (Direct Push)
-        if: github.event_name == 'push'
-        run: |
-          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
-          for service in "${services[@]}"; do
-            kubectl rollout restart deployment/$service
-          done
-
-      # 4. VERIFY Phase
-      - name: Verify Deployments Rollout
+      - name: Force Rollout Restart & Verify (Sequential)
         id: verify_rollout
         run: |
-          # 5-Phase Deployment: Verify health check
           services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
           
           for service in "${services[@]}"; do
+            # Only force restart if it's a direct push (as opposed to image tag update which auto-rolls)
+            if [ "${{ github.event_name }}" == "push" ]; then
+              echo "Force restarting $service..."
+              kubectl rollout restart deployment/$service
+            fi
+            
             echo "Waiting for rollout of deployment/$service..."
-            if ! kubectl rollout status deployment/$service --timeout=420s; then
+            if ! kubectl rollout status deployment/$service --timeout=300s; then
               echo "::error::Rollout failed for $service. Checking logs for clues..."
               kubectl get pods -l app=$service --no-headers | awk '{print $1}' | xargs -I{} kubectl logs {} --tail=50
               exit 1
@@ -118,7 +114,7 @@ jobs:
           
           for service in "${services[@]}"; do
             echo "Rolling back deployment/$service..."
-            kubectl rollout undo deployment/$service
+            kubectl rollout undo deployment/$service || echo "::warning::No previous rollout history to undo for $service"
             kubectl rollout status deployment/$service --timeout=180s || echo "::error::Rollback confirmation failed for $service"
           done
           exit 1
