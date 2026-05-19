@@ -40,8 +40,8 @@ public class EmailService : IEmailService
                         
                         <!-- Header with Brand -->
                         <div style='background-color: #ffffff; padding: 25px; text-align: center; border-bottom: 1px solid #f0f0f0;'>
-                            <h1 style='color: #ff4d4f; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
-                                <span style='font-weight: 300; color: #333;'>BUN BO</span> CHUNG CU
+                            <h1 style='color: #D9381E; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
+                                <span style='font-weight: 300; color: #000000;'>BUN BO</span> CHUNG CU
                             </h1>
                         </div>
 
@@ -50,14 +50,14 @@ public class EmailService : IEmailService
                         </div>
 
                         <!-- Content Body -->
-                        <div style='padding: 40px; color: #444; line-height: 1.6;'>
-                            <h2 style='color: #222; font-size: 24px; margin-top: 0; margin-bottom: 20px;'>Chào mừng {username}!</h2>
+                        <div style='padding: 40px; color: #2D2D2D; line-height: 1.6;'>
+                            <h2 style='color: #000000; font-size: 24px; margin-top: 0; margin-bottom: 20px;'>Chào mừng {username}!</h2>
                             
                             <p style='margin-bottom: 20px; font-size: 16px;'>Cảm ơn bạn đã đăng ký thành viên tại <strong>Bun Bo Chung Cu</strong>. Chúng tôi rất hân hạnh được phục vụ bạn những món ăn đậm đà hương vị truyền thống.</p>
                             
-                            <div style='background-color: #fff9f9; border-left: 4px solid #ff4d4f; padding: 15px 20px; margin: 25px 0;'>
+                            <div style='background-color: #fff9f9; border-left: 4px solid #D9381E; padding: 15px 20px; margin: 25px 0;'>
                                 <p style='margin: 5px 0; font-weight: 600;'>💡 Trải nghiệm tiện ích cùng chúng tôi:</p>
-                                <ul style='margin: 10px 0; padding-left: 20px; font-size: 14px; color: #666;'>
+                                <ul style='margin: 10px 0; padding-left: 20px; font-size: 14px; color: #2D2D2D;'>
                                     <li>Đặt món trực tuyến dễ dàng, không cần xếp hàng.</li>
                                     <li>Cập nhật trạng thái đơn hàng thời gian thực.</li>
                                     <li>Tích lũy điểm thưởng cho mọi đơn hàng.</li>
@@ -65,7 +65,7 @@ public class EmailService : IEmailService
                             </div>
 
                             <div style='text-align: center; margin-top: 30px;'>
-                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 77, 79, 0.3);'>
+                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #D9381E 0%, #F54A2D 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 16px; box-shadow: 0 4px 15px rgba(217, 56, 30, 0.3);'>
                                     TRẢI NGHIỆM NGAY
                                 </a>
                             </div>
@@ -159,24 +159,24 @@ public class EmailService : IEmailService
                         
                         <!-- Header with Brand -->
                         <div style='background-color: #ffffff; padding: 25px; text-align: center; border-bottom: 1px solid #f0f0f0;'>
-                            <h1 style='color: #ff4d4f; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
-                                <span style='font-weight: 300; color: #333;'>BUN BO</span> CHUNG CU
+                            <h1 style='color: #D9381E; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
+                                <span style='font-weight: 300; color: #000000;'>BUN BO</span> CHUNG CU
                             </h1>
                         </div>
 
                         <!-- Content Body -->
-                        <div style='padding: 40px; color: #444; line-height: 1.6;'>
-                            <h2 style='color: #222; font-size: 24px; margin-top: 0; margin-bottom: 20px;'>Khôi phục mật khẩu</h2>
+                        <div style='padding: 40px; color: #2D2D2D; line-height: 1.6;'>
+                            <h2 style='color: #000000; font-size: 24px; margin-top: 0; margin-bottom: 20px;'>Khôi phục mật khẩu</h2>
                             
                             <p style='margin-bottom: 20px; font-size: 16px;'>Chào <strong>{username}</strong>,</p>
                             <p style='margin-bottom: 20px; font-size: 16px;'>Chúng tôi đã nhận được yêu cầu khôi phục mật khẩu cho tài khoản của bạn. Vui lòng sử dụng mã xác thực dưới đây để tiếp tục:</p>
                             
-                            <div style='background-color: #fff9f9; border: 1px dashed #ff4d4f; padding: 20px; text-align: center; margin: 30px 0; border-radius: 12px;'>
-                                <span style='font-size: 36px; font-weight: 800; color: #ff4d4f; letter-spacing: 10px;'>{otpCode}</span>
+                            <div style='background-color: #fff9f9; border: 1px dashed #D9381E; padding: 20px; text-align: center; margin: 30px 0; border-radius: 12px;'>
+                                <span style='font-size: 36px; font-weight: 800; color: #D9381E; letter-spacing: 10px;'>{otpCode}</span>
                             </div>
 
-                            <p style='margin-bottom: 10px; font-size: 14px; color: #666;'>Mã xác thực này có hiệu lực trong vòng <strong>5 phút</strong>.</p>
-                            <p style='margin-bottom: 25px; font-size: 14px; color: #666;'>Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này hoặc liên hệ hỗ trợ nếu bạn thấy có dấu hiệu bất thường.</p>
+                            <p style='margin-bottom: 10px; font-size: 14px; color: #2D2D2D;'>Mã xác thực này có hiệu lực trong vòng <strong>5 phút</strong>.</p>
+                            <p style='margin-bottom: 25px; font-size: 14px; color: #2D2D2D;'>Nếu bạn không yêu cầu thay đổi mật khẩu, vui lòng bỏ qua email này hoặc liên hệ hỗ trợ nếu bạn thấy có dấu hiệu bất thường.</p>
                         </div>
 
                         <!-- Footer -->
@@ -264,37 +264,37 @@ public class EmailService : IEmailService
                         
                         <!-- Header with Brand -->
                         <div style='background-color: #ffffff; padding: 25px; text-align: center; border-bottom: 1px solid #f0f0f0;'>
-                            <h1 style='color: #ff4d4f; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
-                                <span style='font-weight: 300; color: #333;'>BUN BO</span> CHUNG CU
+                            <h1 style='color: #D9381E; margin: 0; font-size: 28px; font-weight: 800; letter-spacing: -0.5px;'>
+                                <span style='font-weight: 300; color: #000000;'>BUN BO</span> CHUNG CU
                             </h1>
                         </div>
 
                         <!-- Hero Banner -->
-                        <div style='background-color: #ff4d4f; padding: 40px 20px; text-align: center; color: white;'>
+                        <div style='background-color: #D9381E; padding: 40px 20px; text-align: center; color: white;'>
                             <h2 style='margin: 0; font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px;'>MÃ GIẢM GIÁ MỚI!</h2>
                             <p style='margin: 10px 0 0; font-size: 18px; opacity: 0.9;'>{description}</p>
                         </div>
 
                         <!-- Content Body -->
-                        <div style='padding: 40px; color: #444; line-height: 1.6;'>
-                            <h3 style='color: #222; font-size: 22px; margin-top: 0; margin-bottom: 15px;'>Chào {username}!</h3>
+                        <div style='padding: 40px; color: #2D2D2D; line-height: 1.6;'>
+                            <h3 style='color: #000000; font-size: 22px; margin-top: 0; margin-bottom: 15px;'>Chào {username}!</h3>
                             
-                            <p style='margin-bottom: 25px; font-size: 16px;'>Hệ thống vừa tung ra một mã ưu đãi cực sốc. Nhanh tay đặt món để không bỏ lỡ vì số lượng có hạn!</p>
+                            <p style='margin-bottom: 25px; font-size: 16px;'>Hệ thống vừa tung ra một mã ưu đãi cực sốc. Nhanh chân tới quán quét mã order để không bỏ lỡ vì số lượng có hạn!</p>
                             
                             <!-- Voucher Info Card -->
-                            <div style='background-color: #fff9f9; border: 2px dashed #ff4d4f; border-radius: 12px; padding: 25px; text-align: center; margin: 30px 0;'>
-                                <p style='margin: 0 0 10px; font-size: 14px; color: #666; text-transform: uppercase; letter-spacing: 1px;'>Nhập mã thanh toán</p>
-                                <span style='display: inline-block; font-size: 42px; font-weight: 900; color: #ff4d4f; letter-spacing: 5px; margin-bottom: 15px;'>{code}</span>
-                                <div style='font-size: 20px; font-weight: bold; color: #333; margin-bottom: 15px;'>Giảm: <span style='color: #ff4d4f;'>{discountText}</span></div>
-                                <div style='display: inline-block; background-color: #ff4d4f; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold;'>
+                            <div style='background-color: #fff9f9; border: 2px dashed #D9381E; border-radius: 12px; padding: 25px; text-align: center; margin: 30px 0;'>
+                                <p style='margin: 0 0 10px; font-size: 14px; color: #2D2D2D; text-transform: uppercase; letter-spacing: 1px;'>Nhập mã thanh toán</p>
+                                <span style='display: inline-block; font-size: 42px; font-weight: 900; color: #D9381E; letter-spacing: 5px; margin-bottom: 15px;'>{code}</span>
+                                <div style='font-size: 20px; font-weight: bold; color: #000000; margin-bottom: 15px;'>Giảm: <span style='color: #D9381E;'>{discountText}</span></div>
+                                <div style='display: inline-block; background-color: #D9381E; color: white; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold;'>
                                     Chỉ có {totalUsageLimit} lượt
                                 </div>
                             </div>
 
-                            <p style='margin-bottom: 10px; font-size: 14px; color: #555;'><strong>⏳ Thời gian áp dụng:</strong><br>Từ {validFromStr} đến {validToStr}</p>
+                            <p style='margin-bottom: 10px; font-size: 14px; color: #2D2D2D;'><strong>⏳ Thời gian áp dụng:</strong><br>Từ {validFromStr} đến {validToStr}</p>
 
                             <div style='text-align: center; margin-top: 40px;'>
-                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #ff4d4f 0%, #ff7875 100%); color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(255, 77, 79, 0.4); text-transform: uppercase;'>
+                                <a href='https://bun-bo-chung-cu.io.vn/' style='display: inline-block; background: linear-gradient(135deg, #D9381E 0%, #F54A2D 100%); color: #ffffff; padding: 18px 40px; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 18px; box-shadow: 0 4px 15px rgba(217, 56, 30, 0.4); text-transform: uppercase;'>
                                     ĐẶT MÓN NGAY
                                 </a>
                             </div>
