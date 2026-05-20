@@ -330,13 +330,12 @@ services:
 
   # Notification Service (Email & SMS)
   notification-service:
-    image: bunbo-notification
-    init: true
-    container_name: bunbo-notification
-    restart: on-failure
     build:
       context: .
       dockerfile: NotificationService/Dockerfile
+    init: true
+    container_name: bunbo-notification
+    restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - RabbitMq__Host=rabbitmq
