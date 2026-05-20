@@ -31,7 +31,7 @@ public class GetDashboardStatsQueryHandlerTests
     public async Task Handle_WhenCacheExists_ShouldReturnCachedData()
     {
         // Arrange
-        var cachedStats = new DashboardStatsDto(1000, 5, 2, "Bun Bo", new List<RevenueChartDataDto>(), new List<OrderSummaryDto>());
+        var cachedStats = new DashboardStatsDto(1000, 5, 2, "Bun Bo", new List<RevenueChartDataDto>(), new List<OrderSummaryDto>(), 0, 0, 0, 0, 0, 0);
         _cacheMock.Setup(x => x.GetAsync<DashboardStatsDto>("dashboard_stats")).ReturnsAsync(cachedStats);
 
         // Act
@@ -75,7 +75,7 @@ public class GetDashboardStatsQueryHandlerTests
         _cacheMock.Verify(x => x.SetAsync(
             "dashboard_stats", 
             It.IsAny<DashboardStatsDto>(), 
-            It.Is<TimeSpan?>(t => t == TimeSpan.FromMinutes(2))), 
+            It.Is<TimeSpan?>(t => t == TimeSpan.FromHours(1))), 
             Times.Once);
     }
 }
