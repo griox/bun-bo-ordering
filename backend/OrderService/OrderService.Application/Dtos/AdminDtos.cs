@@ -18,7 +18,14 @@ public record DashboardStatsDto(
     int NewCustomersToday,
     string BestSellingItem,
     List<RevenueChartDataDto> WeeklyRevenue,
-    List<OrderSummaryDto> RecentOrders
+    List<OrderSummaryDto> RecentOrders,
+    // Trend data for comparison
+    decimal YesterdayRevenue,
+    int TotalOrdersYesterday,
+    int NewCustomersYesterday,
+    decimal MonthlyRevenue,
+    int TotalOrdersMonth,
+    int TotalCustomersMonth
 );
 
 public record RevenueChartDataDto(

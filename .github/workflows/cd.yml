@@ -21,13 +21,11 @@ jobs:
     if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     
     env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      # Use the commit SHA that triggered the CI run, or 'latest' for direct push
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 1
           clean: true
@@ -36,7 +34,7 @@ jobs:
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
-        uses: azure/setup-kubectl@v4
+        uses: azure/setup-kubectl@v5
         with:
           version: 'latest'
 

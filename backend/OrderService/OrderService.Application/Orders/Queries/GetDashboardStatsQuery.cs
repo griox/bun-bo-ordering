@@ -31,11 +31,18 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         }
 
         var today = DateTime.UtcNow.Date;
+        var yesterday = today.AddDays(-1);
         var sevenDaysAgo = today.AddDays(-6);
+        var monthStart = new DateTime(today.Year, today.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
         // 1. Daily Revenue
         var dailyRevenue = await _context.Orders
             .Where(o => o.CreatedAt >= today && o.Status == OrderStatus.Paid)
+            .SumAsync(o => o.TotalAmount, cancellationToken);
+
+        // 1b. Yesterday Revenue (for trend comparison)
+        var yesterdayRevenue = await _context.Orders
+            .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today && o.Status == OrderStatus.Paid)
             .SumAsync(o => o.TotalAmount, cancellationToken);
 
         // 2. Total Orders Today
@@ -43,9 +50,36 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             .Where(o => o.CreatedAt >= today)
             .CountAsync(cancellationToken);
 
+        // 2b. Total Orders Yesterday
+        var totalOrdersYesterday = await _context.Orders
+            .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today)
+            .CountAsync(cancellationToken);
+
         // 3. New Customers Today (Unique CustomerId)
         var newCustomersToday = await _context.Orders
             .Where(o => o.CreatedAt >= today && o.CustomerId != null)
+            .Select(o => o.CustomerId)
+            .Distinct()
+            .CountAsync(cancellationToken);
+
+        // 3b. New Customers Yesterday
+        var newCustomersYesterday = await _context.Orders
+            .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today && o.CustomerId != null)
+            .Select(o => o.CustomerId)
+            .Distinct()
+            .CountAsync(cancellationToken);
+
+        // Monthly aggregates
+        var monthlyRevenue = await _context.Orders
+            .Where(o => o.CreatedAt >= monthStart && o.Status == OrderStatus.Paid)
+            .SumAsync(o => o.TotalAmount, cancellationToken);
+
+        var totalOrdersMonth = await _context.Orders
+            .Where(o => o.CreatedAt >= monthStart)
+            .CountAsync(cancellationToken);
+
+        var totalCustomersMonth = await _context.Orders
+            .Where(o => o.CreatedAt >= monthStart && o.CustomerId != null)
             .Select(o => o.CustomerId)
             .Distinct()
             .CountAsync(cancellationToken);
@@ -79,7 +113,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             ));
         }
 
-        // 6. Recent Orders (Top 10)
+        // 6. Recent Orders (Top 10, prioritize paid orders)
         var recentOrders = await _context.Orders
             .Include(o => o.TableSession)
                 .ThenInclude(ts => ts!.Table)
@@ -102,7 +136,13 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             newCustomersToday,
             bestSellingItem,
             chartData,
-            recentOrders
+            recentOrders,
+            yesterdayRevenue,
+            totalOrdersYesterday,
+            newCustomersYesterday,
+            monthlyRevenue,
+            totalOrdersMonth,
+            totalCustomersMonth
         );
 
         // Store in cache for 2 minutes

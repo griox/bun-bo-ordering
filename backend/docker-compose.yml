@@ -342,7 +342,7 @@ services:
       - RabbitMq__Host=rabbitmq
       - Serilog__SeqUrl=http://bunbo-seq:5341
       - SmtpSettings__Host=smtp-relay.brevo.com
-      - SmtpSettings__Port=587
+      - SmtpSettings__Port=2525
       - SmtpSettings__DefaultSenderEmail=noreply@bun-bo-chung-cu.io.vn
       - SmtpSettings__SupportSenderEmail=support@bun-bo-chung-cu.io.vn
       - SmtpSettings__Username=aba245001@smtp-brevo.com

@@ -53,7 +53,7 @@ spec:
         - name: SmtpSettings__Host
           value: "smtp-relay.brevo.com"
         - name: SmtpSettings__Port
-          value: "587"
+          value: "2525"
         - name: SmtpSettings__DefaultSenderEmail
           value: "noreply@bun-bo-chung-cu.io.vn"
         - name: SmtpSettings__SupportSenderEmail
