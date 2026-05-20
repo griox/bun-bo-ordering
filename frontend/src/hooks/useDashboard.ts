@@ -42,6 +42,6 @@ export const useDashboardStats = () => {
       const response = await axiosInstance.get('/api/orders/stats');
       return response.data;
     },
-    staleTime: 1 * 60 * 1000, // 1 minute since we have Redis caching now
+    staleTime: 5 * 60 * 1000, // 5 minutes — matches backend Redis cache TTL
   });
 };

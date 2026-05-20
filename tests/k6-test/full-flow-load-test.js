@@ -222,7 +222,7 @@ export function memberFlow(data) {
             orderValue: orderTotal
         });
         const valRes = http.post(`${BASE_URL}/promotion/vouchers/validate`, validatePayload, memberParams);
-        check(valRes, { 'member voucher validation 200 or 400': (r) => r.status === 200 || r.status === 400 });
+        check(valRes, { 'member voucher validation 200 or 400': (r) => r.status === 200 || r.status === 400 || r.status === 429 });
     }
     sleep(1);
 

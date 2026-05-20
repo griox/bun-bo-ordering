@@ -113,6 +113,7 @@ builder.Services.AddCors(options =>
 
 // Add MediatR
 builder.Services.AddApplicationServices();
+builder.Services.AddHostedService<OrderService.Api.BackgroundServices.DashboardCacheWorker>();
 
 // Add Http Clients for external sync
 builder.Services.AddHttpClient<ICartDataClient, OrderService.Infrastructure.SyncDataServices.Http.CartDataClient>(client => {

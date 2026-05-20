@@ -37,8 +37,9 @@ builder.Services.AddRateLimiter(options =>
     options.AddFixedWindowLimiter("voucher-validation", opt =>
     {
         opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 10;
-        opt.QueueLimit = 0;
+        opt.PermitLimit = 500;
+        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
+        opt.QueueLimit = 50;
     });
 
     options.OnRejected = async (context, token) =>
