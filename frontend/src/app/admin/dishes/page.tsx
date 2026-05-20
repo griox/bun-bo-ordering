@@ -406,9 +406,85 @@ export default function DishesPage() {
                         <p className="text-neutral-500">Đang tải dữ liệu...</p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto custom-scrollbar">
-                        <Table className="min-w-[800px]">
-                            <TableHeader className="bg-gray-50/50">
+                    <div className="custom-scrollbar">
+                        {/* Mobile Card List View */}
+                        <div className="md:hidden flex flex-col gap-4 p-4">
+                            {filteredDishes.length === 0 ? (
+                                <div className="text-center py-12 flex flex-col items-center gap-4 opacity-30">
+                                    <Search className="size-12" />
+                                    <p className="text-lg font-display font-bold uppercase">Không tìm thấy món ăn</p>
+                                </div>
+                            ) : (
+                                filteredDishes.map((dish) => (
+                                    <div key={dish.id} className="flex gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-sm relative">
+                                        <div className="relative size-20 rounded-xl bg-gray-50 border border-gray-100 overflow-hidden shadow-sm shrink-0">
+                                            {dish.imageUrl ? (
+                                                <Image src={dish.imageUrl || ''} alt={dish.name} fill className="object-cover" unoptimized />
+                                            ) : (
+                                                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                                    <ImageIcon className="size-6 text-gray-300" />
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 flex flex-col min-w-0">
+                                            <div className="flex justify-between items-start gap-2">
+                                                <div className="min-w-0 pr-8">
+                                                    <h3 className="font-bold text-gray-900 text-base truncate">{dish.name}</h3>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <Badge variant="secondary" className="bg-gray-100 text-gray-600 font-bold uppercase text-[10px] px-2 py-0.5 rounded-lg border-none">
+                                                            {dish.categoryName}
+                                                        </Badge>
+                                                        <div className="flex items-center gap-1.5">
+                                                            <div className={`size-2 rounded-full ${dish.isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
+                                                            <span className={`text-[10px] font-bold uppercase tracking-wider ${dish.isAvailable ? 'text-green-600' : 'text-red-400'}`}>
+                                                                {dish.isAvailable ? 'Sẵn sàng' : 'Hết hàng'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="mt-auto pt-3 flex items-center justify-between">
+                                                <div className="font-bold text-gray-900 text-base">
+                                                    {dish.price.toLocaleString('vi-VN')}
+                                                    <span className="text-xs ml-0.5 font-bold text-primary">đ</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="absolute top-2 right-2">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
+                                                        <MoreVertical className="size-5 text-gray-400" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-56 rounded-[1.2rem] border border-gray-100 shadow-2xl p-2 bg-white">
+                                                    <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-bold text-xs uppercase cursor-pointer hover:bg-gray-50 text-gray-600" onClick={() => openEditDialog(dish)}>
+                                                        <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
+                                                            <Pencil className="size-4" />
+                                                        </div>
+                                                        Hiệu chỉnh món ăn
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem
+                                                        className="gap-3 py-3.5 rounded-xl font-bold text-xs uppercase cursor-pointer text-red-500 hover:bg-red-50"
+                                                        onClick={() => handleDeleteFood(dish.id)}
+                                                    >
+                                                        <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                                                            <Trash2 className="size-4" />
+                                                        </div>
+                                                        Xóa khỏi hệ thống
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Desktop Table View */}
+                        <div className="hidden md:block overflow-x-auto pb-4">
+                            <Table className="min-w-[800px]">
+                                <TableHeader className="bg-gray-50/50">
                                 <TableRow className="hover:bg-transparent border-b border-gray-100">
                                     <TableHead className="w-[80px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ảnh</TableHead>
                                     <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Sản phẩm</TableHead>
@@ -499,6 +575,7 @@ export default function DishesPage() {
                             </TableBody>
                         </Table>
                     </div>
+                </div>
                 )}
 
                 <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">

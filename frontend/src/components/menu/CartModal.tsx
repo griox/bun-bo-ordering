@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
@@ -6,7 +5,7 @@ import { ShoppingCart, Loader2, Minus, Plus, X, QrCode, Receipt, Smartphone, Tic
 import Image from 'next/image';
 import { useOrderStore } from '@/store/useOrderStore';
 import { useCart, usePlaceOrderMutation } from '@/hooks/useCart';
-import { usePromotions } from '@/hooks/usePromotions';
+import { usePromotions, Voucher } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import axiosInstance from '@/lib/axiosInstance';
@@ -26,7 +25,7 @@ export function CartModal() {
     const { data: myVouchers } = useMyVouchers();
 
     const displayVouchers = useMemo(() => {
-        const list: any[] = [];
+        const list: Pick<Voucher, 'id' | 'code' | 'description' | 'minOrderValue' | 'isActive'>[] = [];
         
         if (availableVouchers) {
             // Add active Standard vouchers (Handle both string and integer enum serialization)
@@ -113,7 +112,7 @@ export function CartModal() {
                 });
             }
         }
-    }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen, clearCart]);
+    }, [paymentSuccessOrderId, paymentOrderId, setPaymentSuccess, setIsOpen, clearCart, extendSession]);
 
     const handleConfirm = async () => {
         if (!paymentMethod && total > 0) {

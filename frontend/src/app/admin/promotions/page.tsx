@@ -155,23 +155,83 @@ export default function PromotionsPage() {
                     </Button>
                 </div>
 
-                <div className="overflow-x-auto">
-                    {isLoading ? (
-                        <div className="flex flex-col items-center justify-center p-20 gap-4">
-                            <Loader2 className="size-12 animate-spin text-[#ff4d4f]" />
-                            <p className="font-bold text-gray-400 animate-pulse uppercase tracking-widest text-xs">Đang tải dữ liệu bún bò...</p>
-                        </div>
-                    ) : filteredVouchers?.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center p-20 text-center gap-4">
-                            <div className="size-20 bg-gray-50 rounded-full flex items-center justify-center">
-                                <Search className="size-8 text-gray-300" />
+                <div className="custom-scrollbar">
+                    {/* Mobile Card List View */}
+                    <div className="md:hidden flex flex-col gap-4 p-4">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center justify-center py-12 gap-4">
+                                <Loader2 className="size-12 animate-spin text-[#ff4d4f]" />
+                                <p className="font-bold text-gray-400 animate-pulse uppercase tracking-widest text-xs">Đang tải...</p>
                             </div>
-                            <div>
-                                <h3 className="text-lg font-black text-gray-800">Không tìm thấy mã nào</h3>
-                                <p className="text-gray-400 text-sm max-w-xs mx-auto">Hãy thử thay đổi từ khóa hoặc tạo một mã khuyến mãi mới nhé!</p>
+                        ) : filteredVouchers?.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
+                                <div className="size-16 bg-gray-50 rounded-full flex items-center justify-center">
+                                    <Search className="size-6 text-gray-300" />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-black text-gray-800">Không tìm thấy mã nào</h3>
+                                </div>
                             </div>
-                        </div>
-                    ) : (
+                        ) : (
+                            filteredVouchers?.map((voucher) => (
+                                <div key={voucher.id} className="flex flex-col gap-3 p-4 rounded-[1.5rem] border-2 border-gray-100 bg-white shadow-sm relative">
+                                    <div className="flex items-start gap-3 pr-8">
+                                        <div className="size-12 bg-gray-900 rounded-2xl flex items-center justify-center text-white shrink-0">
+                                            <Ticket className="size-6" />
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-black text-gray-900 text-base truncate">{voucher.code}</span>
+                                            </div>
+                                            <p className="text-xs text-gray-500 font-medium mt-0.5 line-clamp-2">{voucher.description}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="absolute top-4 right-4">
+                                        {voucher.isActive ? (
+                                            <div className="size-3 rounded-full bg-emerald-500 border-2 border-white shadow-sm animate-pulse" />
+                                        ) : (
+                                            <div className="size-3 rounded-full bg-gray-300 border-2 border-white shadow-sm" />
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-xl p-3 mt-1">
+                                        <div>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Giảm giá</p>
+                                            <p className="text-sm font-black text-gray-900 mt-0.5">
+                                                {voucher.discountType === 'Percentage'
+                                                    ? `${voucher.discountValue}%`
+                                                    : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(voucher.discountValue)}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Đã dùng</p>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-sm font-black text-gray-900">{voucher.usageCount}/{voucher.totalUsageLimit}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center justify-between mt-1">
+                                        <div className="text-[10px] font-bold text-gray-500">
+                                            <p>HSD: {format(new Date(voucher.validTo), 'dd/MM/yyyy')}</p>
+                                        </div>
+                                        <div className="flex gap-1">
+                                            <Button variant="ghost" size="icon" onClick={() => setEditingVoucher(voucher)} className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-all">
+                                                <Edit className="size-4" />
+                                            </Button>
+                                            <Button variant="ghost" size="icon" onClick={() => setDeletingVoucherId(voucher.id)} className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-red-50 text-gray-400 hover:text-red-600 transition-all">
+                                                <Trash2 className="size-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto pb-4">
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">
@@ -319,7 +379,7 @@ export default function PromotionsPage() {
                                 ))}
                             </tbody>
                         </table>
-                    )}
+                    </div>
                 </div>
 
                 {vouchersData && (

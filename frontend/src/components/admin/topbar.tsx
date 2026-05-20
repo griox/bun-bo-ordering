@@ -29,24 +29,23 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
     return (
         <header className="h-16 bg-white border-b border-gray-100 px-4 md:px-8 flex items-center justify-between sticky top-0 z-30 transition-all">
             <div className="flex items-center gap-4">
-                {/* Mobile Menu Toggle */}
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="lg:hidden size-10 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl"
+                    className="lg:hidden min-h-[44px] min-w-[44px] text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-xl"
                     onClick={onToggleSidebar}
                 >
                     <Menu className="size-5" />
                 </Button>
 
-                <h1 className="hidden sm:block text-lg font-bold text-gray-900 tracking-tight">Trang quản trị</h1>
+                <h1 className="hidden md:block text-lg font-bold text-gray-900 tracking-tight">Trang quản trị</h1>
             </div>
 
             <div className="flex items-center gap-4">
                 {/* Notification Bell */}
                 <DropdownMenu onOpenChange={(open) => open && markAsRead()}>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="relative size-10 text-gray-400 hover:text-red-500 hover:bg-red-50/50 rounded-xl border border-transparent hover:border-red-100 transition-all">
+                        <Button variant="ghost" size="icon" className="relative min-h-[44px] min-w-[44px] text-gray-400 hover:text-red-500 hover:bg-red-50/50 rounded-xl border border-transparent hover:border-red-100 transition-all">
                             <Bell className="w-5 h-5" />
                             {unreadCount > 0 && (
                                 <span className="absolute top-2.5 right-2.5 size-2 bg-red-500 rounded-full border-2 border-white animate-pulse" />
@@ -111,10 +110,10 @@ export function Topbar({ onToggleSidebar }: TopbarProps) {
 
                 <div className="flex items-center gap-3 pl-1 group cursor-pointer">
                     <div className="text-right hidden sm:block">
-                        <p className="text-xs font-bold text-gray-900 leading-none mb-1">{user?.username || 'Admin'}</p>
-                        <p className="text-[10px] text-gray-400 font-medium">{user?.role || 'Administrator'}</p>
+                        <p className="text-sm font-bold text-gray-900 leading-none mb-1">{user?.username || 'Admin'}</p>
+                        <p className="text-xs text-gray-400 font-medium">{user?.role || 'Administrator'}</p>
                     </div>
-                    <div className="size-9 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center border-2 border-transparent group-hover:border-primary/20 transition-all overflow-hidden">
+                    <div className="min-h-[44px] min-w-[44px] rounded-full bg-gray-100 text-gray-500 flex items-center justify-center border-2 border-transparent group-hover:border-primary/20 transition-all overflow-hidden">
                         <User className="size-5" />
                     </div>
                 </div>

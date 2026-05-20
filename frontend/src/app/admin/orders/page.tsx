@@ -67,14 +67,16 @@ export default function OrdersPage() {
                     <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý hóa đơn</h2>
                     <p className="text-sm text-gray-500 mt-1">Quản lý giao dịch & trạng thái thanh toán.</p>
                 </div>
-                <div className="flex gap-2">
-                    <Button variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50 gap-2">
+                <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
+                    <Button variant="outline" className="min-h-[44px] flex-1 md:flex-none px-4 rounded-xl text-xs md:text-sm font-bold border-gray-200 bg-white hover:bg-gray-50 gap-2">
                         <Calendar className="size-4 text-primary" />
-                        Lọc theo ngày
+                        <span className="hidden sm:inline">Lọc theo ngày</span>
+                        <span className="sm:hidden">Lọc</span>
                     </Button>
-                    <Button variant="outline" className="h-10 px-4 rounded-xl text-xs font-bold border-gray-200 bg-white hover:bg-gray-50 gap-2">
+                    <Button variant="outline" className="min-h-[44px] flex-1 md:flex-none px-4 rounded-xl text-xs md:text-sm font-bold border-gray-200 bg-white hover:bg-gray-50 gap-2">
                         <Download className="size-4 text-primary" />
-                        Xuất báo cáo
+                        <span className="hidden sm:inline">Xuất báo cáo</span>
+                        <span className="sm:hidden">Xuất</span>
                     </Button>
                 </div>
             </div>
@@ -82,10 +84,16 @@ export default function OrdersPage() {
             <Card className="border-none shadow-sm rounded-2xl overflow-hidden bg-white">
                 <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex flex-col lg:flex-row gap-4 justify-between items-center">
                     <Tabs defaultValue="Paid" onValueChange={(val) => { setStatusFilter(val); setPage(0); }} className="w-full lg:w-auto">
-                        <TabsList className="bg-gray-200/40 p-1 h-9 rounded-xl border-none">
-                            <TabsTrigger value="All" className="rounded-lg px-4 py-1 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">Tất cả</TabsTrigger>
-                            <TabsTrigger value="Unpaid" className="rounded-lg px-4 py-1 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">Chưa thanh toán</TabsTrigger>
-                            <TabsTrigger value="Paid" className="rounded-lg px-4 py-1 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">Đã thanh toán</TabsTrigger>
+                        <TabsList className="bg-gray-200/40 p-1 min-h-[44px] rounded-xl border-none w-full grid grid-cols-3 lg:flex lg:w-auto">
+                            <TabsTrigger value="All" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">Tất cả</TabsTrigger>
+                            <TabsTrigger value="Unpaid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
+                                <span className="hidden sm:inline">Chưa thanh toán</span>
+                                <span className="sm:hidden">Chưa TT</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="Paid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
+                                <span className="hidden sm:inline">Đã thanh toán</span>
+                                <span className="sm:hidden">Đã TT</span>
+                            </TabsTrigger>
                         </TabsList>
                     </Tabs>
                     <div className="relative w-full lg:w-72">
@@ -97,9 +105,53 @@ export default function OrdersPage() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto custom-scrollbar">
-                    <Table className="min-w-[900px]">
-                        <TableHeader className="bg-gray-50/50">
+                <div className="custom-scrollbar">
+                    {/* Mobile Card List View */}
+                    <div className="md:hidden flex flex-col gap-4 p-4">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center gap-4 py-12 opacity-40">
+                                <Loader2 className="size-12 animate-spin text-primary" />
+                                <p className="font-display font-bold uppercase text-xs">Đang tải...</p>
+                            </div>
+                        ) : filteredOrders.length === 0 ? (
+                            <div className="flex flex-col items-center gap-4 py-12 opacity-20">
+                                <Receipt className="size-16" />
+                                <p className="text-xl font-display font-bold uppercase">Không có đơn hàng</p>
+                            </div>
+                        ) : (
+                            filteredOrders.map((order) => (
+                                <div 
+                                    key={order.id} 
+                                    className="flex flex-col gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm cursor-pointer"
+                                    onClick={() => handleViewDetails(order.id)}
+                                >
+                                    <div className="flex justify-between items-start">
+                                        <div>
+                                            <div className="font-bold text-gray-900 text-base">Bàn {order.tableName}</div>
+                                            <div className="text-xs text-gray-400 font-medium">#{order.id.slice(0, 8).toUpperCase()}</div>
+                                        </div>
+                                        <div className="scale-90 origin-top-right">
+                                            {getStatusBadge(order.status)}
+                                        </div>
+                                    </div>
+                                    <div className="flex justify-between items-end mt-2 pt-3 border-t border-gray-50">
+                                        <div>
+                                            <div className="text-xs text-gray-400 font-medium">{format(new Date(order.createdAt), 'HH:mm - dd/MM/yyyy')}</div>
+                                        </div>
+                                        <div className="font-bold text-primary text-base">
+                                            {order.totalAmount.toLocaleString('vi-VN')}
+                                            <span className="text-xs ml-0.5 font-bold">đ</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto pb-4">
+                        <Table className="min-w-[900px]">
+                            <TableHeader className="bg-gray-50/50">
                             <TableRow className="hover:bg-transparent border-b border-gray-100">
                                 <TableHead className="hidden md:table-cell font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Mã đơn</TableHead>
                                 <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Bàn</TableHead>
@@ -185,8 +237,9 @@ export default function OrdersPage() {
                         </TableBody>
                     </Table>
                 </div>
+            </div>
 
-                <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
+            <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
                     <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
                         Trang <span className="text-gray-900">{page + 1}</span> / {totalPages || 1} — Tổng <span className="text-gray-900">{totalCount}</span> đơn
                     </p>
@@ -206,3 +259,4 @@ export default function OrdersPage() {
         </div>
     );
 }
+

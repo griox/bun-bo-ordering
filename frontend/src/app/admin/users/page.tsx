@@ -134,60 +134,27 @@ export default function AdminUserManagement() {
                     </div>
                 </div>
 
-                <div className="overflow-x-auto custom-scrollbar">
-                    <Table className="min-w-[900px]">
-                        <TableHeader className="bg-gray-50/50">
-                            <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                <TableHead className="w-[100px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Mã</TableHead>
-                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Tài khoản</TableHead>
-                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Vai trò</TableHead>
-                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ngày gia nhập</TableHead>
-                                <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {usersLoading ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-64 text-center">
-                                        <div className="flex flex-col items-center gap-4 opacity-40">
-                                            <Loader2 className="size-12 animate-spin text-primary" />
-                                            <p className="font-bold uppercase text-xs">Đang truy xuất dữ liệu người dùng...</p>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : users.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-64 text-center">
-                                        <div className="flex flex-col items-center gap-4 opacity-20">
-                                            <Search className="size-16" />
-                                            <p className="text-2xl font-bold uppercase">Không tìm thấy kết quả</p>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ) : (
-                                users.map((user) => (
-                                    <TableRow
-                                        key={user.id}
-                                        className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group cursor-pointer"
-                                        onClick={() => handleViewHistory(user)}
-                                    >
-                                        <TableCell className="p-4">
-                                            <div className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-lg border border-gray-200 inline-block text-[10px] tracking-tight group-hover:bg-white transition-all">
+                <div className="custom-scrollbar">
+                    {/* Mobile Card List View */}
+                    <div className="md:hidden flex flex-col gap-4 p-4">
+                        {usersLoading ? (
+                            <div className="flex flex-col items-center justify-center py-12 gap-4 opacity-40">
+                                <Loader2 className="size-12 animate-spin text-primary" />
+                                <p className="font-bold uppercase text-xs">Đang tải...</p>
+                            </div>
+                        ) : users.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center py-12 text-center gap-4 opacity-40">
+                                <Search className="size-12" />
+                                <h3 className="text-base font-black text-gray-800 uppercase">Không tìm thấy kết quả</h3>
+                            </div>
+                        ) : (
+                            users.map((user) => (
+                                <div key={user.id} className="flex flex-col gap-3 p-4 rounded-[1.5rem] border-2 border-gray-100 bg-white shadow-sm relative group cursor-pointer" onClick={() => handleViewHistory(user)}>
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-center gap-2">
+                                            <div className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-lg border border-gray-200 text-[10px] tracking-tight">
                                                 ID-{user.id.slice(0, 4).toUpperCase()}
                                             </div>
-                                        </TableCell>
-                                        <TableCell className="p-4">
-                                            <div className="flex flex-col">
-                                                <div className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors">
-                                                    {user.username}
-                                                </div>
-                                                <div className="flex items-center gap-1.5 text-gray-400 text-[11px] font-medium">
-                                                    <Mail className="size-3" />
-                                                    {user.email}
-                                                </div>
-                                            </div>
-                                        </TableCell>
-                                        <TableCell className="p-4 text-center">
                                             <Badge
                                                 variant="secondary"
                                                 className={`font-bold uppercase text-[9px] px-2 py-0.5 rounded-lg border-none shadow-none ${user.role === 'Admin'
@@ -197,64 +164,197 @@ export default function AdminUserManagement() {
                                             >
                                                 {user.role}
                                             </Badge>
-                                        </TableCell>
-                                        <TableCell className="p-4 text-center">
-                                            <div className="font-bold text-gray-900 text-sm">{format(new Date(user.createdAt), "dd/MM/yyyy")}</div>
-                                            <div className="text-[11px] text-gray-400 font-medium">{format(new Date(user.createdAt), "HH:mm")}</div>
-                                        </TableCell>
-                                        <TableCell className="p-4 text-right">
-                                            <div className="flex justify-end gap-2">
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col mt-1">
+                                        <div className="font-black text-gray-900 text-base">{user.username}</div>
+                                        <div className="flex items-center gap-1.5 text-gray-500 text-xs font-medium mt-0.5">
+                                            <Mail className="size-3.5" />
+                                            {user.email}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-between items-end mt-2 gap-2">
+                                        <div className="shrink-0">
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tham gia</p>
+                                            <div className="font-bold text-gray-900 text-sm mt-0.5">{format(new Date(user.createdAt), "dd/MM/yyyy")}</div>
+                                        </div>
+                                        <div className="flex gap-1 flex-wrap justify-end">
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                title="Xem lịch sử"
+                                                className="min-h-[44px] min-w-[44px] rounded-xl bg-gray-50 border border-gray-100 text-gray-400 hover:text-blue-500 transition-all"
+                                                onClick={(e) => { e.stopPropagation(); handleViewHistory(user); }}
+                                            >
+                                                <History className="size-4" />
+                                            </Button>
+
+                                            {user.isBlacklisted ? (
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    title="Xem lịch sử"
-                                                    className="size-11 rounded-xl bg-white border border-gray-100 shadow-sm text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all"
-                                                    onClick={(e) => { e.stopPropagation(); handleViewHistory(user); }}
+                                                    title="Bỏ chặn"
+                                                    className="min-h-[44px] min-w-[44px] rounded-xl bg-green-50 border border-green-100 text-green-500 transition-all"
+                                                    onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsUnbanDialogOpen(true); }}
+                                                    disabled={removeBlacklistMutation.isPending}
                                                 >
-                                                    <History className="size-5" />
+                                                    <Unlock className="size-4" />
                                                 </Button>
-
-                                                {user.isBlacklisted ? (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        title="Bỏ chặn"
-                                                        className="size-11 rounded-xl bg-green-50 border border-green-100 shadow-sm text-green-500 hover:bg-green-100 transition-all"
-                                                        onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsUnbanDialogOpen(true); }}
-                                                        disabled={removeBlacklistMutation.isPending}
-                                                    >
-                                                        <Unlock className="size-5" />
-                                                    </Button>
-                                                ) : (
-                                                    <Button
-                                                        variant="ghost"
-                                                        size="icon"
-                                                        title="Chặn người dùng"
-                                                        className="size-11 rounded-xl bg-orange-50 border border-orange-100 shadow-sm text-orange-500 hover:bg-orange-100 transition-all"
-                                                        onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsBanDialogOpen(true); }}
-                                                        disabled={blacklistMutation.isPending || user.role === 'Admin'}
-                                                    >
-                                                        <Ban className="size-5" />
-                                                    </Button>
-                                                )}
-
+                                            ) : (
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    title="Xóa người dùng"
-                                                    className="size-11 rounded-xl bg-red-50 border border-red-100 shadow-sm text-red-500 hover:bg-red-100 transition-all"
-                                                    onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsDeleteDialogOpen(true); }}
-                                                    disabled={deleteMutation.isPending || user.role === 'Admin'}
+                                                    title="Chặn người dùng"
+                                                    className="min-h-[44px] min-w-[44px] rounded-xl bg-orange-50 border border-orange-100 text-orange-500 transition-all"
+                                                    onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsBanDialogOpen(true); }}
+                                                    disabled={blacklistMutation.isPending || user.role === 'Admin'}
                                                 >
-                                                    <Trash2 className="size-5" />
+                                                    <Ban className="size-4" />
                                                 </Button>
+                                            )}
+
+                                            <Button
+                                                variant="ghost"
+                                                size="icon"
+                                                title="Xóa người dùng"
+                                                className="min-h-[44px] min-w-[44px] rounded-xl bg-red-50 border border-red-100 text-red-500 transition-all"
+                                                onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsDeleteDialogOpen(true); }}
+                                                disabled={deleteMutation.isPending || user.role === 'Admin'}
+                                            >
+                                                <Trash2 className="size-4" />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <div className="hidden md:block overflow-x-auto pb-4">
+                        <Table className="min-w-[900px]">
+                            <TableHeader className="bg-gray-50/50">
+                                <TableRow className="hover:bg-transparent border-b border-gray-100">
+                                    <TableHead className="w-[100px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Mã</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Tài khoản</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Vai trò</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ngày gia nhập</TableHead>
+                                    <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {usersLoading ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="h-64 text-center">
+                                            <div className="flex flex-col items-center gap-4 opacity-40">
+                                                <Loader2 className="size-12 animate-spin text-primary" />
+                                                <p className="font-bold uppercase text-xs">Đang truy xuất dữ liệu người dùng...</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            )}
-                        </TableBody>
-                    </Table>
+                                ) : users.length === 0 ? (
+                                    <TableRow>
+                                        <TableCell colSpan={5} className="h-64 text-center">
+                                            <div className="flex flex-col items-center gap-4 opacity-20">
+                                                <Search className="size-16" />
+                                                <p className="text-2xl font-bold uppercase">Không tìm thấy kết quả</p>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ) : (
+                                    users.map((user) => (
+                                        <TableRow
+                                            key={user.id}
+                                            className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group cursor-pointer"
+                                            onClick={() => handleViewHistory(user)}
+                                        >
+                                            <TableCell className="p-4">
+                                                <div className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-lg border border-gray-200 inline-block text-[10px] tracking-tight group-hover:bg-white transition-all">
+                                                    ID-{user.id.slice(0, 4).toUpperCase()}
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="p-4">
+                                                <div className="flex flex-col">
+                                                    <div className="font-bold text-gray-900 text-sm group-hover:text-primary transition-colors">
+                                                        {user.username}
+                                                    </div>
+                                                    <div className="flex items-center gap-1.5 text-gray-400 text-[11px] font-medium mt-0.5">
+                                                        <Mail className="size-3" />
+                                                        {user.email}
+                                                    </div>
+                                                </div>
+                                            </TableCell>
+                                            <TableCell className="p-4 text-center">
+                                                <Badge
+                                                    variant="secondary"
+                                                    className={`font-bold uppercase text-[9px] px-2 py-0.5 rounded-lg border-none shadow-none ${user.role === 'Admin'
+                                                        ? 'bg-purple-50 text-purple-600'
+                                                        : 'bg-blue-50 text-blue-600'
+                                                        }`}
+                                                >
+                                                    {user.role}
+                                                </Badge>
+                                            </TableCell>
+                                            <TableCell className="p-4 text-center">
+                                                <div className="font-bold text-gray-900 text-sm">{format(new Date(user.createdAt), "dd/MM/yyyy")}</div>
+                                                <div className="text-[11px] text-gray-400 font-medium">{format(new Date(user.createdAt), "HH:mm")}</div>
+                                            </TableCell>
+                                            <TableCell className="p-4 text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Xem lịch sử"
+                                                        className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-white border border-gray-100 shadow-sm text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all"
+                                                        onClick={(e) => { e.stopPropagation(); handleViewHistory(user); }}
+                                                    >
+                                                        <History className="size-5" />
+                                                    </Button>
+
+                                                    {user.isBlacklisted ? (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            title="Bỏ chặn"
+                                                            className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-green-50 border border-green-100 shadow-sm text-green-500 hover:bg-green-100 transition-all"
+                                                            onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsUnbanDialogOpen(true); }}
+                                                            disabled={removeBlacklistMutation.isPending}
+                                                        >
+                                                            <Unlock className="size-5" />
+                                                        </Button>
+                                                    ) : (
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            title="Chặn người dùng"
+                                                            className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-orange-50 border border-orange-100 shadow-sm text-orange-500 hover:bg-orange-100 transition-all"
+                                                            onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsBanDialogOpen(true); }}
+                                                            disabled={blacklistMutation.isPending || user.role === 'Admin'}
+                                                        >
+                                                            <Ban className="size-5" />
+                                                        </Button>
+                                                    )}
+
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        title="Xóa người dùng"
+                                                        className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-red-50 border border-red-100 shadow-sm text-red-500 hover:bg-red-100 transition-all"
+                                                        onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsDeleteDialogOpen(true); }}
+                                                        disabled={deleteMutation.isPending || user.role === 'Admin'}
+                                                    >
+                                                        <Trash2 className="size-5" />
+                                                    </Button>
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                )}
+                            </TableBody>
+                        </Table>
+                    </div>
                 </div>
 
                 <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">

@@ -160,7 +160,7 @@ export default function TablesPage() {
                     if (!open) resetForm();
                 }}>
                     <DialogTrigger asChild>
-                        <Button className="h-10 px-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl transition-all shadow-sm" onClick={() => resetForm()}>
+                        <Button className="min-h-[48px] px-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl transition-all shadow-sm" onClick={() => resetForm()}>
                             <Plus className="size-4" />
                             THÊM BÀN MỚI
                         </Button>
@@ -240,19 +240,19 @@ export default function TablesPage() {
                         ) : paginatedTables.map(table => (
                             <div key={table.id} className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/30 group hover:border-primary/30 hover:bg-primary/5 transition-all">
                                 <div>
-                                    <p className="font-bold text-gray-900 text-sm tracking-tight">{table.tableCode}</p>
-                                    <p className="text-[11px] text-gray-500 font-medium">{table.name}</p>
-                                    <p className="text-[8px] text-gray-300 font-mono mt-1">ID: {table.id}</p>
+                                    <p className="font-bold text-gray-900 text-base md:text-sm tracking-tight">{table.tableCode}</p>
+                                    <p className="text-xs md:text-[11px] text-gray-500 font-medium">{table.name}</p>
+                                    <p className="text-[10px] md:text-[8px] text-gray-300 font-mono mt-1">ID: {table.id}</p>
                                 </div>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-all scale-90 group-hover:scale-100">
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg hover:bg-blue-500 hover:text-white" onClick={() => openEditDialog(table)}>
-                                        <Pencil className="size-3.5" />
+                                <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all scale-100 lg:scale-90 lg:group-hover:scale-100">
+                                    <Button size="icon" variant="ghost" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-blue-500 hover:text-white" onClick={() => openEditDialog(table)}>
+                                        <Pencil className="size-4" />
                                     </Button>
-                                    <Button size="icon" variant="ghost" className="h-8 w-8 rounded-lg hover:bg-[#ff4d4f] hover:text-white" onClick={() => {
+                                    <Button size="icon" variant="ghost" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-[#ff4d4f] hover:text-white" onClick={() => {
                                         setSelectedTableForQR(table);
                                         setIsQRModalOpen(true);
                                     }}>
-                                        <QrCode className="size-3.5" />
+                                        <QrCode className="size-4" />
                                     </Button>
                                 </div>
                             </div>
@@ -301,10 +301,10 @@ export default function TablesPage() {
                                     </div>
                                     <p className="mt-1.5 text-[10px] font-bold text-gray-500 truncate w-full text-center">{table.name}</p>
 
-                                    <div className="absolute -top-3 -right-3 opacity-0 group-hover:opacity-100 transition-all scale-0 group-hover:scale-100">
+                                    <div className="absolute -top-3 -right-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all scale-100 lg:scale-0 lg:group-hover:scale-100">
                                         <Button
                                             size="icon"
-                                            className="size-8 rounded-lg bg-primary text-white shadow-lg hover:bg-primary/90"
+                                            className="min-h-[44px] min-w-[44px] rounded-xl bg-primary text-white shadow-lg hover:bg-primary/90"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 setSelectedTableForQR(table);
@@ -368,8 +368,8 @@ export default function TablesPage() {
                                 <div className="text-center space-y-1">
                                     <p className="text-[10px] font-medium text-gray-400 break-all line-clamp-1">{getScanUrl(selectedTableForQR.id)}</p>
                                 </div>
-                                <Button className="w-full h-10 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl shadow-md transition-all" onClick={() => downloadQR(selectedTableForQR)}>
-                                    <Download className="size-4" />
+                                <Button className="w-full min-h-[48px] bg-primary hover:bg-primary/90 text-white font-bold text-sm gap-2 rounded-xl shadow-md transition-all" onClick={() => downloadQR(selectedTableForQR)}>
+                                    <Download className="size-5" />
                                     TẢI MÃ QR
                                 </Button>
                             </>

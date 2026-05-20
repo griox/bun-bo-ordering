@@ -147,9 +147,10 @@ export function usePromotions() {
             try {
                 const { data } = await axiosInstance.post('/api/promotion/vouchers/validate', { code, orderValue });
                 return data as { isValid: boolean, discountAmount: number, message: string };
-            } catch (error: any) {
-                if (error.response && error.response.data) {
-                    return error.response.data as { isValid: boolean, discountAmount: number, message: string };
+            } catch (error: unknown) {
+                const axiosError = error as { response?: { data?: { isValid: boolean; discountAmount: number; message: string } } };
+                if (axiosError.response && axiosError.response.data) {
+                    return axiosError.response.data;
                 }
                 throw error;
             }

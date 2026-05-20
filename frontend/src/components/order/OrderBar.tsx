@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { useOrderStore, CartItem } from '@/store/useOrderStore';
 import { usePlaceOrderMutation, useCart } from '@/hooks/useCart';
-import { usePromotions } from '@/hooks/usePromotions';
+import { usePromotions, Voucher } from '@/hooks/usePromotions';
 import { Button } from '@/components/ui/button';
 import {
     ShoppingBag, ArrowRight, Loader2, Trash2, MessageSquare,
@@ -60,7 +60,7 @@ export function OrderBar() {
     const { data: myVouchers } = useMyVouchers();
 
     const displayVouchers = React.useMemo(() => {
-        const list: any[] = [];
+        const list: Pick<Voucher, 'id' | 'code' | 'description' | 'minOrderValue' | 'isActive'>[] = [];
         
         if (availableVouchers) {
             // Add active Standard vouchers (Handle both string and integer enum serialization)

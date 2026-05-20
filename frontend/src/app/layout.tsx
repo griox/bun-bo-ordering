@@ -25,6 +25,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
   title: "Bún Bò Chung Cư & Cà Phê - Hương Vị Truyền Thống",
   description: "Trải nghiệm bún bò đậm đà và cà phê sữa đá Nha Trang chuẩn vị trong không gian Retro giữa lòng thành phố.",
   keywords: ["bún bò", "cà phê", "nha trang", "ẩm thực việt", "đặt món online"],

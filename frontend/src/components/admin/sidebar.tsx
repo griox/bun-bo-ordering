@@ -51,7 +51,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Button
                     variant="ghost"
                     size="icon"
-                    className="lg:hidden size-8 text-gray-400 hover:text-gray-600"
+                    className="lg:hidden min-h-[44px] min-w-[44px] text-gray-400 hover:text-gray-600"
                     onClick={onClose}
                 >
                     <X className="size-5" />
@@ -72,7 +72,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                                         : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
                                 )}>
                                     <item.icon className={cn("size-5", isActive ? "text-primary" : "text-gray-400 group-hover:text-gray-600")} />
-                                    <span className="font-medium text-sm">{item.title}</span>
+                                    <span className="font-medium text-base lg:text-sm">{item.title}</span>
                                 </div>
                             </Link>
                         );
@@ -83,11 +83,11 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="p-4 border-t border-gray-50">
                 <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl py-6"
+                    className="w-full justify-start gap-3 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl py-6 min-h-[44px]"
                     onClick={() => logout()}
                 >
-                    <LogOut className="size-4" />
-                    <span className="font-medium text-sm">Đăng xuất</span>
+                    <LogOut className="size-5" />
+                    <span className="font-medium text-base lg:text-sm">Đăng xuất</span>
                 </Button>
             </div>
         </aside>

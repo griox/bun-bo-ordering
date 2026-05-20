@@ -143,7 +143,7 @@ export function OrderDetailModal({
                     <div className="px-6 pb-2">
                         <div className="flex items-start gap-2 p-3 bg-amber-50 rounded-xl border border-amber-100">
                             <StickyNote size={14} className="text-amber-600 shrink-0 mt-0.5" />
-                            <p className="text-xs text-amber-800 leading-relaxed italic">"{order.note}"</p>
+                            <p className="text-xs text-amber-800 leading-relaxed italic">&ldquo;{order.note}&rdquo;</p>
                         </div>
                     </div>
                 )}

@@ -26,6 +26,13 @@ export interface DashboardStats {
     bestSellingItem: string;
     weeklyRevenue: WeeklyRevenue[];
     recentOrders: OrderSummary[];
+    // Trend data
+    yesterdayRevenue: number;
+    totalOrdersYesterday: number;
+    newCustomersYesterday: number;
+    monthlyRevenue: number;
+    totalOrdersMonth: number;
+    totalCustomersMonth: number;
 }
 
 export const useDashboardStats = () => {

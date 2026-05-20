@@ -39,7 +39,7 @@ export const useRealtime = () => {
                 globalConnection.stop().catch(() => {});
                 globalConnection = null;
             }
-            setConnectionStatus(signalR.HubConnectionState.Disconnected);
+            queueMicrotask(() => setConnectionStatus(signalR.HubConnectionState.Disconnected));
             return;
         }
 

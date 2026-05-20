@@ -36,7 +36,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
             queries: {
                 staleTime: 60 * 1000, // 1 minute
                 refetchOnWindowFocus: false,
-                retry: (failureCount, error: any) => {
+                retry: (failureCount, error: Error & { response?: { status?: number } }) => {
                     // Don't retry on client errors (400, 401, 403, 404, etc.)
                     const status = error?.response?.status;
                     if (status && status >= 400 && status < 500) {
