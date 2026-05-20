@@ -95,6 +95,7 @@ builder.Services.AddGrpcClient<CatalogService.Api.Protos.CatalogGrpc.CatalogGrpc
     o.HttpHandler = new SocketsHttpHandler
     {
         EnableMultipleHttp2Connections = true,      // Tái sử dụng connection thay vì mở mới
+        PooledConnectionLifetime = TimeSpan.FromMinutes(2), // BẮT BUỘC TRONG K8S: Tránh cache DNS cũ khi CatalogService restart
         PooledConnectionIdleTimeout = TimeSpan.FromMinutes(5),
         KeepAlivePingDelay = TimeSpan.FromSeconds(30),
         KeepAlivePingTimeout = TimeSpan.FromSeconds(10),
