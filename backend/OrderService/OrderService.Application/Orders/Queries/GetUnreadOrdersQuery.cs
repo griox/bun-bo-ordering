@@ -36,7 +36,7 @@ public class GetUnreadOrdersQueryHandler : IRequestHandler<GetUnreadOrdersQuery,
     {
         var orders = await _context.Orders
             .Include(o => o.TableSession)
-            .ThenInclude(ts => ts.Table)
+            .ThenInclude(ts => ts!.Table)
             .Include(o => o.OrderItems)
             .Where(o => o.Status == OrderStatus.Processing || o.Status == OrderStatus.Paid)
             .OrderByDescending(o => o.CreatedAt)
