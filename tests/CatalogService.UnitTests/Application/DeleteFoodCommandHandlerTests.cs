@@ -41,8 +41,8 @@ public class DeleteFoodCommandHandlerTests
 
         // Assert
         result.Should().BeTrue();
-        _storageServiceMock.Verify(x => x.DeleteFileAsync(imageUrl), Times.Once);
-        _contextMock.Verify(x => x.Foods.Remove(It.Is<Food>(f => f.Id == foodId)), Times.Once);
+        food.IsDeleted.Should().BeTrue();
+        _contextMock.Verify(x => x.Foods.Update(It.Is<Food>(f => f.Id == foodId)), Times.Once);
         _contextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
