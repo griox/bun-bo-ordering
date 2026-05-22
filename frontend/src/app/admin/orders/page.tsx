@@ -26,6 +26,8 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useOrders, useOrder } from '@/hooks/useOrders';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
+import axiosInstance from '@/lib/axiosInstance';
+import { useQueryClient } from '@tanstack/react-query';
 
 export default function OrdersPage() {
     const [statusFilter, setStatusFilter] = useState('Paid'); // 'All', 'Unpaid', 'Paid'
@@ -42,22 +44,40 @@ export default function OrdersPage() {
 
     const { data: orderDetails } = useOrder(selectedOrderId || undefined);
 
-    const handleViewDetails = (orderId: string) => {
+    const queryClient = useQueryClient();
+
+    const handleViewDetails = async (orderId: string, currentStatus: number | string) => {
         setSelectedOrderId(orderId);
         setIsModalOpen(true);
+        
+        // If status is Processing (3), mark as Completed (4) when admin views it
+        if (Number(currentStatus) === 3) {
+            try {
+                await axiosInstance.put(`/api/orders/${orderId}/status?status=4`);
+                queryClient.invalidateQueries({ queryKey: ['orders'] });
+                queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+            } catch (error) {
+                console.error("Failed to mark order as completed", error);
+            }
+        }
     };
 
     const filteredOrders = orders;
 
     const getStatusBadge = (status: number | string) => {
-        const baseClass = "font-black uppercase text-[9px] px-3 py-1.5 rounded-xl border transition-all bg-white shadow-sm";
-        // Convert string status (e.g. from filter) or numeric status (from data)
-        const isPaid = status === 1 || status === 'Paid';
-
-        if (isPaid) {
+        const baseClass = "font-black uppercase text-[9px] px-3 py-1.5 rounded-xl border transition-all bg-white shadow-sm inline-flex items-center justify-center";
+        // Convert numeric status to semantic badges
+        const s = Number(status);
+        if (s === 1) { // Paid
             return <Badge variant="outline" className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>ĐÃ THANH TOÁN</Badge>;
         }
-        return <Badge variant="outline" className={`${baseClass} text-red-500 border-red-100 bg-red-50/50 animate-pulse`}>CHƯA THANH TOÁN</Badge>;
+        if (s === 4) { // Completed
+            return <Badge variant="outline" className={`${baseClass} text-blue-500 border-blue-100 bg-blue-50/50`}>HOÀN THÀNH</Badge>;
+        }
+        if (s === 3) { // Processing
+            return <Badge variant="outline" className={`${baseClass} text-emerald-600 border-emerald-100 bg-emerald-50/50`}>ĐANG XỬ LÝ</Badge>;
+        }
+        return <Badge variant="outline" className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50`}>CHƯA THANH TOÁN</Badge>;
     };
 
     return (
@@ -87,8 +107,8 @@ export default function OrdersPage() {
                         <TabsList className="bg-gray-200/40 p-1 min-h-[44px] rounded-xl border-none w-full grid grid-cols-3 lg:flex lg:w-auto">
                             <TabsTrigger value="All" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">Tất cả</TabsTrigger>
                             <TabsTrigger value="Unpaid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
-                                <span className="hidden sm:inline">Chưa thanh toán</span>
-                                <span className="sm:hidden">Chưa TT</span>
+                                <span className="hidden sm:inline">Đang xử lý</span>
+                                <span className="sm:hidden">Đang XL</span>
                             </TabsTrigger>
                             <TabsTrigger value="Paid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
                                 <span className="hidden sm:inline">Đã thanh toán</span>
@@ -122,13 +142,18 @@ export default function OrdersPage() {
                             filteredOrders.map((order) => (
                                 <div 
                                     key={order.id} 
-                                    className="flex flex-col gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm cursor-pointer"
-                                    onClick={() => handleViewDetails(order.id)}
+                                    className="flex flex-col gap-3 p-4 rounded-xl border border-gray-100 bg-white shadow-sm cursor-pointer hover:border-gray-300 transition-all"
+                                    onClick={() => handleViewDetails(order.id, order.status)}
                                 >
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <div className="font-bold text-gray-900 text-base">Bàn {order.tableName}</div>
-                                            <div className="text-xs text-gray-400 font-medium">#{order.id.slice(0, 8).toUpperCase()}</div>
+                                            <div className="font-bold text-gray-900 text-base flex items-center gap-2">
+                                                Bàn {order.tableName}
+                                            </div>
+                                            <div className="text-xs text-gray-400 font-medium mt-1">#{order.id.slice(0, 8).toUpperCase()}</div>
+                                            <div className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider inline-block mt-1">
+                                                {order.paymentMethod || 'KHÔNG RÕ'}
+                                            </div>
                                         </div>
                                         <div className="scale-90 origin-top-right">
                                             {getStatusBadge(order.status)}
@@ -185,7 +210,7 @@ export default function OrdersPage() {
                                     <TableRow
                                         key={order.id}
                                         className="hover:bg-gray-50/30 transition-colors border-b border-gray-50 last:border-0 group cursor-pointer"
-                                        onClick={() => handleViewDetails(order.id)}
+                                        onClick={() => handleViewDetails(order.id, order.status)}
                                     >
                                         <TableCell className="hidden md:table-cell p-4">
                                             <div className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-lg border border-gray-200 inline-block text-[10px] tracking-tight">
@@ -193,7 +218,10 @@ export default function OrdersPage() {
                                             </div>
                                         </TableCell>
                                         <TableCell className="p-4">
-                                            <div className="font-bold text-gray-900 text-sm mb-0.5">BÀN {order.tableCode}</div>
+                                            <div className="font-bold text-gray-900 text-sm mb-0.5 flex items-center gap-2">
+                                                BÀN {order.tableCode}
+                                                <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-[9px] uppercase font-bold tracking-widest">{order.paymentMethod || 'KHÔNG RÕ'}</span>
+                                            </div>
                                             <div className="text-[11px] text-gray-400 font-medium">{order.tableName}</div>
                                         </TableCell>
                                         <TableCell className="p-4 text-center">
@@ -217,7 +245,7 @@ export default function OrdersPage() {
                                                     variant="ghost"
                                                     size="icon"
                                                     className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm text-gray-400 hover:text-black"
-                                                    onClick={(e) => { e.stopPropagation(); handleViewDetails(order.id); }}
+                                                    onClick={(e) => { e.stopPropagation(); handleViewDetails(order.id, order.status); }}
                                                 >
                                                     <Eye className="size-4" />
                                                 </Button>

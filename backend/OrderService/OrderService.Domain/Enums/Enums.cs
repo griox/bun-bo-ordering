@@ -2,9 +2,11 @@ namespace OrderService.Domain.Enums;
 
 public enum OrderStatus
 {
-    Unpaid,
+    Unpaid, // Legacy
     Paid,
-    PaymentFailed
+    PaymentFailed,
+    Processing,
+    Completed
 }
 
 public enum PaymentStatus

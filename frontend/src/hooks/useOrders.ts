@@ -68,7 +68,7 @@ export const useOrders = (status?: string, skip: number = 0, take: number = 50) 
     queryFn: async () => {
       let url = `/api/orders?skip=${skip}&take=${take}`;
       if (status && status !== 'All') {
-        const statuses: Record<string, number> = { 'Unpaid': 0, 'Paid': 1 };
+        const statuses: Record<string, number> = { 'Unpaid': 3, 'Paid': 1, 'Completed': 4 };
         const statusValue = statuses[status] !== undefined ? statuses[status] : status;
         url += `&status=${statusValue}`;
       }

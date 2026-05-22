@@ -230,7 +230,7 @@ orderGroup.MapPost("/", async (Microsoft.AspNetCore.Http.HttpContext httpContext
     return Results.Created($"/api/orders/{id}", new { Id = id });
 }).RequireRateLimiting("order-creation");
 
-orderGroup.MapGet("/{id}", async (Guid id, MediatR.IMediator mediator) =>
+orderGroup.MapGet("/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
 {
     var order = await mediator.Send(new OrderService.Application.Orders.Queries.GetOrderByIdQuery(id));
     return order != null ? Results.Ok(order) : Results.NotFound();
@@ -243,6 +243,12 @@ orderGroup.MapGet("/tablesession/{sessionId}", async (Guid sessionId, MediatR.IM
 });
 
 // Admin Dashboard & History
+orderGroup.MapGet("/unread", async (MediatR.IMediator mediator) =>
+{
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetUnreadOrdersQuery());
+    return Results.Ok(result);
+}).RequireAuthorization("Admin");
+
 orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 50, OrderStatus? status = null) =>
 {
     var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status));
@@ -255,9 +261,9 @@ orderGroup.MapGet("/{id:guid}", async (Guid id, MediatR.IMediator mediator) =>
     return result is null ? Results.NotFound() : Results.Ok(result);
 }).RequireAuthorization("Admin");
 
-orderGroup.MapGet("/stats", async (MediatR.IMediator mediator) =>
+orderGroup.MapGet("/stats", async (MediatR.IMediator mediator, [Microsoft.AspNetCore.Mvc.FromQuery] int weekOffset = 0) =>
 {
-    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetDashboardStatsQuery());
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetDashboardStatsQuery(ForceRefresh: false, WeekOffset: weekOffset));
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 

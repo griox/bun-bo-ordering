@@ -30,7 +30,7 @@ public class Order : BaseEntity
         PaymentMethod = paymentMethod;
         VoucherCode = voucherCode;
         DiscountAmount = discountAmount;
-        Status = OrderStatus.Unpaid;
+        Status = OrderStatus.Processing;
     }
 
     public void AddItem(OrderItem item)

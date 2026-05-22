@@ -27,12 +27,9 @@ public class DeleteFoodCommandHandler : IRequestHandler<DeleteFoodCommand, bool>
         if (food == null)
             return false;
 
-        if (!string.IsNullOrEmpty(food.ImageUrl))
-        {
-            await _storageService.DeleteFileAsync(food.ImageUrl);
-        }
-
-        _context.Foods.Remove(food);
+        // Soft delete
+        food.MarkAsDeleted();
+        _context.Foods.Update(food);
         await _context.SaveChangesAsync(cancellationToken);
 
         // Invalidate cache

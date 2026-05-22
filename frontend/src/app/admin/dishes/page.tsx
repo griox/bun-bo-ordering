@@ -44,6 +44,16 @@ import {
     SelectValue
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useCategories, useAllFoods, useCreateFoodMutation, useUpdateFoodMutation, useDeleteFoodMutation, useCreateCategoryMutation, Food } from '@/hooks/useCatalog';
@@ -61,6 +71,7 @@ export default function DishesPage() {
 
     const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
     const [newCategoryName, setNewCategoryName] = useState('');
+    const [dishToDelete, setDishToDelete] = useState<string | null>(null);
     const createCategoryMutation = useCreateCategoryMutation();
 
     // TanStack Query Hooks
@@ -186,9 +197,12 @@ export default function DishesPage() {
         setIsDialogOpen(true);
     };
 
-    const handleDeleteFood = (id: string) => {
-        if (!confirm("Bạn có chắc chắn muốn xóa món này?")) return;
-        deleteFoodMutation.mutate(id);
+    const confirmDelete = () => {
+        if (dishToDelete) {
+            deleteFoodMutation.mutate(dishToDelete, {
+                onSuccess: () => setDishToDelete(null)
+            });
+        }
     };
 
     const filteredDishes = foods;
@@ -197,6 +211,38 @@ export default function DishesPage() {
 
     return (
         <div className="space-y-6 md:space-y-8 pb-10">
+            <AlertDialog open={!!dishToDelete} onOpenChange={(open) => !open && setDishToDelete(null)}>
+                <AlertDialogContent className="bg-white rounded-[24px] border-none shadow-2xl p-0 overflow-hidden max-w-[400px] animate-in zoom-in-95 fade-in duration-200">
+                    <div className="bg-red-500 p-8 flex flex-col items-center text-center relative overflow-hidden">
+                        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
+                        <div className="size-16 rounded-2xl bg-white/20 flex items-center justify-center mb-4 backdrop-blur-sm border border-white/20 relative z-10 shadow-inner">
+                            <Trash2 className="size-8 text-white" />
+                        </div>
+                        <AlertDialogTitle className="text-2xl font-bold text-white tracking-tight relative z-10">
+                            Xóa món ăn?
+                        </AlertDialogTitle>
+                    </div>
+                    <div className="p-8 text-center bg-gray-50/50">
+                        <AlertDialogDescription className="text-gray-500 font-medium text-sm leading-relaxed">
+                            Bạn có chắc chắn muốn xóa món này khỏi hệ thống? 
+                            <br />Hành động này <strong className="text-red-500">không thể</strong> hoàn tác.
+                        </AlertDialogDescription>
+                    </div>
+                    <AlertDialogFooter className="p-6 pt-0 flex flex-row gap-3 sm:space-x-0 bg-gray-50/50">
+                        <AlertDialogCancel className="flex-1 mt-0 h-12 rounded-xl font-bold text-[10px] tracking-widest uppercase bg-white border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 text-gray-500 transition-all shadow-sm">
+                            Hủy bỏ
+                        </AlertDialogCancel>
+                        <AlertDialogAction 
+                            onClick={(e) => { e.preventDefault(); confirmDelete(); }}
+                            disabled={deleteFoodMutation.isPending}
+                            className="flex-1 h-12 rounded-xl font-bold text-[10px] tracking-widest uppercase bg-red-500 hover:bg-red-600 text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50"
+                        >
+                            {deleteFoodMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : "Xóa vĩnh viễn"}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý thực đơn</h2>
@@ -451,30 +497,14 @@ export default function DishesPage() {
                                             </div>
                                         </div>
                                         <div className="absolute top-2 right-2">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200">
-                                                        <MoreVertical className="size-5 text-gray-400" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-56 rounded-[1.2rem] border border-gray-100 shadow-2xl p-2 bg-white">
-                                                    <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-bold text-xs uppercase cursor-pointer hover:bg-gray-50 text-gray-600" onClick={() => openEditDialog(dish)}>
-                                                        <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500">
-                                                            <Pencil className="size-4" />
-                                                        </div>
-                                                        Hiệu chỉnh món ăn
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem
-                                                        className="gap-3 py-3.5 rounded-xl font-bold text-xs uppercase cursor-pointer text-red-500 hover:bg-red-50"
-                                                        onClick={() => handleDeleteFood(dish.id)}
-                                                    >
-                                                        <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
-                                                            <Trash2 className="size-4" />
-                                                        </div>
-                                                        Xóa khỏi hệ thống
-                                                    </DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
+                                            <div className="flex items-center gap-1 bg-white/80 backdrop-blur-sm rounded-lg p-1 shadow-sm border border-gray-50">
+                                                <Button variant="ghost" size="icon" className="size-8 rounded-md hover:bg-blue-50 hover:text-blue-600 text-gray-400 transition-colors" onClick={() => openEditDialog(dish)}>
+                                                    <Pencil className="size-4" />
+                                                </Button>
+                                                <Button variant="ghost" size="icon" className="size-8 rounded-md hover:bg-red-50 hover:text-red-600 text-gray-400 transition-colors" onClick={() => setDishToDelete(dish.id)}>
+                                                    <Trash2 className="size-4" />
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))
@@ -542,32 +572,14 @@ export default function DishesPage() {
                                                 </div>
                                             </TableCell>
                                             <TableCell className="p-4 text-right">
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <div className="inline-block">
-                                                            <Button variant="ghost" size="icon" className="size-10 rounded-xl hover:bg-gray-100 transition-all border border-transparent hover:border-gray-200 shadow-sm transition-all">
-                                                                <MoreVertical className="size-5 text-gray-400" />
-                                                            </Button>
-                                                        </div>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="w-56 rounded-[1.2rem] border border-gray-100 shadow-2xl p-2 bg-white animate-in slide-in-from-top-1 duration-200">
-                                                        <DropdownMenuItem className="gap-3 py-3.5 rounded-xl font-bold text-[10px] uppercase cursor-pointer hover:bg-gray-50 text-gray-600 transition-colors" onClick={() => openEditDialog(dish)}>
-                                                            <div className="size-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 border border-blue-100 transition-all shadow-sm">
-                                                                <Pencil className="size-4" />
-                                                            </div>
-                                                            Hiệu chỉnh món ăn
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            className="gap-3 py-3.5 rounded-xl font-bold text-[10px] uppercase cursor-pointer text-red-500 hover:bg-red-50 transition-colors"
-                                                            onClick={() => handleDeleteFood(dish.id)}
-                                                        >
-                                                            <div className="size-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 border border-red-100 transition-all shadow-sm">
-                                                                <Trash2 className="size-4" />
-                                                            </div>
-                                                            Xóa khỏi hệ thống
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                                <div className="flex items-center justify-end gap-1.5">
+                                                    <Button variant="ghost" size="icon" className="size-9 rounded-xl hover:bg-blue-50 hover:text-blue-600 text-gray-400 transition-colors shadow-sm bg-white border border-gray-100" onClick={() => openEditDialog(dish)}>
+                                                        <Pencil className="size-4" />
+                                                    </Button>
+                                                    <Button variant="ghost" size="icon" className="size-9 rounded-xl hover:bg-red-50 hover:text-red-600 text-gray-400 transition-colors shadow-sm bg-white border border-gray-100" onClick={() => setDishToDelete(dish.id)}>
+                                                        <Trash2 className="size-4" />
+                                                    </Button>
+                                                </div>
                                             </TableCell>
                                         </TableRow>
                                     ))

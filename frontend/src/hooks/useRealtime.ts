@@ -90,6 +90,7 @@ export const useRealtime = () => {
                     duration: 5000,
                 });
                 queryClient.invalidateQueries({ queryKey: ['orders'] });
+                queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,6 +104,7 @@ export const useRealtime = () => {
 
                     toast.info(`Đơn hàng ${orderId.substring(0, 8).toUpperCase()} đã chuyển sang: ${newStatus}`);
                     queryClient.invalidateQueries({ queryKey: ['orders'] });
+                    queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
                 }
             });
 
@@ -124,6 +126,7 @@ export const useRealtime = () => {
                     description: `Mã giao dịch: ${transactionId || ""}`
                 });
                 queryClient.invalidateQueries({ queryKey: ['orders'] });
+                queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
             });
         }
 

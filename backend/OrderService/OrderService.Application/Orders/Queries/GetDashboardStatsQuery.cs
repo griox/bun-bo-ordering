@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace OrderService.Application.Orders.Queries;
 
-public record GetDashboardStatsQuery(bool ForceRefresh = false) : IRequest<DashboardStatsDto>;
+public record GetDashboardStatsQuery(bool ForceRefresh = false, int WeekOffset = 0) : IRequest<DashboardStatsDto>;
 
 public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQuery, DashboardStatsDto>
 {
@@ -25,10 +25,12 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
     public async Task<DashboardStatsDto> Handle(GetDashboardStatsQuery request, CancellationToken cancellationToken)
     {
+        string cacheKey = request.WeekOffset == 0 ? CacheKey : $"{CacheKey}_offset_{request.WeekOffset}";
+
         if (!request.ForceRefresh)
         {
             // Fast path: return cached data immediately
-            var cachedData = await _cache.GetAsync<DashboardStatsDto>(CacheKey);
+            var cachedData = await _cache.GetAsync<DashboardStatsDto>(cacheKey);
             if (cachedData != null)
             {
                 return cachedData;
@@ -42,7 +44,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             if (!request.ForceRefresh)
             {
                 // Re-check inside lock (another request may have rebuilt cache while we waited)
-                var cachedData = await _cache.GetAsync<DashboardStatsDto>(CacheKey);
+                var cachedData = await _cache.GetAsync<DashboardStatsDto>(cacheKey);
                 if (cachedData != null)
                 {
                     return cachedData;
@@ -113,22 +115,36 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
                 .FirstOrDefaultAsync(cancellationToken) ?? "N/A";
 
             // 5. Weekly Revenue Chart
+            // Tính ngày Thứ 2 của tuần hiện tại
+            int diff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var currentWeekMonday = today.AddDays(-1 * diff);
+            
+            var startDay = currentWeekMonday.AddDays(request.WeekOffset * -7);
+            var endDay = startDay.AddDays(6); // Sunday
+            
             var weeklyData = await _context.Orders
-                .Where(o => o.CreatedAt >= sevenDaysAgo && o.Status == OrderStatus.Paid)
+                .Where(o => o.CreatedAt >= startDay && o.CreatedAt < endDay.AddDays(1))
                 .ToListAsync(cancellationToken);
 
             var chartData = new List<RevenueChartDataDto>();
             for (int i = 0; i < 7; i++)
             {
-                var date = sevenDaysAgo.AddDays(i);
-                var revenue = weeklyData
-                    .Where(o => o.CreatedAt.Date == date)
+                var date = startDay.AddDays(i);
+                var dailyOrders = weeklyData.Where(o => o.CreatedAt.Date == date).ToList();
+                
+                var revenuePaid = dailyOrders
+                    .Where(o => o.Status == OrderStatus.Paid)
+                    .Sum(o => o.TotalAmount);
+                    
+                var revenueUnpaid = dailyOrders
+                    .Where(o => o.Status != OrderStatus.Paid && o.Status != OrderStatus.PaymentFailed)
                     .Sum(o => o.TotalAmount);
 
                 chartData.Add(new RevenueChartDataDto(
                     date.ToString("dd/MM"),
                     GetVietnameseDayOfWeek(date),
-                    revenue
+                    revenuePaid,
+                    revenueUnpaid
                 ));
             }
 
@@ -145,7 +161,8 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
                     o.CreatedAt,
                     o.TotalAmount,
                     o.Status,
-                    o.Note
+                    o.Note,
+                    o.PaymentMethod
                 ))
                 .ToListAsync(cancellationToken);
 
@@ -166,7 +183,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
             // Cache for 1 hour. The DashboardCacheWorker will refresh it every 4 minutes.
             // This guarantees the API endpoint never queries the DB under high load.
-            await _cache.SetAsync(CacheKey, result, TimeSpan.FromHours(1));
+            await _cache.SetAsync(cacheKey, result, TimeSpan.FromHours(1));
 
             return result;
         }

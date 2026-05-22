@@ -1,12 +1,13 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import axiosInstance from '@/lib/axiosInstance';
 
 export interface WeeklyRevenue {
     date: string;
     dayOfWeek: string;
-    revenue: number;
+    revenuePaid: number;
+    revenueUnpaid: number;
 }
 
 export interface OrderSummary {
@@ -17,6 +18,7 @@ export interface OrderSummary {
     totalAmount: number;
     status: number;
     note: string | null;
+    paymentMethod: string;
 }
 
 export interface DashboardStats {
@@ -35,13 +37,14 @@ export interface DashboardStats {
     totalCustomersMonth: number;
 }
 
-export const useDashboardStats = () => {
+export const useDashboardStats = (weekOffset: number = 0) => {
   return useQuery<DashboardStats>({
-    queryKey: ['dashboard-stats'],
+    queryKey: ['dashboard-stats', weekOffset],
     queryFn: async () => {
-      const response = await axiosInstance.get('/api/orders/stats');
+      const response = await axiosInstance.get(`/api/orders/stats?weekOffset=${weekOffset}`);
       return response.data;
     },
     staleTime: 5 * 60 * 1000, // 5 minutes — matches backend Redis cache TTL
+    placeholderData: keepPreviousData,
   });
 };

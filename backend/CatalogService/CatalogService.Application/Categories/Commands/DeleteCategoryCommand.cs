@@ -25,7 +25,8 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
         if (category == null)
             return false;
 
-        _context.Categories.Remove(category);
+        category.MarkAsDeleted();
+        _context.Categories.Update(category);
         await _context.SaveChangesAsync(cancellationToken);
 
         // Invalidate cache

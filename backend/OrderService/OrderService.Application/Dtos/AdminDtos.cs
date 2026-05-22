@@ -9,7 +9,8 @@ public record OrderSummaryDto(
     DateTime CreatedAt,
     decimal TotalAmount,
     OrderStatus Status,
-    string? Note
+    string? Note,
+    string PaymentMethod
 );
 
 public record DashboardStatsDto(
@@ -31,5 +32,6 @@ public record DashboardStatsDto(
 public record RevenueChartDataDto(
     string Date,
     string DayOfWeek,
-    decimal Revenue
+    decimal RevenuePaid,
+    decimal RevenueUnpaid
 );
