@@ -6,8 +6,8 @@ import axiosInstance from '@/lib/axiosInstance';
 export interface WeeklyRevenue {
     date: string;
     dayOfWeek: string;
-    revenuePaid: number;
-    revenueUnpaid: number;
+    revenueCash: number;
+    revenueTransfer: number;
 }
 
 export interface OrderSummary {

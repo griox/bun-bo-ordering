@@ -58,12 +58,12 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
             // 1. Daily Revenue
             var dailyRevenue = await _context.Orders
-                .Where(o => o.CreatedAt >= today && o.Status == OrderStatus.Paid)
+                .Where(o => o.CreatedAt >= today && (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed))
                 .SumAsync(o => o.TotalAmount, cancellationToken);
 
             // 1b. Yesterday Revenue (for trend comparison)
             var yesterdayRevenue = await _context.Orders
-                .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today && o.Status == OrderStatus.Paid)
+                .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today && (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed))
                 .SumAsync(o => o.TotalAmount, cancellationToken);
 
             // 2. Total Orders Today
@@ -92,7 +92,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
 
             // Monthly aggregates
             var monthlyRevenue = await _context.Orders
-                .Where(o => o.CreatedAt >= monthStart && o.Status == OrderStatus.Paid)
+                .Where(o => o.CreatedAt >= monthStart && (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed))
                 .SumAsync(o => o.TotalAmount, cancellationToken);
 
             var totalOrdersMonth = await _context.Orders
@@ -108,7 +108,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             // 4. Best Selling Item
             var bestSellingItem = await _context.OrderItems
                 .Include(oi => oi.Order)
-                .Where(oi => oi.Order!.CreatedAt >= today.AddDays(-30) && oi.Order!.Status == OrderStatus.Paid)
+                .Where(oi => oi.Order!.CreatedAt >= today.AddDays(-30) && (oi.Order!.Status == OrderStatus.Paid || oi.Order!.Status == OrderStatus.Completed))
                 .GroupBy(oi => oi.ProductName)
                 .OrderByDescending(g => g.Sum(x => x.Quantity))
                 .Select(g => g.Key)
@@ -132,19 +132,19 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
                 var date = startDay.AddDays(i);
                 var dailyOrders = weeklyData.Where(o => o.CreatedAt.Date == date).ToList();
                 
-                var revenuePaid = dailyOrders
-                    .Where(o => o.Status == OrderStatus.Paid)
+                var revenueCash = dailyOrders
+                    .Where(o => (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed) && o.PaymentMethod == "Cash")
                     .Sum(o => o.TotalAmount);
                     
-                var revenueUnpaid = dailyOrders
-                    .Where(o => o.Status != OrderStatus.Paid && o.Status != OrderStatus.PaymentFailed)
+                var revenueTransfer = dailyOrders
+                    .Where(o => (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed) && o.PaymentMethod != "Cash")
                     .Sum(o => o.TotalAmount);
 
                 chartData.Add(new RevenueChartDataDto(
                     date.ToString("dd/MM"),
                     GetVietnameseDayOfWeek(date),
-                    revenuePaid,
-                    revenueUnpaid
+                    revenueCash,
+                    revenueTransfer
                 ));
             }
 

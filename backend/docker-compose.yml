@@ -98,6 +98,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoCatalogDb;Username=root;Password=rootpassword
+      - ConnectionStrings__Redis=redis:6379,abortConnect=false
       - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients

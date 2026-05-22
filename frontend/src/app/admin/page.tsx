@@ -101,9 +101,9 @@ export default function AdminDashboard() {
 
     const chartData = statsData?.weeklyRevenue?.map(d => ({
         name: d.dayOfWeek.toUpperCase(),
-        revenuePaid: d.revenuePaid,
-        revenueUnpaid: d.revenueUnpaid,
-        revenue: d.revenuePaid + d.revenueUnpaid, // For total display if needed
+        revenueCash: d.revenueCash,
+        revenueTransfer: d.revenueTransfer,
+        revenue: d.revenueCash + d.revenueTransfer, // For total display if needed
         fullDate: d.date
     })) || [];
 
@@ -272,21 +272,21 @@ export default function AdminDashboard() {
                                         cursor={{ fill: 'rgba(255,255,255,0.03)' }}
                                         content={({ active, payload }) => {
                                             if (active && payload && payload.length) {
-                                                const p = payload[0] as { payload?: { name?: string; fullDate?: string; revenuePaid?: number; revenueUnpaid?: number } };
-                                                const paid = p.payload?.revenuePaid || 0;
-                                                const unpaid = p.payload?.revenueUnpaid || 0;
-                                                const total = paid + unpaid;
+                                                const p = payload[0] as { payload?: { name?: string; fullDate?: string; revenueCash?: number; revenueTransfer?: number } };
+                                                const cash = p.payload?.revenueCash || 0;
+                                                const transfer = p.payload?.revenueTransfer || 0;
+                                                const total = cash + transfer;
                                                 return (
                                                     <div className="bg-white p-3 shadow-xl rounded-xl border border-gray-100 min-w-[150px]">
                                                         <p className="text-[10px] font-bold text-gray-400 mb-2 border-b pb-1 border-gray-50">{p.payload?.fullDate}</p>
                                                         <div className="space-y-1">
                                                             <div className="flex justify-between items-center gap-4 text-xs font-semibold">
-                                                                <span className="text-red-500 flex items-center gap-1"><div className="size-1.5 rounded-full bg-red-500"></div> Đã thu:</span>
-                                                                <span className="text-gray-900">{paid.toLocaleString('vi-VN')} đ</span>
+                                                                <span className="text-red-500 flex items-center gap-1"><div className="size-1.5 rounded-full bg-red-500"></div> Tiền mặt:</span>
+                                                                <span className="text-gray-900">{cash.toLocaleString('vi-VN')} đ</span>
                                                             </div>
                                                             <div className="flex justify-between items-center gap-4 text-xs font-semibold">
-                                                                <span className="text-orange-400 flex items-center gap-1"><div className="size-1.5 rounded-full bg-orange-400"></div> Chưa thu:</span>
-                                                                <span className="text-gray-900">{unpaid.toLocaleString('vi-VN')} đ</span>
+                                                                <span className="text-orange-400 flex items-center gap-1"><div className="size-1.5 rounded-full bg-orange-400"></div> Chuyển khoản:</span>
+                                                                <span className="text-gray-900">{transfer.toLocaleString('vi-VN')} đ</span>
                                                             </div>
                                                             <div className="flex justify-between items-center gap-4 text-sm font-bold pt-1 mt-1 border-t border-gray-50">
                                                                 <span className="text-gray-500">Tổng:</span>
@@ -300,13 +300,13 @@ export default function AdminDashboard() {
                                         }}
                                     />
                                     <Bar
-                                        dataKey="revenuePaid"
+                                        dataKey="revenueCash"
                                         stackId="a"
                                         fill="#ef4444"
                                         barSize={24}
                                     />
                                     <Bar
-                                        dataKey="revenueUnpaid"
+                                        dataKey="revenueTransfer"
                                         stackId="a"
                                         fill="#fb923c"
                                         radius={[4, 4, 0, 0]}

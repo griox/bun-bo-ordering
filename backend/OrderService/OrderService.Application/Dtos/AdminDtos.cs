@@ -32,6 +32,6 @@ public record DashboardStatsDto(
 public record RevenueChartDataDto(
     string Date,
     string DayOfWeek,
-    decimal RevenuePaid,
-    decimal RevenueUnpaid
+    decimal RevenueCash,
+    decimal RevenueTransfer
 );
