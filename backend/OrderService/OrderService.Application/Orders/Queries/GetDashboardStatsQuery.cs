@@ -57,56 +57,56 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             var monthStart = new DateTime(today.Year, today.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // 1. Daily Revenue
-            var dailyRevenue = await _context.Orders
+            var dailyRevenue = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= today && (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed))
                 .SumAsync(o => o.TotalAmount, cancellationToken);
 
             // 1b. Yesterday Revenue (for trend comparison)
-            var yesterdayRevenue = await _context.Orders
+            var yesterdayRevenue = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today && (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed))
                 .SumAsync(o => o.TotalAmount, cancellationToken);
 
             // 2. Total Orders Today
-            var totalOrdersToday = await _context.Orders
+            var totalOrdersToday = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= today)
                 .CountAsync(cancellationToken);
 
             // 2b. Total Orders Yesterday
-            var totalOrdersYesterday = await _context.Orders
+            var totalOrdersYesterday = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today)
                 .CountAsync(cancellationToken);
 
             // 3. New Customers Today (Unique CustomerId)
-            var newCustomersToday = await _context.Orders
+            var newCustomersToday = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= today && o.CustomerId != null)
                 .Select(o => o.CustomerId)
                 .Distinct()
                 .CountAsync(cancellationToken);
 
             // 3b. New Customers Yesterday
-            var newCustomersYesterday = await _context.Orders
+            var newCustomersYesterday = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= yesterday && o.CreatedAt < today && o.CustomerId != null)
                 .Select(o => o.CustomerId)
                 .Distinct()
                 .CountAsync(cancellationToken);
 
             // Monthly aggregates
-            var monthlyRevenue = await _context.Orders
+            var monthlyRevenue = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= monthStart && (o.Status == OrderStatus.Paid || o.Status == OrderStatus.Completed))
                 .SumAsync(o => o.TotalAmount, cancellationToken);
 
-            var totalOrdersMonth = await _context.Orders
+            var totalOrdersMonth = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= monthStart)
                 .CountAsync(cancellationToken);
 
-            var totalCustomersMonth = await _context.Orders
+            var totalCustomersMonth = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= monthStart && o.CustomerId != null)
                 .Select(o => o.CustomerId)
                 .Distinct()
                 .CountAsync(cancellationToken);
 
             // 4. Best Selling Item
-            var bestSellingItem = await _context.OrderItems
+            var bestSellingItem = await _context.OrderItems.AsNoTracking()
                 .Include(oi => oi.Order)
                 .Where(oi => oi.Order!.CreatedAt >= today.AddDays(-30) && (oi.Order!.Status == OrderStatus.Paid || oi.Order!.Status == OrderStatus.Completed))
                 .GroupBy(oi => oi.ProductName)
@@ -122,8 +122,9 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             var startDay = currentWeekMonday.AddDays(request.WeekOffset * -7);
             var endDay = startDay.AddDays(6); // Sunday
             
-            var weeklyData = await _context.Orders
+            var weeklyData = await _context.Orders.AsNoTracking()
                 .Where(o => o.CreatedAt >= startDay && o.CreatedAt < endDay.AddDays(1))
+                .Select(o => new { o.CreatedAt, o.Status, o.PaymentMethod, o.TotalAmount })
                 .ToListAsync(cancellationToken);
 
             var chartData = new List<RevenueChartDataDto>();
@@ -149,7 +150,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
             }
 
             // 6. Recent Orders (Top 10, prioritize paid orders)
-            var recentOrders = await _context.Orders
+            var recentOrders = await _context.Orders.AsNoTracking()
                 .Include(o => o.TableSession)
                     .ThenInclude(ts => ts!.Table)
                 .OrderByDescending(o => o.CreatedAt)

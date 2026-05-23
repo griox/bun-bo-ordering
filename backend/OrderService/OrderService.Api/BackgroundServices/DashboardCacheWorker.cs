@@ -7,7 +7,7 @@ public class DashboardCacheWorker : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<DashboardCacheWorker> _logger;
-    private readonly TimeSpan _period = TimeSpan.FromMinutes(4); // Run slightly faster than 5m cache TTL to keep it always hot
+    private readonly TimeSpan _period = TimeSpan.FromMinutes(1); // Run every 1 minute to keep it always hot
 
     public DashboardCacheWorker(IServiceProvider serviceProvider, ILogger<DashboardCacheWorker> logger)
     {

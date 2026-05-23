@@ -44,7 +44,7 @@ export const useDashboardStats = (weekOffset: number = 0) => {
       const response = await axiosInstance.get(`/api/orders/stats?weekOffset=${weekOffset}`);
       return response.data;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes — matches backend Redis cache TTL
+    staleTime: 1 * 60 * 1000, // 1 minute — matches backend Redis cache TTL
     placeholderData: keepPreviousData,
   });
 };

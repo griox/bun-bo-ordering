@@ -13,7 +13,7 @@ namespace OrderService.Application.Orders.Commands;
 
 public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? Note, string PaymentMethod, string? VoucherCode = null, decimal DiscountAmount = 0) : IRequest<Guid>;
 
-public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
+    public class CreateOrderCommandHandler : IRequestHandler<CreateOrderCommand, Guid>
 {
     private readonly IAppDbContext _context;
     private readonly IPublishEndpoint _publishEndpoint;
