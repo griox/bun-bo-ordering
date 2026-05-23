@@ -4,6 +4,7 @@ import axiosInstance from '@/lib/axiosInstance';
 export interface UnreadOrderItem {
     productName: string;
     quantity: number;
+    note?: string | null;
 }
 
 export interface UnreadOrder {
@@ -30,9 +31,8 @@ export const useUnreadOrders = () => {
     });
 
     const markAsReadMutation = useMutation({
-        mutationFn: async (orderId: string) => {
-            // Status 4 is Completed
-            const res = await axiosInstance.put(`/api/orders/${orderId}/status?status=4`);
+        mutationFn: async (tableCode: string) => {
+            const res = await axiosInstance.post(`/api/orders/mark-read-by-table/${tableCode}`);
             return res.data;
         },
         onSuccess: () => {

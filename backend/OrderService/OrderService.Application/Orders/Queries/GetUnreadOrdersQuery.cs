@@ -18,7 +18,8 @@ public record UnreadOrderDto(
 
 public record UnreadOrderItemDto(
     string ProductName,
-    int Quantity
+    int Quantity,
+    string? Note
 );
 
 public record GetUnreadOrdersQuery() : IRequest<List<UnreadOrderDto>>;
@@ -38,7 +39,7 @@ public class GetUnreadOrdersQueryHandler : IRequestHandler<GetUnreadOrdersQuery,
             .Include(o => o.TableSession)
             .ThenInclude(ts => ts!.Table)
             .Include(o => o.OrderItems)
-            .Where(o => o.Status == OrderStatus.Processing || o.Status == OrderStatus.Paid)
+            .Where(o => o.IsRead == false)
             .OrderByDescending(o => o.CreatedAt)
             .AsNoTracking()
             .Select(o => new UnreadOrderDto(
@@ -49,7 +50,7 @@ public class GetUnreadOrdersQueryHandler : IRequestHandler<GetUnreadOrdersQuery,
                 o.PaymentMethod,
                 o.Status,
                 o.CreatedAt,
-                o.OrderItems.Select(i => new UnreadOrderItemDto(i.ProductName, i.Quantity)).ToList()
+                o.OrderItems.Select(i => new UnreadOrderItemDto(i.ProductName, i.Quantity, i.Note)).ToList()
             ))
             .ToListAsync(cancellationToken);
 

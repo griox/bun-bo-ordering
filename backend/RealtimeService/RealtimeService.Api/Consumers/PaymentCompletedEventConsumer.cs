@@ -29,18 +29,7 @@ public class PaymentCompletedEventConsumer : IConsumer<PaymentCompletedEvent>
 
         _logger.LogInformation($"Payment SUCCESS for Order {message.OrderId}. Notifying Table and Kitchen.");
 
-        // 1. Notify Admin/Kitchen
-        _logger.LogInformation($"Broadcasting ReceiveNewOrder to {HubConstants.KitchenGroup} and {HubConstants.AdminGroup} for Order {message.OrderId}");
-        await _hubContext.Clients.Groups(HubConstants.KitchenGroup, HubConstants.AdminGroup).SendAsync(HubConstants.Events.ReceiveNewOrder, new 
-        {
-            OrderId = message.OrderId,
-            TableNumber = message.TableNumber ?? "N/A",
-            TableSessionId = message.TableSessionId ?? Guid.Empty,
-            TotalAmount = message.Amount,
-            Note = message.Note,
-            CreatedAt = message.CompletedAt,
-            PaymentMethod = "Transfer"
-        });
+        // Payment Success Notification to Table is handled below
 
         // 2. Notify the exact Table
         if (message.TableSessionId.HasValue)

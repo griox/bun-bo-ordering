@@ -14,6 +14,7 @@ public class Order : BaseEntity
     public OrderStatus Status { get; private set; }
     public string? Note { get; private set; }
     public string PaymentMethod { get; private set; } = string.Empty;
+    public bool IsRead { get; private set; } = false;
     
     public Guid? CustomerId { get; private set; }
 
@@ -58,5 +59,10 @@ public class Order : BaseEntity
         }
         
         Status = newStatus;
+    }
+
+    public void MarkAsRead()
+    {
+        IsRead = true;
     }
 }

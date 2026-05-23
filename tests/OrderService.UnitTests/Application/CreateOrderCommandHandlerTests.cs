@@ -71,7 +71,7 @@ public class CreateOrderCommandHandlerTests
         var order = await _context.Orders.Include(o => o.OrderItems).FirstOrDefaultAsync(o => o.Id == result);
         order.Should().NotBeNull();
         order!.TableSessionId.Should().Be(sessionId);
-        order.Status.Should().Be(OrderStatus.Unpaid);
+        order.Status.Should().Be(OrderStatus.Processing);
         order.OrderItems.Should().HaveCount(1);
         
         _publishEndpointMock.Verify(x => x.Publish(It.IsAny<OrderCreatedEvent>(), It.IsAny<CancellationToken>()), Times.Once);

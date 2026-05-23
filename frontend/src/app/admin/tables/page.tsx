@@ -24,6 +24,7 @@ import {
     DialogDescription
 } from '@/components/ui/dialog';
 import { useTables, useCreateTableMutation, useUpdateTableMutation, useUpdateTablePositionsMutation, RestaurantTable } from '@/hooks/useTables';
+import { useUnreadOrders, UnreadOrder } from '@/hooks/useUnreadOrders';
 import { motion } from 'framer-motion';
 import { QRCodeCanvas } from 'qrcode.react';
 
@@ -32,6 +33,7 @@ export default function TablesPage() {
     const createTableMutation = useCreateTableMutation();
     const updateTableMutation = useUpdateTableMutation();
     const updatePositionsMutation = useUpdateTablePositionsMutation();
+    const { unreadOrders, markAsRead, isMarkingAsRead } = useUnreadOrders();
 
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingTable, setEditingTable] = useState<RestaurantTable | null>(null);
@@ -57,6 +59,9 @@ export default function TablesPage() {
 
     const [isQRModalOpen, setIsQRModalOpen] = useState(false);
     const [selectedTableForQR, setSelectedTableForQR] = useState<RestaurantTable | null>(null);
+
+    const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+    const [selectedTableForOrders, setSelectedTableForOrders] = useState<RestaurantTable | null>(null);
 
     const floorPlanRef = useRef<HTMLDivElement>(null);
 
@@ -237,26 +242,57 @@ export default function TablesPage() {
                                 <Loader2 className="size-8 animate-spin text-[#ff4d4f]" />
                                 <p className="font-black text-[10px] uppercase">Đang tải...</p>
                             </div>
-                        ) : paginatedTables.map(table => (
-                            <div key={table.id} className="flex items-center justify-between p-3 rounded-xl border border-gray-100 bg-gray-50/30 group hover:border-primary/30 hover:bg-primary/5 transition-all">
-                                <div>
-                                    <p className="font-bold text-gray-900 text-base md:text-sm tracking-tight">{table.tableCode}</p>
-                                    <p className="text-xs md:text-[11px] text-gray-500 font-medium">{table.name}</p>
-                                    <p className="text-[10px] md:text-[8px] text-gray-300 font-mono mt-1">ID: {table.id}</p>
+                        ) : paginatedTables.map(table => {
+                            const tableOrders = unreadOrders.filter(o => o.tableCode === table.tableCode);
+                            const hasUnread = tableOrders.length > 0;
+                            return (
+                                <div key={table.id} 
+                                    className={`relative flex items-center justify-between p-3 rounded-xl border group hover:shadow-sm transition-all cursor-pointer ${hasUnread ? 'border-red-500 bg-red-50/20 hover:border-red-600' : 'border-gray-100 bg-gray-50/30 hover:border-primary/30 hover:bg-primary/5'}`}
+                                    onDoubleClick={() => {
+                                        if (hasUnread) {
+                                            setSelectedTableForOrders(table);
+                                            setIsOrderModalOpen(true);
+                                        }
+                                    }}
+                                    onClick={() => {
+                                        if (hasUnread) {
+                                            setSelectedTableForOrders(table);
+                                            setIsOrderModalOpen(true);
+                                        }
+                                    }}
+                                >
+                                    <div className="flex gap-3">
+                                        <div className={`size-12 rounded-xl flex items-center justify-center shadow-sm border transition-all ${hasUnread ? 'bg-red-50 border-red-200 text-red-600' : 'bg-gray-50 border-gray-100 group-hover:bg-primary group-hover:text-white'}`}>
+                                            <span className="font-bold text-sm tracking-tight">{table.tableCode}</span>
+                                        </div>
+                                        <div>
+                                            <p className="font-bold text-gray-900 text-base md:text-sm tracking-tight">{table.tableCode}</p>
+                                            <p className="text-xs md:text-[11px] text-gray-500 font-medium">{table.name}</p>
+                                            <p className="text-[10px] md:text-[8px] text-gray-300 font-mono mt-1">ID: {table.id}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    {hasUnread && (
+                                        <div className="absolute -top-1 -right-1 bg-red-500 text-white size-5 rounded-full flex items-center justify-center text-[10px] font-bold border border-white shadow-sm animate-pulse z-10">
+                                            {tableOrders.length}
+                                        </div>
+                                    )}
+
+                                    <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all scale-100 lg:scale-90 lg:group-hover:scale-100 relative z-20">
+                                        <Button size="icon" variant="ghost" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-blue-500 hover:text-white" onClick={(e) => { e.stopPropagation(); openEditDialog(table); }}>
+                                            <Pencil className="size-4" />
+                                        </Button>
+                                        <Button size="icon" variant="ghost" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-[#ff4d4f] hover:text-white" onClick={(e) => {
+                                            e.stopPropagation();
+                                            setSelectedTableForQR(table);
+                                            setIsQRModalOpen(true);
+                                        }}>
+                                            <QrCode className="size-4" />
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="flex gap-1 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all scale-100 lg:scale-90 lg:group-hover:scale-100">
-                                    <Button size="icon" variant="ghost" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-blue-500 hover:text-white" onClick={() => openEditDialog(table)}>
-                                        <Pencil className="size-4" />
-                                    </Button>
-                                    <Button size="icon" variant="ghost" className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-[#ff4d4f] hover:text-white" onClick={() => {
-                                        setSelectedTableForQR(table);
-                                        setIsQRModalOpen(true);
-                                    }}>
-                                        <QrCode className="size-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                     
                     {/* Pagination for table list */}
@@ -282,41 +318,67 @@ export default function TablesPage() {
                     <div className="absolute inset-8 border border-dashed border-gray-100 rounded-xl pointer-events-none" />
 
                     <div ref={floorPlanRef} className="absolute inset-0 w-full h-full p-8">
-                        {localTables.map(table => (
-                            <motion.div
-                                key={table.id}
-                                drag
-                                dragConstraints={floorPlanRef}
-                                dragElastic={0.05}
-                                dragMomentum={false}
-                                onDragEnd={(e, info) => handleDragEnd(table.id, e, info)}
-                                initial={{ x: table.posX, y: table.posY }}
-                                animate={{ x: table.posX, y: table.posY }}
-                                whileDrag={{ scale: 1.1, zIndex: 50 }}
-                                className="absolute left-0 top-0 cursor-grab active:cursor-grabbing"
-                            >
-                                <div className="size-24 bg-white rounded-2xl shadow-lg border border-gray-100 flex flex-col items-center justify-center p-2 group hover:border-primary hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300">
-                                    <div className="size-12 bg-gray-50 rounded-xl flex items-center justify-center shadow-sm border border-gray-100 group-hover:bg-primary group-hover:text-white transition-all">
-                                        <span className="font-bold text-sm tracking-tight">{table.tableCode}</span>
-                                    </div>
-                                    <p className="mt-1.5 text-[10px] font-bold text-gray-500 truncate w-full text-center">{table.name}</p>
-
-                                    <div className="absolute -top-3 -right-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all scale-100 lg:scale-0 lg:group-hover:scale-100">
-                                        <Button
-                                            size="icon"
-                                            className="min-h-[44px] min-w-[44px] rounded-xl bg-primary text-white shadow-lg hover:bg-primary/90"
-                                            onClick={(e) => {
+                        {localTables.map(table => {
+                            const tableOrders = unreadOrders.filter(o => o.tableCode === table.tableCode);
+                            const hasUnread = tableOrders.length > 0;
+                            return (
+                                <motion.div
+                                    key={table.id}
+                                    drag
+                                    dragConstraints={floorPlanRef}
+                                    dragElastic={0.05}
+                                    dragMomentum={false}
+                                    onDragEnd={(e, info) => handleDragEnd(table.id, e, info)}
+                                    initial={{ x: table.posX, y: table.posY }}
+                                    animate={{ x: table.posX, y: table.posY }}
+                                    whileDrag={{ scale: 1.1, zIndex: 50 }}
+                                    className="absolute left-0 top-0 cursor-grab active:cursor-grabbing"
+                                >
+                                    <div 
+                                        className={`size-24 bg-white rounded-2xl shadow-lg border flex flex-col items-center justify-center p-2 group hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300 relative ${hasUnread ? 'border-red-500 animate-pulse' : 'border-gray-100 hover:border-primary'}`}
+                                        onDoubleClick={(e) => {
+                                            if (hasUnread) {
                                                 e.stopPropagation();
-                                                setSelectedTableForQR(table);
-                                                setIsQRModalOpen(true);
-                                            }}
-                                        >
-                                            <QrCode className="size-4" />
-                                        </Button>
+                                                setSelectedTableForOrders(table);
+                                                setIsOrderModalOpen(true);
+                                            }
+                                        }}
+                                        onClick={(e) => {
+                                            if (hasUnread) {
+                                                e.stopPropagation();
+                                                setSelectedTableForOrders(table);
+                                                setIsOrderModalOpen(true);
+                                            }
+                                        }}
+                                    >
+                                        <div className={`size-12 rounded-xl flex items-center justify-center shadow-sm border transition-all ${hasUnread ? 'bg-red-50 border-red-200 text-red-600' : 'bg-gray-50 border-gray-100 group-hover:bg-primary group-hover:text-white'}`}>
+                                            <span className="font-bold text-sm tracking-tight">{table.tableCode}</span>
+                                        </div>
+                                        <p className="mt-1.5 text-[10px] font-bold text-gray-500 truncate w-full text-center">{table.name}</p>
+
+                                        {hasUnread && (
+                                            <div className="absolute -top-2 -right-2 bg-red-500 text-white size-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white shadow-sm z-10 animate-bounce">
+                                                {tableOrders.length}
+                                            </div>
+                                        )}
+
+                                        <div className="absolute -top-3 -left-3 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all scale-100 lg:scale-0 lg:group-hover:scale-100 z-20">
+                                            <Button
+                                                size="icon"
+                                                className="min-h-[44px] min-w-[44px] rounded-xl bg-primary text-white shadow-lg hover:bg-primary/90"
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    setSelectedTableForQR(table);
+                                                    setIsQRModalOpen(true);
+                                                }}
+                                            >
+                                                <QrCode className="size-4" />
+                                            </Button>
+                                        </div>
                                     </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                </motion.div>
+                            );
+                        })}
                     </div>
 
                     {hasChanges && (
@@ -374,6 +436,72 @@ export default function TablesPage() {
                                 </Button>
                             </>
                         )}
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isOrderModalOpen} onOpenChange={setIsOrderModalOpen}>
+                <DialogContent className="max-w-md rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
+                    <div className="p-6 border-b border-gray-100 bg-gray-50/50">
+                        <DialogHeader>
+                            <DialogTitle className="text-xl font-bold text-center text-gray-900">Thông báo đơn mới</DialogTitle>
+                            <DialogDescription className="text-center text-sm text-gray-500 mt-1">Bàn {selectedTableForOrders?.tableCode} - {selectedTableForOrders?.name}</DialogDescription>
+                        </DialogHeader>
+                    </div>
+
+                    <div className="flex flex-col gap-4 p-8 max-h-[60vh] overflow-y-auto">
+                        {selectedTableForOrders && unreadOrders
+                            .filter(o => o.tableCode === selectedTableForOrders.tableCode)
+                            .map(order => (
+                                <div key={order.id} className="p-4 border border-gray-100 rounded-2xl bg-gray-50/30">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-xs text-gray-400 font-mono tracking-wider">#{order.id.slice(0, 8).toUpperCase()}</span>
+                                        <div className="flex items-center gap-2">
+                                            {order.paymentMethod === 'Transfer' ? (
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
+                                                    Đã thanh toán
+                                                </span>
+                                            ) : (
+                                                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100">
+                                                    Chưa thanh toán
+                                                </span>
+                                            )}
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4d4f] animate-pulse">
+                                                Mới
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <ul className="space-y-3">
+                                        {order.items?.map((item, idx) => (
+                                            <li key={idx} className="text-sm flex flex-col pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                                                <div className="flex justify-between items-center">
+                                                    <span className="font-semibold text-gray-700">{item.productName}</span>
+                                                    <span className="font-black bg-gray-100 px-2.5 py-1 rounded-lg text-xs">x{item.quantity}</span>
+                                                </div>
+                                                {item.note && (
+                                                    <div className="text-xs text-gray-500 mt-1 italic pl-2 border-l-2 border-gray-200">
+                                                        Ghi chú: {item.note}
+                                                    </div>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            ))}
+                        
+                        <Button
+                            className="w-full min-h-[48px] mt-4 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-sm gap-2 rounded-xl shadow-md transition-all"
+                            disabled={isMarkingAsRead}
+                            onClick={() => {
+                                if (selectedTableForOrders) {
+                                    markAsRead(selectedTableForOrders.tableCode);
+                                    setIsOrderModalOpen(false);
+                                }
+                            }}
+                        >
+                            {isMarkingAsRead ? <Loader2 className="size-5 animate-spin" /> : null}
+                            XÁC NHẬN ĐÃ XEM
+                        </Button>
                     </div>
                 </DialogContent>
             </Dialog>

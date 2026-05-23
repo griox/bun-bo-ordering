@@ -249,6 +249,12 @@ orderGroup.MapGet("/unread", async (MediatR.IMediator mediator) =>
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 
+orderGroup.MapPost("/mark-read-by-table/{tableCode}", async (string tableCode, MediatR.IMediator mediator) =>
+{
+    var success = await mediator.Send(new OrderService.Application.Orders.Commands.MarkTableOrdersAsReadCommand(tableCode));
+    return success ? Results.NoContent() : Results.NotFound();
+}).RequireAuthorization("Admin");
+
 orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 50, OrderStatus? status = null) =>
 {
     var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status));
