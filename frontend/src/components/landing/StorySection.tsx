@@ -3,9 +3,11 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, MapPin } from 'lucide-react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 export function StorySection() {
     const [currentSlide, setCurrentSlide] = useState(0);
+    const t = useTranslations('Landing.Story');
 
     const slides = [
         {
@@ -111,27 +113,23 @@ export function StorySection() {
 
                 <div className="w-full md:w-1/2 ">
                     <h2 className="font-display text-5xl mb-6 leading-tight">
-                        KHÔNG CHỈ LÀ <br />
-                        <span className="text-secondary">BÚN BÒ...</span>
+                        {t.rich('title1', { br: () => <br /> })}
+                        <span className="text-secondary">{t('title2')}</span>
                     </h2>
                     <div className="space-y-6 font-main text-lg leading-relaxed text-text/90 font-large">
-                        <p>
-                            Tọa lạc dưới tòa chung cư cũ, <strong>Bún Bò & Cà Phê Phố</strong> đã lặng lẽ gắn bó với thực khách suốt hơn 8 năm qua. Ở đây, mỗi tô bún bò được nấu bằng sự chỉn chu và kiên nhẫn: nước dùng ninh từ xương ống suốt nhiều giờ, thịt bò tươi được chọn mỗi sáng, nêm nếm vừa miệng để ai ăn cũng thấy quen, thấy dễ thương.
-                        </p>
-                        <p>
-                            Bên cạnh bún bò, quán còn có cà phê pha trộn Robusta và Arabica, cho vị đậm vừa, hậu thơm nhẹ — rất hợp để nhâm nhi trong buổi sáng nhiều gió biển hay một chiều ngồi chậm lại. Một quán nhỏ, giá cả phải chăng, mang cảm giác thân quen và bình dị đúng kiểu thành phố biển: không ồn ào, nhưng đủ để người ta muốn quay lại.
-                        </p>
+                        <p>{t.rich('p1', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
+                        <p>{t.rich('p2', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
                     </div>
 
                     <div className="mt-8 flex gap-4">
                         <div className="text-center">
                             <div className="font-display text-4xl text-secondary">8+</div>
-                            <div className="text-sm opacity-80">Năm Kinh Nghiệm</div>
+                            <div className="text-sm opacity-80">{t('stat1')}</div>
                         </div>
                         <div className="w-px bg-white/20"></div>
                         <div className="text-center">
                             <div className="font-display text-4xl text-secondary">100%</div>
-                            <div className="text-sm opacity-80">Nguyên Liệu Sạch</div>
+                            <div className="text-sm opacity-80">{t('stat2')}</div>
                         </div>
                         <div className="w-px bg-white/20"></div>
                         <div
@@ -141,7 +139,7 @@ export function StorySection() {
                             <div className="font-display text-4xl text-secondary flex justify-center items-center gap-1">
                                 <MapPin size={32} />
                             </div>
-                            <div className="text-sm opacity-80 underline decoration-dashed"><a href="https://www.google.com/maps?q=Bún+Bò+%26+Cà+Phê+Phố,+634+Đ.2/4+Chung+Cư,+khu+B,+Nha+Trang,+Khánh+Hòa+57000&ftid=0x31706700617a79cf:0xc7be36136df2332c&entry=gps&lucs=,94286594,94284511,94231188,47071704,94218641,94282134,94286869&g_ep=CAISEjI1LjI5LjEuNzgyOTg1OTc1MBgAIIgnKj8sOTQyODY1OTQsOTQyODQ1MTEsOTQyMzExODgsNDcwNzE3MDQsOTQyMTg2NDEsOTQyODIxMzQsOTQyODY4NjlCAlZO&skid=5746e2ca-adcd-4a56-924d-58a70eca6f68&g_st=ia" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>Xem bản đồ</a></div>
+                            <div className="text-sm opacity-80 underline decoration-dashed"><a href="https://www.google.com/maps?q=Bún+Bò+%26+Cà+Phê+Phố,+634+Đ.2/4+Chung+Cư,+khu+B,+Nha+Trang,+Khánh+Hòa+57000&ftid=0x31706700617a79cf:0xc7be36136df2332c&entry=gps&lucs=,94286594,94284511,94231188,47071704,94218641,94282134,94286869&g_ep=CAISEjI1LjI5LjEuNzgyOTg1OTc1MBgAIIgnKj8sOTQyODY1OTQsOTQyODQ1MTEsOTQyMzExODgsNDcwNzE3MDQsOTQyMTg2NDEsOTQyODIxMzQsOTQyODY4NjlCAlZO&skid=5746e2ca-adcd-4a56-924d-58a70eca6f68&g_st=ia" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>{t('viewMap')}</a></div>
                         </div>
                     </div>
                 </div>

@@ -2,17 +2,19 @@
 
 import { Soup } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import { useTranslations } from 'next-intl';
 
 const ScannerModal = dynamic(() => import('./ScannerModal').then(mod => mod.ScannerModal), {
     ssr: false,
     loading: () => (
         <button className="inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[2px_2px_0px_#2D2D2D] opacity-70 cursor-wait border-2 border-[#2D2D2D]">
-            ĐANG TẢI...
+            LOADING...
         </button>
     )
 });
 
 export function HeroSection() {
+    const t = useTranslations('Landing.Hero');
     return (
         <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
             {/* Background Pattern */}
@@ -26,16 +28,15 @@ export function HeroSection() {
 
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
                 <div className="inline-block mb-4 px-6 py-2 bg-paper rounded-full border-2 border-primary transform -rotate-2 shadow-lg hover:rotate-0 transition-transform cursor-default">
-                    <span className="font-display text-primary text-lg tracking-wider">HƯƠNG VỊ BIỂN x PHONG CÁCH PHỐ</span>
+                    <span className="font-display text-primary text-lg tracking-wider">{t('label')}</span>
                 </div>
 
                 <h1 className="font-display text-[2.5rem] md:text-8xl text-paper drop-shadow-[2px_2px_0px_#D9381E] md:drop-shadow-[4px_4px_0px_#D9381E] mb-6 leading-tight whitespace-nowrap tracking-tighter md:tracking-normal">
-                    BÚN BÒ <span className="text-secondary drop-shadow-[2px_2px_0px_#2D2D2D] md:drop-shadow-[4px_4px_0px_#2D2D2D]">& CÀ PHÊ</span>
+                    {t('title1')} <span className="text-secondary drop-shadow-[2px_2px_0px_#2D2D2D] md:drop-shadow-[4px_4px_0px_#2D2D2D]">{t('title2')}</span>
                 </h1>
 
                 <p className="font-main text-xl text-text/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-white drop-shadow-sm font-medium">
-                    Sự kết hợp hoàn hảo giữa nước dùng đậm đà, thịt bò mềm tan và ly cà phê sữa đá Nha Trang.
-                    Một trải nghiệm ẩm thực &quot;Retro&quot; ngay giữa lòng thành phố.
+                    {t('description')}
                 </p>
 
                 <div className="flex flex-col md:flex-row gap-4 justify-center items-center">
@@ -44,7 +45,7 @@ export function HeroSection() {
                             id="btn-order"
                             className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all border-2 border-[#2D2D2D]"
                         >
-                            <span className='font-bold text-white'>GỌI MÓN TẠI ĐÂY</span>
+                            <span className='font-bold text-white'>{t('button')}</span>
                             <span className="group-hover:translate-x-1 text-white transition-transform"><Soup size={20} /></span>
                         </button>
                     </ScannerModal>

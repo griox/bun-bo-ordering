@@ -4,10 +4,12 @@ import { useEffect, useRef } from 'react';
 import { driver } from 'driver.js';
 import 'driver.js/dist/driver.css';
 import { useAuthStore } from '@/store/useAuthStore';
+import { useTranslations } from 'next-intl';
 
 export function OnboardingGuide() {
     const { user } = useAuthStore();
     const hasRun = useRef(false);
+    const t = useTranslations('Landing.Onboarding');
 
     useEffect(() => {
         if (user || hasRun.current) return;
@@ -20,19 +22,19 @@ export function OnboardingGuide() {
         const desktopSteps = [
             {
                 element: '#nav-home',
-                popover: { title: 'Trang chủ', description: 'Chào mừng bạn đến với Bún Bò & Cà Phê Phố!', side: "bottom", align: 'start' }
+                popover: { title: t('navHomeTitle'), description: t('navHomeDesc'), side: "bottom", align: 'start' }
             },
             {
                 element: '#nav-menu',
-                popover: { title: 'Thực đơn', description: 'Khám phá danh sách các món ăn đậm đà hương vị.', side: "bottom", align: 'start' }
+                popover: { title: t('navMenuTitle'), description: t('navMenuDesc'), side: "bottom", align: 'start' }
             },
             {
                 element: '#nav-about',
-                popover: { title: 'Về chúng tôi', description: 'Tìm hiểu về câu chuyện và tâm huyết của chúng tôi.', side: "bottom", align: 'start' }
+                popover: { title: t('navAboutTitle'), description: t('navAboutDesc'), side: "bottom", align: 'start' }
             },
             {
                 element: '#nav-member-desktop',
-                popover: { title: 'Thành viên', description: 'Đăng nhập để quản lý giỏ hàng và xem lịch sử mua hàng.', side: "bottom", align: 'end' }
+                popover: { title: t('navMemberTitle'), description: t('navMemberDesc'), side: "bottom", align: 'end' }
             }
         ] as const;
 
@@ -40,8 +42,8 @@ export function OnboardingGuide() {
             {
                 element: '#nav-member-mobile',
                 popover: {
-                    title: 'Menu & Thành viên',
-                    description: 'Nhấn vào đây để xem các lựa chọn menu và đăng nhập thành viên.',
+                    title: t('mobileMenuTitle'),
+                    description: t('mobileMenuDesc'),
                     side: "bottom",
                     align: 'end'
                 }
@@ -49,8 +51,8 @@ export function OnboardingGuide() {
             {
                 element: '#mobile-menu',
                 popover: {
-                    title: 'Xem thực đơn',
-                    description: 'Bạn có thể truy cập nhanh vào thực đơn ngay tại đây.',
+                    title: t('mobileViewMenuTitle'),
+                    description: t('mobileViewMenuDesc'),
                     side: "bottom",
                     align: 'start'
                 },
@@ -66,11 +68,11 @@ export function OnboardingGuide() {
             {
                 element: '#btn-order',
                 popover: {
-                    title: 'Đặt món ngay',
+                    title: t('orderTitle'),
                     description: `
                         <div class="flex flex-col items-center gap-3">
                             <img src="/images/scanqr.jpg" alt="Quét mã QR" class="w-40 h-40 object-cover rounded-lg border-2 border-primary shadow-md" />
-                            <p class="text-sm font-medium text-center">Tiến hành quét mã QR để order món tại bàn một cách nhanh chóng!</p>
+                            <p class="text-sm font-medium text-center">${t('orderDesc')}</p>
                         </div>
                     `,
                     side: "top",
@@ -85,9 +87,9 @@ export function OnboardingGuide() {
             allowClose: false,
             overlayClickBehavior: 'nextStep',
             overlayColor: 'rgba(0, 0, 0, 0.75)',
-            nextBtnText: 'Tiếp theo',
-            prevBtnText: 'Quay lại',
-            doneBtnText: 'Hoàn tất',
+            nextBtnText: t('nextBtnText'),
+            prevBtnText: t('prevBtnText'),
+            doneBtnText: t('doneBtnText'),
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             steps: [...(isMobile ? mobileSteps : desktopSteps), ...commonSteps] as any,
             onDestroyed: () => {
@@ -101,7 +103,7 @@ export function OnboardingGuide() {
         }, 1500);
 
         return () => clearTimeout(timer);
-    }, [user]);
+    }, [user, t]);
 
     return null;
 }

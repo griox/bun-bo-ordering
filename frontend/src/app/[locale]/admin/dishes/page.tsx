@@ -57,8 +57,10 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useCategories, useAllFoods, useCreateFoodMutation, useUpdateFoodMutation, useDeleteFoodMutation, useCreateCategoryMutation, Food } from '@/hooks/useCatalog';
+import { useTranslations } from 'next-intl';
 
 export default function DishesPage() {
+    const t = useTranslations('Dishes');
     const [searchTerm, setSearchTerm] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [editingFood, setEditingFood] = useState<Food | null>(null);
@@ -219,25 +221,25 @@ export default function DishesPage() {
                             <Trash2 className="size-8 text-white" />
                         </div>
                         <AlertDialogTitle className="text-2xl font-bold text-white tracking-tight relative z-10">
-                            Xóa món ăn?
+                            {t('deleteTitle')}
                         </AlertDialogTitle>
                     </div>
                     <div className="p-8 text-center bg-gray-50/50">
                         <AlertDialogDescription className="text-gray-500 font-medium text-sm leading-relaxed">
-                            Bạn có chắc chắn muốn xóa món này khỏi hệ thống? 
-                            <br />Hành động này <strong className="text-red-500">không thể</strong> hoàn tác.
+                            {t('deleteDesc1')} 
+                            <br />{t('deleteDesc2').split('không thể')[0]}<strong className="text-red-500">không thể</strong>{t('deleteDesc2').split('không thể')[1]}
                         </AlertDialogDescription>
                     </div>
                     <AlertDialogFooter className="p-6 pt-0 flex flex-row gap-3 sm:space-x-0 bg-gray-50/50">
                         <AlertDialogCancel className="flex-1 mt-0 h-12 rounded-xl font-bold text-[10px] tracking-widest uppercase bg-white border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 text-gray-500 transition-all shadow-sm">
-                            Hủy bỏ
+                            {t('cancel')}
                         </AlertDialogCancel>
                         <AlertDialogAction 
                             onClick={(e) => { e.preventDefault(); confirmDelete(); }}
                             disabled={deleteFoodMutation.isPending}
                             className="flex-1 h-12 rounded-xl font-bold text-[10px] tracking-widest uppercase bg-red-500 hover:bg-red-600 text-white transition-all shadow-md hover:shadow-lg disabled:opacity-50"
                         >
-                            {deleteFoodMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : "Xóa vĩnh viễn"}
+                            {deleteFoodMutation.isPending ? <Loader2 className="size-4 animate-spin" /> : t('confirmDelete')}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
@@ -245,8 +247,8 @@ export default function DishesPage() {
 
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý thực đơn</h2>
-                    <p className="text-sm text-gray-500 mt-1">Hệ thống quản trị và kiểm soát dữ liệu món ăn tập trung.</p>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('title')}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
                     setIsDialogOpen(open);
@@ -255,7 +257,7 @@ export default function DishesPage() {
                     <DialogTrigger asChild>
                         <Button className="h-10 px-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl transition-all shadow-sm" onClick={() => resetForm()}>
                             <Plus className="size-4" />
-                            THÊM MÓN MỚI
+                            {t('addNewDish')}
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-4xl bg-white border-none rounded-2xl p-0 overflow-hidden shadow-xl">
@@ -267,9 +269,9 @@ export default function DishesPage() {
                                     </div>
                                     <div>
                                         <DialogTitle className="text-xl font-bold tracking-tight">
-                                            {editingFood ? 'Hiệu chỉnh món ăn' : 'Thêm món ăn mới'}
+                                            {editingFood ? t('editDish') : t('createNewDish')}
                                         </DialogTitle>
-                                        <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Cập nhật thực đơn bún bò của bạn</p>
+                                        <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">{t('dishFormSubtitle')}</p>
                                     </div>
                                 </div>
                             </div>
@@ -279,25 +281,25 @@ export default function DishesPage() {
                                     {/* Cột Trái (Trường chính) */}
                                     <div className="space-y-6">
                                         <div className="space-y-2">
-                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tên món ăn</Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('dishNameLabel')}</Label>
                                             <Input
                                                 required
                                                 className="h-12 border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 placeholder:text-gray-300"
                                                 value={formData.name}
                                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                                placeholder="Ví dụ: Bún Bò Huế Đặc Biệt"
+                                                placeholder={t('dishNamePlaceholder')}
                                             />
                                         </div>
 
                                         <div className="space-y-2">
                                             <div className="flex justify-between items-center px-1">
-                                                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Danh mục</Label>
+                                                <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('categoryLabel')}</Label>
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowNewCategoryInput(!showNewCategoryInput)}
                                                     className="text-[9px] font-black text-red-500 hover:text-red-600 uppercase tracking-widest transition-all"
                                                 >
-                                                    {showNewCategoryInput ? 'Hủy bỏ' : '+ Tạo mới'}
+                                                    {showNewCategoryInput ? t('cancel') : t('createNewCategory')}
                                                 </button>
                                             </div>
 
@@ -305,7 +307,7 @@ export default function DishesPage() {
                                                 <div className="flex gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                                                     <Input
                                                         className="h-11 border-[#ff4d4f] rounded-md font-medium text-sm"
-                                                        placeholder="Nhập tên danh mục mới..."
+                                                        placeholder={t('newCategoryPlaceholder')}
                                                         value={newCategoryName}
                                                         onChange={e => setNewCategoryName(e.target.value)}
                                                         onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleCreateCategory())}
@@ -325,7 +327,7 @@ export default function DishesPage() {
                                                     onValueChange={val => setFormData({ ...formData, categoryId: val || '' })}
                                                 >
                                                     <SelectTrigger className="h-11 border-slate-200 rounded-md font-medium text-sm focus:ring-1 focus:ring-[#ff4d4f]/20 transition-all">
-                                                        <SelectValue placeholder="Chọn danh mục phân loại..." />
+                                                        <SelectValue placeholder={t('selectCategoryPlaceholder')} />
                                                     </SelectTrigger>
                                                     <SelectContent className="rounded-md border-slate-200 shadow-lg">
                                                         {categories.map(cat => (
@@ -334,7 +336,7 @@ export default function DishesPage() {
                                                             </SelectItem>
                                                         ))}
                                                         {categories.length === 0 && (
-                                                            <div className="py-6 text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">Không có dữ liệu</div>
+                                                            <div className="py-6 text-center text-slate-400 text-[10px] font-bold uppercase tracking-widest">{t('noData')}</div>
                                                         )}
                                                     </SelectContent>
                                                 </Select>
@@ -342,7 +344,7 @@ export default function DishesPage() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá bán (VNĐ)</Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('priceLabel')}</Label>
                                             <div className="relative group">
                                                 <Input
                                                     id="foodPrice"
@@ -355,7 +357,7 @@ export default function DishesPage() {
                                                     required
                                                 />
                                                 <div className="absolute inset-y-0 right-0 flex items-center pr-4">
-                                                    <span className="text-[10px] font-black text-gray-400">VNĐ</span>
+                                                    <span className="text-[10px] font-black text-gray-400">{t('currency')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -364,17 +366,17 @@ export default function DishesPage() {
                                     {/* Cột Phải (Trường phụ) */}
                                     <div className="space-y-6">
                                         <div className="space-y-2">
-                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả món ăn</Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('descriptionLabel')}</Label>
                                             <Textarea
                                                 className="min-h-[110px] border-2 border-gray-100 rounded-xl bg-gray-50/50 focus:bg-white focus:border-red-500 transition-all font-bold text-gray-900 resize-none placeholder:text-gray-300"
                                                 value={formData.description}
                                                 onChange={e => setFormData({ ...formData, description: e.target.value })}
-                                                placeholder="Ghi chú về thành phần, hương vị hoặc đặc tính món ăn..."
+                                                placeholder={t('descriptionPlaceholder')}
                                             />
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Hình ảnh món ăn</Label>
+                                            <Label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('imageLabel')}</Label>
                                             <div className="relative group h-[200px] bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200 overflow-hidden transition-all hover:border-red-500/50 hover:bg-red-50/10">
                                                 <input
                                                     type="file"
@@ -388,7 +390,7 @@ export default function DishesPage() {
                                                         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                                             <div className="flex flex-col items-center gap-2 text-white">
                                                                 <ImageIcon className="size-8" />
-                                                                <span className="text-[10px] font-black uppercase tracking-widest">Thay đổi ảnh</span>
+                                                                <span className="text-[10px] font-black uppercase tracking-widest">{t('changeImage')}</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -398,8 +400,8 @@ export default function DishesPage() {
                                                             <Plus className="size-6" />
                                                         </div>
                                                         <div className="text-center">
-                                                            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">Chọn tệp hình ảnh</p>
-                                                            <p className="text-[9px] text-gray-400 font-bold uppercase mt-1">PNG, JPG, WEBP • Tối đa 5MB</p>
+                                                            <p className="text-[10px] font-black text-gray-900 uppercase tracking-widest">{t('selectImage')}</p>
+                                                            <p className="text-[9px] text-gray-400 font-bold uppercase mt-1">{t('imageFormat')}</p>
                                                         </div>
                                                     </div>
                                                 )}
@@ -416,7 +418,7 @@ export default function DishesPage() {
                                     onClick={() => setIsDialogOpen(false)}
                                     className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
                                 >
-                                    Hủy bỏ
+                                    {t('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
@@ -425,7 +427,7 @@ export default function DishesPage() {
                                 >
                                     {createFoodMutation.isPending || updateFoodMutation.isPending ? (
                                         <Loader2 className="size-4 animate-spin" />
-                                    ) : 'Hoàn tất & Lưu món'}
+                                    ) : t('saveDish')}
                                 </Button>
                             </div>
                         </form>
@@ -440,7 +442,7 @@ export default function DishesPage() {
                         <Input
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            placeholder="Tìm kiếm món ăn..."
+                            placeholder={t('searchPlaceholder')}
                             className="h-10 pl-10 pr-4 border-gray-200 rounded-xl bg-white text-sm focus:border-primary focus:ring-primary/20 transition-all"
                         />
                     </div>
@@ -449,7 +451,7 @@ export default function DishesPage() {
                 {isLoading ? (
                     <div className="p-20 text-center flex flex-col items-center gap-4">
                         <Loader2 className="w-10 h-10 animate-spin text-primary" />
-                        <p className="text-neutral-500">Đang tải dữ liệu...</p>
+                        <p className="text-neutral-500">{t('loadingData')}</p>
                     </div>
                 ) : (
                     <div className="custom-scrollbar">
@@ -458,7 +460,7 @@ export default function DishesPage() {
                             {filteredDishes.length === 0 ? (
                                 <div className="text-center py-12 flex flex-col items-center gap-4 opacity-30">
                                     <Search className="size-12" />
-                                    <p className="text-lg font-display font-bold uppercase">Không tìm thấy món ăn</p>
+                                    <p className="text-lg font-display font-bold uppercase">{t('noDishesFound')}</p>
                                 </div>
                             ) : (
                                 filteredDishes.map((dish) => (
@@ -483,7 +485,7 @@ export default function DishesPage() {
                                                         <div className="flex items-center gap-1.5">
                                                             <div className={`size-2 rounded-full ${dish.isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
                                                             <span className={`text-[10px] font-bold uppercase tracking-wider ${dish.isAvailable ? 'text-green-600' : 'text-red-400'}`}>
-                                                                {dish.isAvailable ? 'Sẵn sàng' : 'Hết hàng'}
+                                                                {dish.isAvailable ? t('available') : t('outOfStock')}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -492,7 +494,7 @@ export default function DishesPage() {
                                             <div className="mt-auto pt-3 flex items-center justify-between">
                                                 <div className="font-bold text-gray-900 text-base">
                                                     {dish.price.toLocaleString('vi-VN')}
-                                                    <span className="text-xs ml-0.5 font-bold text-primary">đ</span>
+                                                    <span className="text-xs ml-0.5 font-bold text-primary">{t('currencySymbol')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -516,12 +518,12 @@ export default function DishesPage() {
                             <Table className="min-w-[800px]">
                                 <TableHeader className="bg-gray-50/50">
                                 <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                    <TableHead className="w-[80px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ảnh</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Sản phẩm</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Danh mục</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Giá bán</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Trạng thái</TableHead>
-                                    <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
+                                    <TableHead className="w-[80px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colImage')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colProduct')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colCategory')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colPrice')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colStatus')}</TableHead>
+                                    <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colAction')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -530,7 +532,7 @@ export default function DishesPage() {
                                         <TableCell colSpan={6} className="text-center py-24">
                                             <div className="flex flex-col items-center gap-4 opacity-20">
                                                 <Search className="size-16" />
-                                                <p className="text-2xl font-display font-bold uppercase">Không tìm thấy món ăn</p>
+                                                <p className="text-2xl font-display font-bold uppercase">{t('noDishesFound')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -550,7 +552,7 @@ export default function DishesPage() {
                                             </TableCell>
                                             <TableCell className="p-4">
                                                 <div className="font-bold text-gray-900 text-sm mb-0.5">{dish.name}</div>
-                                                <div className="text-[11px] text-gray-400 font-medium line-clamp-1 italic">{dish.description || 'Chưa có mô tả'}</div>
+                                                <div className="text-[11px] text-gray-400 font-medium line-clamp-1 italic">{dish.description || t('noDescription')}</div>
                                             </TableCell>
                                             <TableCell className="p-4 text-center">
                                                 <Badge variant="secondary" className="bg-gray-100 text-gray-600 font-bold uppercase text-[9px] px-2 py-0.5 rounded-lg border-none">
@@ -560,14 +562,14 @@ export default function DishesPage() {
                                             <TableCell className="p-4 text-center">
                                                 <div className="font-bold text-gray-900 text-sm">
                                                     {dish.price.toLocaleString('vi-VN')}
-                                                    <span className="text-[10px] ml-0.5 font-bold text-primary">đ</span>
+                                                    <span className="text-[10px] ml-0.5 font-bold text-primary">{t('currencySymbol')}</span>
                                                 </div>
                                             </TableCell>
                                             <TableCell className="p-4 text-center">
                                                 <div className="flex flex-col items-center gap-1">
                                                     <div className={`size-2 rounded-full ${dish.isAvailable ? 'bg-green-500' : 'bg-red-500'}`} />
                                                     <span className={`text-[9px] font-bold uppercase tracking-wider ${dish.isAvailable ? 'text-green-600' : 'text-red-400'}`}>
-                                                        {dish.isAvailable ? 'Sẵn sàng' : 'Hết hàng'}
+                                                        {dish.isAvailable ? t('available') : t('outOfStock')}
                                                     </span>
                                                 </div>
                                             </TableCell>
@@ -592,7 +594,7 @@ export default function DishesPage() {
 
                 <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
                     <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                        Trang <span className="text-gray-900">{page + 1}</span> / {totalPages || 1} — Tổng <span className="text-gray-900">{totalCount}</span> món ăn
+                        {t('page')}<span className="text-gray-900">{page + 1}</span> / {totalPages || 1} {t('totalPrefix')}<span className="text-gray-900">{totalCount}</span>{t('dishesCountSuffix')}
                     </p>
                     <AdminPagination 
                         currentPage={page} 

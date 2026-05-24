@@ -1,6 +1,7 @@
 import { ArrowRight, Star } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
+import { getTranslations } from 'next-intl/server';
 
 interface Food {
     id: string;
@@ -30,6 +31,7 @@ async function getFeaturedFoods() {
 
 export async function FeaturedMenu() {
     const featuredItems: Food[] = await getFeaturedFoods();
+    const t = await getTranslations('Landing.FeaturedMenu');
 
     return (
         <section className="py-20 bg-background relative overflow-hidden transition-colors duration-300">
@@ -38,9 +40,9 @@ export async function FeaturedMenu() {
 
             <div className="container mx-auto px-4">
                 <div className="text-center mb-16">
-                    <span className="text-primary font-bold tracking-widest uppercase text-sm mb-2 block">Menu Nổi Bật</span>
+                    <span className="text-primary font-bold tracking-widest uppercase text-sm mb-2 block">{t('subtitle')}</span>
                     <h2 className="font-display text-4xl md:text-5xl text-text relative inline-block">
-                        MÓN &quot;RUỘT&quot; CỦA QUÁN
+                        {t('title')}
                         <span className="absolute -right-8 -top-8 text-secondary transform rotate-12">
                             <Star size={40} fill="#FFCC33" stroke="#2D2D2D" strokeWidth={2} />
                         </span>
@@ -77,7 +79,7 @@ export async function FeaturedMenu() {
 
                 <div className="mt-12 text-center">
                     <Link href="/menu" className="inline-block border-b-2 border-text font-display text-text hover:text-primary hover:border-primary transition-colors pb-1 text-xl">
-                        XEM TOÀN BỘ MENU →
+                        {t('viewAll')}
                     </Link>
                 </div>
             </div>

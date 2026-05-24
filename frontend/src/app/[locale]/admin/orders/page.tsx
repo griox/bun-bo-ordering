@@ -28,8 +28,10 @@ import { useOrders, useOrder } from '@/hooks/useOrders';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
 import axiosInstance from '@/lib/axiosInstance';
 import { useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 
 export default function OrdersPage() {
+    const t = useTranslations('Orders');
     const [statusFilter, setStatusFilter] = useState('Paid'); // 'All', 'Unpaid', 'Paid'
     const [page, setPage] = useState(0);
     const pageSize = 6;
@@ -69,34 +71,34 @@ export default function OrdersPage() {
         // Convert numeric status to semantic badges
         const s = Number(status);
         if (s === 1) { // Paid
-            return <Badge variant="outline" className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>ĐÃ THANH TOÁN</Badge>;
+            return <Badge variant="outline" className={`${baseClass} text-green-500 border-green-100 bg-green-50/50`}>{t('statusPaid')}</Badge>;
         }
         if (s === 4) { // Completed
-            return <Badge variant="outline" className={`${baseClass} text-blue-500 border-blue-100 bg-blue-50/50`}>HOÀN THÀNH</Badge>;
+            return <Badge variant="outline" className={`${baseClass} text-blue-500 border-blue-100 bg-blue-50/50`}>{t('statusCompleted')}</Badge>;
         }
         if (s === 3) { // Processing
-            return <Badge variant="outline" className={`${baseClass} text-emerald-600 border-emerald-100 bg-emerald-50/50`}>ĐANG XỬ LÝ</Badge>;
+            return <Badge variant="outline" className={`${baseClass} text-emerald-600 border-emerald-100 bg-emerald-50/50`}>{t('statusProcessing')}</Badge>;
         }
-        return <Badge variant="outline" className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50`}>CHƯA THANH TOÁN</Badge>;
+        return <Badge variant="outline" className={`${baseClass} text-orange-500 border-orange-100 bg-orange-50/50`}>{t('statusUnpaid')}</Badge>;
     };
 
     return (
         <div className="space-y-10 pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý hóa đơn</h2>
-                    <p className="text-sm text-gray-500 mt-1">Quản lý giao dịch & trạng thái thanh toán.</p>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('title')}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
                 <div className="flex gap-2 w-full md:w-auto mt-4 md:mt-0">
                     <Button variant="outline" className="min-h-[44px] flex-1 md:flex-none px-4 rounded-xl text-xs md:text-sm font-bold border-gray-200 bg-white hover:bg-gray-50 gap-2">
                         <Calendar className="size-4 text-primary" />
-                        <span className="hidden sm:inline">Lọc theo ngày</span>
-                        <span className="sm:hidden">Lọc</span>
+                        <span className="hidden sm:inline">{t('filterByDate')}</span>
+                        <span className="sm:hidden">{t('filter')}</span>
                     </Button>
                     <Button variant="outline" className="min-h-[44px] flex-1 md:flex-none px-4 rounded-xl text-xs md:text-sm font-bold border-gray-200 bg-white hover:bg-gray-50 gap-2">
                         <Download className="size-4 text-primary" />
-                        <span className="hidden sm:inline">Xuất báo cáo</span>
-                        <span className="sm:hidden">Xuất</span>
+                        <span className="hidden sm:inline">{t('exportReport')}</span>
+                        <span className="sm:hidden">{t('export')}</span>
                     </Button>
                 </div>
             </div>
@@ -105,21 +107,21 @@ export default function OrdersPage() {
                 <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex flex-col lg:flex-row gap-4 justify-between items-center">
                     <Tabs defaultValue="Paid" onValueChange={(val) => { setStatusFilter(val); setPage(0); }} className="w-full lg:w-auto">
                         <TabsList className="bg-gray-200/40 p-1 min-h-[44px] rounded-xl border-none w-full grid grid-cols-3 lg:flex lg:w-auto">
-                            <TabsTrigger value="All" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">Tất cả</TabsTrigger>
+                            <TabsTrigger value="All" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">{t('tabAll')}</TabsTrigger>
                             <TabsTrigger value="Unpaid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
-                                <span className="hidden sm:inline">Đang xử lý</span>
-                                <span className="sm:hidden">Đang XL</span>
+                                <span className="hidden sm:inline">{t('tabProcessing')}</span>
+                                <span className="sm:hidden">{t('tabProcessingShort')}</span>
                             </TabsTrigger>
                             <TabsTrigger value="Paid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
-                                <span className="hidden sm:inline">Đã thanh toán</span>
-                                <span className="sm:hidden">Đã TT</span>
+                                <span className="hidden sm:inline">{t('tabPaid')}</span>
+                                <span className="sm:hidden">{t('tabPaidShort')}</span>
                             </TabsTrigger>
                         </TabsList>
                     </Tabs>
                     <div className="relative w-full lg:w-72">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                         <Input
-                            placeholder="Tìm mã đơn, số bàn..."
+                            placeholder={t('searchPlaceholder')}
                             className="h-9 pl-10 pr-4 border-gray-200 rounded-xl bg-white text-sm focus:border-primary focus:ring-primary/20 transition-all"
                         />
                     </div>
@@ -131,12 +133,12 @@ export default function OrdersPage() {
                         {isLoading ? (
                             <div className="flex flex-col items-center gap-4 py-12 opacity-40">
                                 <Loader2 className="size-12 animate-spin text-primary" />
-                                <p className="font-display font-bold uppercase text-xs">Đang tải...</p>
+                                <p className="font-display font-bold uppercase text-xs">{t('loading')}</p>
                             </div>
                         ) : filteredOrders.length === 0 ? (
                             <div className="flex flex-col items-center gap-4 py-12 opacity-20">
                                 <Receipt className="size-16" />
-                                <p className="text-xl font-display font-bold uppercase">Không có đơn hàng</p>
+                                <p className="text-xl font-display font-bold uppercase">{t('noOrders')}</p>
                             </div>
                         ) : (
                             filteredOrders.map((order) => (
@@ -148,11 +150,11 @@ export default function OrdersPage() {
                                     <div className="flex justify-between items-start">
                                         <div>
                                             <div className="font-bold text-gray-900 text-base flex items-center gap-2">
-                                                Bàn {order.tableName}
+                                                {t('tablePrefix')}{order.tableName}
                                             </div>
                                             <div className="text-xs text-gray-400 font-medium mt-1">#{order.id.slice(0, 8).toUpperCase()}</div>
                                             <div className="text-[10px] bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded uppercase font-bold tracking-wider inline-block mt-1">
-                                                {order.paymentMethod || 'KHÔNG RÕ'}
+                                                {order.paymentMethod || t('unknown')}
                                             </div>
                                         </div>
                                         <div className="scale-90 origin-top-right">
@@ -178,12 +180,12 @@ export default function OrdersPage() {
                         <Table className="min-w-[900px]">
                             <TableHeader className="bg-gray-50/50">
                             <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                <TableHead className="hidden md:table-cell font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Mã đơn</TableHead>
-                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Bàn</TableHead>
-                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Thời gian</TableHead>
-                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Tổng tiền</TableHead>
-                                <TableHead className="hidden md:table-cell font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Trạng thái</TableHead>
-                                <TableHead className="hidden md:table-cell text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
+                                <TableHead className="hidden md:table-cell font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colOrderId')}</TableHead>
+                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colTable')}</TableHead>
+                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colTime')}</TableHead>
+                                <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colTotal')}</TableHead>
+                                <TableHead className="hidden md:table-cell font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colStatus')}</TableHead>
+                                <TableHead className="hidden md:table-cell text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colAction')}</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -192,7 +194,7 @@ export default function OrdersPage() {
                                     <TableCell colSpan={6} className="h-64 text-center">
                                         <div className="flex flex-col items-center gap-4 opacity-40">
                                             <Loader2 className="size-12 animate-spin text-primary" />
-                                            <p className="font-display font-bold uppercase text-xs">Đang truy xuất dữ liệu...</p>
+                                            <p className="font-display font-bold uppercase text-xs">{t('loadingData')}</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -201,7 +203,7 @@ export default function OrdersPage() {
                                     <TableCell colSpan={6} className="h-64 text-center">
                                         <div className="flex flex-col items-center gap-4 opacity-20">
                                             <Receipt className="size-16" />
-                                            <p className="text-2xl font-display font-bold uppercase">Không có đơn hàng nào</p>
+                                            <p className="text-2xl font-display font-bold uppercase">{t('noOrdersFound')}</p>
                                         </div>
                                     </TableCell>
                                 </TableRow>
@@ -219,8 +221,8 @@ export default function OrdersPage() {
                                         </TableCell>
                                         <TableCell className="p-4">
                                             <div className="font-bold text-gray-900 text-sm mb-0.5 flex items-center gap-2">
-                                                BÀN {order.tableCode}
-                                                <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-[9px] uppercase font-bold tracking-widest">{order.paymentMethod || 'KHÔNG RÕ'}</span>
+                                                {t('tablePrefix').toUpperCase()}{order.tableCode}
+                                                <span className="bg-gray-100 text-gray-500 px-1.5 py-0.5 rounded text-[9px] uppercase font-bold tracking-widest">{order.paymentMethod || t('unknown')}</span>
                                             </div>
                                             <div className="text-[11px] text-gray-400 font-medium">{order.tableName}</div>
                                         </TableCell>
@@ -269,7 +271,7 @@ export default function OrdersPage() {
 
             <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
                     <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                        Trang <span className="text-gray-900">{page + 1}</span> / {totalPages || 1} — Tổng <span className="text-gray-900">{totalCount}</span> đơn
+                        {t('page')}<span className="text-gray-900">{page + 1}</span> / {totalPages || 1} {t('totalPrefix')}<span className="text-gray-900">{totalCount}</span>{t('ordersCountSuffix')}
                     </p>
                     <AdminPagination 
                         currentPage={page} 

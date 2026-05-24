@@ -43,8 +43,10 @@ import { Badge } from '@/components/ui/badge';
 import { UserHistoryModal } from '@/components/admin/UserHistoryModal';
 import { OrderDetailModal } from '@/components/order/OrderDetailModal';
 import { format } from 'date-fns';
+import { useTranslations } from 'next-intl';
 
 export default function AdminUserManagement() {
+    const t = useTranslations('Users');
     const [page, setPage] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
@@ -116,8 +118,8 @@ export default function AdminUserManagement() {
         <div className="space-y-6 md:space-y-8 pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý người dùng</h2>
-                    <p className="text-sm text-gray-500 mt-1">Quản lý thông tin & lịch sử giao dịch khách hàng.</p>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('title')}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
             </div>
 
@@ -126,7 +128,7 @@ export default function AdminUserManagement() {
                     <div className="relative w-full md:w-72">
                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
                         <Input
-                            placeholder="Tìm tên, email..."
+                            placeholder={t('searchPlaceholder')}
                             className="h-9 pl-10 pr-4 border-gray-200 rounded-xl bg-white text-sm focus:border-primary focus:ring-primary/20 transition-all"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
@@ -140,12 +142,12 @@ export default function AdminUserManagement() {
                         {usersLoading ? (
                             <div className="flex flex-col items-center justify-center py-12 gap-4 opacity-40">
                                 <Loader2 className="size-12 animate-spin text-primary" />
-                                <p className="font-bold uppercase text-xs">Đang tải...</p>
+                                <p className="font-bold uppercase text-xs">{t('loading')}</p>
                             </div>
                         ) : users.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center gap-4 opacity-40">
                                 <Search className="size-12" />
-                                <h3 className="text-base font-black text-gray-800 uppercase">Không tìm thấy kết quả</h3>
+                                <h3 className="text-base font-black text-gray-800 uppercase">{t('noResults')}</h3>
                             </div>
                         ) : (
                             users.map((user) => (
@@ -162,7 +164,7 @@ export default function AdminUserManagement() {
                                                     : 'bg-blue-50 text-blue-600'
                                                     }`}
                                             >
-                                                {user.role}
+                                                {user.role === 'Admin' ? t('roleAdmin') : t('roleUser')}
                                             </Badge>
                                         </div>
                                     </div>
@@ -177,14 +179,14 @@ export default function AdminUserManagement() {
 
                                     <div className="flex justify-between items-end mt-2 gap-2">
                                         <div className="shrink-0">
-                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Tham gia</p>
+                                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{t('joined')}</p>
                                             <div className="font-bold text-gray-900 text-sm mt-0.5">{format(new Date(user.createdAt), "dd/MM/yyyy")}</div>
                                         </div>
                                         <div className="flex gap-1 flex-wrap justify-end">
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                title="Xem lịch sử"
+                                                title={t('viewHistory')}
                                                 className="min-h-[44px] min-w-[44px] rounded-xl bg-gray-50 border border-gray-100 text-gray-400 hover:text-blue-500 transition-all"
                                                 onClick={(e) => { e.stopPropagation(); handleViewHistory(user); }}
                                             >
@@ -195,7 +197,7 @@ export default function AdminUserManagement() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    title="Bỏ chặn"
+                                                    title={t('unban')}
                                                     className="min-h-[44px] min-w-[44px] rounded-xl bg-green-50 border border-green-100 text-green-500 transition-all"
                                                     onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsUnbanDialogOpen(true); }}
                                                     disabled={removeBlacklistMutation.isPending}
@@ -206,7 +208,7 @@ export default function AdminUserManagement() {
                                                 <Button
                                                     variant="ghost"
                                                     size="icon"
-                                                    title="Chặn người dùng"
+                                                    title={t('banUser')}
                                                     className="min-h-[44px] min-w-[44px] rounded-xl bg-orange-50 border border-orange-100 text-orange-500 transition-all"
                                                     onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsBanDialogOpen(true); }}
                                                     disabled={blacklistMutation.isPending || user.role === 'Admin'}
@@ -218,7 +220,7 @@ export default function AdminUserManagement() {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                title="Xóa người dùng"
+                                                title={t('deleteUser')}
                                                 className="min-h-[44px] min-w-[44px] rounded-xl bg-red-50 border border-red-100 text-red-500 transition-all"
                                                 onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsDeleteDialogOpen(true); }}
                                                 disabled={deleteMutation.isPending || user.role === 'Admin'}
@@ -237,11 +239,11 @@ export default function AdminUserManagement() {
                         <Table className="min-w-[900px]">
                             <TableHeader className="bg-gray-50/50">
                                 <TableRow className="hover:bg-transparent border-b border-gray-100">
-                                    <TableHead className="w-[100px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Mã</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Tài khoản</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Vai trò</TableHead>
-                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">Ngày gia nhập</TableHead>
-                                    <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">Thao tác</TableHead>
+                                    <TableHead className="w-[100px] font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colId')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colAccount')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colRole')}</TableHead>
+                                    <TableHead className="font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest text-center">{t('colJoinDate')}</TableHead>
+                                    <TableHead className="text-right font-bold text-gray-400 uppercase p-4 text-[10px] tracking-widest">{t('colAction')}</TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -250,7 +252,7 @@ export default function AdminUserManagement() {
                                         <TableCell colSpan={5} className="h-64 text-center">
                                             <div className="flex flex-col items-center gap-4 opacity-40">
                                                 <Loader2 className="size-12 animate-spin text-primary" />
-                                                <p className="font-bold uppercase text-xs">Đang truy xuất dữ liệu người dùng...</p>
+                                                <p className="font-bold uppercase text-xs">{t('fetchingData')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -259,7 +261,7 @@ export default function AdminUserManagement() {
                                         <TableCell colSpan={5} className="h-64 text-center">
                                             <div className="flex flex-col items-center gap-4 opacity-20">
                                                 <Search className="size-16" />
-                                                <p className="text-2xl font-bold uppercase">Không tìm thấy kết quả</p>
+                                                <p className="text-2xl font-bold uppercase">{t('noResults')}</p>
                                             </div>
                                         </TableCell>
                                     </TableRow>
@@ -294,7 +296,7 @@ export default function AdminUserManagement() {
                                                         : 'bg-blue-50 text-blue-600'
                                                         }`}
                                                 >
-                                                    {user.role}
+                                                    {user.role === 'Admin' ? t('roleAdmin') : t('roleUser')}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell className="p-4 text-center">
@@ -306,7 +308,7 @@ export default function AdminUserManagement() {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        title="Xem lịch sử"
+                                                        title={t('viewHistory')}
                                                         className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-white border border-gray-100 shadow-sm text-gray-400 hover:text-blue-500 hover:border-blue-200 transition-all"
                                                         onClick={(e) => { e.stopPropagation(); handleViewHistory(user); }}
                                                     >
@@ -317,7 +319,7 @@ export default function AdminUserManagement() {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            title="Bỏ chặn"
+                                                            title={t('unban')}
                                                             className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-green-50 border border-green-100 shadow-sm text-green-500 hover:bg-green-100 transition-all"
                                                             onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsUnbanDialogOpen(true); }}
                                                             disabled={removeBlacklistMutation.isPending}
@@ -328,7 +330,7 @@ export default function AdminUserManagement() {
                                                         <Button
                                                             variant="ghost"
                                                             size="icon"
-                                                            title="Chặn người dùng"
+                                                            title={t('banUser')}
                                                             className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-orange-50 border border-orange-100 shadow-sm text-orange-500 hover:bg-orange-100 transition-all"
                                                             onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsBanDialogOpen(true); }}
                                                             disabled={blacklistMutation.isPending || user.role === 'Admin'}
@@ -340,7 +342,7 @@ export default function AdminUserManagement() {
                                                     <Button
                                                         variant="ghost"
                                                         size="icon"
-                                                        title="Xóa người dùng"
+                                                        title={t('deleteUser')}
                                                         className="size-11 min-h-[44px] min-w-[44px] rounded-xl bg-red-50 border border-red-100 shadow-sm text-red-500 hover:bg-red-100 transition-all"
                                                         onClick={(e) => { e.stopPropagation(); setUserToAction(user); setIsDeleteDialogOpen(true); }}
                                                         disabled={deleteMutation.isPending || user.role === 'Admin'}
@@ -359,7 +361,7 @@ export default function AdminUserManagement() {
 
                 <div className="p-6 bg-gray-50/30 border-t border-gray-100 flex items-center justify-between">
                     <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
-                        Trang <span className="text-gray-900">{page + 1}</span> / {totalPages || 1} — Tổng <span className="text-gray-900">{totalCount}</span> thành viên
+                        {t('page')}<span className="text-gray-900">{page + 1}</span> / {totalPages || 1}{t('totalPrefix')}<span className="text-gray-900">{totalCount}</span>{t('membersSuffix')}
                     </p>
                     <AdminPagination 
                         currentPage={page} 
@@ -394,8 +396,8 @@ export default function AdminUserManagement() {
                                 <Ban className="size-7 text-red-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-2xl font-black uppercase tracking-tight">Chặn người dùng</DialogTitle>
-                                <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Tài khoản sẽ không thể đăng nhập</p>
+                                <DialogTitle className="text-2xl font-black uppercase tracking-tight">{t('banTitle')}</DialogTitle>
+                                <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">{t('banSubtitle')}</p>
                             </div>
                         </div>
                     </div>
@@ -405,16 +407,16 @@ export default function AdminUserManagement() {
                             <div className="flex items-center gap-3 px-4 py-3 bg-red-50 border-2 border-red-100 rounded-2xl">
                                 <AlertCircle className="size-4 text-red-500 shrink-0" />
                                 <p className="text-[10px] font-black text-red-900 uppercase tracking-widest">
-                                    Đối tượng: <span className="text-red-500 underline decoration-2 offset-2">@{userToAction?.username}</span>
+                                    {t('target')} <span className="text-red-500 underline decoration-2 offset-2">@{userToAction?.username}</span>
                                 </p>
                             </div>
 
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lý do chặn</label>
+                                <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('banReasonLabel')}</label>
                                 <Textarea
                                     value={banReason}
                                     onChange={(e) => setBanReason(e.target.value)}
-                                    placeholder="Nhập lý do chặn (vi phạm điều khoản, spam...)..."
+                                    placeholder={t('banReasonPlaceholder')}
                                     className="min-h-[140px] border-2 border-gray-100 rounded-2xl bg-gray-50/30 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-bold text-gray-900 resize-none placeholder:text-gray-300 text-base p-4"
                                 />
                             </div>
@@ -428,14 +430,14 @@ export default function AdminUserManagement() {
                             onClick={() => setIsBanDialogOpen(false)}
                             className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
                         >
-                            Hủy bỏ
+                            {t('cancel')}
                         </Button>
                         <Button
                             onClick={handleBanUser}
                             disabled={blacklistMutation.isPending || !banReason.trim()}
                             className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                         >
-                            {blacklistMutation.isPending ? "Đang xử lý..." : "Xác nhận chặn ngay"}
+                            {blacklistMutation.isPending ? t('processing') : t('confirmBan')}
                         </Button>
                     </div>
                 </DialogContent>
@@ -450,22 +452,22 @@ export default function AdminUserManagement() {
                                 <Unlock className="size-7 text-green-400" />
                             </div>
                             <div>
-                                <AlertDialogTitle className="text-xl font-bold tracking-tight">Mở khóa tài khoản</AlertDialogTitle>
-                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Khôi phục quyền truy cập hệ thống</p>
+                                <AlertDialogTitle className="text-xl font-bold tracking-tight">{t('unbanTitle')}</AlertDialogTitle>
+                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">{t('unbanSubtitle')}</p>
                             </div>
                         </div>
                     </div>
                     <div className="p-8 space-y-6 bg-white">
                         <p className="text-gray-500 font-bold text-sm leading-relaxed">
-                            Bạn có chắc chắn muốn bỏ chặn cho người dùng <span className="text-black font-black underline decoration-2 decoration-green-500/30 underline-offset-4">@{userToAction?.username}</span>? Họ sẽ có thể đăng nhập lại vào hệ thống ngay lập tức.
+                            {t('unbanDesc1')}<span className="text-black font-black underline decoration-2 decoration-green-500/30 underline-offset-4">@{userToAction?.username}</span>{t('unbanDesc2')}
                         </p>
                         <div className="flex justify-end gap-4">
-                            <AlertDialogCancel className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all border-none shadow-none bg-transparent">Hủy bỏ</AlertDialogCancel>
+                            <AlertDialogCancel className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all border-none shadow-none bg-transparent">{t('cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleRemoveBan}
                                 className="h-12 px-10 bg-green-500 hover:bg-green-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#14532d] active:translate-y-1 active:shadow-none transition-all"
                             >
-                                Xác nhận mở
+                                {t('confirmUnban')}
                             </AlertDialogAction>
                         </div>
                     </div>
@@ -481,8 +483,8 @@ export default function AdminUserManagement() {
                                 <Trash2 className="size-7 text-red-500" />
                             </div>
                             <div>
-                                <AlertDialogTitle className="text-xl font-bold tracking-tight">Xóa người dùng</AlertDialogTitle>
-                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">Hành động này không thể hoàn tác</p>
+                                <AlertDialogTitle className="text-xl font-bold tracking-tight">{t('deleteTitle')}</AlertDialogTitle>
+                                <p className="text-white/50 text-[10px] font-medium uppercase tracking-widest mt-1">{t('deleteSubtitle')}</p>
                             </div>
                         </div>
                     </div>
@@ -490,19 +492,19 @@ export default function AdminUserManagement() {
                         <div className="flex items-start gap-4 p-5 bg-red-50 border-2 border-red-100 rounded-[1.5rem]">
                             <AlertCircle className="size-5 text-red-500 mt-0.5 shrink-0" />
                             <div className="space-y-1">
-                                <p className="text-[10px] font-black text-red-900 uppercase tracking-widest">Cảnh báo nguy hiểm</p>
+                                <p className="text-[10px] font-black text-red-900 uppercase tracking-widest">{t('dangerWarning')}</p>
                                 <p className="text-red-700 text-xs font-bold leading-relaxed">
-                                    Dữ liệu của <span className="underline decoration-2 underline-offset-4">@{userToAction?.username}</span> sẽ bị xóa vĩnh viễn khỏi cơ sở dữ liệu.
+                                    {t('deleteDesc1')}<span className="underline decoration-2 underline-offset-4">@{userToAction?.username}</span>{t('deleteDesc2')}
                                 </p>
                             </div>
                         </div>
                         <div className="flex justify-end gap-4">
-                            <AlertDialogCancel className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all border-none shadow-none bg-transparent">Hủy bỏ</AlertDialogCancel>
+                            <AlertDialogCancel className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all border-none shadow-none bg-transparent">{t('cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                                 onClick={handleDeleteUser}
                                 className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-xl shadow-[4px_4px_0px_#7f1d1d] active:translate-y-1 active:shadow-none transition-all"
                             >
-                                Xác nhận xóa
+                                {t('confirmDelete')}
                             </AlertDialogAction>
                         </div>
                     </div>

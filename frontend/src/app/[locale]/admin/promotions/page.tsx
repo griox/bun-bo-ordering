@@ -41,8 +41,11 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useTranslations, useLocale } from 'next-intl';
 
 export default function PromotionsPage() {
+    const t = useTranslations('Promotions');
+    const locale = useLocale();
     const { useVouchers, deleteVoucherMutation } = usePromotions();
     const [page, setPage] = useState(0);
     const take = 10; // Changed to 10 for better view
@@ -60,16 +63,16 @@ export default function PromotionsPage() {
     const handleDelete = async (id: string) => {
         try {
             await deleteVoucherMutation.mutateAsync(id);
-            toast.success('Đã xóa mã khuyến mãi thành công');
+            toast.success(t('deleteSuccess'));
             setDeletingVoucherId(null);
         } catch {
-            toast.error('Lỗi khi xóa mã khuyến mãi');
+            toast.error(t('deleteError'));
         }
     };
 
     const handleCopyCode = (code: string) => {
         navigator.clipboard.writeText(code);
-        toast.success(`Đã sao chép mã: ${code}`);
+        toast.success(`${t('copySuccess')}${code}`);
     };
 
     return (
@@ -81,20 +84,20 @@ export default function PromotionsPage() {
                         <div className="p-2 bg-[#ff4d4f]/10 rounded-xl">
                             <Ticket className="size-8 text-[#ff4d4f]" />
                         </div>
-                        QUẢN LÝ KHUYẾN MÃI
+                        {t('title')}
                     </h1>
-                    <p className="text-gray-500 mt-1 font-medium">Tạo và quản lý các mã giảm giá cho khách hàng.</p>
+                    <p className="text-gray-500 mt-1 font-medium">{t('subtitle')}</p>
                 </div>
 
                 <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white px-6 h-12 rounded-2xl shadow-lg shadow-[#ff4d4f]/20 flex items-center gap-2 group transition-all active:scale-95">
                             <Plus className="size-5 group-hover:rotate-90 transition-transform" />
-                            <span className="font-bold uppercase tracking-wider text-xs">Tạo mã mới</span>
+                            <span className="font-bold uppercase tracking-wider text-xs">{t('createNew')}</span>
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-2xl bg-white border-none rounded-[3rem] p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300">
-                        <DialogTitle className="sr-only">Tạo mã khuyến mãi</DialogTitle>
+                        <DialogTitle className="sr-only">{t('createVoucher')}</DialogTitle>
                         <CreateVoucherForm onSuccess={() => setIsCreateModalOpen(false)} />
                     </DialogContent>
                 </Dialog>
@@ -108,7 +111,7 @@ export default function PromotionsPage() {
                             <Ticket className="size-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Tổng số mã</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t('totalVouchers')}</p>
                             <p className="text-2xl font-black text-gray-900">{vouchersData?.totalCount || 0}</p>
                         </div>
                     </div>
@@ -119,7 +122,7 @@ export default function PromotionsPage() {
                             <CheckCircle2 className="size-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đang hoạt động</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t('activeVouchers')}</p>
                             <p className="text-2xl font-black text-gray-900">{vouchersData?.items?.filter(v => v.isActive).length || 0}</p>
                         </div>
                     </div>
@@ -130,7 +133,7 @@ export default function PromotionsPage() {
                             <Users className="size-6" />
                         </div>
                         <div>
-                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Đã sử dụng (Trang này)</p>
+                            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">{t('usedVouchers')}</p>
                             <p className="text-2xl font-black text-gray-900">{vouchersData?.items?.reduce((acc, v) => acc + v.usageCount, 0) || 0}</p>
                         </div>
                     </div>
@@ -143,7 +146,7 @@ export default function PromotionsPage() {
                     <div className="relative w-full md:w-96">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-gray-400" />
                         <Input
-                            placeholder="Tìm kiếm mã hoặc nội dung..."
+                            placeholder={t('searchPlaceholder')}
                             className="pl-12 h-14 bg-white border-2 border-gray-100 rounded-2xl focus:border-[#ff4d4f] transition-all"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -151,7 +154,7 @@ export default function PromotionsPage() {
                     </div>
                     <Button variant="outline" className="h-14 px-6 border-2 border-gray-100 rounded-2xl hover:bg-gray-100 transition-all flex items-center gap-2">
                         <Filter className="size-5 text-gray-400" />
-                        <span className="font-bold text-xs uppercase text-gray-600">Bộ lọc</span>
+                        <span className="font-bold text-xs uppercase text-gray-600">{t('filter')}</span>
                     </Button>
                 </div>
 
@@ -161,7 +164,7 @@ export default function PromotionsPage() {
                         {isLoading ? (
                             <div className="flex flex-col items-center justify-center py-12 gap-4">
                                 <Loader2 className="size-12 animate-spin text-[#ff4d4f]" />
-                                <p className="font-bold text-gray-400 animate-pulse uppercase tracking-widest text-xs">Đang tải...</p>
+                                <p className="font-bold text-gray-400 animate-pulse uppercase tracking-widest text-xs">{t('loading')}</p>
                             </div>
                         ) : filteredVouchers?.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-12 text-center gap-4">
@@ -169,7 +172,7 @@ export default function PromotionsPage() {
                                     <Search className="size-6 text-gray-300" />
                                 </div>
                                 <div>
-                                    <h3 className="text-base font-black text-gray-800">Không tìm thấy mã nào</h3>
+                                    <h3 className="text-base font-black text-gray-800">{t('noVouchers')}</h3>
                                 </div>
                             </div>
                         ) : (
@@ -197,15 +200,15 @@ export default function PromotionsPage() {
 
                                     <div className="grid grid-cols-2 gap-2 bg-gray-50 rounded-xl p-3 mt-1">
                                         <div>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Giảm giá</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('discount')}</p>
                                             <p className="text-sm font-black text-gray-900 mt-0.5">
                                                 {voucher.discountType === 'Percentage'
                                                     ? `${voucher.discountValue}%`
-                                                    : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(voucher.discountValue)}
+                                                    : new Intl.NumberFormat(locale === 'vi' ? 'vi-VN' : 'en-US', { style: 'currency', currency: 'VND' }).format(voucher.discountValue)}
                                             </p>
                                         </div>
                                         <div>
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Đã dùng</p>
+                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t('used')}</p>
                                             <div className="flex items-center gap-2 mt-0.5">
                                                 <span className="text-sm font-black text-gray-900">{voucher.usageCount}/{voucher.totalUsageLimit}</span>
                                             </div>
@@ -214,7 +217,7 @@ export default function PromotionsPage() {
 
                                     <div className="flex items-center justify-between mt-1">
                                         <div className="text-[10px] font-bold text-gray-500">
-                                            <p>HSD: {format(new Date(voucher.validTo), 'dd/MM/yyyy')}</p>
+                                            <p>{t('expiryDate')}{format(new Date(voucher.validTo), 'dd/MM/yyyy')}</p>
                                         </div>
                                         <div className="flex gap-1">
                                             <Button variant="ghost" size="icon" onClick={() => setEditingVoucher(voucher)} className="min-h-[44px] min-w-[44px] rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-all">
@@ -235,12 +238,12 @@ export default function PromotionsPage() {
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Mã & Mô tả</th>
-                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Loại giảm</th>
-                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Sử dụng</th>
-                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Thời hạn</th>
-                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Trạng thái</th>
-                                    <th className="px-8 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Thao tác</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('colCodeDesc')}</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('colDiscountType')}</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('colUsage')}</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('colDuration')}</th>
+                                    <th className="px-8 py-6 text-left text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('colStatus')}</th>
+                                    <th className="px-8 py-6 text-right text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">{t('colAction')}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
@@ -280,17 +283,17 @@ export default function PromotionsPage() {
                                                     <p className="text-sm font-black text-gray-800">
                                                         {voucher.discountType === 'Percentage'
                                                             ? `${voucher.discountValue}%`
-                                                            : new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(voucher.discountValue)}
+                                                            : new Intl.NumberFormat(locale === 'vi' ? 'vi-VN' : 'en-US', { style: 'currency', currency: 'VND' }).format(voucher.discountValue)}
                                                     </p>
                                                     <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                                                        {voucher.discountType === 'Percentage' ? 'Theo %' : 'Cố định'}
+                                                        {voucher.discountType === 'Percentage' ? t('percentage') : t('fixedAmount')}
                                                     </p>
                                                 </div>
                                             </div>
                                             {voucher.type === 'PointRedemption' && (
                                                 <div className="mt-2 flex items-center gap-1.5 px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg border border-amber-100 w-fit">
                                                     <Ticket className="size-3" />
-                                                    <span className="text-[9px] font-black uppercase tracking-tighter">Cần {voucher.pointCost} điểm</span>
+                                                    <span className="text-[9px] font-black uppercase tracking-tighter">{t('need')}{voucher.pointCost}{t('points')}</span>
                                                 </div>
                                             )}
                                         </td>
@@ -321,12 +324,12 @@ export default function PromotionsPage() {
                                             {voucher.isActive ? (
                                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-widest">
                                                     <div className="size-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                                                    Đang chạy
+                                                    {t('running')}
                                                 </span>
                                             ) : (
                                                 <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-50 text-gray-400 text-[10px] font-black uppercase tracking-widest">
                                                     <XCircle className="size-3" />
-                                                    Dừng
+                                                    {t('stopped')}
                                                 </span>
                                             )}
                                         </td>
@@ -358,17 +361,17 @@ export default function PromotionsPage() {
                                                                 <AlertCircle className="size-6" />
                                                             </div>
                                                             <div>
-                                                                <AlertDialogTitle className="text-xl font-black text-gray-900 uppercase tracking-tight">Xác nhận xóa?</AlertDialogTitle>
-                                                                <AlertDialogDescription className="text-gray-500 font-medium">Hành động này không thể hoàn tác. Mã <b>{voucher.code}</b> sẽ biến mất khỏi hệ thống.</AlertDialogDescription>
+                                                                <AlertDialogTitle className="text-xl font-black text-gray-900 uppercase tracking-tight">{t('confirmDeleteTitle')}</AlertDialogTitle>
+                                                                <AlertDialogDescription className="text-gray-500 font-medium">{t('confirmDeleteDesc1')}<b>{voucher.code}</b>{t('confirmDeleteDesc2')}</AlertDialogDescription>
                                                             </div>
                                                         </div>
                                                         <AlertDialogFooter className="p-6 bg-gray-50/50 gap-3">
-                                                            <AlertDialogCancel className="h-12 px-6 rounded-xl border-2 border-gray-100 font-bold uppercase text-[10px] tracking-widest">Hủy bỏ</AlertDialogCancel>
+                                                            <AlertDialogCancel className="h-12 px-6 rounded-xl border-2 border-gray-100 font-bold uppercase text-[10px] tracking-widest">{t('cancel')}</AlertDialogCancel>
                                                             <AlertDialogAction
                                                                 onClick={() => handleDelete(voucher.id)}
                                                                 className="h-12 px-8 rounded-xl bg-red-500 hover:bg-red-600 text-white font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-red-500/20"
                                                             >
-                                                                Xóa vĩnh viễn
+                                                                {t('deletePermanently')}
                                                             </AlertDialogAction>
                                                         </AlertDialogFooter>
                                                     </AlertDialogContent>
@@ -385,7 +388,7 @@ export default function PromotionsPage() {
                 {vouchersData && (
                     <div className="p-8 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                            Trang <span className="text-gray-900">{page + 1}</span> / {Math.ceil((vouchersData.totalCount || 0) / take) || 1} — Tổng <span className="text-gray-900">{vouchersData.totalCount || 0}</span> mã khuyến mãi
+                            {t('page')} <span className="text-gray-900">{page + 1}</span> / {Math.ceil((vouchersData.totalCount || 0) / take) || 1} {t('totalPrefix')} <span className="text-gray-900">{vouchersData.totalCount || 0}</span>{t('vouchersCountSuffix')}
                         </p>
                         <AdminPagination
                             currentPage={page}
@@ -414,6 +417,7 @@ export default function PromotionsPage() {
 
 function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess: () => void }) {
     const { updateVoucherMutation } = usePromotions();
+    const t = useTranslations('Promotions');
     const [formData, setFormData] = useState(() => ({
         description: voucher.description,
         discountType: voucher.discountType,
@@ -433,11 +437,11 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
         e.preventDefault();
         try {
             await updateVoucherMutation.mutateAsync({ id: voucher.id, formData });
-            toast.success('Đã cập nhật mã khuyến mãi thành công!');
+            toast.success(t('updateSuccess'));
             onSuccess();
         } catch (error: unknown) {
             const err = error as { response?: { data?: { detail?: string; message?: string } } };
-            toast.error(err.response?.data?.detail || 'Lỗi khi cập nhật mã khuyến mãi.');
+            toast.error(err.response?.data?.detail || t('updateError'));
         }
     };
 
@@ -450,8 +454,8 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                         <Edit className="size-8" />
                     </div>
                     <div>
-                        <DialogTitle className="text-3xl font-black uppercase tracking-tight">Cập nhật mã: {voucher.code}</DialogTitle>
-                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Chỉnh sửa thông số chương trình khuyến mãi</p>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tight">{t('updateVoucher')}{voucher.code}</DialogTitle>
+                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">{t('updateSubtitle')}</p>
                     </div>
                 </div>
             </div>
@@ -459,9 +463,9 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
             <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
                 <div className="grid grid-cols-2 gap-6">
                     <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('descLabel')}</label>
                         <Input
-                            placeholder="VD: Giảm 30% cho đơn hàng đầu tiên"
+                            placeholder={t('descPlaceholder')}
                             className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-medium"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -470,21 +474,21 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại giảm</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('colDiscountType')}</label>
                         <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'Percentage' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, discountType: 'Percentage' })}
                             >
-                                Phần trăm (%)
+                                {t('percentageType')}
                             </button>
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'FixedAmount' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, discountType: 'FixedAmount' })}
                             >
-                                Số tiền (VND)
+                                {t('fixedType')}
                             </button>
                         </div>
                     </div>
@@ -497,33 +501,33 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                                 onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                                 className="size-5 rounded-lg border-2 border-gray-300 text-blue-600 focus:ring-blue-500"
                             />
-                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Kích hoạt mã</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">{t('activateCode')}</span>
                         </label>
                     </div>
 
                     <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại Voucher</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('voucherType')}</label>
                         <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'Standard' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, type: 'Standard', pointCost: 0 })}
                             >
-                                Tiêu chuẩn
+                                {t('standardType')}
                             </button>
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'PointRedemption' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, type: 'PointRedemption' })}
                             >
-                                Đổi điểm thưởng
+                                {t('pointRedemptionType')}
                             </button>
                         </div>
                     </div>
 
                     {formData.type === 'PointRedemption' && (
                         <div className="col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2">
-                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
+                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">{t('pointsNeededLabel')}</label>
                             <Input
                                 type="number"
                                 min="0"
@@ -536,7 +540,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                     )}
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá trị giảm</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('discountValueLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -547,7 +551,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Đơn tối thiểu</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('minOrderLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -560,7 +564,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
 
                     <div className="grid grid-cols-2 gap-4 col-span-2">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày bắt đầu</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('startDateLabel')}</label>
                             <Input
                                 type="datetime-local"
                                 className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
@@ -570,7 +574,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày kết thúc</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('endDateLabel')}</label>
                             <Input
                                 type="datetime-local"
                                 className="h-12 border-2 border-gray-100 rounded-xl focus:border-blue-500 font-bold"
@@ -582,7 +586,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('totalUsageLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -593,7 +597,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lượt dùng / user</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('usagePerUserLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -613,14 +617,14 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
                     onClick={() => onSuccess()}
                     className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
                 >
-                    Hủy bỏ
+                    {t('cancel')}
                 </Button>
                 <Button
                     type="submit"
                     disabled={updateVoucherMutation.isPending}
                     className="h-12 px-12 bg-blue-500 hover:bg-blue-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all"
                 >
-                    {updateVoucherMutation.isPending ? 'Đang cập nhật...' : 'Cập nhật ngay'}
+                    {updateVoucherMutation.isPending ? t('updating') : t('updateNow')}
                 </Button>
             </div>
         </form>
@@ -629,6 +633,7 @@ function UpdateVoucherForm({ voucher, onSuccess }: { voucher: Voucher, onSuccess
 
 function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
     const { createVoucherMutation } = usePromotions();
+    const t = useTranslations('Promotions');
     const [formData, setFormData] = useState(() => ({
         code: '',
         description: '',
@@ -649,11 +654,11 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
         e.preventDefault();
         try {
             await createVoucherMutation.mutateAsync(formData);
-            toast.success('Đã tạo mã khuyến mãi thành công!');
+            toast.success(t('createSuccess'));
             onSuccess();
         } catch (error: unknown) {
             const err = error as { response?: { data?: { detail?: string; message?: string } } };
-            const serverMessage = err.response?.data?.detail || err.response?.data?.message || 'Lỗi khi tạo mã khuyến mãi.';
+            const serverMessage = err.response?.data?.detail || err.response?.data?.message || t('createError');
             toast.error(serverMessage);
         }
     };
@@ -667,8 +672,8 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                         <Ticket className="size-8 text-red-400" />
                     </div>
                     <div>
-                        <DialogTitle className="text-3xl font-black uppercase tracking-tight">Tạo mã khuyến mãi</DialogTitle>
-                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Thiết lập chương trình ưu đãi mới cho khách hàng</p>
+                        <DialogTitle className="text-3xl font-black uppercase tracking-tight">{t('createVoucher')}</DialogTitle>
+                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">{t('createSubtitle')}</p>
                     </div>
                 </div>
             </div>
@@ -676,9 +681,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
             <div className="p-8 space-y-8 overflow-y-auto max-h-[70vh]">
                 <div className="grid grid-cols-2 gap-6">
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã Code</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('codeLabel')}</label>
                         <Input
-                            placeholder="VD: BUNBO30"
+                            placeholder={t('codePlaceholder')}
                             className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-black uppercase"
                             value={formData.code}
                             onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
@@ -686,52 +691,52 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại giảm</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('colDiscountType')}</label>
                         <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'Percentage' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, discountType: 'Percentage' })}
                             >
-                                Phần trăm (%)
+                                {t('percentageType')}
                             </button>
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.discountType === 'FixedAmount' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, discountType: 'FixedAmount' })}
                             >
-                                Số tiền (VND)
+                                {t('fixedType')}
                             </button>
                         </div>
                     </div>
 
                     <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Loại Voucher</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('voucherType')}</label>
                         <div className="flex bg-gray-50 p-1 rounded-xl border-2 border-gray-100 h-12">
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'Standard' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, type: 'Standard', pointCost: 0 })}
                             >
-                                Tiêu chuẩn
+                                {t('standardType')}
                             </button>
                             <button
                                 type="button"
                                 className={`flex-1 rounded-lg text-[10px] font-black uppercase transition-all ${formData.type === 'PointRedemption' ? 'bg-white shadow-sm text-gray-900 border border-gray-100' : 'text-gray-400'}`}
                                 onClick={() => setFormData({ ...formData, type: 'PointRedemption' })}
                             >
-                                Đổi điểm thưởng
+                                {t('pointRedemptionType')}
                             </button>
                         </div>
                     </div>
 
                     {formData.type === 'PointRedemption' && (
                         <div className="col-span-2 space-y-2 animate-in fade-in slide-in-from-top-2">
-                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">Số điểm cần để đổi mã này</label>
+                            <label className="text-[10px] font-black text-amber-600 uppercase tracking-[0.2em] px-1 italic">{t('pointsNeededLabel')}</label>
                             <Input
                                 type="number"
                                 min="0"
-                                placeholder="Nhập số điểm khách cần tiêu tốn..."
+                                placeholder={t('pointsNeededPlaceholder')}
                                 className="h-12 border-2 border-amber-200 bg-amber-50 rounded-xl focus:border-amber-500 font-bold text-amber-900"
                                 value={formData.pointCost || ''}
                                 onChange={(e) => setFormData({ ...formData, pointCost: e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)) })}
@@ -741,9 +746,9 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     )}
 
                     <div className="col-span-2 space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mô tả</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('descLabel')}</label>
                         <Input
-                            placeholder="VD: Giảm 30% cho đơn hàng đầu tiên"
+                            placeholder={t('descPlaceholder')}
                             className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-medium"
                             value={formData.description}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -752,7 +757,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Giá trị giảm</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('discountValueLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -764,7 +769,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Đơn tối thiểu</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('minOrderLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -778,7 +783,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
 
                     <div className="grid grid-cols-2 gap-4 col-span-2">
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày bắt đầu</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('startDateLabel')}</label>
                             <Input
                                 type="datetime-local"
                                 className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
@@ -788,7 +793,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                             />
                         </div>
                         <div className="space-y-2">
-                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Ngày kết thúc</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('endDateLabel')}</label>
                             <Input
                                 type="datetime-local"
                                 className="h-12 border-2 border-gray-100 rounded-xl focus:border-[#ff4d4f] font-bold"
@@ -800,7 +805,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     </div>
 
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tổng lượt dùng</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('totalUsageLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -812,7 +817,7 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                         />
                     </div>
                     <div className="space-y-2">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Lượt dùng / user</label>
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('usagePerUserLabel')}</label>
                         <Input
                             type="number"
                             min="0"
@@ -833,14 +838,14 @@ function CreateVoucherForm({ onSuccess }: { onSuccess: () => void }) {
                     onClick={() => onSuccess()}
                     className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
                 >
-                    Hủy bỏ
+                    {t('cancel')}
                 </Button>
                 <Button
                     type="submit"
                     disabled={createVoucherMutation.isPending}
                     className="h-12 px-12 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                 >
-                    {createVoucherMutation.isPending ? 'Đang đồng bộ...' : 'Tạo mã ngay'}
+                    {createVoucherMutation.isPending ? t('syncing') : t('createNow')}
                 </Button>
             </div>
         </form>

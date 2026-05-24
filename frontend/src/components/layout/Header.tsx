@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname as useNextPathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound, Star, BadgePercent, ChevronDown } from 'lucide-react';
+import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, KeyRound, Star, BadgePercent, ChevronDown, Globe } from 'lucide-react';
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePromotions } from '@/hooks/usePromotions';
 import toast from 'react-hot-toast';
@@ -24,12 +24,24 @@ import {
 import { LoginForm } from '@/components/login-form';
 import { useOrderStore } from '@/store/useOrderStore';
 import { CartModal } from '@/components/menu/CartModal';
+import { useLocale, useTranslations } from 'next-intl';
+import { usePathname, useRouter } from '@/i18n/routing';
 
 export function Header() {
+    const nextPathname = useNextPathname();
     const pathname = usePathname();
+    const router = useRouter();
+    const locale = useLocale();
+    const t = useTranslations('LandingHeader');
     const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-    const isActive = (path: string) => pathname === path;
+    const isActive = (path: string) => nextPathname === path;
+
+    const switchLocale = (nextLocale: string) => {
+        if (nextLocale !== locale) {
+            router.replace(pathname, { locale: nextLocale });
+        }
+    };
 
     // Xử lý Hydration mismatch với local storage state của Zustand
     const [mounted, setMounted] = useState(false);
@@ -43,9 +55,9 @@ export function Header() {
     }, []);
 
     const menuItems = [
-        { name: 'TRANG CHỦ', path: '/' },
-        { name: 'THỰC ĐƠN', path: '/menu' },
-        { name: 'VỀ CHÚNG TÔI', path: '/#story' },
+        { name: t('navHome'), path: '/' },
+        { name: t('navMenu'), path: '/menu' },
+        { name: t('navAbout'), path: '/#story' },
     ];
 
     return (
@@ -64,8 +76,8 @@ export function Header() {
                         />
                     </div>
                     <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
-                        <span className="font-display text-lg md:text-xl text-paper leading-none">BÚN BÒ</span>
-                        <span className="font-display text-[10px] md:text-sm text-secondary leading-none">& CÀ PHÊ PHỐ</span>
+                        <span className="font-display text-lg md:text-xl text-paper leading-none">{t('brand1')}</span>
+                        <span className="font-display text-[10px] md:text-sm text-secondary leading-none">{t('brand2')}</span>
                     </div>
 
 
@@ -87,6 +99,32 @@ export function Header() {
                         ))}
                     </nav>
 
+                    {/* Language Toggle */}
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center justify-center h-11 w-11 rounded-full hover:bg-black/5 active:scale-95 transition-all outline-none mr-1 md:mr-2">
+                                <Globe size={22} className="text-text/80" />
+                                <span className="sr-only">Toggle language</span>
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-36 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] font-display p-2 mt-1">
+                            <DropdownMenuItem
+                                onClick={() => switchLocale('vi')}
+                                className={`cursor-pointer px-3 py-2 text-sm font-bold rounded-lg transition-colors flex items-center justify-between ${locale === 'vi' ? 'bg-primary/10 text-primary' : 'hover:bg-black/5 text-text'}`}
+                            >
+                                <span>Tiếng Việt</span>
+                                <span>🇻🇳</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => switchLocale('en')}
+                                className={`cursor-pointer px-3 py-2 text-sm font-bold rounded-lg transition-colors flex items-center justify-between ${locale === 'en' ? 'bg-primary/10 text-primary' : 'hover:bg-black/5 text-text'}`}
+                            >
+                                <span>English</span>
+                                <span>🇬🇧</span>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+
                     {/* Member Section */}
                     <div className="z-50 flex items-center">
                         {/* CartModal only for non-session (guest/browse) — session users use OrderBar */}
@@ -98,7 +136,7 @@ export function Header() {
                                 <div className="relative group cursor-pointer">
                                     <div id="nav-member-desktop" className="onboarding-member hidden md:flex items-center gap-2 bg-primary text-white font-display text-sm px-4 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all">
                                         <User size={14} className="w-4 h-4" />
-                                        <span>{(user.username || 'THÀNH VIÊN').toUpperCase()}</span>
+                                        <span>{(user.username || t('member')).toUpperCase()}</span>
                                         {points && (
                                             <div className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full ml-1">
                                                 <Star size={10} className="fill-yellow-300 text-yellow-300" />
@@ -113,7 +151,7 @@ export function Header() {
                                                 href="/admin"
                                                 className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
                                             >
-                                                TRANG QUẢN TRỊ
+                                                {t('admin')}
                                             </Link>
                                         )}
                                         {user.role === 'Client' && (
@@ -122,13 +160,13 @@ export function Header() {
                                                     href="/history"
                                                     className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
                                                 >
-                                                    LỊCH SỬ ĐƠN HÀNG
+                                                    {t('history')}
                                                 </Link>
                                                 <Link
                                                     href="/vouchers"
                                                     className="px-4 py-3 text-left text-sm font-bold border-b-2 border-text/5 hover:bg-black/5 transition-colors"
                                                 >
-                                                    ƯU ĐÃI CỦA TÔI
+                                                    {t('vouchers')}
                                                 </Link>
                                             </>
                                         )}
@@ -147,7 +185,7 @@ export function Header() {
                                     onClick={() => setIsLoginOpen(true)}
                                 >
                                     <User size={16} />
-                                    <span>THÀNH VIÊN</span>
+                                    <span>{t('member')}</span>
                                 </div>
                             )}
                         </div>
@@ -161,7 +199,7 @@ export function Header() {
                                         className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all cursor-pointer"
                                     >
                                         <User size={16} />
-                                        <span>{mounted && user ? (user.username || 'THÀNH VIÊN').toUpperCase() : 'THÀNH VIÊN'}</span>
+                                        <span>{mounted && user ? (user.username || t('member')).toUpperCase() : t('member')}</span>
                                         {mounted && user && points && (
                                             <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-black">
                                                 <Star size={8} className="fill-yellow-300 text-yellow-300" />
@@ -173,24 +211,24 @@ export function Header() {
                                 <DropdownMenuContent align="end" className="w-64 bg-white border-2 border-text rounded-xl shadow-[4px_4px_0px_#2D2D2D] p-2 mt-2 font-display">
                                     <DropdownMenuItem asChild id="mobile-home">
                                         <Link href="/" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
-                                            <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> TRANG CHỦ</span>
+                                            <span className="flex items-center gap-2.5"><Home size={15} className="text-neutral-500" /> {t('navHome')}</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild id="mobile-menu">
                                         <Link href="/menu" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
-                                            <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> THỰC ĐƠN</span>
+                                            <span className="flex items-center gap-2.5"><UtensilsCrossed size={15} className="text-neutral-500" /> {t('navMenu')}</span>
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild id="mobile-about">
                                         <Link href="/#story" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5" >
-                                            <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> VỀ CHÚNG TÔI</span>
+                                            <span className="flex items-center gap-2.5"><Building2 size={15} className="text-neutral-500" /> {t('navAbout')}</span>
                                         </Link>
                                     </DropdownMenuItem>
 
                                     {mounted && user && user.role === 'Admin' && (
                                         <DropdownMenuItem asChild id="mobile-admin">
                                             <Link href="/admin" className="w-full text-sm font-bold bg-black/5 border-2 border-black/5 cursor-pointer px-4 py-3 hover:bg-black/10 rounded-lg transition-colors focus:bg-black/10" >
-                                                <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> QUẢN TRỊ VIÊN</span>
+                                                <span className="flex items-center gap-2.5"><Settings size={15} className="text-neutral-500" /> {t('admin')}</span>
                                             </Link>
                                         </DropdownMenuItem>
                                     )}
@@ -199,7 +237,7 @@ export function Header() {
                                         <>
                                             <DropdownMenuItem asChild id="mobile-history">
                                                 <Link href="/history" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-all focus:bg-black/5 flex items-center justify-between group" >
-                                                    <span className="flex items-center gap-2.5"><ScrollText size={16} className="text-primary" /> LỊCH SỬ ĐƠN HÀNG</span>
+                                                    <span className="flex items-center gap-2.5"><ScrollText size={16} className="text-primary" /> {t('history')}</span>
                                                     <div className="size-5 rounded-full bg-primary/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <ChevronDown size={10} className="-rotate-90 text-primary" />
                                                     </div>
@@ -207,7 +245,7 @@ export function Header() {
                                             </DropdownMenuItem>
                                             <DropdownMenuItem asChild id="mobile-vouchers">
                                                 <Link href="/vouchers" className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-all focus:bg-black/5 flex items-center justify-between group" >
-                                                    <span className="flex items-center gap-2.5"><BadgePercent size={16} className="text-secondary" /> ƯU ĐÃI CỦA TÔI</span>
+                                                    <span className="flex items-center gap-2.5"><BadgePercent size={16} className="text-secondary" /> {t('vouchers')}</span>
                                                     <div className="size-5 rounded-full bg-secondary/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <ChevronDown size={10} className="-rotate-90 text-secondary" />
                                                     </div>
@@ -223,11 +261,11 @@ export function Header() {
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 logout();
-                                                toast.success('Đã đăng xuất!');
+                                                toast.success(t('logoutSuccess'));
                                             }}
                                             className="w-full text-sm font-bold text-red-600 focus:text-red-700 cursor-pointer px-4 py-3 hover:bg-red-50 rounded-lg transition-colors focus:bg-red-50"
                                         >
-                                            <span className="flex items-center gap-2.5"><LogOut size={15} /> ĐĂNG XUẤT</span>
+                                            <span className="flex items-center gap-2.5"><LogOut size={15} /> {t('logout')}</span>
                                         </DropdownMenuItem>
                                     ) : (
                                         <DropdownMenuItem
@@ -237,7 +275,7 @@ export function Header() {
                                             }}
                                             className="w-full text-sm font-bold cursor-pointer px-4 py-3 hover:bg-black/5 rounded-lg transition-colors focus:bg-black/5"
                                         >
-                                            <span className="flex items-center gap-2.5"><KeyRound size={15} className="text-neutral-500" /> ĐĂNG NHẬP</span>
+                                            <span className="flex items-center gap-2.5"><KeyRound size={15} className="text-neutral-500" /> {t('login')}</span>
                                         </DropdownMenuItem>
                                     )}
                                 </DropdownMenuContent>

@@ -12,8 +12,10 @@ import {
 import { Loader2, CameraOff, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
+import { useTranslations } from 'next-intl';
 
 export function ScannerModal({ children }: { children: React.ReactElement }) {
+    const t = useTranslations('Landing.Scanner');
     const [isOpen, setIsOpen] = useState(false);
     const [isScanning, setIsScanning] = useState(false);
     const [cameraError, setCameraError] = useState<string | null>(null);
@@ -51,11 +53,11 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
             } else {
                 router.push(`/scan/${decodedText}`);
             }
-            toast.success("Quét mã thành công!");
+            toast.success(t('success'));
         } catch {
-            toast.error("Mã QR không hợp lệ!");
+            toast.error(t('invalid'));
         }
-    }, [stopScanner, router]);
+    }, [stopScanner, router, t]);
 
     const startScanner = useCallback(async () => {
         if (isTransitioningRef.current) return;
@@ -86,12 +88,12 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
             setIsScanning(true);
         } catch (err: unknown) {
             console.error("Camera error:", err);
-            setCameraError("Hệ thống đã chặn quyền truy cập Camera. Bạn có thể sử dụng ảnh mã QR để thay thế.");
+            setCameraError(t('cameraError'));
             setIsScanning(false);
         } finally {
             isTransitioningRef.current = false;
         }
-    }, [handleScanSuccess]);
+    }, [handleScanSuccess, t]);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -103,7 +105,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                 const decodedText = await scannerRef.current.scanFile(imageFile, true);
                 handleScanSuccess(decodedText);
             } catch {
-                toast.error("Không tìm thấy mã QR trong ảnh này.");
+                toast.error(t('notFoundInImg'));
             }
         }
     };
@@ -126,17 +128,17 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
             <DialogContent className="w-[92vw] max-w-md bg-white border-2 border-black p-0 overflow-hidden shadow-[8px_8px_0px_rgba(0,0,0,0.1)] rounded-[2.5rem]">
-        <DialogDescription className="sr-only">Dialog nội dung</DialogDescription>
+        <DialogDescription className="sr-only">{t('dialogContent')}</DialogDescription>
                 <div className="absolute inset-0 opacity-[0.05] pointer-events-none"
                     style={{ backgroundImage: "url('/images/parchment.png')" }}>
                 </div>
 
                 <DialogHeader className="p-8 pb-4 relative z-10 text-center bg-white border-b-2 border-black/5">
                     <DialogTitle className="font-display text-3xl font-black text-primary tracking-tight uppercase drop-shadow-[2px_2px_0px_rgba(0,0,0,0.1)]">
-                        Quét Mã QR
+                        {t('title')}
                     </DialogTitle>
                     <p className="text-xs font-main font-bold text-neutral-400 mt-2 uppercase tracking-widest">
-                        Vui lòng quét mã tại bàn quý khách đang ngồi
+                        {t('subtitle')}
                     </p>
                 </DialogHeader>
 
@@ -173,7 +175,7 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                                     <Loader2 className="w-12 h-12 animate-spin text-primary relative z-10" />
                                     <div className="absolute inset-0 w-12 h-12 bg-primary/20 blur-xl animate-pulse" />
                                 </div>
-                                <span className="font-display font-black text-xs uppercase tracking-[0.3em] mt-6 animate-pulse">Khởi động camera...</span>
+                                <span className="font-display font-black text-xs uppercase tracking-[0.3em] mt-6 animate-pulse">{t('loadingCamera')}</span>
                             </div>
                         )}
 
@@ -191,14 +193,14 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                                         className="bg-white hover:bg-neutral-100 text-black border-2 border-black font-display font-black text-xs tracking-widest uppercase rounded-full h-14 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-[2px] active:shadow-none transition-all flex items-center justify-center gap-3"
                                     >
                                         <Upload size={18} className="text-primary" />
-                                        Tải ảnh mã QR
+                                        {t('uploadImg')}
                                     </Button>
                                     <Button
                                         variant="ghost"
                                         onClick={startScanner}
                                         className="text-neutral-400 hover:text-white hover:bg-white/5 font-bold text-xs uppercase tracking-widest"
                                     >
-                                        Thử lại
+                                        {t('retry')}
                                     </Button>
                                     <input
                                         type="file"
@@ -217,13 +219,13 @@ export function ScannerModal({ children }: { children: React.ReactElement }) {
                             <div className="flex flex-col items-center gap-2">
                                 <div className="flex items-center gap-3 px-6 py-2 bg-primary/5 rounded-full border border-primary/10">
                                     <div className="w-2 h-2 bg-primary rounded-full animate-ping" />
-                                    <span className="text-[10px] font-display font-black text-primary uppercase tracking-[0.2em]">Đang tìm mã QR...</span>
+                                    <span className="text-[10px] font-display font-black text-primary uppercase tracking-[0.2em]">{t('findingQR')}</span>
                                 </div>
                                 <button
                                     onClick={stopScanner}
                                     className="text-[10px] font-bold text-neutral-400 mt-4 uppercase tracking-widest hover:text-red-500 transition-colors"
                                 >
-                                    Dừng quét
+                                    {t('stopScanning')}
                                 </button>
                             </div>
                         ) : (

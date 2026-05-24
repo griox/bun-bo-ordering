@@ -16,24 +16,34 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface SidebarProps {
     isOpen?: boolean;
     onClose?: () => void;
 }
 
-const menuItems = [
-    { title: 'Bảng điều khiển', icon: LayoutDashboard, href: '/admin' },
-    { title: 'Quản lý món ăn', icon: Utensils, href: '/admin/dishes' },
-    { title: 'Quản lý bàn', icon: Settings, href: '/admin/tables' },
-    { title: 'Đơn hàng', icon: ClipboardList, href: '/admin/orders' },
-    { title: 'Người dùng', icon: Users, href: '/admin/users' },
-    { title: 'Khuyến mãi', icon: Ticket, href: '/admin/promotions' },
-];
-
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
     const pathname = usePathname();
     const logout = useAuthStore((state) => state.logout);
+    const t = useTranslations('Sidebar');
+
+    const menuItems = [
+        { title: t('dashboard'), icon: LayoutDashboard, href: '/admin' },
+        { title: t('dishes'), icon: Utensils, href: '/admin/dishes' },
+        { title: t('tables'), icon: Settings, href: '/admin/tables' },
+        { title: t('orders'), icon: ClipboardList, href: '/admin/orders' },
+        { title: t('users'), icon: Users, href: '/admin/users' },
+        { title: t('promotions'), icon: Ticket, href: '/admin/promotions' },
+    ];
+
+    // Check if path is active (considering locale prefix)
+    const isActivePath = (path: string) => {
+        if (path === '/admin') {
+            return pathname === '/admin' || pathname === '/en/admin' || pathname === '/vi/admin';
+        }
+        return pathname.includes(path);
+    };
 
     return (
         <aside className={cn(
@@ -41,7 +51,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             isOpen ? "translate-x-0" : "-translate-x-full"
         )}>
             <div className="p-6 flex items-center justify-between border-b border-gray-50">
-                <Link href="/" className="flex items-center gap-2 group" onClick={onClose}>
+                <Link href="/admin" className="flex items-center gap-2 group" onClick={onClose}>
                     <div className="size-8 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-105 transition-transform">
                         <Utensils className="size-4 text-primary" />
                     </div>
@@ -59,10 +69,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
             </div>
 
             <div className="px-4 py-6 flex-1 overflow-y-auto">
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 mb-4">Menu</p>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-4 mb-4">{t('menu')}</p>
                 <nav className="space-y-1">
                     {menuItems.map((item) => {
-                        const isActive = pathname === item.href;
+                        const isActive = isActivePath(item.href);
                         return (
                             <Link key={item.href} href={item.href} onClick={onClose}>
                                 <div className={cn(
@@ -87,7 +97,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     onClick={() => logout()}
                 >
                     <LogOut className="size-5" />
-                    <span className="font-medium text-base lg:text-sm">Đăng xuất</span>
+                    <span className="font-medium text-base lg:text-sm">{t('logout')}</span>
                 </Button>
             </div>
         </aside>

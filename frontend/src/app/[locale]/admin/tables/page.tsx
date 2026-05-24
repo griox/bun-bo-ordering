@@ -27,8 +27,10 @@ import { useTables, useCreateTableMutation, useUpdateTableMutation, useUpdateTab
 import { useUnreadOrders, UnreadOrder } from '@/hooks/useUnreadOrders';
 import { motion } from 'framer-motion';
 import { QRCodeCanvas } from 'qrcode.react';
+import { useTranslations } from 'next-intl';
 
 export default function TablesPage() {
+    const t = useTranslations('Tables');
     const { data: tables = [], isLoading } = useTables();
     const createTableMutation = useCreateTableMutation();
     const updateTableMutation = useUpdateTableMutation();
@@ -157,8 +159,8 @@ export default function TablesPage() {
         <div className="space-y-10 pb-10">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Quản lý sơ đồ bàn</h2>
-                    <p className="text-sm text-gray-500 mt-1">Thiết lập vị trí & mã QR gọi món kỹ thuật số.</p>
+                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">{t('title')}</h2>
+                    <p className="text-sm text-gray-500 mt-1">{t('subtitle')}</p>
                 </div>
                 <Dialog open={isDialogOpen} onOpenChange={(open) => {
                     setIsDialogOpen(open);
@@ -167,7 +169,7 @@ export default function TablesPage() {
                     <DialogTrigger asChild>
                         <Button className="min-h-[48px] px-6 bg-primary hover:bg-primary/90 text-white font-bold text-xs gap-2 rounded-xl transition-all shadow-sm" onClick={() => resetForm()}>
                             <Plus className="size-4" />
-                            THÊM BÀN MỚI
+                            {t('addNewTable')}
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md bg-white border-none rounded-3xl p-0 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
@@ -179,30 +181,30 @@ export default function TablesPage() {
                                     </div>
                                     <div>
                                         <DialogTitle className="text-2xl font-black uppercase tracking-tight">
-                                            {editingTable ? 'Cập nhật bàn' : 'Tạo bàn mới'}
+                                            {editingTable ? t('updateTable') : t('createNewTable')}
                                         </DialogTitle>
-                                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">Gán mã định danh kỹ thuật cho bàn ăn</p>
+                                        <p className="text-white/40 text-[10px] font-black uppercase tracking-[0.2em] mt-1.5">{t('tableIdentifierDesc')}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="p-8 space-y-8 bg-white">
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Mã định danh bàn</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('tableIdLabel')}</label>
                                     <Input
                                         required
                                         className="h-14 border-2 border-gray-100 rounded-2xl bg-gray-50/30 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-bold text-gray-900 placeholder:text-gray-300 text-base"
-                                        placeholder="Ví dụ: T1, VIP-01"
+                                        placeholder={t('tableIdPlaceholder')}
                                         value={formData.tableCode}
                                         onChange={e => setFormData({ ...formData, tableCode: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-3">
-                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">Tên hiển thị nội bộ</label>
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] px-1">{t('displayNameLabel')}</label>
                                     <Input
                                         required
                                         className="h-14 border-2 border-gray-100 rounded-2xl bg-gray-50/30 focus:bg-white focus:border-red-500 focus:ring-4 focus:ring-red-500/10 transition-all font-bold text-gray-900 placeholder:text-gray-300 text-base"
-                                        placeholder="Ví dụ: Bàn 1, Bàn cửa sổ"
+                                        placeholder={t('displayNamePlaceholder')}
                                         value={formData.name}
                                         onChange={e => setFormData({ ...formData, name: e.target.value })}
                                     />
@@ -216,13 +218,13 @@ export default function TablesPage() {
                                     onClick={() => setIsDialogOpen(false)}
                                     className="h-12 px-6 font-black uppercase text-[10px] tracking-widest text-gray-400 hover:text-gray-900 transition-all"
                                 >
-                                    Hủy bỏ
+                                    {t('cancel')}
                                 </Button>
                                 <Button
                                     type="submit"
                                     className="h-12 px-10 bg-red-500 hover:bg-red-600 text-white font-black uppercase text-[10px] tracking-[0.1em] rounded-2xl shadow-lg shadow-red-500/20 active:scale-95 transition-all"
                                 >
-                                    {editingTable ? 'Lưu thay đổi' : 'Tạo bàn ngay'}
+                                    {editingTable ? t('saveChanges') : t('createNow')}
                                 </Button>
                             </div>
                         </form>
@@ -234,13 +236,13 @@ export default function TablesPage() {
                 {/* Left: Table List */}
                 <Card className="lg:col-span-1 border-none shadow-sm rounded-2xl p-6 h-[400px] lg:h-[650px] flex flex-col bg-white">
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-                        DANH SÁCH BÀN
+                        {t('tableList')}
                     </h3>
                     <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar">
                         {isLoading ? (
                             <div className="flex flex-col items-center justify-center py-20 gap-4 opacity-40">
                                 <Loader2 className="size-8 animate-spin text-[#ff4d4f]" />
-                                <p className="font-black text-[10px] uppercase">Đang tải...</p>
+                                <p className="font-black text-[10px] uppercase">{t('loading')}</p>
                             </div>
                         ) : paginatedTables.map(table => {
                             const tableOrders = unreadOrders.filter(o => o.tableCode === table.tableCode);
@@ -298,7 +300,7 @@ export default function TablesPage() {
                     {/* Pagination for table list */}
                     <div className="pt-4 mt-auto border-t border-gray-50 flex flex-col items-center gap-2">
                         <p className="text-[9px] font-black text-gray-300 uppercase tracking-widest">
-                            Trang {page + 1} / {totalPages || 1}
+                            {t('page')} {page + 1} / {totalPages || 1}
                         </p>
                         <AdminPagination 
                             currentPage={page} 
@@ -393,13 +395,13 @@ export default function TablesPage() {
                                 ) : (
                                     <Save className="size-4" />
                                 )}
-                                ĐỒNG BỘ VỊ TRÍ
+                                {t('syncPosition')}
                             </Button>
                         </div>
                     )}
 
                     <div className="absolute bottom-4 right-4 lg:bottom-8 lg:right-8 bg-white/80 backdrop-blur-md border border-gray-100 px-4 py-2 lg:px-6 lg:py-3 rounded-2xl shadow-sm text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 lg:gap-3 transition-all hover:bg-white hover:shadow-md">
-                        <Move className="size-3 lg:size-4 text-[#ff4d4f]" /> GIỮ VÀ KÉO ĐỂ THAY ĐỔI VỊ TRÍ
+                        <Move className="size-3 lg:size-4 text-[#ff4d4f]" /> {t('dragInstruction')}
                     </div>
                 </Card>
             </div>
@@ -409,8 +411,8 @@ export default function TablesPage() {
                 <DialogContent className="max-w-sm rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
                     <div className="p-6 border-b border-gray-100 bg-gray-50/50">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-bold text-center text-gray-900">Mã QR Gọi món</DialogTitle>
-                            <DialogDescription className="text-center text-sm text-gray-500 mt-1">Bàn: {selectedTableForQR?.tableCode} - {selectedTableForQR?.name}</DialogDescription>
+                            <DialogTitle className="text-xl font-bold text-center text-gray-900">{t('qrTitle')}</DialogTitle>
+                            <DialogDescription className="text-center text-sm text-gray-500 mt-1">{t('table')}: {selectedTableForQR?.tableCode} - {selectedTableForQR?.name}</DialogDescription>
                         </DialogHeader>
                     </div>
 
@@ -432,7 +434,7 @@ export default function TablesPage() {
                                 </div>
                                 <Button className="w-full min-h-[48px] bg-primary hover:bg-primary/90 text-white font-bold text-sm gap-2 rounded-xl shadow-md transition-all" onClick={() => downloadQR(selectedTableForQR)}>
                                     <Download className="size-5" />
-                                    TẢI MÃ QR
+                                    {t('downloadQr')}
                                 </Button>
                             </>
                         )}
@@ -444,8 +446,8 @@ export default function TablesPage() {
                 <DialogContent className="max-w-md rounded-2xl border-none shadow-2xl p-0 overflow-hidden bg-white">
                     <div className="p-6 border-b border-gray-100 bg-gray-50/50">
                         <DialogHeader>
-                            <DialogTitle className="text-xl font-bold text-center text-gray-900">Thông báo đơn mới</DialogTitle>
-                            <DialogDescription className="text-center text-sm text-gray-500 mt-1">Bàn {selectedTableForOrders?.tableCode} - {selectedTableForOrders?.name}</DialogDescription>
+                            <DialogTitle className="text-xl font-bold text-center text-gray-900">{t('newOrderNotification')}</DialogTitle>
+                            <DialogDescription className="text-center text-sm text-gray-500 mt-1">{t('table')} {selectedTableForOrders?.tableCode} - {selectedTableForOrders?.name}</DialogDescription>
                         </DialogHeader>
                     </div>
 
@@ -459,15 +461,15 @@ export default function TablesPage() {
                                         <div className="flex items-center gap-2">
                                             {order.paymentMethod === 'Transfer' ? (
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
-                                                    Đã thanh toán
+                                                    {t('paid')}
                                                 </span>
                                             ) : (
                                                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100">
-                                                    Chưa thanh toán
+                                                    {t('unpaid')}
                                                 </span>
                                             )}
                                             <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4d4f] animate-pulse">
-                                                Mới
+                                                {t('new')}
                                             </span>
                                         </div>
                                     </div>
@@ -480,7 +482,7 @@ export default function TablesPage() {
                                                 </div>
                                                 {item.note && (
                                                     <div className="text-xs text-gray-500 mt-1 italic pl-2 border-l-2 border-gray-200">
-                                                        Ghi chú: {item.note}
+                                                        {t('note')} {item.note}
                                                     </div>
                                                 )}
                                             </li>
@@ -500,7 +502,7 @@ export default function TablesPage() {
                             }}
                         >
                             {isMarkingAsRead ? <Loader2 className="size-5 animate-spin" /> : null}
-                            XÁC NHẬN ĐÃ XEM
+                            {t('confirmSeen')}
                         </Button>
                     </div>
                 </DialogContent>
