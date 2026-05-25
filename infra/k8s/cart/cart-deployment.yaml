@@ -25,8 +25,8 @@ spec:
             cpu: "80m"
             memory: "100Mi"
           limits:
-            cpu: "1000m"
-            memory: "512Mi"
+            cpu: "400m"
+            memory: "256Mi"
         livenessProbe:
           tcpSocket:
             port: 8080
@@ -83,7 +83,7 @@ spec:
     kind: Deployment
     name: cart-service
   minReplicas: 2
-  maxReplicas: 6
+  maxReplicas: 4
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120
