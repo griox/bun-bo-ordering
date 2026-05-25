@@ -102,8 +102,9 @@ export function Header() {
                     {/* Language Toggle */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <button className="flex items-center justify-center h-11 w-11 rounded-full hover:bg-black/5 active:scale-95 transition-all outline-none mr-1 md:mr-2">
-                                <Globe size={22} className="text-text/80" />
+                            <button className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-full hover:bg-black/5 active:scale-95 transition-all outline-none mr-1 md:mr-2">
+                                <Globe size={20} className="text-text/80" />
+                                <span className="font-display font-bold text-sm text-text/80 mt-0.5">{locale === 'vi' ? 'VN' : 'ENG'}</span>
                                 <span className="sr-only">Toggle language</span>
                             </button>
                         </DropdownMenuTrigger>

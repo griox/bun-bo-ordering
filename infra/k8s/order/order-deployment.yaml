@@ -22,10 +22,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
-            memory: "256Mi"
+            cpu: "300m"
+            memory: "350Mi"
           limits:
-            cpu: "1000m"
+            cpu: "1500m"
             memory: "768Mi"
         livenessProbe:
           tcpSocket:
@@ -115,7 +115,7 @@ spec:
     kind: Deployment
     name: order-service
   minReplicas: 2
-  maxReplicas: 4
+  maxReplicas: 6
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120
