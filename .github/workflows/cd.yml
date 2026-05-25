@@ -22,12 +22,13 @@ jobs:
     
     env:
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
@@ -55,6 +56,10 @@ jobs:
       # 2. UPDATE CONFIGURATION
       - name: Prepare Image Tags
         run: |
+          if [ -z "${IMAGE_TAG}" ]; then
+            echo "::error::IMAGE_TAG is empty, aborting deployment to prevent ImagePullBackOff!"
+            exit 1
+          fi
           echo "Updating deployment manifests to use image tag: ${IMAGE_TAG}"
           # Replace 'latest' tag with the specific commit SHA to force rolling updates
           find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/:latest/:${IMAGE_TAG}/g" {} +
