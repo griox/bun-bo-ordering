@@ -66,7 +66,7 @@ export default function TablesPage() {
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
     const [selectedTableForOrders, setSelectedTableForOrders] = useState<RestaurantTable | null>(null);
 
-    const parentRef = useRef<HTMLDivElement>(null);
+    const [listElement, setListElement] = useState<HTMLDivElement | null>(null);
     const filteredOrders = React.useMemo(() => {
         if (!selectedTableForOrders) return [];
         return unreadOrders.filter(o => o.tableCode === selectedTableForOrders.tableCode);
@@ -74,7 +74,7 @@ export default function TablesPage() {
 
     const virtualizer = useVirtualizer({
         count: filteredOrders.length,
-        getScrollElement: () => parentRef.current,
+        getScrollElement: () => listElement,
         estimateSize: () => 180,
         overscan: 5,
     });
@@ -465,7 +465,7 @@ export default function TablesPage() {
                         </DialogHeader>
                     </div>
 
-                    <div ref={parentRef} className="flex flex-col p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                    <div ref={setListElement} className="flex flex-col p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
                         <div
                             style={{
                                 height: `${virtualizer.getTotalSize()}px`,
