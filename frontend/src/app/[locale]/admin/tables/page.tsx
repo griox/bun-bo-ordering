@@ -525,9 +525,11 @@ export default function TablesPage() {
                                 );
                             })}
                         </div>
+                    </div>
                         
+                    <div className="p-6 border-t border-gray-100 bg-gray-50/50">
                         <Button
-                            className="w-full min-h-[48px] mt-4 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-sm gap-2 rounded-xl shadow-md transition-all"
+                            className="w-full min-h-[48px] bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-sm gap-2 rounded-xl shadow-md transition-all"
                             disabled={isMarkingAsRead}
                             onClick={() => {
                                 if (selectedTableForOrders) {
