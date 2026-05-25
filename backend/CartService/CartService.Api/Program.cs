@@ -19,6 +19,7 @@ builder.Host.AddSerilogLogging("CartService");
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddMemoryCache();
 
 // Configure Global Exception Handling
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
