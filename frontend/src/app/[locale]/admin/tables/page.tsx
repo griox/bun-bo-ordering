@@ -28,6 +28,7 @@ import { useUnreadOrders, UnreadOrder } from '@/hooks/useUnreadOrders';
 import { motion } from 'framer-motion';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useTranslations } from 'next-intl';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 export default function TablesPage() {
     const t = useTranslations('Tables');
@@ -64,6 +65,19 @@ export default function TablesPage() {
 
     const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
     const [selectedTableForOrders, setSelectedTableForOrders] = useState<RestaurantTable | null>(null);
+
+    const parentRef = useRef<HTMLDivElement>(null);
+    const filteredOrders = React.useMemo(() => {
+        if (!selectedTableForOrders) return [];
+        return unreadOrders.filter(o => o.tableCode === selectedTableForOrders.tableCode);
+    }, [selectedTableForOrders, unreadOrders]);
+
+    const virtualizer = useVirtualizer({
+        count: filteredOrders.length,
+        getScrollElement: () => parentRef.current,
+        estimateSize: () => 180,
+        overscan: 5,
+    });
 
     const floorPlanRef = useRef<HTMLDivElement>(null);
 
@@ -451,45 +465,66 @@ export default function TablesPage() {
                         </DialogHeader>
                     </div>
 
-                    <div className="flex flex-col gap-4 p-8 max-h-[60vh] overflow-y-auto">
-                        {selectedTableForOrders && unreadOrders
-                            .filter(o => o.tableCode === selectedTableForOrders.tableCode)
-                            .map(order => (
-                                <div key={order.id} className="p-4 border border-gray-100 rounded-2xl bg-gray-50/30">
-                                    <div className="flex justify-between items-center mb-3">
-                                        <span className="text-xs text-gray-400 font-mono tracking-wider">#{order.id.slice(0, 8).toUpperCase()}</span>
-                                        <div className="flex items-center gap-2">
-                                            {order.paymentMethod === 'Transfer' ? (
-                                                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
-                                                    {t('paid')}
-                                                </span>
-                                            ) : (
-                                                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100">
-                                                    {t('unpaid')}
-                                                </span>
-                                            )}
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4d4f] animate-pulse">
-                                                {t('new')}
-                                            </span>
+                    <div ref={parentRef} className="flex flex-col p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <div
+                            style={{
+                                height: `${virtualizer.getTotalSize()}px`,
+                                width: '100%',
+                                position: 'relative',
+                            }}
+                        >
+                            {virtualizer.getVirtualItems().map((virtualItem) => {
+                                const order = filteredOrders[virtualItem.index];
+                                return (
+                                    <div
+                                        key={virtualItem.key}
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            transform: `translateY(${virtualItem.start}px)`,
+                                        }}
+                                        className="pb-4"
+                                    >
+                                        <div className="p-4 border border-gray-100 rounded-2xl bg-gray-50/30">
+                                            <div className="flex justify-between items-center mb-3">
+                                                <span className="text-xs text-gray-400 font-mono tracking-wider">#{order.id.slice(0, 8).toUpperCase()}</span>
+                                                <div className="flex items-center gap-2">
+                                                    {order.paymentMethod === 'Transfer' ? (
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100">
+                                                            {t('paid')}
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 bg-amber-50 px-2 py-1 rounded-md border border-amber-100">
+                                                            {t('unpaid')}
+                                                        </span>
+                                                    )}
+                                                    <span className="text-[10px] font-black uppercase tracking-widest text-[#ff4d4f] animate-pulse">
+                                                        {t('new')}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <ul className="space-y-3">
+                                                {order.items?.map((item, idx) => (
+                                                    <li key={idx} className="text-sm flex flex-col pb-3 border-b border-gray-100 last:border-0 last:pb-0">
+                                                        <div className="flex justify-between items-center">
+                                                            <span className="font-semibold text-gray-700">{item.productName}</span>
+                                                            <span className="font-black bg-gray-100 px-2.5 py-1 rounded-lg text-xs">x{item.quantity}</span>
+                                                        </div>
+                                                        {item.note && (
+                                                            <div className="text-xs text-gray-500 mt-1 italic pl-2 border-l-2 border-gray-200">
+                                                                {t('note')} {item.note}
+                                                            </div>
+                                                        )}
+                                                    </li>
+                                                ))}
+                                            </ul>
                                         </div>
                                     </div>
-                                    <ul className="space-y-3">
-                                        {order.items?.map((item, idx) => (
-                                            <li key={idx} className="text-sm flex flex-col pb-3 border-b border-gray-100 last:border-0 last:pb-0">
-                                                <div className="flex justify-between items-center">
-                                                    <span className="font-semibold text-gray-700">{item.productName}</span>
-                                                    <span className="font-black bg-gray-100 px-2.5 py-1 rounded-lg text-xs">x{item.quantity}</span>
-                                                </div>
-                                                {item.note && (
-                                                    <div className="text-xs text-gray-500 mt-1 italic pl-2 border-l-2 border-gray-200">
-                                                        {t('note')} {item.note}
-                                                    </div>
-                                                )}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            ))}
+                                );
+                            })}
+                        </div>
                         
                         <Button
                             className="w-full min-h-[48px] mt-4 bg-[#ff4d4f] hover:bg-[#ff4d4f]/90 text-white font-bold text-sm gap-2 rounded-xl shadow-md transition-all"
