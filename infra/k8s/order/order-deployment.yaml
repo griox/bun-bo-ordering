@@ -26,7 +26,7 @@ spec:
             memory: "150Mi"
           limits:
             cpu: "400m"
-            memory: "384Mi"
+            memory: "512Mi"
         livenessProbe:
           tcpSocket:
             port: 8080

@@ -30,13 +30,13 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
-  title: "Bún Bò Chung Cư & Cà Phê - Hương Vị Truyền Thống",
+  title: "Bún Bò Chung Cư & Cà Phê ",
   description: "Trải nghiệm bún bò đậm đà và cà phê sữa đá Nha Trang chuẩn vị trong không gian Retro giữa lòng thành phố.",
   keywords: ["bún bò", "cà phê", "nha trang", "ẩm thực việt", "đặt món online"],
   openGraph: {
-    title: "Bún Bò Chung Cư & Cà Phê - Hương Vị Truyền Thống",
+    title: "Bún Bò Chung Cư & Cà Phê ",
     description: "Trải nghiệm bún bò đậm đà và cà phê sữa đá Nha Trang chuẩn vị trong không gian Retro giữa lòng thành phố.",
-    url: "https://bunbo.vn",
+    url: "https://bun-bo-chung-cu.io.vn",
     siteName: "Bún Bò Chung Cư & Cà Phê",
     images: [
       {
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     images: ["/images/og-image.jpg"],
   },
   alternates: {
-    canonical: "https://bunbo.vn",
+    canonical: "https://bun-bo-chung-cu.io.vn",
   },
 };
 
