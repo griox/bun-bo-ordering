@@ -17,24 +17,16 @@ public class MarkTableOrdersAsReadCommandHandler : IRequestHandler<MarkTableOrde
 
     public async Task<bool> Handle(MarkTableOrdersAsReadCommand request, CancellationToken cancellationToken)
     {
-        var orders = await _context.Orders
-            .Include(o => o.TableSession)
-            .ThenInclude(ts => ts!.Table)
-            .Where(o => o.TableSession != null && o.TableSession.Table != null && o.TableSession.Table.TableCode == request.TableCode && o.IsRead == false)
-            .ToListAsync(cancellationToken);
+        // Bulk UPDATE trực tiếp trên DB — 1 câu SQL duy nhất, không load entity vào RAM
+        var affectedRows = await _context.Orders
+            .Where(o => o.TableSession != null
+                && o.TableSession.Table != null
+                && o.TableSession.Table.TableCode == request.TableCode
+                && o.IsRead == false)
+            .ExecuteUpdateAsync(
+                setters => setters.SetProperty(o => o.IsRead, true),
+                cancellationToken);
 
-        if (!orders.Any())
-        {
-            return false;
-        }
-
-        foreach (var order in orders)
-        {
-            order.MarkAsRead();
-        }
-
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return true;
+        return affectedRows > 0;
     }
 }
