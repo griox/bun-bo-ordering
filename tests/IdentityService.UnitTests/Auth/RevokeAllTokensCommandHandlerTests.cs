@@ -24,7 +24,7 @@ public class RevokeAllTokensCommandHandlerTests
         // Arrange
         var user = new User("admin", "admin@test.com", "hash", "Admin");
         var userId = user.Id;
-        user.UpdateRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
+        user.AddRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
 
         _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });
 
@@ -35,7 +35,7 @@ public class RevokeAllTokensCommandHandlerTests
 
         // Assert
         result.Should().BeTrue();
-        user.RefreshToken.Should().BeNull();
+        user.RefreshTokens.Should().BeEmpty();
         _dbContextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

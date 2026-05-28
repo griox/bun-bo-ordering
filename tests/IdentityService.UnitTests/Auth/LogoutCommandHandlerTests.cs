@@ -25,7 +25,7 @@ public class LogoutCommandHandlerTests
         // Arrange
         var user = new User("test", "test@test.com", "hash", "Client");
         var userId = user.Id;
-        user.UpdateRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
+        user.AddRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
 
         _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });
 
@@ -35,8 +35,7 @@ public class LogoutCommandHandlerTests
         await _handler.Handle(command, CancellationToken.None);
 
         // Assert
-        user.RefreshToken.Should().BeNull();
-        user.RefreshTokenExpiryTime.Should().BeNull();
+        user.RefreshTokens.Should().BeEmpty();
         _dbContextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 

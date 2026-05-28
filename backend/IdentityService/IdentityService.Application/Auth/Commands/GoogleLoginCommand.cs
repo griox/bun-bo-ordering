@@ -34,7 +34,9 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
         var googleUser = await _googleAuthService.GetUserInfoAsync(request.AccessToken, cancellationToken)
             ?? throw new DomainException("Invalid Google access token.");
 
-        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.GoogleId == googleUser.Sub, cancellationToken);
+        var user = await _dbContext.Users
+            .Include(u => u.RefreshTokens)
+            .SingleOrDefaultAsync(u => u.GoogleId == googleUser.Sub, cancellationToken);
 
         if (user == null)
         {
@@ -72,7 +74,7 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
         var token = _tokenService.GenerateToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
-        user.UpdateRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
+        user.AddRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new LoginResult(token, refreshToken, user.Id.ToString(), user.Username, user.Email, user.Role);

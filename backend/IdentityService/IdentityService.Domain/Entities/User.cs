@@ -17,19 +17,41 @@ public class User : BaseEntity
     public int FailedLoginAttempts { get; private set; }
     public DateTimeOffset? LockoutEnd { get; private set; }
 
-    public string? RefreshToken { get; private set; }
-    public DateTime? RefreshTokenExpiryTime { get; private set; }
+    private readonly List<RefreshToken> _refreshTokens = new();
+    public IReadOnlyCollection<RefreshToken> RefreshTokens => _refreshTokens.AsReadOnly();
 
-    public void UpdateRefreshToken(string token, DateTime expiryTime)
+    public void AddRefreshToken(string token, DateTime expiryTime)
     {
-        RefreshToken = token;
-        RefreshTokenExpiryTime = expiryTime;
+        // Giới hạn số lượng thiết bị đăng nhập đồng thời (ví dụ: tối đa 5 thiết bị)
+        var maxTokens = 5;
+        if (_refreshTokens.Count >= maxTokens)
+        {
+            // Xóa các token đã hết hạn
+            _refreshTokens.RemoveAll(rt => rt.IsExpired);
+
+            // Nếu vẫn đầy, xóa token cũ nhất
+            if (_refreshTokens.Count >= maxTokens)
+            {
+                var oldestToken = _refreshTokens.OrderBy(rt => rt.CreatedAt).First();
+                _refreshTokens.Remove(oldestToken);
+            }
+        }
+
+        _refreshTokens.Add(new RefreshToken(token, expiryTime, this.Id));
     }
 
-    public void RevokeRefreshToken()
+    public void RemoveRefreshToken(string token)
     {
-        RefreshToken = null;
-        RefreshTokenExpiryTime = null;
+        var refreshToken = _refreshTokens.SingleOrDefault(rt => rt.Token == token);
+        if (refreshToken != null)
+        {
+            _refreshTokens.Remove(refreshToken);
+        }
+    }
+
+    public void RevokeAllRefreshTokens()
+    {
+        _refreshTokens.Clear();
     }
 
     // For EF Core

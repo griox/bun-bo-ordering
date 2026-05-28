@@ -20,7 +20,7 @@ public class LogoutCommandHandler : IRequestHandler<LogoutCommand, Unit>
         var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
         if (user != null)
         {
-            user.RevokeRefreshToken();
+            user.RevokeAllRefreshTokens();
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
         return Unit.Value;

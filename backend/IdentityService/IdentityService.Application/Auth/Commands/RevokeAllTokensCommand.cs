@@ -20,7 +20,7 @@ public class RevokeAllTokensCommandHandler : IRequestHandler<RevokeAllTokensComm
         var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
         if (user == null) return false;
 
-        user.RevokeRefreshToken();
+        user.RevokeAllRefreshTokens();
         await _dbContext.SaveChangesAsync(cancellationToken);
         return true;
     }

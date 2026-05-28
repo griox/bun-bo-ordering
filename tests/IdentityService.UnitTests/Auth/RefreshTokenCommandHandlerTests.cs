@@ -26,7 +26,7 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var user = new User("test", "test@test.com", "hash", "Client");
-        user.UpdateRefreshToken("old-rt", DateTime.UtcNow.AddHours(-1)); // Expired
+        user.AddRefreshToken("old-rt", DateTime.UtcNow.AddHours(-1)); // Expired
 
         _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });
 
@@ -43,7 +43,7 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var user = new User("test", "test@test.com", "hash", "Client");
-        user.UpdateRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
+        user.AddRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
 
         _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });
         _tokenServiceMock.Setup(x => x.GenerateToken(It.IsAny<User>())).Returns("new-at");
@@ -57,7 +57,7 @@ public class RefreshTokenCommandHandlerTests
         // Assert
         result.token.Should().Be("new-at");
         result.refreshToken.Should().Be("new-rt");
-        user.RefreshToken.Should().Be("new-rt");
+        user.RefreshTokens.Should().Contain(rt => rt.Token == "new-rt");
         _dbContextMock.Verify(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -66,7 +66,7 @@ public class RefreshTokenCommandHandlerTests
     {
         // Arrange
         var user = new User("test", "test@test.com", "hash", "Client");
-        user.UpdateRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
+        user.AddRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
         user.Blacklist("Reason");
 
         _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });

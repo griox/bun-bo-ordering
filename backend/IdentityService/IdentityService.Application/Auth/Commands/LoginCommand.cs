@@ -22,8 +22,9 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 
     public async Task<LoginResult> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        // Login by Username
-        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
+        var user = await _dbContext.Users
+            .Include(u => u.RefreshTokens)
+            .SingleOrDefaultAsync(u => u.Username == request.Username, cancellationToken);
         if (user == null)
             throw new DomainException("Tên đăng nhập hoặc mật khẩu không chính xác!");
 
@@ -52,12 +53,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResult>
 
         // Reset failed attempts on successful login
         user.ResetFailedAttempts();
-        await _dbContext.SaveChangesAsync(cancellationToken);
 
         var token = _tokenService.GenerateToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
 
-        user.UpdateRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
+        user.AddRefreshToken(refreshToken, DateTime.UtcNow.AddDays(7));
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new LoginResult(token, refreshToken, user.Id.ToString(), user.Username, user.Email, user.Role);

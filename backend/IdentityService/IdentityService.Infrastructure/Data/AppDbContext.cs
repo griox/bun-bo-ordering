@@ -26,6 +26,14 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.Property(e => e.Role).IsRequired().HasMaxLength(20);
             entity.Property(e => e.GoogleId).IsRequired(false).HasMaxLength(150);
             entity.HasIndex(e => e.GoogleId).IsUnique(); // Ensure Google Ids are unique
+
+            entity.HasMany(e => e.RefreshTokens)
+                  .WithOne(e => e.User)
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            
+            entity.Metadata.FindNavigation(nameof(User.RefreshTokens))?
+                  .SetPropertyAccessMode(PropertyAccessMode.Field);
         });
     }
 }

@@ -20,9 +20,17 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
 
     public async Task<LoginResult> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.SingleOrDefaultAsync(u => u.RefreshToken == request.RefreshToken, cancellationToken);
+        var user = await _dbContext.Users
+            .Include(u => u.RefreshTokens)
+            .SingleOrDefaultAsync(u => u.RefreshTokens.Any(rt => rt.Token == request.RefreshToken), cancellationToken);
 
-        if (user == null || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
+        if (user == null)
+        {
+            throw new DomainException("Refresh token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
+        }
+
+        var currentToken = user.RefreshTokens.SingleOrDefault(rt => rt.Token == request.RefreshToken);
+        if (currentToken == null || currentToken.IsExpired)
         {
             throw new DomainException("Refresh token không hợp lệ hoặc đã hết hạn. Vui lòng đăng nhập lại.");
         }
@@ -37,10 +45,13 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
             throw new DomainException("Tài khoản hiện đang bị khóa tạm thời.");
         }
 
+        // Revoke old token and issue a new one (Token Rotation)
+        user.RemoveRefreshToken(request.RefreshToken);
+
         var newAccessToken = _tokenService.GenerateToken(user);
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
-        user.UpdateRefreshToken(newRefreshToken, DateTime.UtcNow.AddDays(7));
+        user.AddRefreshToken(newRefreshToken, DateTime.UtcNow.AddDays(7));
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         return new LoginResult(newAccessToken, newRefreshToken, user.Id.ToString(), user.Username, user.Email, user.Role);
