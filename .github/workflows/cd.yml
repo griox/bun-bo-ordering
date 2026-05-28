@@ -108,6 +108,28 @@ jobs:
           done
           echo "All deployments verified successfully."
 
+      # 4. HEALTH CHECK Phase
+      - name: Verify Service Health Endpoints
+        id: health_check
+        run: |
+          echo "Waiting 30s for services to stabilize..."
+          sleep 30
+          
+          GATEWAY_IP=$(kubectl get svc api-gateway -o jsonpath='{.spec.clusterIP}' 2>/dev/null || echo "")
+          if [ -n "$GATEWAY_IP" ]; then
+            echo "Checking API Gateway health at $GATEWAY_IP..."
+            kubectl run health-check-${{ github.run_id }} \
+              --image=curlimages/curl:latest \
+              --restart=Never \
+              --rm -i \
+              --timeout=60s \
+              -- curl -sf --max-time 10 "http://$GATEWAY_IP/health" \
+              && echo "✅ Health check PASSED" \
+              || echo "::warning::⚠️ Health check did not return 200 — service may still be starting"
+          else
+            echo "::warning::Could not resolve API Gateway service IP, skipping health check"
+          fi
+
       # 5. CONFIRM or ROLLBACK Phase
       - name: Automated Rollback on Failure
         if: failure() && steps.verify_rollout.outcome == 'failure'
