@@ -12,7 +12,6 @@ import {
     TrendingDown,
     Minus,
     CalendarDays,
-    ArrowRight,
     ChevronLeft,
     ChevronRight
 } from 'lucide-react';
@@ -20,7 +19,6 @@ import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGri
 import { useDashboardStats } from '@/hooks/useDashboard';
 import { useAuthStore } from "@/store/useAuthStore";
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 // Helper to calculate percentage change
 function calcTrend(current: number, previous: number): { value: string; type: 'up' | 'down' | 'neutral' } {

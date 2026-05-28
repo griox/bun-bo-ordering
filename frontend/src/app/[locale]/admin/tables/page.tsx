@@ -4,7 +4,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     Plus,
     QrCode,
-    Download,
     Save,
     Pencil,
     Move,
@@ -18,7 +17,6 @@ import { Card } from '@/components/ui/card';
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
     DialogTitle,
     DialogTrigger,
     DialogDescription
@@ -35,7 +33,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useTables, useCreateTableMutation, useUpdateTableMutation, useUpdateTablePositionsMutation, useDeleteTableMutation, RestaurantTable } from '@/hooks/useTables';
-import { useUnreadOrders, UnreadOrder } from '@/hooks/useUnreadOrders';
+import { useUnreadOrders } from '@/hooks/useUnreadOrders';
 import { motion } from 'framer-motion';
 import { QRCodeCanvas } from 'qrcode.react';
 import { useTranslations } from 'next-intl';
@@ -43,7 +41,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 
 export default function TablesPage() {
     const t = useTranslations('Tables');
-    const { data: tables = [], isLoading } = useTables();
+    const { data: tables = [] } = useTables();
     const createTableMutation = useCreateTableMutation();
     const updateTableMutation = useUpdateTableMutation();
     const updatePositionsMutation = useUpdateTablePositionsMutation();
@@ -62,7 +60,7 @@ export default function TablesPage() {
     // Sync local state when server data loads
     useEffect(() => {
         if (tables.length > 0) {
-            // eslint-disable-next-line react-hooks/set-state-in-effect
+             
             setLocalTables(tables);
         }
     }, [tables]);
@@ -76,6 +74,7 @@ export default function TablesPage() {
         return unreadOrders.filter(o => o.tableCode === selectedTable.tableCode);
     }, [selectedTable, unreadOrders]);
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const virtualizer = useVirtualizer({
         count: filteredOrders.length,
         getScrollElement: () => listElement,
@@ -135,8 +134,8 @@ export default function TablesPage() {
         const rawX = info.point.x - rect.left - 48;
         const rawY = info.point.y - rect.top - 48;
 
-        let x = Math.round(rawX / GRID_SIZE) * GRID_SIZE;
-        let y = Math.round(rawY / GRID_SIZE) * GRID_SIZE;
+        const x = Math.round(rawX / GRID_SIZE) * GRID_SIZE;
+        const y = Math.round(rawY / GRID_SIZE) * GRID_SIZE;
 
         const maxX = Math.floor((rect.width - 96) / GRID_SIZE) * GRID_SIZE;
         const maxY = Math.floor((rect.height - 96) / GRID_SIZE) * GRID_SIZE;

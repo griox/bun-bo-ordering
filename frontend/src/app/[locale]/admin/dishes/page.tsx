@@ -5,7 +5,6 @@ import Image from 'next/image';
 import {
     Plus,
     Search,
-    MoreVertical,
     Pencil,
     Trash2,
     Image as ImageIcon,
@@ -22,12 +21,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table';
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+
 import { Badge } from '@/components/ui/badge';
 import {
     Dialog,
@@ -51,7 +45,6 @@ import {
     AlertDialogContent,
     AlertDialogDescription,
     AlertDialogFooter,
-    AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Label } from '@/components/ui/label';
