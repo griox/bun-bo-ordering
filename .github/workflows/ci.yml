@@ -33,14 +33,14 @@ jobs:
 
       - name: Run All Unit & Integration Tests
         run: |
-          dotnet test tests/CatalogService.UnitTests/CatalogService.UnitTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/IdentityService.UnitTests/IdentityService.UnitTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/CartService.UnitTests/CartService.UnitTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/OrderService.UnitTests/OrderService.UnitTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/PromotionService.UnitTests/PromotionService.UnitTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/NotificationService.UnitTests/NotificationService.UnitTests.csproj --no-build -c Release --verbosity minimal
-          dotnet test tests/RealtimeService.UnitTests/RealtimeService.UnitTests.csproj --no-build -c Release --verbosity minimal
+          dotnet test tests/CatalogService.UnitTests/CatalogService.UnitTests.csproj -c Release --verbosity minimal
+          dotnet test tests/IdentityService.UnitTests/IdentityService.UnitTests.csproj -c Release --verbosity minimal
+          dotnet test tests/IdentityService.IntegrationTests/IdentityService.IntegrationTests.csproj -c Release --verbosity minimal
+          dotnet test tests/CartService.UnitTests/CartService.UnitTests.csproj -c Release --verbosity minimal
+          dotnet test tests/OrderService.UnitTests/OrderService.UnitTests.csproj -c Release --verbosity minimal
+          dotnet test tests/PromotionService.UnitTests/PromotionService.UnitTests.csproj -c Release --verbosity minimal
+          dotnet test tests/NotificationService.UnitTests/NotificationService.UnitTests.csproj -c Release --verbosity minimal
+          dotnet test tests/RealtimeService.UnitTests/RealtimeService.UnitTests.csproj -c Release --verbosity minimal
 
   frontend-checks:
     name: Frontend Lint & Build

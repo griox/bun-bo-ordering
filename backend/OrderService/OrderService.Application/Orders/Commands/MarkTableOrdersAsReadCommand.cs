@@ -17,7 +17,7 @@ public class MarkTableOrdersAsReadCommandHandler : IRequestHandler<MarkTableOrde
 
     public async Task<bool> Handle(MarkTableOrdersAsReadCommand request, CancellationToken cancellationToken)
     {
-        // Bulk UPDATE trực tiếp trên DB — 1 câu SQL duy nhất, không load entity vào RAM
+        // Bulk UPDATE directly on the database to prevent high memory usage when updating ~2000 orders
         var affectedRows = await _context.Orders
             .Where(o => o.TableSession != null
                 && o.TableSession.Table != null

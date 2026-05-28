@@ -29,17 +29,20 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
             Status = "Pending"
         });
 
-        // 2. Notify the Admin group that a new order has arrived (For all payment methods)
-        _logger.LogInformation($"Notifying Admin/Kitchen of new order {message.OrderId}");
-        await _hubContext.Clients.Group(HubConstants.KitchenGroup).SendAsync(HubConstants.Events.ReceiveNewOrder, new 
+        // 2. Notify the Admin/Kitchen group that a new order has arrived (Skip kitchen notification for Transfer until payment completes)
+        if (message.PaymentMethod != "Transfer")
         {
-            OrderId = message.OrderId,
-            TableNumber = message.TableNumber,
-            TotalAmount = message.TotalAmount,
-            CreatedAt = message.CreatedAt,
-            TableSessionId = message.TableSessionId,
-            PaymentMethod = message.PaymentMethod,
-            Note = message.Note
-        });
+            _logger.LogInformation($"Notifying Kitchen of new order {message.OrderId}");
+            await _hubContext.Clients.Group(HubConstants.KitchenGroup).SendAsync(HubConstants.Events.ReceiveNewOrder, new 
+            {
+                OrderId = message.OrderId,
+                TableNumber = message.TableNumber,
+                TotalAmount = message.TotalAmount,
+                CreatedAt = message.CreatedAt,
+                TableSessionId = message.TableSessionId,
+                PaymentMethod = message.PaymentMethod,
+                Note = message.Note
+            });
+        }
     }
 }

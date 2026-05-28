@@ -70,9 +70,7 @@ public class CartRepositoryTests
             It.Is<RedisKey>(k => k == $"cart:{cart.CartOwnerId}"),
             It.IsAny<RedisValue>(),
             It.IsAny<TimeSpan?>(),
-            It.IsAny<bool>(),
-            It.IsAny<When>(),
-            It.IsAny<CommandFlags>()))
+            It.IsAny<When>()))
             .ReturnsAsync(true);
             
         _databaseMock.Setup(x => x.StringGetAsync(It.IsAny<RedisKey>(), It.IsAny<CommandFlags>()))
@@ -84,11 +82,10 @@ public class CartRepositoryTests
         // Assert
         result.Should().NotBeNull();
         _databaseMock.Verify(x => x.StringSetAsync(
-            $"cart:{cart.CartOwnerId}",
+            It.Is<RedisKey>(k => k == $"cart:{cart.CartOwnerId}"),
             It.IsAny<RedisValue>(),
             It.IsAny<TimeSpan?>(),
-            It.IsAny<When>(),
-            It.IsAny<CommandFlags>()), Times.Once);
+            It.IsAny<When>()), Times.Once);
     }
 
     [Fact]

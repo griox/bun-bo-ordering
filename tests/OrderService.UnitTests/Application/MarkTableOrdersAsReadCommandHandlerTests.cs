@@ -5,21 +5,36 @@ using OrderService.Domain.Entities;
 using OrderService.Infrastructure.Data;
 using Xunit;
 
+using System.Data.Common;
+using Microsoft.Data.Sqlite;
+
 namespace OrderService.UnitTests.Application;
 
-public class MarkTableOrdersAsReadCommandHandlerTests
+public class MarkTableOrdersAsReadCommandHandlerTests : IDisposable
 {
     private readonly AppDbContext _context;
     private readonly MarkTableOrdersAsReadCommandHandler _handler;
+    private readonly DbConnection _connection;
 
     public MarkTableOrdersAsReadCommandHandlerTests()
     {
+        _connection = new SqliteConnection("DataSource=:memory:");
+        _connection.Open();
+
         var options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .UseSqlite(_connection)
             .Options;
+            
         _context = new AppDbContext(options);
+        _context.Database.EnsureCreated();
 
         _handler = new MarkTableOrdersAsReadCommandHandler(_context);
+    }
+
+    public void Dispose()
+    {
+        _context.Dispose();
+        _connection.Dispose();
     }
 
     [Fact]
@@ -52,6 +67,8 @@ public class MarkTableOrdersAsReadCommandHandlerTests
         // Assert
         result.Should().BeTrue();
         
+        // ExecuteUpdateAsync runs directly on DB and bypasses change tracker, so we must clear it
+        _context.ChangeTracker.Clear();
         var updatedOrders = await _context.Orders.ToListAsync();
         updatedOrders.Should().HaveCount(2);
         updatedOrders.All(o => o.IsRead).Should().BeTrue();
