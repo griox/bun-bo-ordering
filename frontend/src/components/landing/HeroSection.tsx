@@ -27,15 +27,18 @@ export function HeroSection() {
             <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-yellow-200/20 rounded-full filter blur-[150px] pointer-events-none"></div>
 
             <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-                <div className="inline-block mb-4 px-6 py-2 bg-paper rounded-full border-2 border-primary transform -rotate-2 shadow-lg hover:rotate-0 transition-transform cursor-default">
-                    <span className="font-display text-primary text-lg tracking-wider">{t('label')}</span>
+                <div className="inline-block mb-4 px-4 md:px-6 py-1.5 md:py-2 bg-paper rounded-full border-2 border-primary transform -rotate-2 shadow-lg hover:rotate-0 transition-transform cursor-default">
+                    <span className="font-display text-primary text-sm md:text-lg tracking-wider">{t('label')}</span>
                 </div>
 
-                <h1 className="font-display text-[2.5rem] md:text-8xl text-paper drop-shadow-[2px_2px_0px_#D9381E] md:drop-shadow-[4px_4px_0px_#D9381E] mb-6 leading-tight whitespace-nowrap tracking-tighter md:tracking-normal">
+                <h1
+                    className="font-display text-paper drop-shadow-[2px_2px_0px_#D9381E] md:drop-shadow-[4px_4px_0px_#D9381E] mb-4 md:mb-6 leading-tight whitespace-nowrap tracking-tighter md:tracking-normal"
+                    style={{ fontSize: 'clamp(1.75rem, 8vw, 5rem)' }}
+                >
                     {t('title1')} <span className="text-secondary drop-shadow-[2px_2px_0px_#2D2D2D] md:drop-shadow-[4px_4px_0px_#2D2D2D]">{t('title2')}</span>
                 </h1>
 
-                <p className="font-main text-xl text-text/90 mb-10 max-w-2xl mx-auto leading-relaxed shadow-white drop-shadow-sm font-medium">
+                <p className="font-main text-base md:text-xl text-text/90 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed shadow-white drop-shadow-sm font-medium">
                     {t('description')}
                 </p>
 
@@ -43,10 +46,10 @@ export function HeroSection() {
                     <ScannerModal>
                         <button
                             id="btn-order"
-                            className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-xl px-8 py-4 rounded-full shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all border-2 border-[#2D2D2D]"
+                            className="group relative inline-flex items-center justify-center gap-2 bg-primary text-white font-display text-base md:text-xl px-6 md:px-8 py-3 md:py-4 min-h-[48px] rounded-full shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all border-2 border-[#2D2D2D]"
                         >
-                            <span className='font-bold text-white'>{t('button')}</span>
-                            <span className="group-hover:translate-x-1 text-white transition-transform"><Soup size={20} /></span>
+                            <span className="font-bold text-white">{t('button')}</span>
+                            <span className="group-hover:translate-x-1 text-white transition-transform"><Soup size={18} /></span>
                         </button>
                     </ScannerModal>
                 </div>

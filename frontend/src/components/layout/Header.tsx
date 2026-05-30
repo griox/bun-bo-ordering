@@ -62,11 +62,11 @@ export function Header() {
 
     return (
         <header className="bg-background/95 backdrop-blur-sm sticky top-0 z-50 shadow-sm transition-colors duration-300">
-            <div className="container mx-auto px-4 h-24 flex items-center justify-between">
+            <div className="container mx-auto px-3 md:px-4 h-14 md:h-20 flex items-center justify-between">
 
                 {/* Brand Logo */}
-                <Link href="/" className="flex items-center gap-2 group z-50 relative">
-                    <div className="w-24 h-24 relative group-hover:rotate-12 transition-transform shrink-0">
+                <Link href="/" className="flex items-center gap-1.5 md:gap-2 group z-50 relative">
+                    <div className="w-11 h-11 md:w-16 md:h-16 relative group-hover:rotate-12 transition-transform shrink-0">
                         <Image 
                             src="/images/logo.png" 
                             alt="Logo" 
@@ -75,12 +75,10 @@ export function Header() {
                             priority
                         />
                     </div>
-                    <div className="flex flex-col md:flex-row md:items-baseline md:gap-2">
-                        <span className="font-display text-lg md:text-xl text-paper leading-none">{t('brand1')}</span>
-                        <span className="font-display text-[10px] md:text-sm text-secondary leading-none">{t('brand2')}</span>
+                    <div className="flex flex-col">
+                        <span className="font-display text-sm md:text-xl text-paper leading-tight">{t('brand1')}</span>
+                        <span className="font-display text-[9px] md:text-sm text-secondary leading-tight">{t('brand2')}</span>
                     </div>
-
-
                 </Link>
 
                 {/* Navigation & Member CTA (Both Desktop & Mobile) */}
@@ -102,9 +100,9 @@ export function Header() {
                     {/* Language Toggle */}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <button className="flex items-center justify-center gap-1.5 h-11 px-3 rounded-full hover:bg-black/5 active:scale-95 transition-all outline-none mr-1 md:mr-2">
-                                <Globe size={20} className="text-text/80" />
-                                <span className="font-display font-bold text-sm text-text/80 mt-0.5">{locale === 'vi' ? 'VN' : 'ENG'}</span>
+                            <button className="flex items-center justify-center gap-1 h-9 md:h-11 px-2 md:px-3 rounded-full hover:bg-black/5 active:scale-95 transition-all outline-none">
+                                <Globe size={16} className="text-text/80" />
+                                <span className="font-display font-bold text-xs md:text-sm text-text/80">{locale === 'vi' ? 'VN' : 'EN'}</span>
                                 <span className="sr-only">Toggle language</span>
                             </button>
                         </DropdownMenuTrigger>
@@ -197,13 +195,13 @@ export function Header() {
                                 <DropdownMenuTrigger asChild>
                                     <div
                                         id="nav-member-mobile"
-                                        className="onboarding-member md:hidden flex flex-row items-center gap-2 bg-primary text-white font-display text-xs px-4 py-2.5 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all cursor-pointer"
+                                        className="onboarding-member md:hidden flex flex-row items-center gap-1.5 bg-primary text-white font-display text-[11px] px-3 py-2 rounded-full border-2 border-text shadow-[2px_2px_0px_#2D2D2D] active:translate-y-px active:shadow-none transition-all cursor-pointer min-h-[36px]"
                                     >
-                                        <User size={16} />
-                                        <span>{mounted && user ? (user.username || t('member')).toUpperCase() : t('member')}</span>
+                                        <User size={14} />
+                                        <span className="max-w-[80px] truncate">{mounted && user ? (user.username || t('member')).toUpperCase() : t('member')}</span>
                                         {mounted && user && points && (
-                                            <span className="flex items-center gap-1 bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-black">
-                                                <Star size={8} className="fill-yellow-300 text-yellow-300" />
+                                            <span className="flex items-center gap-0.5 bg-white/20 px-1.5 py-0.5 rounded-full text-[9px] font-black">
+                                                <Star size={7} className="fill-yellow-300 text-yellow-300" />
                                                 {points.balance}
                                             </span>
                                         )}

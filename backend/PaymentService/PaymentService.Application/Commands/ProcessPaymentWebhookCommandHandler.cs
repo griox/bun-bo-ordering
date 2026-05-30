@@ -39,7 +39,15 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
         // 4. Update status
         if (request.Status.Equals("Success", StringComparison.OrdinalIgnoreCase))
         {
-            transaction.MarkAsSuccess(request.ProviderTransactionId, request.Signature);
+            // Validate transferred amount matches order amount (allow 1000 VND tolerance for rounding)
+            if (request.Amount < transaction.Amount - 1000m)
+            {
+                transaction.MarkAsFailed();
+            }
+            else
+            {
+                transaction.MarkAsSuccess(request.ProviderTransactionId, request.Signature);
+            }
         }
         else
         {

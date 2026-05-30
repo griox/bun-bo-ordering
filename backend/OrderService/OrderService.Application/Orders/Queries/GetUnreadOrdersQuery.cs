@@ -39,7 +39,9 @@ public class GetUnreadOrdersQueryHandler : IRequestHandler<GetUnreadOrdersQuery,
             .Include(o => o.TableSession)
             .ThenInclude(ts => ts!.Table)
             .Include(o => o.OrderItems)
-            .Where(o => o.IsRead == false)
+            .Where(o => o.IsRead == false
+                // Exclude Transfer orders that are still pending payment (not yet confirmed by webhook)
+                && !(o.PaymentMethod == "Transfer" && o.Status == OrderStatus.Processing))
             .OrderByDescending(o => o.CreatedAt)
             .AsNoTracking()
             .Select(o => new UnreadOrderDto(
