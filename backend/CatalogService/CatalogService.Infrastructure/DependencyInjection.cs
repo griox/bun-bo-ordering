@@ -20,9 +20,9 @@ public static class DependencyInjection
 
         services.AddScoped<ICacheService, RedisCacheService>();
 
-        // MaxPoolSize=20: Tăng từ 8 lên 20 để tăng khả năng chịu tải nhẹ (bursts) mà không OOM
-        var connectionString = configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=20;MinPoolSize=1;Connection Lifetime=300;Connection Idle Lifetime=60;";
-        services.AddDbContext<AppDbContext>(options =>
+        // AddDbContextPool for Catalog
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        services.AddDbContextPool<AppDbContext>(options =>
             options.UseNpgsql(connectionString,
                 npgsqlOptionsAction: sqlOptions =>
                 {

@@ -78,9 +78,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 
-// Configure Database — MaxPoolSize=8: tối đa 4 pods × 8 = 32 connections, nằm trong giới hạn PG max_connections=100
-var orderConnStr = builder.Configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=8;MinPoolSize=1;Connection Lifetime=300;Connection Idle Lifetime=60;";
-builder.Services.AddDbContext<AppDbContext>(options =>
+// Configure Database
+var orderConnStr = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContextPool<AppDbContext>(options =>
     options.UseNpgsql(orderConnStr,
         npgsqlOptionsAction: sqlOptions =>
         {

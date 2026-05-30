@@ -1,5 +1,7 @@
 using BunBo.SharedKernel;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.RateLimiting;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,34 @@ builder.Services.AddReverseProxy()
         handler.PooledConnectionLifetime = TimeSpan.FromMinutes(5);
     });
 
+// Configure Output Caching
+builder.Services.AddOutputCache(options =>
+{
+    options.AddBasePolicy(builder => builder.Expire(TimeSpan.FromSeconds(10)));
+    options.AddPolicy("CatalogCache", builder => builder.Expire(TimeSpan.FromMinutes(5)).SetVaryByQuery("*"));
+});
+
+// Configure Rate Limiting
+builder.Services.AddRateLimiter(options =>
+{
+    options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+        RateLimitPartition.GetFixedWindowLimiter(
+            partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+            factory: partition => new FixedWindowRateLimiterOptions
+            {
+                AutoReplenishment = true,
+                PermitLimit = 500,
+                QueueLimit = 100,
+                Window = TimeSpan.FromMinutes(1)
+            }));
+            
+    options.OnRejected = async (context, token) =>
+    {
+        context.HttpContext.Response.StatusCode = StatusCodes.Status429TooManyRequests;
+        await context.HttpContext.Response.WriteAsJsonAsync(new { Message = "Too many requests. Please try again later." }, token);
+    };
+});
+
 // CORS
 var allowedOrigins = builder.Configuration
     .GetSection("Cors:AllowedOrigins").Get<string[]>()
@@ -46,6 +76,8 @@ var app = builder.Build();
 
 app.UseResponseCompression();
 app.UseCors(); // Must be before MapReverseProxy
+app.UseOutputCache();
+app.UseRateLimiter();
 app.UseWebSockets(); // Crucial for proxying SignalR WebSocket connections
 
 app.MapReverseProxy();
