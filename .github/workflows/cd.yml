@@ -14,11 +14,34 @@ on:
       - 'infra/k8s/**'
 
 jobs:
+  check-event:
+    name: Check CI Event
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      proceed: ${{ steps.check.outputs.proceed }}
+    steps:
+      - name: Download Event Artifact
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            echo "Direct push trigger. Proceeding."
+            echo "proceed=true" >> $GITHUB_OUTPUT
+          elif gh run download ${{ github.event.workflow_run.id }} --name backend-changed --dir /tmp/artifact 2>/dev/null; then
+            echo "Backend changes detected in CI. Proceeding."
+            echo "proceed=true" >> $GITHUB_OUTPUT
+          else
+            echo "No backend changes detected in CI. Skipping deploy."
+            echo "proceed=false" >> $GITHUB_OUTPUT
+          fi
+
   deploy:
     name: Deploy to DigitalOcean K3s
+    needs: check-event
+    if: ${{ github.event_name == 'push' || needs.check-event.outputs.proceed == 'true' }}
     runs-on: ubuntu-latest
-    # Only run if the triggering CI workflow succeeded, or if it's a direct push to infra/k8s
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     
     env:
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}

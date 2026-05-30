@@ -54,12 +54,11 @@ export function StorySection() {
         return () => clearInterval(interval);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
     return (
-        <section className="py-20 text-paper relative" id="story">
-            <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-12">
+        <section className="py-10 md:py-20 text-paper relative" id="story">
+            <div className="container mx-auto px-4 flex flex-col md:flex-row items-center gap-8 md:gap-12">
                 <div className="w-full md:w-1/2 relative group">
-                    <div className="aspect-[4/5] bg-paper rounded-lg rotate-2 border-4 border-white shadow-2xl p-4 transform transition-transform hover:rotate-0 relative overflow-hidden">
+                    <div className="aspect-[4/5] bg-paper rounded-lg rotate-2 border-4 border-white shadow-2xl p-3 md:p-4 transform transition-transform hover:rotate-0 relative overflow-hidden">
 
                         {/* Carousel Content */}
                         <div className="w-full h-full relative bg-gray-200 overflow-hidden">
@@ -85,22 +84,22 @@ export function StorySection() {
                             )}
                         </div>
 
-                        {/* Navigation Buttons */}
+                        {/* Navigation Buttons - Touch targets optimized (min 44x44px) */}
                         <button
                             onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-text p-2 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-text p-2.5 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-90"
                         >
                             <ChevronLeft size={24} />
                         </button>
                         <button
                             onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-text p-2 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-text p-2.5 rounded-full shadow-lg opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10 min-w-[44px] min-h-[44px] flex items-center justify-center active:scale-90"
                         >
                             <ChevronRight size={24} />
                         </button>
 
                         {/* Indicators */}
-                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+                        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2.5 z-10">
                             {slides.map((_, index) => (
                                 <div
                                     key={index}
@@ -112,34 +111,34 @@ export function StorySection() {
                 </div>
 
                 <div className="w-full md:w-1/2 ">
-                    <h2 className="font-display text-5xl mb-6 leading-tight">
+                    <h2 className="font-display text-3xl md:text-5xl mb-4 md:mb-6 leading-tight">
                         {t.rich('title1', { br: () => <br /> })}
                         <span className="text-secondary">{t('title2')}</span>
                     </h2>
-                    <div className="space-y-6 font-main text-lg leading-relaxed text-text/90 font-large">
+                    <div className="space-y-4 md:space-y-6 font-main text-sm md:text-lg leading-relaxed text-text/90">
                         <p>{t.rich('p1', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
                         <p>{t.rich('p2', { strong: (chunks) => <strong>{chunks}</strong> })}</p>
                     </div>
 
-                    <div className="mt-8 flex gap-4">
-                        <div className="text-center">
-                            <div className="font-display text-4xl text-secondary">8+</div>
-                            <div className="text-sm opacity-80">{t('stat1')}</div>
+                    <div className="mt-6 md:mt-8 flex gap-3 md:gap-4 justify-between md:justify-start">
+                        <div className="text-center flex-1 md:flex-none">
+                            <div className="font-display text-3xl md:text-4xl text-secondary">8+</div>
+                            <div className="text-xs md:text-sm opacity-80">{t('stat1')}</div>
                         </div>
                         <div className="w-px bg-white/20"></div>
-                        <div className="text-center">
-                            <div className="font-display text-4xl text-secondary">100%</div>
-                            <div className="text-sm opacity-80">{t('stat2')}</div>
+                        <div className="text-center flex-1 md:flex-none">
+                            <div className="font-display text-3xl md:text-4xl text-secondary">100%</div>
+                            <div className="text-xs md:text-sm opacity-80">{t('stat2')}</div>
                         </div>
                         <div className="w-px bg-white/20"></div>
                         <div
-                            className="text-center cursor-pointer hover:bg-white/10 rounded-lg p-1 transition-colors"
+                            className="text-center cursor-pointer hover:bg-white/10 rounded-lg p-1 transition-colors flex-1 md:flex-none"
                             onClick={() => setCurrentSlide(3)}
                         >
-                            <div className="font-display text-4xl text-secondary flex justify-center items-center gap-1">
-                                <MapPin size={32} />
+                            <div className="font-display text-3xl md:text-4xl text-secondary flex justify-center items-center gap-1">
+                                <MapPin size={28} />
                             </div>
-                            <div className="text-sm opacity-80 underline decoration-dashed"><a href="https://www.google.com/maps?q=Bún+Bò+%26+Cà+Phê+Phố,+634+Đ.2/4+Chung+Cư,+khu+B,+Nha+Trang,+Khánh+Hòa+57000&ftid=0x31706700617a79cf:0xc7be36136df2332c&entry=gps&lucs=,94286594,94284511,94231188,47071704,94218641,94282134,94286869&g_ep=CAISEjI1LjI5LjEuNzgyOTg1OTc1MBgAIIgnKj8sOTQyODY1OTQsOTQyODQ1MTEsOTQyMzExODgsNDcwNzE3MDQsOTQyMTg2NDEsOTQyODIxMzQsOTQyODY4NjlCAlZO&skid=5746e2ca-adcd-4a56-924d-58a70eca6f68&g_st=ia" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>{t('viewMap')}</a></div>
+                            <div className="text-xs md:text-sm opacity-80 underline decoration-dashed"><a href="https://www.google.com/maps?q=Bún+Bò+%26+Cà+Phê+Phố,+634+Đ.2/4+Chung+Cư,+khu+B,+Nha+Trang,+Khánh+Hòa+57000&ftid=0x31706700617a79cf:0xc7be36136df2332c&entry=gps&lucs=,94286594,94284511,94231188,47071704,94218641,94282134,94286869&g_ep=CAISEjI1LjI5LjEuNzgyOTg1OTc1MBgAIIgnKj8sOTQyODY1OTQsOTQyODQ1MTEsOTQyMzExODgsNDcwNzE3MDQsOTQyMTg2NDEsOTQyODIxMzQsOTQyODY4NjlCAlZO&skid=5746e2ca-adcd-4a56-924d-58a70eca6f68&g_st=ia" target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()}>{t('viewMap')}</a></div>
                         </div>
                     </div>
                 </div>

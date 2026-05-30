@@ -45,15 +45,15 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
             <div className="flex-1 md:order-2 flex flex-col justify-between py-1">
                 <div>
                     <div className="flex justify-between items-start mb-1">
-                        <h3 className="font-display text-neutral-900 font-bold text-xl leading-tight group-hover:text-primary transition-colors">{item.name}</h3>
+                        <h3 className="font-display text-neutral-900 font-bold text-lg md:text-xl leading-tight group-hover:text-primary transition-colors">{item.name}</h3>
                     </div>
-                    <p className="text-neutral-500 text-xs font-main line-clamp-2 mb-3 leading-relaxed">{item.description}</p>
+                    <p className="text-neutral-500 text-xs font-main line-clamp-2 mb-2 md:mb-3 leading-relaxed">{item.description}</p>
                 </div>
 
                 <div className="flex items-center justify-between mt-auto">
                     <div className="flex flex-col">
                         <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider">Giá từ</span>
-                        <span className="font-display text-primary text-2xl font-black">
+                        <span className="font-display text-primary text-xl md:text-2xl font-black">
                             {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(item.price)}
                         </span>
                         <span className="text-[8px] text-neutral-300 font-mono mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -64,32 +64,32 @@ export function FoodItemCard({ item }: FoodItemCardProps) {
                     {item.isAvailable && session && (
                         <div className="flex items-center">
                             {quantity > 0 ? (
-                                <div className="flex items-center bg-neutral-100 rounded-full p-1 border border-neutral-200 shadow-inner">
+                                <div className="flex items-center bg-neutral-100 rounded-full p-0.5 md:p-1 border border-neutral-200 shadow-inner">
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 rounded-full hover:bg-white hover:text-red-500 transition-all"
+                                        className="h-[30px] w-[30px] md:h-8 md:w-8 rounded-full hover:bg-white hover:text-red-500 transition-all cursor-pointer"
                                         onClick={() => updateQuantity(item.id, quantity - 1)}
                                     >
-                                        <Minus className="w-4 h-4" />
+                                        <Minus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                     </Button>
-                                    <span className="w-8 text-center font-bold text-neutral-800">{quantity}</span>
+                                    <span className="w-6 md:w-8 text-center font-bold text-neutral-800 text-xs md:text-base">{quantity}</span>
                                     <Button
                                         size="icon"
                                         variant="ghost"
-                                        className="h-8 w-8 rounded-full hover:bg-white hover:text-primary transition-all"
+                                        className="h-[30px] w-[30px] md:h-8 md:w-8 rounded-full hover:bg-white hover:text-primary transition-all cursor-pointer"
                                         onClick={() => updateQuantity(item.id, quantity + 1)}
                                     >
-                                        <Plus className="w-4 h-4" />
+                                        <Plus className="w-3.5 h-3.5 md:w-4 md:h-4" />
                                     </Button>
                                 </div>
                             ) : (
                                 <Button
                                     size="icon"
-                                    className="h-12 w-12 rounded-2xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 hover:scale-110 transition-all duration-300"
+                                    className="h-[42px] w-[42px] md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-red-600 hover:bg-red-700 text-white shadow-lg shadow-red-200 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
                                     onClick={handleAdd}
                                 >
-                                    <Plus className="w-6 h-6" />
+                                    <Plus className="w-5 h-5 md:w-6 md:h-6" />
                                 </Button>
                             )}
                         </div>

@@ -4,13 +4,13 @@ import { useTranslations } from 'next-intl';
 export function Footer() {
     const t = useTranslations('Landing.Footer');
     return (
-        <footer className="bg-[#2D2D2D] text-white pt-16 pb-8">
+        <footer className="bg-[#2D2D2D] text-white pt-10 md:pt-16 pb-6 md:pb-8">
             <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 mb-8 md:mb-12">
                     {/* Brand */}
                     <div>
-                        <h3 className="font-display text-2xl text-primary mb-4">BÚN BÒ & CÀ PHÊ PHỐ</h3>
-                        <p className="font-main text-gray-400 mb-6">
+                        <h3 className="font-display text-2xl text-primary mb-3 md:mb-4">BÚN BÒ & CÀ PHÊ PHỐ</h3>
+                        <p className="font-main text-sm md:text-base text-gray-400 mb-4 md:mb-6">
                             {t('desc')}
                         </p>
                         <div className="flex gap-4">

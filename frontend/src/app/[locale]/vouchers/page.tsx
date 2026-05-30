@@ -104,18 +104,18 @@ export default function VouchersPage() {
 
             <Header />
 
-            <main className="flex-grow max-w-7xl mx-auto px-6 pt-12 relative z-10 pb-32 w-full">
-                <div className="text-center mb-8 md:mb-16">
-                    <h1 className="font-display text-5xl md:text-8xl text-paper drop-shadow-[3px_3px_0px_#D9381E] mb-4 leading-tight uppercase">
+            <main className="flex-grow max-w-7xl mx-auto px-6 pt-6 md:pt-12 relative z-10 pb-32 w-full">
+                <div className="text-center mb-6 md:mb-16">
+                    <h1 className="font-display text-[2.25rem] md:text-8xl text-paper drop-shadow-[3px_3px_0px_#D9381E] mb-2 md:mb-4 leading-tight uppercase">
                         Kho quà
                     </h1>
-                    <span className="text-secondary font-display text-sm md:text-xl tracking-[0.2em] uppercase mb-4 block drop-shadow-md">
+                    <span className="text-secondary font-display text-[10px] md:text-xl tracking-[0.2em] uppercase mb-4 block drop-shadow-md">
                         Tích điểm đổi ngàn ưu đãi hấp dẫn
                     </span>
                 </div>
                 <div className="max-w-4xl mx-auto">
-                    {/* Points Card for all screen sizes */}
-                    <div className="bg-black rounded-[32px] p-8 text-white mb-12 relative overflow-hidden group border-2 border-white/10 shadow-2xl">
+                    {/* Points Card for all screen sizes - scaled for mobile ergonomics */}
+                    <div className="bg-black rounded-2xl md:rounded-[32px] p-5 md:p-8 text-white mb-6 md:mb-12 relative overflow-hidden group border-2 border-white/10 shadow-2xl">
                         <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
                             <Tag size={120} />
                         </div>
@@ -126,15 +126,15 @@ export default function VouchersPage() {
                                     <div className="size-1 bg-primary rounded-full animate-pulse" />
                                 </div>
                                 <div className="flex items-end gap-2">
-                                    <span className="text-5xl font-black tracking-tighter">{pointsData?.balance?.toLocaleString() || 0}</span>
+                                    <span className="text-4xl md:text-5xl font-black tracking-tighter">{pointsData?.balance?.toLocaleString() || 0}</span>
                                     <span className="text-xs font-bold text-white/40 mb-2 uppercase">Bún Bò Points</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Horizontal Status Nav for all screen sizes */}
-                    <div className="sticky top-[96px] z-30 -mx-6 px-6 py-4 bg-[#FFCC99] border-y-2 border-black/5 shadow-sm overflow-x-auto no-scrollbar flex justify-center gap-3 mb-12">
+                    {/* Sticky Status Nav - top-[56px] to match mobile Header h-14, and top-[80px] to match desktop Header h-20 */}
+                    <div className="sticky top-[56px] md:top-[80px] z-30 -mx-6 px-6 py-3 bg-[#FFCC99] border-y-2 border-black/5 shadow-sm overflow-x-auto no-scrollbar flex justify-center gap-2.5 mb-8 md:mb-12">
                         {[
                             { id: 'unused', label: 'Chưa dùng' },
                             { id: 'used', label: 'Đã dùng' },
@@ -144,9 +144,9 @@ export default function VouchersPage() {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`
-                                    px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2
+                                    px-5 py-2.5 md:px-8 md:py-3 rounded-full text-[10px] md:text-[11px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2 cursor-pointer active:scale-95 min-h-[38px] md:min-h-[44px]
                                     ${activeTab === tab.id
-                                        ? "bg-primary text-white border-primary shadow-[0_8px_20px_-6px_rgba(239,68,68,0.5)] translate-y-[-2px]"
+                                        ? "bg-primary text-white border-primary shadow-[0_8px_20px_-6px_rgba(239,68,68,0.5)] translate-y-[-1px] md:translate-y-[-2px]"
                                         : "bg-white text-gray-500 border-gray-100 hover:border-gray-200"}
                                 `}
                             >
@@ -170,19 +170,19 @@ export default function VouchersPage() {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, scale: 0.95 }}
                                     transition={{ duration: 0.3, delay: idx * 0.05 }}
-                                    className="group bg-white rounded-3xl p-4 flex items-center gap-4 shadow-sm border border-gray-50 active:scale-[0.98] transition-transform cursor-pointer"
+                                    className="group bg-white rounded-2xl md:rounded-3xl p-3 md:p-4 flex items-center gap-3 md:gap-4 shadow-sm border border-gray-50 active:scale-[0.98] transition-all cursor-pointer"
                                 >
-                                    <div className="size-16 rounded-2xl bg-white flex items-center justify-center p-1 flex-shrink-0 border border-gray-100 shadow-sm">
+                                    <div className="size-12 md:size-16 rounded-xl md:rounded-2xl bg-white flex items-center justify-center p-1 flex-shrink-0 border border-gray-100 shadow-sm">
                                         <div className="relative size-full">
                                             <Image src="/images/voucher-logo.png" alt="Bun Bo Logo" fill className="object-contain" />
                                         </div>
                                     </div>
 
                                     <div className="flex-1 min-w-0 pr-2">
-                                        <h3 className="text-[13px] font-black leading-tight mb-1 line-clamp-2 uppercase tracking-tight text-gray-800">
+                                        <h3 className="text-[12px] md:text-[13px] font-black leading-tight mb-1 line-clamp-2 uppercase tracking-tight text-gray-800">
                                             {v.description}
                                         </h3>
-                                        <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-400">
+                                        <div className="flex items-center gap-1.5 text-[10px] md:text-[11px] font-medium text-gray-400">
                                             <Clock size={12} className="text-gray-300" />
                                             <span>
                                                 Hết hạn vào {v.expiryDate ? `${new Date(v.expiryDate).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })} ngày ${new Date(v.expiryDate).toLocaleDateString('vi-VN')}` : 'Không giới hạn'}
@@ -241,25 +241,25 @@ export default function VouchersPage() {
                             animate={{ y: 0 }}
                             exit={{ y: "100%" }}
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                            className="relative bg-white w-full max-w-md rounded-t-[40px] sm:rounded-[40px] overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
+                            className="relative bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl max-h-[85vh] flex flex-col"
                         >
-                            <div className="p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
+                            <div className="p-5 md:p-6 border-b border-gray-100 flex items-center justify-between sticky top-0 bg-white z-10">
                                 <div>
-                                    <h2 className="text-xl font-black uppercase tracking-tight text-gray-800">Đổi ưu đãi</h2>
-                                    <p className="text-xs text-gray-400 font-medium">Sử dụng điểm để đổi các mã giảm giá hấp dẫn</p>
+                                    <h2 className="text-lg md:text-xl font-black uppercase tracking-tight text-gray-800">Đổi ưu đãi</h2>
+                                    <p className="text-[11px] md:text-xs text-gray-400 font-medium">Sử dụng điểm để đổi các mã giảm giá hấp dẫn</p>
                                 </div>
                                 <button 
                                     onClick={() => setIsRedeemModalOpen(false)}
-                                    className="size-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors"
+                                    className="size-9 md:size-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 transition-colors cursor-pointer"
                                 >
-                                    <X size={20} />
+                                    <X size={18} />
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            <div className="flex-1 overflow-y-auto p-5 md:p-6 space-y-3 md:space-y-4">
                                 {redeemableVouchers.length === 0 ? (
-                                    <div className="py-20 text-center">
-                                        <div className="size-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="py-16 md:py-20 text-center">
+                                        <div className="size-14 md:size-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                             <Gift size={24} className="text-gray-300" />
                                         </div>
                                         <p className="text-gray-400 text-sm">Hiện không có ưu đãi nào để đổi</p>
@@ -272,17 +272,17 @@ export default function VouchersPage() {
                                         const isPending = redeemMutation.isPending;
 
                                         return (
-                                            <div key={v.id} className="bg-white rounded-3xl p-4 border border-gray-100 shadow-sm flex items-center gap-4">
-                                                <div className="size-14 rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                                                    <Tag className="text-primary" size={24} />
+                                            <div key={v.id} className="bg-white rounded-2xl p-3 md:p-4 border border-gray-100 shadow-sm flex items-center gap-3 md:gap-4">
+                                                <div className="size-11 md:size-14 rounded-xl md:rounded-2xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                                    <Tag className="text-primary" size={20} />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <h4 className="text-sm font-black text-gray-800 mb-0.5 uppercase truncate">{v.code}</h4>
-                                                    <p className="text-[11px] text-gray-500 line-clamp-1">{v.description}</p>
-                                                    <div className={`flex items-center gap-1 mt-1 text-xs font-black uppercase tracking-wider ${canAfford ? 'text-primary' : 'text-gray-400'}`}>
+                                                    <h4 className="text-xs md:text-sm font-black text-gray-800 mb-0.5 uppercase truncate">{v.code}</h4>
+                                                    <p className="text-[10px] md:text-[11px] text-gray-500 line-clamp-1">{v.description}</p>
+                                                    <div className={`flex items-center gap-1 mt-1 text-[10px] md:text-xs font-black uppercase tracking-wider ${canAfford ? 'text-primary' : 'text-gray-400'}`}>
                                                         <span>{cost.toLocaleString()} ĐIỂM</span>
                                                         {!canAfford && (
-                                                            <span className="text-[10px] font-normal text-gray-400 normal-case tracking-normal">
+                                                            <span className="text-[9px] font-normal text-gray-400 normal-case tracking-normal">
                                                                 (cần thêm {(cost - userPoints).toLocaleString()}đ)
                                                             </span>
                                                         )}
@@ -291,7 +291,7 @@ export default function VouchersPage() {
                                                 <button
                                                     onClick={() => canAfford && !isPending && handleRedeem(v.id)}
                                                     disabled={!canAfford || isPending}
-                                                    className={`shrink-0 px-4 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                                                    className={`shrink-0 px-3 py-2 md:px-4 md:py-2.5 rounded-xl md:rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-all ${
                                                         isPending
                                                             ? 'bg-gray-100 text-gray-400 cursor-wait'
                                                             : canAfford
@@ -307,10 +307,10 @@ export default function VouchersPage() {
                                 )}
                             </div>
 
-                            <div className="p-6 bg-gray-50/50 border-t border-gray-100">
+                            <div className="p-5 md:p-6 bg-gray-50/50 border-t border-gray-100">
                                 <div className="flex items-center justify-between">
                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Số dư hiện tại</span>
-                                    <span className="text-sm font-black text-gray-800">{pointsData?.balance?.toLocaleString()} ĐIỂM</span>
+                                    <span className="text-xs md:text-sm font-black text-gray-800">{pointsData?.balance?.toLocaleString()} ĐIỂM</span>
                                 </div>
                             </div>
                         </motion.div>

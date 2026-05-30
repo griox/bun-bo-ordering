@@ -11,8 +11,34 @@ permissions:
   packages: write
 
 jobs:
+  changes:
+    name: Detect Changed Folders
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Check Path Changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - 'tests/**'
+              - '.github/workflows/ci.yml'
+              - '.github/workflows/cd.yml'
+            frontend:
+              - 'frontend/**'
+              - '.github/workflows/ci.yml'
+
   test:
     name: Run Tests
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout Code
@@ -44,6 +70,8 @@ jobs:
 
   frontend-checks:
     name: Frontend Lint & Build
+    needs: changes
+    if: needs.changes.outputs.frontend == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -73,9 +101,14 @@ jobs:
 
   build-and-push:
     name: Build and Push
-    needs: [test, frontend-checks]
+    needs: [changes, test, frontend-checks]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
+    if: |
+      always() &&
+      needs.changes.outputs.backend == 'true' &&
+      (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)) &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.frontend-checks.result == 'success' || needs.frontend-checks.result == 'skipped')
 
     strategy:
       matrix:
@@ -128,3 +161,21 @@ jobs:
           docker tag ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:latest
           docker push ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:${{ github.sha }}
           docker push ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:latest
+
+  publish-event:
+    name: Publish Deploy Event
+    needs: [changes, build-and-push]
+    runs-on: ubuntu-latest
+    if: |
+      always() &&
+      needs.changes.outputs.backend == 'true' &&
+      (needs.build-and-push.result == 'success' || needs.build-and-push.result == 'skipped')
+    steps:
+      - name: Create Event File
+        run: echo "true" > backend-changed.txt
+      - name: Upload Event Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-changed
+          path: backend-changed.txt
+          retention-days: 1

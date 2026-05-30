@@ -32,17 +32,17 @@ export function MenuClient({ initialCategories, initialFoods }: MenuClientProps)
     return (
         <div className="flex-grow p-4 md:p-8 pb-32 md:pb-8">
             <div className="max-w-7xl mx-auto relative">
-                <div className="text-center mb-8 md:mb-16">
-                    <h1 className="font-display text-5xl md:text-8xl text-paper drop-shadow-[3px_3px_0px_#D9381E] mb-4 leading-tight">
+                <div className="text-center mb-6 md:mb-16">
+                    <h1 className="font-display text-[2.25rem] md:text-8xl text-paper drop-shadow-[3px_3px_0px_#D9381E] mb-2 md:mb-4 leading-tight">
                         THỰC ĐƠN
                     </h1>
-                    <span className="text-secondary font-display text-sm md:text-xl tracking-[0.2em] uppercase mb-4 block drop-shadow-md">
+                    <span className="text-secondary font-display text-[10px] md:text-xl tracking-[0.2em] uppercase mb-4 block drop-shadow-md">
                         Hương vị chân thật từ đường phố
                     </span>
                 </div>
 
-                {/* Mobile: Sticky Horizontal Nav */}
-                <div className="md:hidden sticky top-24 z-40 -mx-4 px-4 py-2 bg-background/80 backdrop-blur-md border-b border-neutral-100 shadow-sm overflow-x-auto no-scrollbar flex gap-3 mb-6">
+                {/* Mobile: Sticky Horizontal Nav - top-[56px] to align with sticky Header h-14 */}
+                <div className="md:hidden sticky top-[56px] z-40 -mx-4 px-4 py-2 bg-[#FEF9E7]/90 backdrop-blur-md border-b border-neutral-200/50 shadow-sm overflow-x-auto no-scrollbar flex gap-3 mb-6">
                     <CategoryNav
                         categories={categories.map(c => ({ ...c, id: c.id.toString() }))}
                         activeCategory={activeCategoryId?.toString() || ''}

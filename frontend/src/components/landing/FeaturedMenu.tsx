@@ -34,22 +34,22 @@ export async function FeaturedMenu() {
     const t = await getTranslations('Landing.FeaturedMenu');
 
     return (
-        <section className="py-20 bg-background relative overflow-hidden transition-colors duration-300">
+        <section className="py-10 md:py-20 bg-background relative overflow-hidden transition-colors duration-300">
             {/* Background Ticket Edge Top */}
             <div className="absolute top-0 left-0 right-0 h-4 bg-background" style={{ clipPath: "polygon(0% 0%, 0% 100%, 2% 0%, 4% 100%, 6% 0%, 8% 100%, 10% 0%, 12% 100%, 14% 0%, 16% 100%, 18% 0%, 20% 100%, 22% 0%, 24% 100%, 26% 0%, 28% 100%, 30% 0%, 32% 100%, 34% 0%, 36% 100%, 38% 0%, 40% 100%, 42% 0%, 44% 100%, 46% 0%, 48% 100%, 50% 0%, 52% 100%, 54% 0%, 56% 100%, 58% 0%, 60% 100%, 62% 0%, 64% 100%, 66% 0%, 68% 100%, 70% 0%, 72% 100%, 74% 0%, 76% 100%, 78% 0%, 80% 100%, 82% 0%, 84% 100%, 86% 0%, 88% 100%, 90% 0%, 92% 100%, 94% 0%, 96% 100%, 98% 0%, 100% 100%, 100% 0%)" }}></div>
 
             <div className="container mx-auto px-4">
-                <div className="text-center mb-16">
-                    <span className="text-primary font-bold tracking-widest uppercase text-sm mb-2 block">{t('subtitle')}</span>
-                    <h2 className="font-display text-4xl md:text-5xl text-text relative inline-block">
+                <div className="text-center mb-8 md:mb-16">
+                    <span className="text-primary font-bold tracking-widest uppercase text-xs md:text-sm mb-2 block">{t('subtitle')}</span>
+                    <h2 className="font-display text-2.5rem md:text-5xl text-text relative inline-block">
                         {t('title')}
-                        <span className="absolute -right-8 -top-8 text-secondary transform rotate-12">
+                        <span className="absolute -right-8 -top-8 text-secondary transform rotate-12 scale-75 md:scale-100">
                             <Star size={40} fill="#FFCC33" stroke="#2D2D2D" strokeWidth={2} />
                         </span>
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                     {featuredItems.map((item) => (
                         <div key={item.id} className="group relative bg-white rounded-2xl border-4 border-dashed border-primary/20 p-4 hover:border-primary transition-colors cursor-pointer">
                             <div className="aspect-square relative overflow-hidden rounded-xl mb-4 border-2 border-text bg-gray-100">
@@ -62,14 +62,14 @@ export async function FeaturedMenu() {
                                 />
                             </div>
 
-                            <h3 className="font-display text-black font-bold text-2xl mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
-                            <p className="font-main text-gray-600 line-clamp-2 mb-4 h-12">{item.description}</p>
+                            <h3 className="font-display text-black font-bold text-xl md:text-2xl mb-2 group-hover:text-primary transition-colors">{item.name}</h3>
+                            <p className="font-main text-gray-600 text-sm md:text-base line-clamp-2 mb-4 h-10 md:h-12">{item.description}</p>
 
                             <div className="flex justify-between items-center">
-                                <div className="flex gap-1 text-yellow-500 text-lg font-bold">
+                                <div className="flex gap-1 text-yellow-500 text-base md:text-lg font-bold">
                                     {item.price.toLocaleString('vi-VN')}đ
                                 </div>
-                                <Link href="/menu" className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center border-2 border-text shadow-[2px_2px_0px_#2D2D2D] md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0 transition-all">
+                                <Link href="/menu" className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center border-2 border-text shadow-[2px_2px_0px_#2D2D2D] md:opacity-0 md:group-hover:opacity-100 md:translate-y-2 md:group-hover:translate-y-0 transition-all active:scale-95">
                                     <ArrowRight size={20} />
                                 </Link>
                             </div>
@@ -77,8 +77,8 @@ export async function FeaturedMenu() {
                     ))}
                 </div>
 
-                <div className="mt-12 text-center">
-                    <Link href="/menu" className="inline-block border-b-2 border-text font-display text-text hover:text-primary hover:border-primary transition-colors pb-1 text-xl">
+                <div className="mt-10 md:mt-12 text-center">
+                    <Link href="/menu" className="inline-block border-b-2 border-text font-display text-text hover:text-primary hover:border-primary transition-colors pb-1 text-lg md:text-xl px-4 py-2 min-h-[44px]">
                         {t('viewAll')}
                     </Link>
                 </div>
