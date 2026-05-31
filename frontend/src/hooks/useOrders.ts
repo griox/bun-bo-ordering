@@ -60,30 +60,43 @@ export interface PagedResult<T> {
   take: number;
 }
 
-export const useOrders = (status?: string, skip: number = 0, take: number = 50) => {
+export const useOrders = (
+  status?: string,
+  skip: number = 0,
+  take: number = 20,
+  fromDate?: string,
+  toDate?: string,
+  keyword?: string,
+) => {
   const { token } = useAuthStore();
   return useQuery<PagedResult<Order>>({
-    queryKey: ['orders', status, skip, take],
+    queryKey: ['orders', status, skip, take, fromDate, toDate, keyword],
     enabled: !!token,
     queryFn: async () => {
-      let url = `/api/orders?skip=${skip}&take=${take}`;
+      const params = new URLSearchParams();
+      params.set('skip', String(skip));
+      params.set('take', String(take));
+
       if (status && status !== 'All') {
         const statuses: Record<string, number> = { 'Unpaid': 3, 'Paid': 1, 'Completed': 4 };
         const statusValue = statuses[status] !== undefined ? statuses[status] : status;
-        url += `&status=${statusValue}`;
+        params.set('status', String(statusValue));
       }
-      const response = await axiosInstance.get(url);
+      if (fromDate) params.set('fromDate', fromDate);
+      if (toDate)   params.set('toDate', toDate);
+      if (keyword && keyword.trim()) params.set('keyword', keyword.trim());
+
+      const response = await axiosInstance.get(`/api/orders?${params.toString()}`);
 
       // Handle both raw array and PagedResult
       if (Array.isArray(response.data)) {
         return {
           items: response.data,
-          totalCount: response.data.length, // This is not accurate for all items, but helps avoid crash
-          skip: skip,
-          take: take
+          totalCount: response.data.length,
+          skip,
+          take,
         };
       }
-
       return response.data;
     },
   });

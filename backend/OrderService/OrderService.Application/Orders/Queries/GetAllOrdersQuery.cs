@@ -8,7 +8,18 @@ namespace OrderService.Application.Orders.Queries;
 
 public record PagedResult<T>(List<T> Items, int TotalCount, int Skip, int Take);
 
-public record GetAllOrdersQuery(int Skip = 0, int Take = 50, OrderStatus? Status = null) : IRequest<PagedResult<OrderSummaryDto>>;
+/// <summary>
+/// Query to retrieve a paginated, filtered list of orders.
+/// Optimized: COUNT runs on the base table without JOIN to avoid full-table scan cost.
+/// </summary>
+public record GetAllOrdersQuery(
+    int Skip = 0,
+    int Take = 20,
+    OrderStatus? Status = null,
+    DateTime? FromDate = null,
+    DateTime? ToDate = null,
+    string? Keyword = null
+) : IRequest<PagedResult<OrderSummaryDto>>;
 
 public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, PagedResult<OrderSummaryDto>>
 {
@@ -21,19 +32,49 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Paged
 
     public async Task<PagedResult<OrderSummaryDto>> Handle(GetAllOrdersQuery request, CancellationToken cancellationToken)
     {
-        var query = _context.Orders
+        // --- Optimization #1: COUNT on base table only (no JOIN) ---
+        // EF Core translates Include() into a LEFT JOIN even for CountAsync().
+        // We build a lightweight count query on Orders alone to avoid the join cost
+        // when the table has 10k+ rows from load testing.
+        var countQuery = _context.Orders.AsQueryable();
+
+        if (request.Status.HasValue)
+            countQuery = countQuery.Where(o => o.Status == request.Status.Value);
+
+        if (request.FromDate.HasValue)
+            countQuery = countQuery.Where(o => o.CreatedAt >= request.FromDate.Value);
+
+        if (request.ToDate.HasValue)
+            countQuery = countQuery.Where(o => o.CreatedAt <= request.ToDate.Value);
+
+        var totalCount = await countQuery.CountAsync(cancellationToken);
+
+        // --- Data query: JOIN only for the small page window (Skip+Take rows) ---
+        var dataQuery = _context.Orders
             .Include(o => o.TableSession)
                 .ThenInclude(ts => ts!.Table)
             .AsQueryable();
 
         if (request.Status.HasValue)
+            dataQuery = dataQuery.Where(o => o.Status == request.Status.Value);
+
+        if (request.FromDate.HasValue)
+            dataQuery = dataQuery.Where(o => o.CreatedAt >= request.FromDate.Value);
+
+        if (request.ToDate.HasValue)
+            dataQuery = dataQuery.Where(o => o.CreatedAt <= request.ToDate.Value);
+
+        // Optimization #2: keyword search on table code (resolved after JOIN)
+        if (!string.IsNullOrWhiteSpace(request.Keyword))
         {
-            query = query.Where(o => o.Status == request.Status.Value);
+            var kw = request.Keyword.Trim().ToLower();
+            dataQuery = dataQuery.Where(o =>
+                o.Id.ToString().ToLower().Contains(kw) ||
+                (o.TableSession != null && o.TableSession.Table != null &&
+                 o.TableSession.Table.TableCode.ToLower().Contains(kw)));
         }
 
-        var totalCount = await query.CountAsync(cancellationToken);
-
-        var orders = await query
+        var orders = await dataQuery
             .OrderByDescending(o => o.CreatedAt)
             .Skip(request.Skip)
             .Take(request.Take)
@@ -52,3 +93,4 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Paged
         return new PagedResult<OrderSummaryDto>(orders, totalCount, request.Skip, request.Take);
     }
 }
+

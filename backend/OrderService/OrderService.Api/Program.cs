@@ -255,9 +255,9 @@ orderGroup.MapPost("/mark-read-by-table/{tableCode}", async (string tableCode, M
     return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin");
 
-orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 50, OrderStatus? status = null) =>
+orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 20, OrderStatus? status = null, DateTime? fromDate = null, DateTime? toDate = null, string? keyword = null) =>
 {
-    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status));
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status, fromDate, toDate, keyword));
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 
