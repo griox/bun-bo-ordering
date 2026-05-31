@@ -291,73 +291,78 @@ export default function TablesPage() {
 
             {/* Floor Plan (Drag & Drop area) */}
             <Card className="w-full h-[600px] lg:h-[750px] relative overflow-hidden bg-white border-none rounded-2xl shadow-sm">
-                {/* Grid Background - subtle by default, fully visible in edit mode */}
-                <div className="absolute inset-0 transition-opacity duration-300"
-                    style={{ 
-                        backgroundImage: 'radial-gradient(#CBD5E1 2px, transparent 2px)', 
-                        backgroundSize: '120px 120px',
-                        backgroundPosition: '32px 32px',
-                        opacity: isEditMode ? 0.6 : 0.1
-                    }} />
+                {/* Scrollable Canvas Viewport for Mobile/Tablet */}
+                <div className="w-full h-full overflow-x-auto overflow-y-hidden scrollbar-thin scrollbar-thumb-gray-200">
+                    <div className="w-full h-full min-w-[960px] lg:min-w-full relative">
+                        {/* Grid Background - subtle by default, fully visible in edit mode */}
+                        <div className="absolute inset-0 transition-opacity duration-300"
+                            style={{ 
+                                backgroundImage: 'radial-gradient(#CBD5E1 2px, transparent 2px)', 
+                                backgroundSize: '120px 120px',
+                                backgroundPosition: '32px 32px',
+                                opacity: isEditMode ? 0.6 : 0.1
+                            }} />
 
 
-                <div ref={floorPlanRef} className="absolute inset-0 w-full h-full p-8">
-                    {/* Drop Target Indicator */}
-                    {dragTarget && (
-                        <div 
-                            className="absolute size-[90px] bg-blue-500/20 border-2 border-blue-500 border-dashed rounded-2xl pointer-events-none transition-all duration-150 z-30"
-                            style={{
-                                left: dragTarget.x,
-                                top: dragTarget.y,
-                            }}
-                        />
-                    )}
-
-                    {localTables.map(table => {
-                        const tableOrders = unreadOrders.filter(o => o.tableCode === table.tableCode);
-                        const hasUnread = tableOrders.length > 0;
-                        return (
-                            <motion.div
-                                key={table.id}
-                                drag={isEditMode}
-                                dragConstraints={floorPlanRef}
-                                dragElastic={0.05}
-                                dragMomentum={false}
-                                onDrag={handleDrag}
-                                onDragEnd={(e, info) => handleDragEnd(table.id, e, info)}
-                                onDragStart={() => dragHasMoved.current = true}
-                                onPointerDown={() => dragHasMoved.current = false}
-                                initial={{ x: table.posX, y: table.posY }}
-                                animate={{ x: table.posX, y: table.posY }}
-                                whileDrag={{ scale: 1.1, zIndex: 50 }}
-                                className={`absolute left-0 top-0 transition-shadow ${isEditMode ? 'cursor-grab active:cursor-grabbing z-20' : 'cursor-pointer z-10'}`}
-                            >
+                        <div ref={floorPlanRef} className="absolute inset-0 w-full h-full p-8">
+                            {/* Drop Target Indicator */}
+                            {dragTarget && (
                                 <div 
-                                    className={`size-[90px] bg-white rounded-2xl shadow-lg border flex flex-col items-center justify-center p-2 group hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300 relative ${
-                                        hasUnread ? 'border-red-500 animate-pulse' : 'border-gray-100 hover:border-primary'
-                                    } ${isEditMode ? 'border-dashed border-red-300 ring-2 ring-red-500/5' : ''}`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (isEditMode) return; // Prevent clicking open modals in edit/drag mode
-                                        if (dragHasMoved.current) return;
-                                        setSelectedTable(table);
-                                        setIsDetailModalOpen(true);
+                                    className="absolute size-[90px] bg-blue-500/20 border-2 border-blue-500 border-dashed rounded-2xl pointer-events-none transition-all duration-150 z-30"
+                                    style={{
+                                        left: dragTarget.x,
+                                        top: dragTarget.y,
                                     }}
-                                >
-                                    <div className={`size-10 rounded-xl flex items-center justify-center shadow-sm border transition-all ${hasUnread ? 'bg-red-50 border-red-200 text-red-600' : 'bg-gray-50 border-gray-100 group-hover:bg-primary group-hover:text-white'}`}>
-                                        <span className="font-bold text-xs tracking-tight">{table.tableCode}</span>
-                                    </div>
-                                    <p className="mt-1 text-[9px] font-bold text-gray-500 truncate w-full text-center">{table.name}</p>
+                                />
+                            )}
 
-                                    {hasUnread && (
-                                        <div className="absolute -top-2 -right-2 bg-red-500 text-white size-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white shadow-sm z-10 animate-bounce">
-                                            {tableOrders.length}
+                            {localTables.map(table => {
+                                const tableOrders = unreadOrders.filter(o => o.tableCode === table.tableCode);
+                                const hasUnread = tableOrders.length > 0;
+                                return (
+                                    <motion.div
+                                        key={table.id}
+                                        drag={isEditMode}
+                                        dragConstraints={floorPlanRef}
+                                        dragElastic={0.05}
+                                        dragMomentum={false}
+                                        onDrag={handleDrag}
+                                        onDragEnd={(e, info) => handleDragEnd(table.id, e, info)}
+                                        onDragStart={() => dragHasMoved.current = true}
+                                        onPointerDown={() => dragHasMoved.current = false}
+                                        initial={{ x: table.posX, y: table.posY }}
+                                        animate={{ x: table.posX, y: table.posY }}
+                                        whileDrag={{ scale: 1.1, zIndex: 50 }}
+                                        className={`absolute left-0 top-0 transition-shadow ${isEditMode ? 'cursor-grab active:cursor-grabbing z-20' : 'cursor-pointer z-10'}`}
+                                    >
+                                        <div 
+                                            className={`size-[90px] bg-white rounded-2xl shadow-lg border flex flex-col items-center justify-center p-2 group hover:shadow-xl hover:translate-y-[-2px] transition-all duration-300 relative ${
+                                                hasUnread ? 'border-red-500 animate-pulse' : 'border-gray-100 hover:border-primary'
+                                            } ${isEditMode ? 'border-dashed border-red-300 ring-2 ring-red-500/5' : ''}`}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                if (isEditMode) return; // Prevent clicking open modals in edit/drag mode
+                                                if (dragHasMoved.current) return;
+                                                setSelectedTable(table);
+                                                setIsDetailModalOpen(true);
+                                            }}
+                                        >
+                                            <div className={`size-10 rounded-xl flex items-center justify-center shadow-sm border transition-all ${hasUnread ? 'bg-red-50 border-red-200 text-red-600' : 'bg-gray-50 border-gray-100 group-hover:bg-primary group-hover:text-white'}`}>
+                                                <span className="font-bold text-xs tracking-tight">{table.tableCode}</span>
+                                            </div>
+                                            <p className="mt-1 text-[9px] font-bold text-gray-500 truncate w-full text-center">{table.name}</p>
+
+                                            {hasUnread && (
+                                                <div className="absolute -top-2 -right-2 bg-red-500 text-white size-6 rounded-full flex items-center justify-center text-[10px] font-bold border-2 border-white shadow-sm z-10 animate-bounce">
+                                                    {tableOrders.length}
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
-                            </motion.div>
-                        );
-                    })}
+                                    </motion.div>
+                                );
+                            })}
+                        </div>
+                    </div>
                 </div>
 
                 {hasChanges && (
@@ -377,9 +382,13 @@ export default function TablesPage() {
                     </div>
                 )}
 
-                <div className="absolute bottom-4 right-4 lg:bottom-8 lg:right-8 bg-white/80 backdrop-blur-md border border-gray-100 px-4 py-2 lg:px-6 lg:py-3 rounded-2xl shadow-sm text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex items-center gap-2 lg:gap-3 transition-all hover:bg-white hover:shadow-md">
-                    <Move className={`size-3 lg:size-4 ${isEditMode ? 'text-red-500 animate-pulse' : 'text-gray-400'}`} /> 
-                    {isEditMode ? t('dragInstruction') : 'BẬT CHẾ ĐỘ CHỈNH SỬA ĐỂ DI CHUYỂN'}
+                <div className="absolute bottom-4 right-4 lg:bottom-8 lg:right-8 bg-white/80 backdrop-blur-md border border-gray-100 px-4 py-2 lg:px-6 lg:py-3 rounded-2xl shadow-sm text-[9px] lg:text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] flex flex-col sm:flex-row items-end sm:items-center gap-2 lg:gap-3 transition-all hover:bg-white hover:shadow-md">
+                    <div className="flex items-center gap-2">
+                        <Move className={`size-3 lg:size-4 ${isEditMode ? 'text-red-500 animate-pulse' : 'text-gray-400'}`} /> 
+                        <span>{isEditMode ? t('dragInstruction') : 'BẬT CHẾ ĐỘ CHỈNH SỬA ĐỂ DI CHUYỂN'}</span>
+                    </div>
+                    <span className="hidden sm:inline text-gray-200 font-normal">|</span>
+                    <span className="text-[8px] lg:text-[9px] text-gray-400 font-bold block sm:inline">👈 CUỘN NGANG ĐỂ XEM HẾT SƠ ĐỒ</span>
                 </div>
             </Card>
 
