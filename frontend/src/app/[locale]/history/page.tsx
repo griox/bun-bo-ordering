@@ -24,7 +24,8 @@ export default function TransactionHistoryPage() {
     const { user } = useAuthStore();
     const customerId = user?.userId;
 
-    const { data: orders, isLoading, error } = useCustomerOrders(customerId);
+    const { data: pagedData, isLoading, error } = useCustomerOrders(customerId);
+    const orders = pagedData?.items;
 
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);

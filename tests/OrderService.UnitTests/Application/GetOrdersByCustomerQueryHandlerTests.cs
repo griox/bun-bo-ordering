@@ -53,8 +53,8 @@ public class GetOrdersByCustomerQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().HaveCount(2);
-        result.Any(o => o.Id == order1.Id).Should().BeTrue();
+        result.Items.Should().HaveCount(2);
+        result.Items.Any(o => o.Id == order1.Id).Should().BeTrue();
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class GetOrdersByCustomerQueryHandlerTests
 
         // Assert
         result.Should().NotBeNull();
-        result.Should().BeEmpty();
+        result.Items.Should().BeEmpty();
     }
 
     private void SetId<TId>(object entity, TId id)
