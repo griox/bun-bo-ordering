@@ -25,7 +25,8 @@ export default function ScanPage() {
     const scanMutation = useScanTableMutation();
 
     const isLoggedIn = !!user?.userId;
-    const { data: orders } = useCustomerOrders(isLoggedIn ? user?.userId : undefined);
+    const { data: pagedData } = useCustomerOrders(isLoggedIn ? user?.userId : undefined);
+    const orders = pagedData?.items;
     const { preferredOrderId, savePreference } = useReorderPreference();
 
     useEffect(() => {
