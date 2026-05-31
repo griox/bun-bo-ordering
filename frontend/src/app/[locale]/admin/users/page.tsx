@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { AdminPagination } from '@/components/admin/pagination';
 import { useUsers, User, useBlacklistUser, useRemoveBlacklist, useDeleteUser } from '@/hooks/useUsers';
-import { useCustomerOrders, Order } from '@/hooks/useOrders';
+import { Order } from '@/hooks/useOrders';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -79,8 +79,7 @@ export default function AdminUserManagement() {
     const removeBlacklistMutation = useRemoveBlacklist();
     const deleteMutation = useDeleteUser();
 
-    // Fetch orders for the selected user
-    const { data: userOrders = [], isLoading: ordersLoading } = useCustomerOrders(selectedUser?.id || undefined);
+    // Fetch orders for the selected user (moved inside UserHistoryModal for pagination)
 
     const handleViewHistory = (user: User) => {
         setSelectedUser(user);
@@ -374,8 +373,6 @@ export default function AdminUserManagement() {
             {/* History Modal */}
             <UserHistoryModal
                 user={selectedUser}
-                orders={userOrders}
-                isLoading={ordersLoading}
                 isOpen={isHistoryModalOpen}
                 onClose={() => setIsHistoryModalOpen(false)}
                 onViewOrder={handleViewOrderDetail}

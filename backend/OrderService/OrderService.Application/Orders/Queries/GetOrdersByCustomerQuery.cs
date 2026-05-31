@@ -1,15 +1,23 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Interfaces;
-using OrderService.Application.Orders.Queries;
 using OrderService.Application.Dtos;
-using OrderService.Domain.Enums;
 
 namespace OrderService.Application.Orders.Queries;
 
-public record GetOrdersByCustomerQuery(Guid CustomerId) : IRequest<List<OrderDetailDto>>;
+/// <summary>
+/// Returns a paginated summary list of a customer's orders.
+/// OrderItems are intentionally NOT included — they are fetched on-demand
+/// when the admin opens the individual order detail modal.
+/// This avoids loading 10k+ orders × N items into memory at once.
+/// </summary>
+public record GetOrdersByCustomerQuery(
+    Guid CustomerId,
+    int Skip = 0,
+    int Take = 20
+) : IRequest<PagedResult<OrderSummaryDto>>;
 
-public class GetOrdersByCustomerQueryHandler : IRequestHandler<GetOrdersByCustomerQuery, List<OrderDetailDto>>
+public class GetOrdersByCustomerQueryHandler : IRequestHandler<GetOrdersByCustomerQuery, PagedResult<OrderSummaryDto>>
 {
     private readonly IAppDbContext _context;
 
@@ -18,37 +26,33 @@ public class GetOrdersByCustomerQueryHandler : IRequestHandler<GetOrdersByCustom
         _context = context;
     }
 
-    public async Task<List<OrderDetailDto>> Handle(GetOrdersByCustomerQuery request, CancellationToken cancellationToken)
+    public async Task<PagedResult<OrderSummaryDto>> Handle(GetOrdersByCustomerQuery request, CancellationToken cancellationToken)
     {
+        // COUNT on lightweight base query — no JOIN needed
+        var totalCount = await _context.Orders
+            .Where(o => o.CustomerId == request.CustomerId)
+            .CountAsync(cancellationToken);
+
+        // Data page: JOIN only for the small window, no OrderItems
         var orders = await _context.Orders
-            .Include(o => o.OrderItems)
             .Include(o => o.TableSession)
                 .ThenInclude(ts => ts!.Table)
             .Where(o => o.CustomerId == request.CustomerId)
             .OrderByDescending(o => o.CreatedAt)
+            .Skip(request.Skip)
+            .Take(request.Take)
+            .Select(o => new OrderSummaryDto(
+                o.Id,
+                o.TableSession != null && o.TableSession.Table != null ? o.TableSession.Table.TableCode : "N/A",
+                o.TableSession != null && o.TableSession.Table != null ? o.TableSession.Table.Name : "Mang đi",
+                o.CreatedAt,
+                o.TotalAmount,
+                o.Status,
+                o.Note,
+                o.PaymentMethod
+            ))
             .ToListAsync(cancellationToken);
 
-        return orders.Select(o => new OrderDetailDto
-        {
-            Id = o.Id,
-            TableSessionId = o.TableSessionId,
-            TableCode = o.TableSession?.Table?.TableCode ?? string.Empty,
-            TableName = o.TableSession?.Table?.Name ?? "Mang đi",
-            TotalAmount = o.TotalAmount,
-            Status = o.Status.ToString(),
-            PaymentMethod = o.PaymentMethod,
-            Note = o.Note,
-            CreatedAt = o.CreatedAt,
-            OrderItems = o.OrderItems.Select(oi => new OrderItemDto
-            {
-                Id = oi.Id,
-                FoodId = oi.FoodId,
-                ProductName = oi.ProductName,
-                Quantity = oi.Quantity,
-                UnitPrice = oi.UnitPrice,
-                TotalPrice = oi.TotalPrice,
-                Note = oi.Note
-            }).ToList()
-        }).ToList();
+        return new PagedResult<OrderSummaryDto>(orders, totalCount, request.Skip, request.Take);
     }
 }

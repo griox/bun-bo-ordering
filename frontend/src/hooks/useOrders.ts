@@ -124,11 +124,17 @@ export const useOrder = (orderId?: string) => {
   });
 };
 
-export const useCustomerOrders = (customerId?: string) => {
-  return useQuery<Order[]>({
-    queryKey: ['customerOrders', customerId],
+export const useCustomerOrders = (customerId?: string, skip: number = 0, take: number = 20) => {
+  return useQuery<PagedResult<Order>>({
+    queryKey: ['customerOrders', customerId, skip, take],
     queryFn: async () => {
-      const response = await axiosInstance.get(`/api/orders/customer/${customerId}`);
+      const response = await axiosInstance.get(
+        `/api/orders/customer/${customerId}?skip=${skip}&take=${take}`
+      );
+      // Handle legacy flat array response
+      if (Array.isArray(response.data)) {
+        return { items: response.data, totalCount: response.data.length, skip, take };
+      }
       return response.data;
     },
     enabled: !!customerId,
