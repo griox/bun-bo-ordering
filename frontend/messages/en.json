@@ -18,6 +18,7 @@
     "title": "Floor Plan Management",
     "subtitle": "Set up positions & digital ordering QR codes.",
     "addNewTable": "ADD NEW TABLE",
+    "editMode": "Edit Table Positions",
     "updateTable": "Update Table",
     "createNewTable": "Create New Table",
     "tableIdentifierDesc": "Assign a technical identifier to the table",

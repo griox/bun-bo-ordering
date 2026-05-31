@@ -18,6 +18,7 @@
     "title": "Quản lý sơ đồ bàn",
     "subtitle": "Thiết lập vị trí & mã QR gọi món kỹ thuật số.",
     "addNewTable": "THÊM BÀN MỚI",
+    "editMode": "Chế độ chỉnh sửa vị trí",
     "updateTable": "Cập nhật bàn",
     "createNewTable": "Tạo bàn mới",
     "tableIdentifierDesc": "Gán mã định danh kỹ thuật cho bàn ăn",
