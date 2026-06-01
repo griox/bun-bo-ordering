@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using CatalogService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using CatalogService.Application;
@@ -95,6 +96,8 @@ builder.Services.AddInfrastructure(builder.Configuration);
 // Configure MediatR
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CatalogService.Application.DependencyInjection).Assembly));
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -109,7 +112,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Catalog Service is running.");
+app.MapBunBoHealthChecks();
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "CatalogService" }));
 
 var catalogGroup = app.MapGroup("/api/catalog");

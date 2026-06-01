@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Hosting;
 using MassTransit;
@@ -116,6 +117,8 @@ builder.Services.AddMassTransit(x =>
 // Configure CORS
 builder.Services.AddCors();
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -131,7 +134,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Payment Service is running.");
+app.MapBunBoHealthChecks();
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "PaymentService" }));
 
 app.MapControllers();

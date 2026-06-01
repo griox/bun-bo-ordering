@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Application;
@@ -144,6 +145,8 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -158,7 +161,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Order Service is running.");
+app.MapBunBoHealthChecks();
 
 var orderGroup = app.MapGroup("/api/orders");
 

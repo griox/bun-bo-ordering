@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using RealtimeService.Api.Middlewares;
 using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
@@ -132,6 +133,8 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -140,7 +143,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Realtime Service is running.");
+app.MapBunBoHealthChecks();
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "RealtimeService" }));
 
 app.MapHub<NotificationHub>("/hub/notifications").RequireRateLimiting("signalr-hub");

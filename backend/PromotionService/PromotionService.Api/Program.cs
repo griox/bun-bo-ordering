@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using PromotionService.Application;
 using PromotionService.Infrastructure;
 using BunBo.SharedKernel;
@@ -107,6 +108,8 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -121,7 +124,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Promotion Service is running.");
+app.MapBunBoHealthChecks();
 
 var promotionGroup = app.MapGroup("/api/promotion");
 

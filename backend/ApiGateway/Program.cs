@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using BunBo.SharedKernel;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.AspNetCore.RateLimiting;
@@ -76,6 +77,8 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
 
 var app = builder.Build();
 

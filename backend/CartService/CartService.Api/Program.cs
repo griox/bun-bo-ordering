@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using CartService.Application;
 using CartService.Application.Interfaces;
 using CartService.Infrastructure.Repositories;
@@ -117,6 +118,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -131,7 +134,7 @@ app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/", () => "Cart Service is running.");
+app.MapBunBoHealthChecks();
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Service = "CartService" }));
 
 var cartGroup = app.MapGroup("/api/cart");

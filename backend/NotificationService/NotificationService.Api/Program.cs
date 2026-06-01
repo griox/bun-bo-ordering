@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using NotificationService.Api.Consumers;
 using NotificationService.Api.Services;
 using MassTransit;
@@ -52,8 +53,10 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
+
 var app = builder.Build();
 
-app.MapGet("/", () => "Notification Service is running correctly.");
+app.MapBunBoHealthChecks();
 
 app.Run();

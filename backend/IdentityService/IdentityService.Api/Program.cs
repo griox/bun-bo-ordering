@@ -1,3 +1,4 @@
+using BunBo.SharedKernel.Extensions;
 using IdentityService.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using IdentityService.Application;
@@ -109,6 +110,8 @@ builder.Services.AddMassTransit(x =>
         });
     });
 });
+
+builder.Services.AddBunBoHealthChecks(builder.Configuration);
 
 var app = builder.Build();
 
@@ -223,7 +226,7 @@ authGroup.Map("{**catchall}", (string catchall, HttpContext context, ILogger<Pro
     return Results.NotFound(new { Message = "Route not found", Path = context.Request.Path, Method = context.Request.Method });
 });
 
-app.MapGet("/", () => "Identity Service is running.");
+app.MapBunBoHealthChecks();
 
 // Auto migrate database on startup
 using (var scope = app.Services.CreateScope())
