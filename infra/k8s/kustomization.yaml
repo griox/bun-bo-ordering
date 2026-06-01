@@ -3,7 +3,6 @@ kind: Kustomization
 
 resources:
   - config/app-config.yaml
-  - config/bunbo-secrets.yaml
   - config/rabbitmq-deployment.yaml
   - cert-manager/cluster-issuer.yaml
   - identity/identity-deployment.yaml
