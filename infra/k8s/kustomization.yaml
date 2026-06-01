@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - config/app-config.yaml
+  - config/bunbo-secrets.yaml
+  - config/rabbitmq-deployment.yaml
+  - cert-manager/cluster-issuer.yaml
+  - identity/identity-deployment.yaml
+  - catalog/catalog-deployment.yaml
+  - cart/cart-deployment.yaml
+  - order/order-deployment.yaml
+  - payment/payment-deployment.yaml
+  - notification/notification-deployment.yaml
+  - realtime/realtime-deployment.yaml
+  - promotion/promotion-deployment.yaml
+  - gateway/gateway-deployment.yaml
+  - monitoring/seq-deployment.yaml

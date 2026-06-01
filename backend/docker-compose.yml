@@ -6,8 +6,8 @@ services:
     container_name: bunbo-postgres
     restart: always
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_USER: ${POSTGRES_USER:-root}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-rootpassword}
     ports:
       - "5432:5432"
     volumes:
@@ -44,8 +44,8 @@ services:
     container_name: bunbo-rabbitmq
     restart: always
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-guest}
     ports:
       - "5672:5672" # AMQP protocol port
       - "15672:15672" # Management UI
@@ -69,14 +69,14 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoIdentityDb;Username=root;Password=rootpassword
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoIdentityDb;Username=${POSTGRES_USER:-root};Password=${POSTGRES_PASSWORD:-rootpassword}
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
       - RabbitMq__Host=rabbitmq
-      - RabbitMq__Username=guest
-      - RabbitMq__Password=guest
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER:-guest}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS:-guest}
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
     ports:
       - "5001:8080"
@@ -97,17 +97,17 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoCatalogDb;Username=root;Password=rootpassword
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoCatalogDb;Username=${POSTGRES_USER:-root};Password=${POSTGRES_PASSWORD:-rootpassword}
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
       - Kestrel__Endpoints__Http__Protocols=Http1AndHttp2
       - S3Settings__ServiceUrl=${AWS_S3_SERVICE_URL:-http://minio:9000}
       - S3Settings__PublicUrl=${AWS_S3_PUBLIC_URL:-http://localhost:9000}
-      - S3Settings__AccessKey=${AWS_ACCESS_KEY_ID:-minioadmin}
-      - S3Settings__SecretKey=${AWS_SECRET_ACCESS_KEY:-minioadminpassword}
+      - S3Settings__AccessKey=${AWS_ACCESS_KEY_ID:-${MINIO_ROOT_USER:-minioadmin}}
+      - S3Settings__SecretKey=${AWS_SECRET_ACCESS_KEY:-${MINIO_ROOT_PASSWORD:-minioadminpassword}}
       - S3Settings__BucketName=${AWS_S3_BUCKET_NAME:-catalog-images}
       - S3Settings__Region=${AWS_REGION:-}
     ports:
@@ -129,7 +129,7 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
       - GrpcSettings__CatalogUrl=http://catalog-service:50022
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
@@ -152,12 +152,12 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoOrderDb;Username=root;Password=rootpassword
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoOrderDb;Username=${POSTGRES_USER:-root};Password=${POSTGRES_PASSWORD:-rootpassword}
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
       - RabbitMq__Host=rabbitmq
-      - RabbitMq__Username=guest
-      - RabbitMq__Password=guest
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER:-guest}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS:-guest}
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
@@ -183,10 +183,10 @@ services:
       - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__Redis=redis:6379,abortConnect=false
       - RabbitMq__Host=rabbitmq
-      - RabbitMq__Username=guest
-      - RabbitMq__Password=guest
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER:-guest}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS:-guest}
       - Kestrel__Endpoints__Http__Url=http://+:8080
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
     ports:
@@ -208,14 +208,14 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoPaymentDb;Username=root;Password=rootpassword
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoPaymentDb;Username=${POSTGRES_USER:-root};Password=${POSTGRES_PASSWORD:-rootpassword}
       - RabbitMq__Host=rabbitmq
-      - RabbitMq__Username=guest
-      - RabbitMq__Password=guest
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER:-guest}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS:-guest}
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
-      - SePay__SecretKey=TEST_SEPAY_SECRET_KEY_12345
+      - SePay__SecretKey=${SEPAY_SECRET_KEY}
       - Kestrel__Endpoints__Http__Url=http://+:8080
     ports:
       - "5006:8080"
@@ -236,11 +236,11 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoPromotionDb;Username=root;Password=rootpassword
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=BunBoPromotionDb;Username=${POSTGRES_USER:-root};Password=${POSTGRES_PASSWORD:-rootpassword}
       - RabbitMq__Host=rabbitmq
-      - RabbitMq__Username=guest
-      - RabbitMq__Password=guest
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - RabbitMq__Username=${RABBITMQ_DEFAULT_USER:-guest}
+      - RabbitMq__Password=${RABBITMQ_DEFAULT_PASS:-guest}
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
       - Kestrel__Endpoints__Http__Url=http://+:8080
@@ -264,7 +264,7 @@ services:
     restart: on-failure
     environment:
       - ASPNETCORE_ENVIRONMENT=Docker
-      - JwtSettings__Secret=SuperSecretKeyForBunBoSystem123456789!!!
+      - JwtSettings__Secret=${JWT_SECRET}
       - JwtSettings__Issuer=BunBoIdentityService
       - JwtSettings__Audience=BunBoClients
       - Cors__AllowedOrigins__0=http://localhost:3000
@@ -291,7 +291,7 @@ services:
 
   # Object Storage (S3 Compatible)
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2024-03-30T09-41-56Z
     init: true
     container_name: bunbo-minio
     restart: always
@@ -299,8 +299,8 @@ services:
       - "9000:9000" # API
       - "9001:9001" # Console UI
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadminpassword
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadminpassword}
     volumes:
       - minio-data:/data
     command: server /data --console-address ":9001"
@@ -314,7 +314,7 @@ services:
 
   # Centralized Logging (Serilog Sink)
   seq:
-    image: datalust/seq:latest
+    image: datalust/seq:2024.1
     init: true
     container_name: bunbo-seq
     restart: always

@@ -28,12 +28,14 @@ spec:
             cpu: "200m"
             memory: "128Mi"
         livenessProbe:
-          tcpSocket:
+          httpGet:
+            path: /
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
         readinessProbe:
-          tcpSocket:
+          httpGet:
+            path: /
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10

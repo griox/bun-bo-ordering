@@ -77,51 +77,38 @@ jobs:
           kubectl label node worker-node role=apps --overwrite
 
       # 2. UPDATE CONFIGURATION
-      - name: Prepare Image Tags
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+        with:
+          kustomize-version: 'latest'
+
+      - name: Update Kubernetes Images via Kustomize
         run: |
-          if [ -z "${IMAGE_TAG}" ]; then
-            echo "::error::IMAGE_TAG is empty, aborting deployment to prevent ImagePullBackOff!"
-            exit 1
-          fi
-          echo "Updating deployment manifests to use image tag: ${IMAGE_TAG}"
-          # Replace 'latest' tag with the specific commit SHA to force rolling updates
-          find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/:latest/:${IMAGE_TAG}/g" {} +
+          cd infra/k8s
+          DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
+          # Fallback to default if not set
+          if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
           
-          # Optional: Update Docker username if different from default
-          if [ -n "${{ secrets.DOCKER_USERNAME }}" ]; then
-            find infra/k8s -name "*-deployment.yaml" -exec sed -i "s/griox\//${{ secrets.DOCKER_USERNAME }}\//g" {} +
-          fi
+          kustomize edit set image griox/bunbo-identity-service=$DOCKER_USER/bunbo-identity-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-catalog-service=$DOCKER_USER/bunbo-catalog-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-cart-service=$DOCKER_USER/bunbo-cart-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-order-service=$DOCKER_USER/bunbo-order-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-payment-service=$DOCKER_USER/bunbo-payment-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-notification-service=$DOCKER_USER/bunbo-notification-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-realtime-service=$DOCKER_USER/bunbo-realtime-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-promotion-service=$DOCKER_USER/bunbo-promotion-service:${IMAGE_TAG}
+          kustomize edit set image griox/bunbo-api-gateway=$DOCKER_USER/bunbo-api-gateway:${IMAGE_TAG}
 
       # 3. DEPLOY Phase
-      - name: Apply Fundamentals
-        run: |
-          kubectl apply -f infra/k8s/config/
-        continue-on-error: true
+      - name: Apply via Kustomize
+        run: kubectl apply -k infra/k8s/
 
-      - name: Apply Microservices
-        run: |
-          kubectl apply -f infra/k8s/identity/
-          kubectl apply -f infra/k8s/catalog/
-          kubectl apply -f infra/k8s/cart/
-          kubectl apply -f infra/k8s/order/
-          kubectl apply -f infra/k8s/payment/
-          kubectl apply -f infra/k8s/notification/
-          kubectl apply -f infra/k8s/realtime/
-          kubectl apply -f infra/k8s/promotion/
-          kubectl apply -f infra/k8s/gateway/
-
-      - name: Force Rollout Restart & Verify (Sequential)
+      - name: Verify Rollout Status
         id: verify_rollout
         run: |
           services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
           
           for service in "${services[@]}"; do
-            # Only force restart if it's a direct push (as opposed to image tag update which auto-rolls)
-            if [ "${{ github.event_name }}" == "push" ]; then
-              echo "Force restarting $service..."
-              kubectl rollout restart deployment/$service
-            fi
-            
             echo "Waiting for rollout of deployment/$service..."
             if ! kubectl rollout status deployment/$service --timeout=300s; then
               echo "::error::Rollout failed for $service. Checking logs for clues..."

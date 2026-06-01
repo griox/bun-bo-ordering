@@ -36,6 +36,11 @@ builder.Services.AddOutputCache(options =>
 });
 
 // Configure Rate Limiting
+var rateLimitingConfig = builder.Configuration.GetSection("RateLimiting");
+var permitLimit = rateLimitingConfig.GetValue<int>("PermitLimit", 500);
+var queueLimit = rateLimitingConfig.GetValue<int>("QueueLimit", 100);
+var windowMinutes = rateLimitingConfig.GetValue<int>("WindowMinutes", 1);
+
 builder.Services.AddRateLimiter(options =>
 {
     options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
@@ -44,9 +49,9 @@ builder.Services.AddRateLimiter(options =>
             factory: partition => new FixedWindowRateLimiterOptions
             {
                 AutoReplenishment = true,
-                PermitLimit = 500,
-                QueueLimit = 100,
-                Window = TimeSpan.FromMinutes(1)
+                PermitLimit = permitLimit,
+                QueueLimit = queueLimit,
+                Window = TimeSpan.FromMinutes(windowMinutes)
             }));
             
     options.OnRejected = async (context, token) =>
