@@ -1,0 +1,28 @@
+﻿using Microsoft.EntityFrameworkCore.Migrations;
+
+#nullable disable
+
+namespace OrderService.Infrastructure.Data.Migrations
+{
+    /// <inheritdoc />
+    public partial class AddCustomerCreatedAtCompositeIndex : Migration
+    {
+        /// <inheritdoc />
+        protected override void Up(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_CustomerId_CreatedAt",
+                table: "Orders",
+                columns: new[] { "CustomerId", "CreatedAt" },
+                descending: new[] { false, true });
+        }
+
+        /// <inheritdoc />
+        protected override void Down(MigrationBuilder migrationBuilder)
+        {
+            migrationBuilder.DropIndex(
+                name: "IX_Orders_CustomerId_CreatedAt",
+                table: "Orders");
+        }
+    }
+}

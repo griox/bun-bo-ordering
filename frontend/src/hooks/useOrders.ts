@@ -138,5 +138,7 @@ export const useCustomerOrders = (customerId?: string, skip: number = 0, take: n
       return response.data;
     },
     enabled: !!customerId,
+    staleTime: 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 };
