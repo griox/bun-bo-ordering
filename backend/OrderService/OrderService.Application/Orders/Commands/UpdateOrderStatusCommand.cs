@@ -30,8 +30,10 @@ public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatus
         await _publishEndpoint.Publish(new OrderStatusUpdatedEvent
         {
             OrderId = order.Id,
+            CustomerId = order.CustomerId,
             TableSessionId = order.TableSessionId,
             NewStatus = order.Status.ToString(),
+            TotalAmount = order.TotalAmount,
             UpdatedAt = DateTime.UtcNow
         }, cancellationToken);
 

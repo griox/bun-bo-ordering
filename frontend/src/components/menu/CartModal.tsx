@@ -27,9 +27,24 @@ export function CartModal() {
     const displayVouchers = useMemo(() => {
         const list: Pick<Voucher, 'id' | 'code' | 'description' | 'minOrderValue' | 'isActive'>[] = [];
         
+        // Track used or expired vouchers to exclude them from the list
+        const usedVoucherCodes = new Set<string>();
+        if (myVouchers) {
+            myVouchers.forEach(v => {
+                if (v.status === 'Used' || v.status === 'Expired') {
+                    usedVoucherCodes.add(v.code);
+                }
+            });
+        }
+        
         if (availableVouchers) {
             // Add active Standard vouchers (Handle both string and integer enum serialization)
-            list.push(...availableVouchers.filter(v => v.isActive && (v.type === 'Standard' || String(v.type) === '0')));
+            // Skip the ones that have been used by the user
+            list.push(...availableVouchers.filter(v => 
+                v.isActive && 
+                (v.type === 'Standard' || String(v.type) === '0') &&
+                !usedVoucherCodes.has(v.code)
+            ));
         }
 
         if (myVouchers) {
@@ -147,6 +162,12 @@ export function CartModal() {
                 toast.error("Lỗi hệ thống: Không xác định được mã đơn hàng.");
                 return;
             }
+
+            // Reset voucher states to prevent reuse in subsequent orders
+            setAppliedVoucher(null);
+            setDiscountAmount(0);
+            setVoucherCode('');
+
 
             if (finalPaymentMethod === 'Transfer') {
                 try {
