@@ -204,17 +204,26 @@ promotionGroup.MapGet("/vouchers/my", async (MediatR.IMediator mediator, ClaimsP
 
 promotionGroup.MapGet("/health", () => Results.Ok(new { Status = "Healthy" }));
 
-// Auto migrate database on startup
+// Auto migrate database and seed data
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
+    
+    // Explicit migration check
+    if (args.Contains("--migrate"))
     {
-        db.Database.Migrate();
-    } 
-    catch(Exception ex) 
-    {
-        Console.WriteLine($"DB Migration failed: {ex.Message}");
+        try
+        {
+            Console.WriteLine("Applying Database Migrations...");
+            db.Database.Migrate();
+            Console.WriteLine("Migration completed successfully.");
+            return; // Exit after migration
+        } 
+        catch(Exception ex) 
+        {
+            Console.WriteLine($"DB Migration failed: {ex.Message}");
+            Environment.Exit(1);
+        }
     }
 }
 

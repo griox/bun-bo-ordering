@@ -320,29 +320,39 @@ orderGroup.MapPut("/preferences/reorder", async (
     return Results.Ok();
 }).RequireAuthorization();
 
-// Auto migrate database on startup and seed data
+// Auto migrate database and seed data
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
+    
+    // Explicit migration check
+    if (args.Contains("--migrate"))
     {
-        db.Database.Migrate();
-
-        // Seed Tables for Testing QR
-        if (!db.RestaurantTables.Any())
+        try
         {
-            db.RestaurantTables.AddRange(
-                new OrderService.Domain.Entities.RestaurantTable("T1", "Bàn VIP 1", 50, 50),
-                new OrderService.Domain.Entities.RestaurantTable("T2", "Bàn VIP 2", 200, 50),
-                new OrderService.Domain.Entities.RestaurantTable("T3", "Bàn Thường 3", 50, 150)
-            );
-            db.SaveChanges();
-            Console.WriteLine("Mock Tables seeded.");
+            Console.WriteLine("Applying Database Migrations...");
+            db.Database.Migrate();
+
+            // Seed Tables for Testing QR
+            if (!db.RestaurantTables.Any())
+            {
+                db.RestaurantTables.AddRange(
+                    new OrderService.Domain.Entities.RestaurantTable("T1", "Bàn VIP 1", 50, 50),
+                    new OrderService.Domain.Entities.RestaurantTable("T2", "Bàn VIP 2", 200, 50),
+                    new OrderService.Domain.Entities.RestaurantTable("T3", "Bàn Thường 3", 50, 150)
+                );
+                db.SaveChanges();
+                Console.WriteLine("Mock Tables seeded.");
+            }
+            
+            Console.WriteLine("Migration completed successfully.");
+            return; // Exit after migration
+        } 
+        catch(Exception ex) 
+        {
+            Console.WriteLine($"DB Migration failed: {ex.Message}");
+            Environment.Exit(1);
         }
-    } 
-    catch(Exception ex) 
-    {
-        Console.WriteLine($"DB Migration failed: {ex.Message}");
     }
 }
 

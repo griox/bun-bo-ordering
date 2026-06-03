@@ -16,10 +16,11 @@ env:
 jobs:
   changes:
     name: Detect Changed Folders
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      services: ${{ steps.detect-services.outputs.services }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -41,6 +42,71 @@ jobs:
             frontend:
               - 'frontend/**'
               - '.github/workflows/ci.yml'
+            identity-service:
+              - 'backend/IdentityService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            catalog-service:
+              - 'backend/CatalogService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            cart-service:
+              - 'backend/CartService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            order-service:
+              - 'backend/OrderService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            realtime-service:
+              - 'backend/RealtimeService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            payment-service:
+              - 'backend/PaymentService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            notification-service:
+              - 'backend/NotificationService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            promotion-service:
+              - 'backend/PromotionService/**'
+              - 'backend/BunBo.SharedKernel/**'
+            api-gateway:
+              - 'backend/ApiGateway/**'
+              - 'backend/BunBo.SharedKernel/**'
+
+      - name: Build Dynamic Service Matrix
+        id: detect-services
+        run: |
+          ALL_SERVICES='[
+            {"name":"identity-service","path":"backend/IdentityService"},
+            {"name":"catalog-service","path":"backend/CatalogService"},
+            {"name":"cart-service","path":"backend/CartService"},
+            {"name":"order-service","path":"backend/OrderService"},
+            {"name":"realtime-service","path":"backend/RealtimeService"},
+            {"name":"payment-service","path":"backend/PaymentService"},
+            {"name":"notification-service","path":"backend/NotificationService"},
+            {"name":"promotion-service","path":"backend/PromotionService"},
+            {"name":"api-gateway","path":"backend/ApiGateway"}
+          ]'
+
+          MATRIX=$(echo "$ALL_SERVICES" | python3 -c "
+          import sys, json, os
+          services = json.load(sys.stdin)
+          changed = [s for s in services if os.environ.get('FILTER_' + s['name'].replace('-','_').upper(), 'false') == 'true']
+          # If SharedKernel or ci/cd workflow changed without specific service match, rebuild all
+          if not changed and os.environ.get('BACKEND_CHANGED', 'false') == 'true':
+              changed = services
+          print(json.dumps(changed))
+          " \
+          BACKEND_CHANGED="${{ steps.filter.outputs.backend }}" \
+          FILTER_IDENTITY_SERVICE="${{ steps.filter.outputs['identity-service'] }}" \
+          FILTER_CATALOG_SERVICE="${{ steps.filter.outputs['catalog-service'] }}" \
+          FILTER_CART_SERVICE="${{ steps.filter.outputs['cart-service'] }}" \
+          FILTER_ORDER_SERVICE="${{ steps.filter.outputs['order-service'] }}" \
+          FILTER_REALTIME_SERVICE="${{ steps.filter.outputs['realtime-service'] }}" \
+          FILTER_PAYMENT_SERVICE="${{ steps.filter.outputs['payment-service'] }}" \
+          FILTER_NOTIFICATION_SERVICE="${{ steps.filter.outputs['notification-service'] }}" \
+          FILTER_PROMOTION_SERVICE="${{ steps.filter.outputs['promotion-service'] }}" \
+          FILTER_API_GATEWAY="${{ steps.filter.outputs['api-gateway'] }}")
+
+          echo "services=$MATRIX" >> $GITHUB_OUTPUT
+          echo "Detected services to build: $MATRIX"
 
   test:
     name: Run Tests
@@ -83,7 +149,7 @@ jobs:
     name: Frontend Lint & Build
     needs: changes
     if: needs.changes.outputs.frontend == 'true'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: ./frontend
@@ -115,28 +181,21 @@ jobs:
         run: npm run build
 
   build-and-push:
-    name: Build and Push
+    name: "Build & Push: ${{ matrix.service.name }}"
     needs: [changes, test, frontend-checks]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: |
       always() &&
       needs.changes.outputs.backend == 'true' &&
+      needs.changes.outputs.services != '[]' &&
       (github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)) &&
       (needs.test.result == 'success' || needs.test.result == 'skipped') &&
       (needs.frontend-checks.result == 'success' || needs.frontend-checks.result == 'skipped')
 
     strategy:
+      fail-fast: false
       matrix:
-        service: 
-          - { name: 'identity-service', path: 'backend/IdentityService' }
-          - { name: 'catalog-service', path: 'backend/CatalogService' }
-          - { name: 'cart-service', path: 'backend/CartService' }
-          - { name: 'order-service', path: 'backend/OrderService' }
-          - { name: 'realtime-service', path: 'backend/RealtimeService' }
-          - { name: 'payment-service', path: 'backend/PaymentService' }
-          - { name: 'notification-service', path: 'backend/NotificationService' }
-          - { name: 'promotion-service', path: 'backend/PromotionService' }
-          - { name: 'api-gateway', path: 'backend/ApiGateway' }
+        service: ${{ fromJson(needs.changes.outputs.services) }}
 
     steps:
       - name: Checkout Code
@@ -161,10 +220,12 @@ jobs:
           context: ./backend
           file: ./${{ matrix.service.path }}/Dockerfile
           platforms: linux/amd64
-          load: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          push: ${{ github.event_name == 'push' }}
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:${{ github.sha }}
+            ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:latest
+          cache-from: type=gha,scope=${{ matrix.service.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.service.name }}
 
       - name: Scan Docker Image with Trivy
         uses: aquasecurity/trivy-action@master
@@ -174,17 +235,10 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '1'
 
-      - name: Push Docker Image
-        if: github.event_name == 'push'
-        run: |
-          docker tag ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:${{ github.sha }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/bunbo-${{ matrix.service.name }}:latest
-
   publish-event:
     name: Publish Deploy Event
     needs: [changes, build-and-push]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: |
       always() &&
       needs.changes.outputs.backend == 'true' &&

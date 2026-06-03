@@ -16,7 +16,7 @@ on:
 jobs:
   check-event:
     name: Check CI Event
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     outputs:
       proceed: ${{ steps.check.outputs.proceed }}
@@ -41,10 +41,13 @@ jobs:
     name: Deploy to DigitalOcean K3s
     needs: check-event
     if: ${{ github.event_name == 'push' || needs.check-event.outputs.proceed == 'true' }}
-    runs-on: ubuntu-latest
-    
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: write  # Required for GitOps git push back
+
     env:
-      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || 'latest' }}
+      IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
@@ -52,6 +55,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           clean: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
@@ -73,7 +78,51 @@ jobs:
           kubectl label node bunbo-master role=infra --overwrite
           kubectl label node worker-node role=apps --overwrite
 
-      # 2. UPDATE CONFIGURATION
+      # 2. DATABASE MIGRATION Phase (Safe, before deploy)
+      - name: Run Database Migrations via Kubernetes Jobs
+        run: |
+          DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
+          if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
+
+          SERVICES=("order-service" "identity-service" "catalog-service" "promotion-service")
+          DLLS=("OrderService.Api.dll" "IdentityService.Api.dll" "CatalogService.Api.dll" "PromotionService.Api.dll")
+
+          for i in "${!SERVICES[@]}"; do
+            SVC="${SERVICES[$i]}"
+            DLL="${DLLS[$i]}"
+            JOB_NAME="${SVC}-migration-$(echo $IMAGE_TAG | cut -c1-7)"
+
+            echo ">>> Running migration Job for $SVC..."
+
+            # Delete old job if exists
+            kubectl delete job "$JOB_NAME" --ignore-not-found=true
+
+            # Apply migration job inline
+            kubectl create job "$JOB_NAME" \
+              --image="$DOCKER_USER/bunbo-$SVC:$IMAGE_TAG" \
+              -- dotnet "$DLL" --migrate
+
+            # Patch the job to use the correct env from secret
+            kubectl patch job "$JOB_NAME" --type=json -p='[
+              {"op":"add","path":"/spec/template/spec/containers/0/envFrom","value":[{"secretRef":{"name":"bunbo-secrets"}}]},
+              {"op":"replace","path":"/spec/backoffLimit","value":3}
+            ]' 2>/dev/null || true
+
+            echo "Waiting for migration job $JOB_NAME to complete..."
+            if ! kubectl wait --for=condition=complete job/"$JOB_NAME" --timeout=120s; then
+              echo "::error::Migration job failed for $SVC. Aborting deployment."
+              kubectl logs "$(kubectl get pods -l job-name=$JOB_NAME -o jsonpath='{.items[0].metadata.name}')" 2>/dev/null || true
+              exit 1
+            fi
+
+            echo "✅ Migration completed for $SVC"
+
+            # Clean up completed job
+            kubectl delete job "$JOB_NAME" --ignore-not-found=true
+          done
+          echo "All migrations completed successfully."
+
+      # 3. UPDATE CONFIGURATION
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v2
         with:
@@ -83,9 +132,8 @@ jobs:
         run: |
           cd infra/k8s
           DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
-          # Fallback to default if not set
           if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
-          
+
           kustomize edit set image griox/bunbo-identity-service=$DOCKER_USER/bunbo-identity-service:${IMAGE_TAG}
           kustomize edit set image griox/bunbo-catalog-service=$DOCKER_USER/bunbo-catalog-service:${IMAGE_TAG}
           kustomize edit set image griox/bunbo-cart-service=$DOCKER_USER/bunbo-cart-service:${IMAGE_TAG}
@@ -96,7 +144,22 @@ jobs:
           kustomize edit set image griox/bunbo-promotion-service=$DOCKER_USER/bunbo-promotion-service:${IMAGE_TAG}
           kustomize edit set image griox/bunbo-api-gateway=$DOCKER_USER/bunbo-api-gateway:${IMAGE_TAG}
 
-      # 3. DEPLOY Phase
+      # GitOps: Commit the updated kustomization.yaml back to Git
+      - name: Commit Kustomization Changes (GitOps State Sync)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          if git diff --quiet infra/k8s/kustomization.yaml; then
+            echo "No kustomization changes to commit (image tags unchanged). Skipping."
+          else
+            git add infra/k8s/kustomization.yaml
+            git commit -m "chore(deploy): update image tags to ${IMAGE_TAG} [skip ci]"
+            git push origin main
+            echo "✅ GitOps state synced — kustomization.yaml committed to main."
+          fi
+
+      # 4. DEPLOY Phase
       - name: Apply via Kustomize
         run: kubectl apply -k infra/k8s/
 
@@ -104,7 +167,7 @@ jobs:
         id: verify_rollout
         run: |
           services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
-          
+
           for service in "${services[@]}"; do
             echo "Waiting for rollout of deployment/$service..."
             if ! kubectl rollout status deployment/$service --timeout=300s; then
@@ -115,38 +178,46 @@ jobs:
           done
           echo "All deployments verified successfully."
 
-      # 4. HEALTH CHECK Phase
+      # 5. HEALTH CHECK Phase (strict — failure triggers rollback)
       - name: Verify Service Health Endpoints
         id: health_check
         run: |
           echo "Waiting 30s for services to stabilize..."
           sleep 30
-          
+
           GATEWAY_IP=$(kubectl get svc api-gateway -o jsonpath='{.spec.clusterIP}' 2>/dev/null || echo "")
           if [ -n "$GATEWAY_IP" ]; then
             echo "Checking API Gateway health at $GATEWAY_IP..."
-            kubectl run health-check-${{ github.run_id }} \
+            HEALTH_STATUS=$(kubectl run health-check-${{ github.run_id }} \
               --image=curlimages/curl:latest \
               --restart=Never \
               --rm -i \
               --timeout=60s \
-              -- curl -sf --max-time 10 "http://$GATEWAY_IP/health" \
-              && echo "✅ Health check PASSED" \
-              || echo "::warning::⚠️ Health check did not return 200 — service may still be starting"
+              -- curl -s -o /dev/null -w "%{http_code}" --max-time 10 "http://$GATEWAY_IP/health" 2>/dev/null || echo "000")
+
+            echo "Health check returned HTTP $HEALTH_STATUS"
+            kubectl delete pod health-check-${{ github.run_id }} --ignore-not-found=true
+
+            if [ "$HEALTH_STATUS" != "200" ]; then
+              echo "::error::Health check FAILED — Gateway returned HTTP $HEALTH_STATUS. Triggering rollback."
+              exit 1
+            fi
+            echo "✅ Health check PASSED (HTTP 200)"
           else
             echo "::warning::Could not resolve API Gateway service IP, skipping health check"
           fi
 
-      # 5. CONFIRM or ROLLBACK Phase
+      # 6. CONFIRM or ROLLBACK Phase
       - name: Automated Rollback on Failure
-        if: failure() && steps.verify_rollout.outcome == 'failure'
+        if: failure() && (steps.verify_rollout.outcome == 'failure' || steps.health_check.outcome == 'failure')
         run: |
-          echo "::warning::Deployment verification failed, initiating automated rollback..."
+          echo "::warning::Deployment or health check failed, initiating automated rollback..."
           services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
-          
+
           for service in "${services[@]}"; do
             echo "Rolling back deployment/$service..."
             kubectl rollout undo deployment/$service || echo "::warning::No previous rollout history to undo for $service"
             kubectl rollout status deployment/$service --timeout=180s || echo "::error::Rollback confirmation failed for $service"
           done
           exit 1
+

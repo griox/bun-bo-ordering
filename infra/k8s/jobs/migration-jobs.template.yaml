@@ -1,0 +1,71 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: order-service-migration
+  namespace: bunbo-system
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+      - name: order-migration
+        image: ${DOCKER_USER}/bunbo-order-service:${IMAGE_TAG}
+        command: ["dotnet", "OrderService.Api.dll", "--migrate"]
+        envFrom:
+        - secretRef:
+            name: bunbo-secrets
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: identity-service-migration
+  namespace: bunbo-system
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+      - name: identity-migration
+        image: ${DOCKER_USER}/bunbo-identity-service:${IMAGE_TAG}
+        command: ["dotnet", "IdentityService.Api.dll", "--migrate"]
+        envFrom:
+        - secretRef:
+            name: bunbo-secrets
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: catalog-service-migration
+  namespace: bunbo-system
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+      - name: catalog-migration
+        image: ${DOCKER_USER}/bunbo-catalog-service:${IMAGE_TAG}
+        command: ["dotnet", "CatalogService.Api.dll", "--migrate"]
+        envFrom:
+        - secretRef:
+            name: bunbo-secrets
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: promotion-service-migration
+  namespace: bunbo-system
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      containers:
+      - name: promotion-migration
+        image: ${DOCKER_USER}/bunbo-promotion-service:${IMAGE_TAG}
+        command: ["dotnet", "PromotionService.Api.dll", "--migrate"]
+        envFrom:
+        - secretRef:
+            name: bunbo-secrets
+      restartPolicy: Never

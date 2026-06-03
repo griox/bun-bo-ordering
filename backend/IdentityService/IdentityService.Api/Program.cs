@@ -228,35 +228,44 @@ authGroup.Map("{**catchall}", (string catchall, HttpContext context, ILogger<Pro
 
 app.MapBunBoHealthChecks();
 
-// Auto migrate database on startup
+// Auto migrate database and seed data
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    // We will catch exceptions here in production, but for local dev it's okay to run Migrate
-    try
+    
+    // Explicit migration check
+    if (args.Contains("--migrate"))
     {
-        db.Database.Migrate();
-
-        // Seed Admin User if not exists
-        if (!db.Users.Any(u => u.Role == "Admin"))
+        try
         {
-            var adminUser = builder.Configuration["ADMIN_USER"] ?? "admin";
-            var adminEmail = builder.Configuration["ADMIN_EMAIL"] ?? "admin@bunbo.com";
-            var adminPassword = builder.Configuration["ADMIN_PASSWORD"] ?? "Admin@123";
+            Console.WriteLine("Applying Database Migrations...");
+            db.Database.Migrate();
 
-            var passwordHasher = new Microsoft.AspNetCore.Identity.PasswordHasher<IdentityService.Domain.Entities.User>();
-            var user = new IdentityService.Domain.Entities.User(adminUser, adminEmail, "", "Admin");
-            var hash = passwordHasher.HashPassword(user, adminPassword);
-            user.UpdatePassword(hash);
+            // Seed Admin User if not exists
+            if (!db.Users.Any(u => u.Role == "Admin"))
+            {
+                var adminUser = builder.Configuration["ADMIN_USER"] ?? "admin";
+                var adminEmail = builder.Configuration["ADMIN_EMAIL"] ?? "admin@bunbo.com";
+                var adminPassword = builder.Configuration["ADMIN_PASSWORD"] ?? "Admin@123";
 
-            db.Users.Add(user);
-            db.SaveChanges();
-            Console.WriteLine($"Admin user seeded: {adminUser} ({adminEmail})");
+                var passwordHasher = new Microsoft.AspNetCore.Identity.PasswordHasher<IdentityService.Domain.Entities.User>();
+                var user = new IdentityService.Domain.Entities.User(adminUser, adminEmail, "", "Admin");
+                var hash = passwordHasher.HashPassword(user, adminPassword);
+                user.UpdatePassword(hash);
+
+                db.Users.Add(user);
+                db.SaveChanges();
+                Console.WriteLine($"Admin user seeded: {adminUser} ({adminEmail})");
+            }
+            
+            Console.WriteLine("Migration completed successfully.");
+            return; // Exit after migration
+        } 
+        catch(Exception ex) 
+        {
+            Console.WriteLine($"DB Migration/Seeding failed: {ex.Message}");
+            Environment.Exit(1);
         }
-    } 
-    catch(Exception ex) 
-    {
-        Console.WriteLine($"DB Migration/Seeding failed: {ex.Message}");
     }
 }
 

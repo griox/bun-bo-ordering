@@ -187,22 +187,39 @@ catalogGroup.MapDelete("/foods/{id}", async (MediatR.IMediator mediator, Guid id
     return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin").RequireRateLimiting("catalog-admin");
 
-// Auto migrate database on startup
+// Auto migrate database and pre-warm cache
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
+    
+    // Explicit migration check
+    if (args.Contains("--migrate"))
     {
-        db.Database.Migrate();
-
-        // Cache Pre-warming
+        try
+        {
+            Console.WriteLine("Applying Database Migrations...");
+            db.Database.Migrate();
+            Console.WriteLine("Migration completed successfully.");
+            return; // Exit after migration
+        } 
+        catch(Exception ex) 
+        {
+            Console.WriteLine($"DB Migration failed: {ex.Message}");
+            Environment.Exit(1);
+        }
+    }
+    
+    // Run cache pre-warming for normal startup
+    try 
+    {
         var mediator = scope.ServiceProvider.GetRequiredService<MediatR.IMediator>();
-        await mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsQuery(0, 50));
+        // Fire and forget cache pre-warm so it doesn't block startup
+        _ = mediator.Send(new CatalogService.Application.Foods.Queries.GetFoodsQuery(0, 50));
         Console.WriteLine("Cache pre-warmed successfully.");
-    } 
-    catch(Exception ex) 
+    }
+    catch(Exception ex)
     {
-        Console.WriteLine($"Startup task failed: {ex.Message}");
+        Console.WriteLine($"Cache pre-warm failed: {ex.Message}");
     }
 }
 
