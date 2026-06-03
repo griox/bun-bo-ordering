@@ -47,9 +47,10 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
                 _logger.LogInformation("Processing voucher usage for Code {VoucherCode} for Order {OrderId}", 
                     @event.VoucherCode, @event.OrderId);
                 
+                var upperVoucherCode = @event.VoucherCode.ToUpperInvariant();
                 // Lock voucher for update to prevent race conditions in IncrementUsage
                 var voucher = await _context.Vouchers
-                    .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Code\" = {0} FOR UPDATE", @event.VoucherCode)
+                    .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Code\" = {0} FOR UPDATE", upperVoucherCode)
                     .SingleOrDefaultAsync();
 
                 if (voucher != null)
