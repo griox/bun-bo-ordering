@@ -91,6 +91,8 @@ export const useRealtime = () => {
                 });
                 queryClient.invalidateQueries({ queryKey: ['orders'] });
                 queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
+                queryClient.invalidateQueries({ queryKey: ['tables'] });
+                queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -103,6 +105,8 @@ export const useRealtime = () => {
                 queryClient.invalidateQueries({ queryKey: ['sessionData'] });
                 queryClient.invalidateQueries({ queryKey: ['orders'] });
                 queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
+                queryClient.invalidateQueries({ queryKey: ['tables'] });
+                queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,6 +122,8 @@ export const useRealtime = () => {
                     queryClient.invalidateQueries({ queryKey: ['orders'] });
                     queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
                     queryClient.invalidateQueries({ queryKey: ['sessionData'] });
+                    queryClient.invalidateQueries({ queryKey: ['tables'] });
+                    queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
                 }
             });
 
@@ -141,6 +147,8 @@ export const useRealtime = () => {
                 queryClient.invalidateQueries({ queryKey: ['orders'] });
                 queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
                 queryClient.invalidateQueries({ queryKey: ['sessionData'] });
+                queryClient.invalidateQueries({ queryKey: ['tables'] });
+                queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
             });
         }
 

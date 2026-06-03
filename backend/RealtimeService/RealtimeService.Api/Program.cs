@@ -70,8 +70,8 @@ builder.Services.AddAuthentication(options => {
         ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
         ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        RoleClaimType = System.Security.Claims.ClaimTypes.Role,
-        NameClaimType = System.Security.Claims.ClaimTypes.Name
+        RoleClaimType = "role",
+        NameClaimType = "sub"
     };
 
     // Essential for SignalR WebSockets as headers aren't available during initial handshake
