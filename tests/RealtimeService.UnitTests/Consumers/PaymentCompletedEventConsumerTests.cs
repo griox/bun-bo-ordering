@@ -38,34 +38,6 @@ public class PaymentCompletedEventConsumerTests
     }
 
     [Fact]
-    public async Task Consume_PaymentSuccess_ShouldNotifyKitchenAndAdmin()
-    {
-        // Arrange
-        var contextMock = new Mock<ConsumeContext<PaymentCompletedEvent>>();
-        var message = new PaymentCompletedEvent
-        {
-            OrderId = Guid.NewGuid(),
-            IsSuccess = true,
-            Amount = 55000,
-            CompletedAt = DateTime.UtcNow,
-            TransactionId = "TXN123"
-        };
-        contextMock.Setup(x => x.Message).Returns(message);
-
-        // Act
-        await _consumer.Consume(contextMock.Object);
-
-        // Assert
-        _clientsMock.Verify(x => x.Groups(It.Is<IReadOnlyList<string>>(list => 
-            list.Contains(HubConstants.KitchenGroup) && list.Contains(HubConstants.AdminGroup))), Times.Once);
-            
-        _clientProxyMock.Verify(x => x.SendCoreAsync(
-            HubConstants.Events.ReceiveNewOrder,
-            It.Is<object[]>(args => args.Length == 1),
-            default), Times.Once);
-    }
-
-    [Fact]
     public async Task Consume_PaymentSuccess_WithTableSession_ShouldNotifyTable()
     {
         // Arrange

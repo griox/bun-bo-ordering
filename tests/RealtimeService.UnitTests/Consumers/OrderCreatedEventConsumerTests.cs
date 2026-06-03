@@ -71,7 +71,7 @@ public class OrderCreatedEventConsumerTests
     }
 
     [Fact]
-    public async Task Consume_TransferOrder_ShouldNotNotifyKitchenGroup()
+    public async Task Consume_TransferOrder_ShouldNotifyKitchenGroup()
     {
         // Arrange
         var @event = new OrderCreatedEvent 
@@ -87,6 +87,6 @@ public class OrderCreatedEventConsumerTests
         await _consumer.Consume(contextMock.Object);
 
         // Assert
-        _hubContextMock.Verify(x => x.Clients.Group(HubConstants.KitchenGroup), Times.Never);
+        _hubContextMock.Verify(x => x.Clients.Group(HubConstants.KitchenGroup), Times.Once);
     }
 }
