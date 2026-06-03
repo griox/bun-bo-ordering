@@ -69,7 +69,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-            RoleClaimType = ClaimTypes.Role
+            RoleClaimType = "role",
+            NameClaimType = "sub"
         };
     });
 
@@ -138,7 +139,7 @@ promotionGroup.MapPost("/vouchers", async (MediatR.IMediator mediator, Promotion
 
 promotionGroup.MapPost("/vouchers/redeem", async (MediatR.IMediator mediator, Guid voucherId, ClaimsPrincipal user) =>
 {
-    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var userIdStr = user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);
@@ -174,7 +175,7 @@ promotionGroup.MapGet("/vouchers/active", async (MediatR.IMediator mediator) =>
 // Client APIs
 promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, ValidateVoucherRequest req, ClaimsPrincipal user) =>
 {
-    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var userIdStr = user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);
@@ -185,7 +186,7 @@ promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, 
 
 promotionGroup.MapGet("/points", async (MediatR.IMediator mediator, ClaimsPrincipal user) =>
 {
-    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var userIdStr = user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);
@@ -195,7 +196,7 @@ promotionGroup.MapGet("/points", async (MediatR.IMediator mediator, ClaimsPrinci
 
 promotionGroup.MapGet("/vouchers/my", async (MediatR.IMediator mediator, ClaimsPrincipal user) =>
 {
-    var userIdStr = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+    var userIdStr = user.FindFirst("sub")?.Value ?? user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userIdStr)) return Results.Unauthorized();
     
     var userId = Guid.Parse(userIdStr);

@@ -25,6 +25,10 @@ public class Order : BaseEntity
 
     public Order(Guid tableSessionId, Guid? customerId, string? note, string paymentMethod, string? voucherCode = null, decimal discountAmount = 0)
     {
+        if (customerId == null && !string.IsNullOrEmpty(voucherCode))
+        {
+            throw new DomainException("Khách vãng lai không được phép sử dụng voucher.");
+        }
         TableSessionId = tableSessionId;
         CustomerId = customerId;
         Note = note;

@@ -94,6 +94,18 @@ export const useRealtime = () => {
             });
 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            globalConnection.on("OrderConfirmed", (data: any) => {
+                console.log("OrderConfirmed received:", data);
+                const orderId = data.orderId || data.OrderId;
+                toast.success("Đơn hàng của bạn đã được tiếp nhận!", {
+                    description: orderId ? `Mã đơn: #${orderId.substring(0, 8).toUpperCase()}` : ""
+                });
+                queryClient.invalidateQueries({ queryKey: ['sessionData'] });
+                queryClient.invalidateQueries({ queryKey: ['orders'] });
+                queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
+            });
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             globalConnection.on("OrderUpdated", (rawUpdate: any) => {
                 console.log("OrderUpdated received:", rawUpdate);
                 const orderId = rawUpdate.orderId || rawUpdate.OrderId;
@@ -105,6 +117,7 @@ export const useRealtime = () => {
                     toast.info(`Đơn hàng ${orderId.substring(0, 8).toUpperCase()} đã chuyển sang: ${newStatus}`);
                     queryClient.invalidateQueries({ queryKey: ['orders'] });
                     queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
+                    queryClient.invalidateQueries({ queryKey: ['sessionData'] });
                 }
             });
 
@@ -127,6 +140,7 @@ export const useRealtime = () => {
                 });
                 queryClient.invalidateQueries({ queryKey: ['orders'] });
                 queryClient.invalidateQueries({ queryKey: ['unread-orders'] });
+                queryClient.invalidateQueries({ queryKey: ['sessionData'] });
             });
         }
 
@@ -137,7 +151,9 @@ export const useRealtime = () => {
 
             try {
                 if (user?.role === 'Admin') {
-                    await connection.invoke("JoinKitchenGroup").catch(() => { });
+                    await connection.invoke("JoinKitchenGroup").catch((err) => {
+                        console.error("!!! SIGNALR ERROR: Failed to join KitchenGroup:", err);
+                    });
                 }
 
                 if (session?.id) {
@@ -206,7 +222,9 @@ export const useRealtime = () => {
             try {
                 if (user?.role === 'Admin') {
                     console.log("!!! SIGNALR: Joining KitchenGroup");
-                    await globalConnection.invoke("JoinKitchenGroup").catch(() => { });
+                    await globalConnection.invoke("JoinKitchenGroup").catch((err) => {
+                        console.error("!!! SIGNALR ERROR: Failed to join KitchenGroup in dynamic sync:", err);
+                    });
                 }
 
                 if (session?.id) {

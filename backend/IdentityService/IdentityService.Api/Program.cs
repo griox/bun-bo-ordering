@@ -176,7 +176,8 @@ authGroup.MapPost("/reset-password", async (MediatR.IMediator mediator, Identity
 
 authGroup.MapPost("/logout", async (MediatR.IMediator mediator, System.Security.Claims.ClaimsPrincipal user) =>
 {
-    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var userIdClaim = user.FindFirst("sub")?.Value 
+        ?? user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
     if (Guid.TryParse(userIdClaim, out var userId))
     {
         await mediator.Send(new IdentityService.Application.Auth.Commands.LogoutCommand(userId));

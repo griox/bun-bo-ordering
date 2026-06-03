@@ -201,7 +201,8 @@ public class CreateOrderCommandHandlerTests
 
         _cartDataClientMock.Setup(x => x.GetCartAsync(sessionId.ToString())).ReturnsAsync(cart);
 
-        var command = new CreateOrderCommand(sessionId, null, null, "Cash", "VOUCHER10", 10000);
+        var customerId = Guid.NewGuid();
+        var command = new CreateOrderCommand(sessionId, customerId, null, "Cash", "VOUCHER10", 10000);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

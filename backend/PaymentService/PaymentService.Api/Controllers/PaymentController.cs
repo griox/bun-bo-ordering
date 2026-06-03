@@ -31,9 +31,15 @@ public class PaymentController : ControllerBase
     [EnableRateLimiting("payment-request")]
     public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
     {
-        var userIdStr = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var userIdStr = User.FindFirst("sub")?.Value 
+            ?? User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
         Guid? customerId = null;
         if (Guid.TryParse(userIdStr, out var parsedId)) customerId = parsedId;
+
+        if (customerId == null && !string.IsNullOrEmpty(request.VoucherCode))
+        {
+            throw new DomainException("Khách vãng lai không được phép sử dụng voucher.");
+        }
 
         var command = new CreatePaymentCommand(request.OrderId, request.Amount, "SePay", customerId, request.VoucherCode, request.TableSessionId, request.TableNumber, request.Note);
         var result = await _mediator.Send(command);
