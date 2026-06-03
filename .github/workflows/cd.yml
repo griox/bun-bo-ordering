@@ -48,15 +48,10 @@ jobs:
 
     env:
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          clean: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
