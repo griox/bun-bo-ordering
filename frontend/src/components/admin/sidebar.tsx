@@ -15,6 +15,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/store/useAuthStore';
+import axiosInstance from '@/lib/axiosInstance';
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -94,7 +95,10 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                 <Button
                     variant="ghost"
                     className="w-full justify-start gap-3 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl py-6 min-h-[44px]"
-                    onClick={() => logout()}
+                    onClick={async () => {
+                        try { await axiosInstance.post('/api/identity/logout'); } catch(_) {}
+                        logout();
+                    }}
                 >
                     <LogOut className="size-5" />
                     <span className="font-medium text-base lg:text-sm">{t('logout')}</span>

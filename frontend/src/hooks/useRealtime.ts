@@ -25,15 +25,15 @@ export const useRealtime = () => {
         globalConnection?.state || signalR.HubConnectionState.Disconnected
     );
 
-    const { token, user } = useAuthStore();
+    const { user } = useAuthStore();
     const { session } = useOrderStore();
     const addOrder = useOrderNotificationStore((state) => state.addOrder);
     const queryClient = useQueryClient();
 
     useEffect(() => {
-        // Don't attempt SignalR connection without a valid token
-        // The hub requires [Authorize], so connecting without token = 401 infinite retry
-        if (!token) {
+        // Don't attempt SignalR connection without a valid user
+        // The hub requires [Authorize]
+        if (!user) {
             // If user logged out and connection exists, stop it
             if (globalConnection && globalConnection.state !== signalR.HubConnectionState.Disconnected) {
                 globalConnection.stop().catch(() => {});
@@ -44,7 +44,7 @@ export const useRealtime = () => {
         }
 
         console.log("SignalR Effect Sync:", {
-            hasToken: !!token,
+            hasUser: !!user,
             role: user?.role,
             sessionId: session?.id,
             connectionState: globalConnection?.state
@@ -61,7 +61,7 @@ export const useRealtime = () => {
         if (!globalConnection) {
             globalConnection = new signalR.HubConnectionBuilder()
                 .withUrl(HUB_URL, {
-                    accessTokenFactory: () => useAuthStore.getState().token || ""
+                    withCredentials: true
                 })
                 .configureLogging(signalR.LogLevel.Information) // Show detailed logs for debugging
                 .withAutomaticReconnect()
@@ -124,6 +124,7 @@ export const useRealtime = () => {
                     queryClient.invalidateQueries({ queryKey: ['sessionData'] });
                     queryClient.invalidateQueries({ queryKey: ['tables'] });
                     queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+                    queryClient.invalidateQueries({ queryKey: ['my-points'] });
                 }
             });
 
@@ -149,6 +150,7 @@ export const useRealtime = () => {
                 queryClient.invalidateQueries({ queryKey: ['sessionData'] });
                 queryClient.invalidateQueries({ queryKey: ['tables'] });
                 queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] });
+                queryClient.invalidateQueries({ queryKey: ['my-points'] });
             });
         }
 
@@ -181,8 +183,8 @@ export const useRealtime = () => {
         syncGroups();
 
         const startConnection = async () => {
-            const currentToken = useAuthStore.getState().token;
-            if (!currentToken) return; // Abort if logged out
+            const currentUser = useAuthStore.getState().user;
+            if (!currentUser) return; // Abort if logged out
 
             if (connection.state === signalR.HubConnectionState.Disconnected) {
                 try {
@@ -220,7 +222,7 @@ export const useRealtime = () => {
             // We DON'T stop the global connection here to avoid churn.
             // It will stay alive for the lifetime of the app.
         };
-    }, [token, addOrder, user?.role, session?.id, queryClient]);
+    }, [user, addOrder, session?.id, queryClient]);
 
     // Separate effect for syncing groups to avoid connection churn
     useEffect(() => {

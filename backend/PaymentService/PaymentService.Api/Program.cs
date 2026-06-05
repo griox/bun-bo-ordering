@@ -86,7 +86,7 @@ builder.Services.AddAuthentication(Microsoft.AspNetCore.Authentication.JwtBearer
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new Microsoft.IdentityModel.Tokens.SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(secretKey)),
-            RoleClaimType = "role",
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role,
             NameClaimType = "sub"
         };
     });

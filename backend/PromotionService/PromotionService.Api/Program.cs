@@ -69,7 +69,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-            RoleClaimType = "role",
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role,
             NameClaimType = "sub"
         };
     });
@@ -93,7 +93,6 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddMassTransit(x =>
 {
-    x.AddConsumer<PromotionService.Infrastructure.Messaging.Consumers.PaymentCompletedConsumer>();
     x.AddConsumer<PromotionService.Infrastructure.Messaging.Consumers.OrderCreatedEventConsumer>();
     x.AddConsumer<PromotionService.Infrastructure.Messaging.Consumers.OrderStatusUpdatedEventConsumer>();
 

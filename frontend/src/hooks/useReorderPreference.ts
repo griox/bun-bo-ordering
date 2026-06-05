@@ -3,12 +3,12 @@ import axiosInstance from '@/lib/axiosInstance';
 import { useAuthStore } from '@/store/useAuthStore';
 
 export function useReorderPreference() {
-    const { token } = useAuthStore();
+    const { user } = useAuthStore();
     const queryClient = useQueryClient();
 
     const { data, isLoading } = useQuery<{ preferredOrderId: string | null }>({
         queryKey: ['reorder-preference'],
-        enabled: !!token,
+        enabled: !!user,
         queryFn: async () => {
             const { data } = await axiosInstance.get('/api/orders/preferences/reorder');
             return data;

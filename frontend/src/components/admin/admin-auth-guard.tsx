@@ -6,7 +6,7 @@ import { useAuthStore } from '@/store/useAuthStore';
 import { Loader2 } from 'lucide-react';
 
 export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
-    const { user, token } = useAuthStore();
+    const { user } = useAuthStore();
     const router = useRouter();
     const [isHydrated, setIsHydrated] = useState(false);
     const [isAuthorized, setIsAuthorized] = useState(false);
@@ -32,13 +32,13 @@ export function AdminAuthGuard({ children }: { children: React.ReactNode }) {
         const allowedRoles = ['Admin'];
 
         // Check if user is logged in and has allowed role
-        if (!token || !user || !allowedRoles.includes(user.role)) {
+        if (!user || !allowedRoles.includes(user.role)) {
             router.push('/');
         } else {
              
             setIsAuthorized(true);
         }
-    }, [user, token, router, isHydrated]);
+    }, [user, router, isHydrated]);
 
     if (!isAuthorized) {
         return (

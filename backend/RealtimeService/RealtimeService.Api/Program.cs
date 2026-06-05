@@ -70,7 +70,7 @@ builder.Services.AddAuthentication(options => {
         ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
         ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-        RoleClaimType = "role",
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role,
         NameClaimType = "sub"
     };
 
@@ -84,6 +84,10 @@ builder.Services.AddAuthentication(options => {
             if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hub"))
             {
                 context.Token = accessToken;
+            }
+            else if (context.Request.Cookies.TryGetValue("accessToken", out var cookieToken))
+            {
+                context.Token = cookieToken;
             }
             return Task.CompletedTask;
         }

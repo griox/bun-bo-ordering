@@ -25,7 +25,6 @@ public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatus
         if (order == null) return false;
 
         order.UpdateStatus(request.NewStatus);
-        await _context.SaveChangesAsync(cancellationToken);
 
         await _publishEndpoint.Publish(new OrderStatusUpdatedEvent
         {
@@ -36,6 +35,8 @@ public class UpdateOrderStatusCommandHandler : IRequestHandler<UpdateOrderStatus
             TotalAmount = order.TotalAmount,
             UpdatedAt = DateTime.UtcNow
         }, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
 
         return true;
     }

@@ -94,6 +94,11 @@ public class User : BaseEntity
         PasswordHash = newPasswordHash;
     }
 
+    public void UpdateGoogleId(string googleId)
+    {
+        GoogleId = googleId;
+    }
+
     public void Blacklist(string reason)
     {
         IsBlacklisted = true;

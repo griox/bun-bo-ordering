@@ -65,7 +65,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-            RoleClaimType = "role",
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role,
             NameClaimType = "sub"
         };
     });

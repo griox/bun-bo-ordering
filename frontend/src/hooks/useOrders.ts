@@ -61,26 +61,24 @@ export interface PagedResult<T> {
 }
 
 export const useOrders = (
-  status?: string,
+  paymentMethod?: string,
   skip: number = 0,
   take: number = 20,
   fromDate?: string,
   toDate?: string,
   keyword?: string,
 ) => {
-  const { token } = useAuthStore();
+  const { user } = useAuthStore();
   return useQuery<PagedResult<Order>>({
-    queryKey: ['orders', status, skip, take, fromDate, toDate, keyword],
-    enabled: !!token,
+    queryKey: ['orders', paymentMethod, skip, take, fromDate, toDate, keyword],
+    enabled: !!user,
     queryFn: async () => {
       const params = new URLSearchParams();
       params.set('skip', String(skip));
       params.set('take', String(take));
 
-      if (status && status !== 'All') {
-        const statuses: Record<string, number> = { 'Unpaid': 3, 'Paid': 1, 'Completed': 4 };
-        const statusValue = statuses[status] !== undefined ? statuses[status] : status;
-        params.set('status', String(statusValue));
+      if (paymentMethod && paymentMethod !== 'All') {
+        params.set('paymentMethod', paymentMethod);
       }
       if (fromDate) params.set('fromDate', fromDate);
       if (toDate)   params.set('toDate', toDate);

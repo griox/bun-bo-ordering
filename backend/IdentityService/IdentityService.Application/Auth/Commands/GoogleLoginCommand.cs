@@ -43,22 +43,25 @@ public class GoogleLoginCommandHandler : IRequestHandler<GoogleLoginCommand, Log
             user = await _dbContext.Users.SingleOrDefaultAsync(u => u.Email == googleUser.Email, cancellationToken);
             if (user != null)
             {
-                throw new DomainException("Tài khoản với email này đã tồn tại. Vui lòng đăng nhập bằng mật khẩu.");
+                // Link the Google account to the existing email/password account
+                user.UpdateGoogleId(googleUser.Sub);
             }
-
-            user = User.CreateGoogleUser(googleUser.Email, googleUser.Sub);
-            user.UpdateUsername(googleUser.Email.Split('@')[0]);
-            _dbContext.Users.Add(user);
-            await _dbContext.SaveChangesAsync(cancellationToken);
-
-            // Publish event for new Google user
-            await _publishEndpoint.Publish(new UserRegisteredEvent
+            else
             {
-                UserId = user.Id,
-                Username = user.Username,
-                Email = user.Email,
-                RegisteredAt = DateTime.UtcNow
-            }, cancellationToken);
+                user = User.CreateGoogleUser(googleUser.Email, googleUser.Sub);
+                user.UpdateUsername(googleUser.Email.Split('@')[0]);
+                _dbContext.Users.Add(user);
+                await _dbContext.SaveChangesAsync(cancellationToken);
+
+                // Publish event for new Google user
+                await _publishEndpoint.Publish(new UserRegisteredEvent
+                {
+                    UserId = user.Id,
+                    Username = user.Username,
+                    Email = user.Email,
+                    RegisteredAt = DateTime.UtcNow
+                }, cancellationToken);
+            }
         }
         else if (string.IsNullOrWhiteSpace(user.Username) || user.Username.Contains("@"))
         {

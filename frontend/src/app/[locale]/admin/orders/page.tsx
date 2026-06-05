@@ -30,12 +30,12 @@ export default function OrdersPage() {
     const t = useTranslations('Orders');
 
     // --- Filter state ---
-    const [statusFilter, setStatusFilter] = useState('Paid');
-    const [page, setPage]                 = useState(0);
-    const [searchInput, setSearchInput]   = useState('');
-    const [keyword, setKeyword]           = useState('');       // debounced value
-    const [fromDate, setFromDate]         = useState('');
-    const [toDate, setToDate]             = useState('');
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState('All');
+    const [page, setPage]                               = useState(0);
+    const [searchInput, setSearchInput]                 = useState('');
+    const [keyword, setKeyword]                         = useState('');       // debounced value
+    const [fromDate, setFromDate]                       = useState('');
+    const [toDate, setToDate]                           = useState('');
 
     // Debounce: only hit the server 400ms after the user stops typing
     useEffect(() => {
@@ -47,8 +47,8 @@ export default function OrdersPage() {
     }, [searchInput]);
 
     // Reset page when any filter changes
-    const handleStatusChange = useCallback((val: string) => {
-        setStatusFilter(val);
+    const handlePaymentMethodChange = useCallback((val: string) => {
+        setPaymentMethodFilter(val);
         setPage(0);
     }, []);
 
@@ -73,7 +73,7 @@ export default function OrdersPage() {
     const toDateISO   = toDate   ? new Date(`${toDate}T23:59:59`).toISOString() : undefined;
 
     const { data: pagedData, isLoading } = useOrders(
-        statusFilter,
+        paymentMethodFilter,
         page * PAGE_SIZE,
         PAGE_SIZE,
         fromDateISO,
@@ -136,16 +136,16 @@ export default function OrdersPage() {
                 <div className="p-4 bg-gray-50/50 border-b border-gray-100 flex flex-col gap-3">
                     {/* Row 1: Status tabs */}
                     <div className="flex flex-col lg:flex-row gap-3 items-start lg:items-center justify-between">
-                        <Tabs defaultValue="Paid" onValueChange={handleStatusChange} className="w-full lg:w-auto">
+                        <Tabs defaultValue="All" onValueChange={handlePaymentMethodChange} className="w-full lg:w-auto">
                             <TabsList className="bg-gray-200/40 p-1 min-h-[44px] rounded-xl border-none w-full grid grid-cols-3 lg:flex lg:w-auto">
                                 <TabsTrigger value="All"    className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">{t('tabAll')}</TabsTrigger>
-                                <TabsTrigger value="Unpaid" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
-                                    <span className="hidden sm:inline">{t('tabProcessing')}</span>
-                                    <span className="sm:hidden">{t('tabProcessingShort')}</span>
+                                <TabsTrigger value="Cash" className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
+                                    <span className="hidden sm:inline">{t('tabCash')}</span>
+                                    <span className="sm:hidden">{t('tabCashShort')}</span>
                                 </TabsTrigger>
-                                <TabsTrigger value="Paid"   className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
-                                    <span className="hidden sm:inline">{t('tabPaid')}</span>
-                                    <span className="sm:hidden">{t('tabPaidShort')}</span>
+                                <TabsTrigger value="Transfer"   className="rounded-lg px-2 lg:px-4 py-2 text-xs font-bold data-[state=active]:bg-white data-[state=active]:text-primary shadow-none transition-all">
+                                    <span className="hidden sm:inline">{t('tabTransfer')}</span>
+                                    <span className="sm:hidden">{t('tabTransferShort')}</span>
                                 </TabsTrigger>
                             </TabsList>
                         </Tabs>

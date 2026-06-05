@@ -18,7 +18,8 @@ public record GetAllOrdersQuery(
     OrderStatus? Status = null,
     DateTime? FromDate = null,
     DateTime? ToDate = null,
-    string? Keyword = null
+    string? Keyword = null,
+    string? PaymentMethod = null
 ) : IRequest<PagedResult<OrderSummaryDto>>;
 
 public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, PagedResult<OrderSummaryDto>>
@@ -41,6 +42,9 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Paged
         if (request.Status.HasValue)
             countQuery = countQuery.Where(o => o.Status == request.Status.Value);
 
+        if (!string.IsNullOrEmpty(request.PaymentMethod) && request.PaymentMethod != "All")
+            countQuery = countQuery.Where(o => o.PaymentMethod == request.PaymentMethod);
+
         if (request.FromDate.HasValue)
             countQuery = countQuery.Where(o => o.CreatedAt >= request.FromDate.Value);
 
@@ -57,6 +61,9 @@ public class GetAllOrdersQueryHandler : IRequestHandler<GetAllOrdersQuery, Paged
 
         if (request.Status.HasValue)
             dataQuery = dataQuery.Where(o => o.Status == request.Status.Value);
+
+        if (!string.IsNullOrEmpty(request.PaymentMethod) && request.PaymentMethod != "All")
+            dataQuery = dataQuery.Where(o => o.PaymentMethod == request.PaymentMethod);
 
         if (request.FromDate.HasValue)
             dataQuery = dataQuery.Where(o => o.CreatedAt >= request.FromDate.Value);

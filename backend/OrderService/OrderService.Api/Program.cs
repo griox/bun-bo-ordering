@@ -70,7 +70,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = jwtSettings["Issuer"] ?? "BunBoIdentity",
             ValidAudience = jwtSettings["Audience"] ?? "BunBoMicroservices",
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-            RoleClaimType = "role",
+            RoleClaimType = System.Security.Claims.ClaimTypes.Role,
             NameClaimType = "sub"
         };
     });
@@ -261,9 +261,9 @@ orderGroup.MapPost("/mark-read-by-table/{tableCode}", async (string tableCode, M
     return success ? Results.NoContent() : Results.NotFound();
 }).RequireAuthorization("Admin");
 
-orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 20, OrderStatus? status = null, DateTime? fromDate = null, DateTime? toDate = null, string? keyword = null) =>
+orderGroup.MapGet("/", async (MediatR.IMediator mediator, int skip = 0, int take = 20, OrderStatus? status = null, DateTime? fromDate = null, DateTime? toDate = null, string? keyword = null, string? paymentMethod = null) =>
 {
-    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status, fromDate, toDate, keyword));
+    var result = await mediator.Send(new OrderService.Application.Orders.Queries.GetAllOrdersQuery(skip, take, status, fromDate, toDate, keyword, paymentMethod));
     return Results.Ok(result);
 }).RequireAuthorization("Admin");
 

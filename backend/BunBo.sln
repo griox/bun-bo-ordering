@@ -81,6 +81,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NotificationService.UnitTes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityService.IntegrationTests", "..\tests\IdentityService.IntegrationTests\IdentityService.IntegrationTests.csproj", "{C8BB34D9-15B1-4D27-B867-AA17D60DD2B9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System.E2ETests", "..\tests\System.E2ETests\System.E2ETests.csproj", "{A193682B-6847-46BC-873B-09B42DEA756F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -222,6 +224,10 @@ Global
 		{C8BB34D9-15B1-4D27-B867-AA17D60DD2B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8BB34D9-15B1-4D27-B867-AA17D60DD2B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8BB34D9-15B1-4D27-B867-AA17D60DD2B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A193682B-6847-46BC-873B-09B42DEA756F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A193682B-6847-46BC-873B-09B42DEA756F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A193682B-6847-46BC-873B-09B42DEA756F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A193682B-6847-46BC-873B-09B42DEA756F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{BD99ECA9-FD3C-4E2B-B417-04344976C83F} = {30BA623E-989F-4D0D-B115-F77853C7B030}

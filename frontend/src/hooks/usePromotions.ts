@@ -44,13 +44,13 @@ export interface UserVoucher {
 }
 
 export function usePromotions() {
-    const { token } = useAuthStore();
+    const { user } = useAuthStore();
     const queryClient = useQueryClient();
 
     // Admin: Get all vouchers
     const useVouchers = (skip: number = 0, take: number = 50) => useQuery({
         queryKey: ['vouchers', skip, take],
-        enabled: !!token,
+        enabled: !!user,
         queryFn: async () => {
             const { data } = await axiosInstance.get<{ items: Voucher[], totalCount: number }>(`/api/promotion/vouchers?skip=${skip}&take=${take}`);
             return data;
@@ -60,7 +60,7 @@ export function usePromotions() {
     // Client: Get active vouchers
     const useActiveVouchers = () => useQuery({
         queryKey: ['vouchers', 'active'],
-        enabled: !!token,
+        enabled: !!user,
         queryFn: async () => {
             const { data } = await axiosInstance.get<Voucher[]>('/api/promotion/vouchers/active');
             return data;
@@ -70,7 +70,7 @@ export function usePromotions() {
     // Client: Get my vouchers (claimed)
     const useMyVouchers = () => useQuery({
         queryKey: ['vouchers', 'my'],
-        enabled: !!token,
+        enabled: !!user,
         refetchInterval: 30000, // Refresh every 30 seconds for real-time status
         queryFn: async () => {
             const { data } = await axiosInstance.get<UserVoucher[]>('/api/promotion/vouchers/my');
@@ -133,7 +133,7 @@ export function usePromotions() {
     // Client: Get loyalty points
     const useMyPoints = () => useQuery({
         queryKey: ['my-points'],
-        enabled: !!token,
+        enabled: !!user,
         refetchInterval: 30000, // Refresh every 30 seconds
         queryFn: async () => {
             const { data } = await axiosInstance.get<LoyaltyPoints>('/api/promotion/points');

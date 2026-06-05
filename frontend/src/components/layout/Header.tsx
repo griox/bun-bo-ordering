@@ -8,6 +8,7 @@ import { User, Home, UtensilsCrossed, Building2, Settings, ScrollText, LogOut, K
 import { useAuthStore } from '@/store/useAuthStore';
 import { usePromotions } from '@/hooks/usePromotions';
 import toast from 'react-hot-toast';
+import axiosInstance from '@/lib/axiosInstance';
 import {
     Dialog,
     DialogContent,
@@ -170,7 +171,11 @@ export function Header() {
                                             </>
                                         )}
                                         <button
-                                            onClick={() => { logout(); toast.success('Đã đăng xuất!'); }}
+                                            onClick={async () => { 
+                                                try { await axiosInstance.post('/api/identity/logout'); } catch(_) {}
+                                                logout(); 
+                                                toast.success('Đã đăng xuất!'); 
+                                            }}
                                             className="px-4 py-3 text-left text-sm font-bold text-red-600 hover:bg-red-50 transition-colors"
                                         >
                                             ĐĂNG XUẤT
@@ -257,8 +262,9 @@ export function Header() {
 
                                     {mounted && user ? (
                                         <DropdownMenuItem
-                                            onClick={(e) => {
+                                            onClick={async (e) => {
                                                 e.preventDefault();
+                                                try { await axiosInstance.post('/api/identity/logout'); } catch(_) {}
                                                 logout();
                                                 toast.success(t('logoutSuccess'));
                                             }}

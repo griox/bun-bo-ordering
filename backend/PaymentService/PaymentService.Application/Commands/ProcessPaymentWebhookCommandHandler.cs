@@ -56,8 +56,6 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
 
         try
         {
-            await _repository.SaveChangesAsync(cancellationToken);
-
             // 5. Publish Event (only fires once per order due to idempotency check above)
             var isSuccess = transaction.Status == Domain.Enums.PaymentStatus.Success;
             await _eventPublisher.PublishPaymentCompletedEventAsync(
@@ -71,6 +69,8 @@ public class ProcessPaymentWebhookCommandHandler : IRequestHandler<ProcessPaymen
                 transaction.Note,
                 request.ProviderTransactionId,
                 cancellationToken);
+
+            await _repository.SaveChangesAsync(cancellationToken);
         }
         catch (Exception ex) when (ex.GetType().Name.Contains("DbUpdateException"))
         {
