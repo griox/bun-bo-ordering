@@ -3,8 +3,6 @@ import { useAuthStore } from '@/store/useAuthStore';
 
 beforeEach(() => {
     useAuthStore.setState({
-        token: null,
-        refreshToken: null,
         user: null,
     });
 });
@@ -13,29 +11,23 @@ describe('useAuthStore', () => {
 
     it('starts with null state', () => {
         const state = useAuthStore.getState();
-        expect(state.token).toBeNull();
-        expect(state.refreshToken).toBeNull();
         expect(state.user).toBeNull();
     });
 
     it('stores credentials on login', () => {
         const user = { userId: 'u1', username: 'huyngo', email: 'huy@test.com', role: 'Admin' };
-        useAuthStore.getState().login('jwt-token-123', 'refresh-abc', user);
+        useAuthStore.getState().login(user);
 
         const state = useAuthStore.getState();
-        expect(state.token).toBe('jwt-token-123');
-        expect(state.refreshToken).toBe('refresh-abc');
         expect(state.user).toEqual(user);
     });
 
     it('clears all credentials on logout', () => {
         const user = { userId: 'u1', username: 'huyngo', email: 'huy@test.com', role: 'Admin' };
-        useAuthStore.getState().login('jwt-token-123', 'refresh-abc', user);
+        useAuthStore.getState().login(user);
         useAuthStore.getState().logout();
 
         const state = useAuthStore.getState();
-        expect(state.token).toBeNull();
-        expect(state.refreshToken).toBeNull();
         expect(state.user).toBeNull();
     });
 
@@ -43,18 +35,17 @@ describe('useAuthStore', () => {
         const user1 = { userId: 'u1', username: 'user1', email: 'u1@test.com', role: 'Customer' };
         const user2 = { userId: 'u2', username: 'user2', email: 'u2@test.com', role: 'Admin' };
 
-        useAuthStore.getState().login('token-1', 'refresh-1', user1);
-        useAuthStore.getState().login('token-2', 'refresh-2', user2);
+        useAuthStore.getState().login(user1);
+        useAuthStore.getState().login(user2);
 
         const state = useAuthStore.getState();
-        expect(state.token).toBe('token-2');
         expect(state.user?.username).toBe('user2');
         expect(state.user?.role).toBe('Admin');
     });
 
     it('preserves user fields correctly', () => {
         const user = { userId: 'u1', username: 'huyngo', email: 'huy@bunbo.vn', role: 'Admin' };
-        useAuthStore.getState().login('token', 'refresh', user);
+        useAuthStore.getState().login(user);
 
         const stored = useAuthStore.getState().user!;
         expect(stored.userId).toBe('u1');

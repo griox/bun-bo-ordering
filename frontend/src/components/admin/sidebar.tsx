@@ -96,7 +96,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
                     variant="ghost"
                     className="w-full justify-start gap-3 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all rounded-xl py-6 min-h-[44px]"
                     onClick={async () => {
-                        try { await axiosInstance.post('/api/identity/logout'); } catch(_) {}
+                        try { await axiosInstance.post('/api/identity/logout'); } catch {}
                         logout();
                     }}
                 >

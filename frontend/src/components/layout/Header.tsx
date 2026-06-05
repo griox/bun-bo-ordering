@@ -172,7 +172,7 @@ export function Header() {
                                         )}
                                         <button
                                             onClick={async () => { 
-                                                try { await axiosInstance.post('/api/identity/logout'); } catch(_) {}
+                                                try { await axiosInstance.post('/api/identity/logout'); } catch {}
                                                 logout(); 
                                                 toast.success('Đã đăng xuất!'); 
                                             }}
@@ -264,7 +264,7 @@ export function Header() {
                                         <DropdownMenuItem
                                             onClick={async (e) => {
                                                 e.preventDefault();
-                                                try { await axiosInstance.post('/api/identity/logout'); } catch(_) {}
+                                                try { await axiosInstance.post('/api/identity/logout'); } catch {}
                                                 logout();
                                                 toast.success(t('logoutSuccess'));
                                             }}
