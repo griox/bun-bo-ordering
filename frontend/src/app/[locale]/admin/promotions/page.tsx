@@ -234,7 +234,7 @@ export default function PromotionsPage() {
                     </div>
 
                     {/* Desktop Table View */}
-                    <div className="hidden md:block overflow-x-auto pb-4">
+                    <div className="hidden md:block admin-table-scroll">
                         <table className="w-full">
                             <thead>
                                 <tr className="bg-gray-50/50 border-b border-gray-100">

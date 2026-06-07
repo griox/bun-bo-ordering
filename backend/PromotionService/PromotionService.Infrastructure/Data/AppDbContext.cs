@@ -27,6 +27,7 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<UserVoucher>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.VoucherId });
         });
 
         modelBuilder.Entity<LoyaltyPoint>(entity =>

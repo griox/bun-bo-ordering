@@ -233,7 +233,7 @@ export default function OrdersPage() {
                     </div>
 
                     {/* Desktop Table */}
-                    <div className="hidden md:block overflow-x-auto pb-4">
+                    <div className="hidden md:block admin-table-scroll">
                         <Table className="min-w-[900px]">
                             <TableHeader className="bg-gray-50/50">
                                 <TableRow className="hover:bg-transparent border-b border-gray-100">

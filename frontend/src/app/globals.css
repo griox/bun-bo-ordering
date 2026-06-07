@@ -229,3 +229,54 @@
 .pb-safe {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
+
+/* ── Custom scrollbar — dùng trong .custom-scrollbar và .admin-table-scroll ── */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 99px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+
+/* ── Admin table scroll container ── */
+/* Áp dụng cho wrapper của <table> để bật scroll dọc + ngang bên trong card */
+.admin-table-scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: 480px;          /* ~10 rows @ 48px */
+  scrollbar-width: thin;
+  scrollbar-color: #e5e7eb transparent;
+}
+.admin-table-scroll::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+.admin-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-table-scroll::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 99px;
+}
+.admin-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
+}
+/* Sticky header khi scroll dọc */
+.admin-table-scroll thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fafafa;
+}

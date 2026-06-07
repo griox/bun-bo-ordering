@@ -7,7 +7,7 @@ namespace PromotionService.Application.Vouchers.Queries;
 
 public record ValidateVoucherQuery(string Code, Guid UserId, decimal OrderAmount) : IRequest<VoucherValidationResult>;
 
-public record VoucherValidationResult(bool IsValid, string? Message, decimal? DiscountAmount = null);
+public record VoucherValidationResult(bool IsValid, string? Message, decimal? DiscountAmount = null, bool IsConflict = false);
 
 public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery, VoucherValidationResult>
 {
@@ -20,8 +20,16 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
 
     public async Task<VoucherValidationResult> Handle(ValidateVoucherQuery request, CancellationToken cancellationToken)
     {
-        var voucher = await _context.Vouchers
-            .SingleOrDefaultAsync(v => v.Code == request.Code.ToUpper(), cancellationToken);
+        var strategy = _context.Database.CreateExecutionStrategy();
+        return await strategy.ExecuteAsync(async () =>
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var upperVoucherCode = request.Code.ToUpper();
+                var voucher = await _context.Vouchers
+                    .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Code\" = {0} FOR UPDATE", upperVoucherCode)
+                    .SingleOrDefaultAsync(cancellationToken);
 
         if (voucher == null)
             return new VoucherValidationResult(false, "Mã giảm giá không tồn tại.");
@@ -42,8 +50,8 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
             if (DateTime.UtcNow < voucher.ValidFrom) return new VoucherValidationResult(false, "Mã giảm giá chưa đến ngày sử dụng.");
             if (DateTime.UtcNow > voucher.ValidTo) return new VoucherValidationResult(false, "Mã giảm giá đã hết hạn.");
             if (request.OrderAmount < voucher.MinOrderValue) return new VoucherValidationResult(false, $"Mã này chỉ áp dụng cho đơn từ {voucher.MinOrderValue:N0}đ.");
-            if (voucher.UsageCount >= voucher.TotalUsageLimit) return new VoucherValidationResult(false, "Mã giảm giá đã hết lượt sử dụng.");
-            if (userUsageCount >= voucher.MaxUsagePerUser) return new VoucherValidationResult(false, "Bạn đã dùng hết lượt cho mã này.");
+            if (voucher.UsageCount >= voucher.TotalUsageLimit) return new VoucherValidationResult(false, "Mã giảm giá đã hết lượt sử dụng.", null, true);
+            if (userUsageCount >= voucher.MaxUsagePerUser) return new VoucherValidationResult(false, "Bạn đã dùng hết lượt cho mã này.", null, true);
             
             return new VoucherValidationResult(false, "Không đủ điều kiện sử dụng mã này.");
         }
@@ -64,5 +72,12 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
         }
 
         return new VoucherValidationResult(true, "Mã hợp lệ", discountAmount);
+            }
+            catch
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                throw;
+            }
+        });
     }
 }

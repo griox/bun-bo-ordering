@@ -179,8 +179,8 @@ promotionGroup.MapPost("/vouchers/validate", async (MediatR.IMediator mediator, 
     
     var userId = Guid.Parse(userIdStr);
     var result = await mediator.Send(new PromotionService.Application.Vouchers.Queries.ValidateVoucherQuery(req.Code, userId, req.OrderValue));
-    
-    return result.IsValid ? Results.Ok(result) : Results.BadRequest(result);
+    if (result.IsValid) return Results.Ok(result);
+    return result.IsConflict ? Results.Conflict(result) : Results.BadRequest(result);
 }).RequireAuthorization().RequireRateLimiting("voucher-validation");
 
 promotionGroup.MapGet("/points", async (MediatR.IMediator mediator, ClaimsPrincipal user) =>
