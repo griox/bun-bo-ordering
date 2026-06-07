@@ -102,6 +102,11 @@ Email hỗ trợ: support@bun-bo-chung-cu.io.vn
             }
 
             var host = smtpSettings["Host"];
+            if (string.IsNullOrEmpty(host))
+            {
+                _logger.LogError("SMTP Host is not configured.");
+                return;
+            }
             var port = int.Parse(smtpSettings["Port"] ?? "587");
             var user = smtpSettings["Username"];
             var pass = smtpSettings["Password"];
@@ -196,6 +201,11 @@ Bún bò Chung Cư Support Team
             }
 
             var host = smtpSettings["Host"];
+            if (string.IsNullOrEmpty(host))
+            {
+                _logger.LogError("SMTP Host is not configured.");
+                return;
+            }
             var port = int.Parse(smtpSettings["Port"] ?? "587");
             var user = smtpSettings["Username"];
             var pass = smtpSettings["Password"];
@@ -305,6 +315,11 @@ Bún bò Chung Cư Team
             }
 
             var host = smtpSettings["Host"];
+            if (string.IsNullOrEmpty(host))
+            {
+                _logger.LogError("SMTP Host is not configured.");
+                return;
+            }
             var port = int.Parse(smtpSettings["Port"] ?? "587");
             var user = smtpSettings["Username"];
             var pass = smtpSettings["Password"];
