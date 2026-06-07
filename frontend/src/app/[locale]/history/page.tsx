@@ -24,13 +24,20 @@ export default function TransactionHistoryPage() {
     const { user } = useAuthStore();
     const customerId = user?.userId;
 
-    const { data: pagedData, isLoading, error } = useCustomerOrders(customerId);
+    const { data: pagedData, isLoading, error } = useCustomerOrders(customerId, 0, 1000);
     const orders = pagedData?.items;
 
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [paymentFilter, setPaymentFilter] = useState('all');
     const [dateFilter, setDateFilter] = useState<Date | undefined>(undefined);
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 7;
+
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [paymentFilter, dateFilter]);
 
     const filteredOrders = React.useMemo(() => {
         if (!orders) return [];
@@ -53,6 +60,13 @@ export default function TransactionHistoryPage() {
             return paymentMatch && dateMatch;
         });
     }, [orders, paymentFilter, dateFilter]);
+
+    const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE);
+
+    const paginatedOrders = React.useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredOrders.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [filteredOrders, currentPage]);
 
     const handleViewDetails = (order: Order) => {
         setSelectedOrder(order);
@@ -174,124 +188,182 @@ export default function TransactionHistoryPage() {
                     </div>
                 )}
 
-                {/* Content */}
-                {isLoading ? (
-                    <div className="py-24 text-center">
-                        <div className="inline-block size-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
-                        <p className="text-sm text-gray-500 font-main">Đang tải dữ liệu...</p>
-                    </div>
-                ) : error ? (
-                    <div className="py-24 text-center bg-white rounded-2xl border border-primary/10 shadow-sm">
-                        <div className="size-16 rounded-full bg-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/10">
-                            <FileText className="text-primary/60" size={24} />
+                {/* Content Card */}
+                <div className="bg-white/80 backdrop-blur-md rounded-3xl border border-primary/20 p-5 md:p-6 shadow-xl relative flex flex-col">
+                    {isLoading ? (
+                        <div className="py-24 text-center">
+                            <div className="inline-block size-10 border-2 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+                            <p className="text-sm text-gray-500 font-main">Đang tải dữ liệu...</p>
                         </div>
-                        <p className="text-primary font-display text-xl uppercase mb-6">Có lỗi khi tải dữ liệu</p>
-                        <Button
-                            onClick={() => window.location.reload()}
-                            className="px-8 py-2 rounded-xl border border-primary/20 bg-white text-primary hover:bg-primary/5 text-sm font-semibold shadow-sm transition-all cursor-pointer"
-                        >
-                            Thử lại
-                        </Button>
-                    </div>
-                ) : !filteredOrders || filteredOrders.length === 0 ? (
-                    <div className="py-24 text-center bg-white rounded-2xl border border-primary/10 shadow-sm">
-                        <div className="size-20 rounded-2xl bg-primary/5 flex items-center justify-center mx-auto mb-5 border border-primary/10">
-                            <FileText size={32} className="text-primary/40" />
-                        </div>
-                        <h3 className="text-xl font-display uppercase tracking-tight text-gray-900 mb-2">
-                            Chưa có đơn hàng nào
-                        </h3>
-                        <p className="text-sm text-gray-500 font-main max-w-xs mx-auto mb-8 leading-relaxed">
-                            {paymentFilter === 'all' && !dateFilter
-                                ? 'Bạn chưa thực hiện đơn hàng nào. Hãy đặt món ngay!'
-                                : 'Không tìm thấy đơn hàng với bộ lọc hiện tại.'}
-                        </p>
-                        {paymentFilter === 'all' && !dateFilter && (
-                            <Button asChild className="px-8 py-2.5 rounded-xl bg-primary text-white hover:brightness-110 transition-all font-semibold text-sm shadow-sm group cursor-pointer">
-                                <Link href="/menu" className="flex items-center gap-2">
-                                    Đặt món ngay
-                                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                </Link>
+                    ) : error ? (
+                        <div className="py-24 text-center">
+                            <div className="size-16 rounded-full bg-primary/5 flex items-center justify-center mx-auto mb-4 border border-primary/10">
+                                <FileText className="text-primary/60" size={24} />
+                            </div>
+                            <p className="text-primary font-display text-xl uppercase mb-6">Có lỗi khi tải dữ liệu</p>
+                            <Button
+                                onClick={() => window.location.reload()}
+                                className="px-8 py-2 rounded-xl border border-primary/20 bg-white text-primary hover:bg-primary/5 text-sm font-semibold shadow-sm transition-all cursor-pointer"
+                            >
+                                Thử lại
                             </Button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="flex flex-col gap-3">
-                        {filteredOrders.map((order: Order) => {
-                            const PaymentIcon = getPaymentIcon(order.paymentMethod);
-                            const orderDate = new Date(order.createdAt);
-                            const isCash = !order.paymentMethod || order.paymentMethod.toLowerCase().includes('cash');
+                        </div>
+                    ) : !filteredOrders || filteredOrders.length === 0 ? (
+                        <div className="py-24 text-center">
+                            <div className="size-20 rounded-2xl bg-primary/5 flex items-center justify-center mx-auto mb-5 border border-primary/10">
+                                <FileText size={32} className="text-primary/40" />
+                            </div>
+                            <h3 className="text-xl font-display uppercase tracking-tight text-gray-900 mb-2">
+                                Chưa có đơn hàng nào
+                            </h3>
+                            <p className="text-sm text-gray-500 font-main max-w-xs mx-auto mb-8 leading-relaxed">
+                                {paymentFilter === 'all' && !dateFilter
+                                    ? 'Bạn chưa thực hiện đơn hàng nào. Hãy đặt món ngay!'
+                                    : 'Không tìm thấy đơn hàng với bộ lọc hiện tại.'}
+                            </p>
+                            {paymentFilter === 'all' && !dateFilter && (
+                                <Button asChild className="px-8 py-2.5 rounded-xl bg-primary text-white hover:brightness-110 transition-all font-semibold text-sm shadow-sm group cursor-pointer">
+                                    <Link href="/menu" className="flex items-center gap-2">
+                                        Đặt món ngay
+                                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                    </Link>
+                                </Button>
+                            )}
+                        </div>
+                    ) : (
+                        <>
+                            <div className="max-h-[440px] overflow-y-auto pr-2 pb-2 custom-scrollbar flex flex-col gap-3">
+                                {paginatedOrders.map((order: Order) => {
+                                    const PaymentIcon = getPaymentIcon(order.paymentMethod);
+                                    const orderDate = new Date(order.createdAt);
+                                    const isCash = !order.paymentMethod || order.paymentMethod.toLowerCase().includes('cash');
 
-                            return (
-                                <div
-                                    key={order.id}
-                                    className="group bg-white rounded-2xl border border-primary/10 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 overflow-hidden cursor-pointer"
-                                    onClick={() => handleViewDetails(order)}
-                                >
-                                    <div className="flex items-center gap-4 p-4 md:p-5">
+                                    return (
+                                        <div
+                                            key={order.id}
+                                            className="group bg-[#FEF9E7]/40 rounded-2xl border border-primary/10 shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-200 overflow-hidden cursor-pointer shrink-0"
+                                            onClick={() => handleViewDetails(order)}
+                                        >
+                                            <div className="flex items-center gap-4 p-4 md:p-5">
 
-                                        {/* Date Block */}
-                                        <div className="shrink-0 w-14 h-14 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center">
-                                            <span className="text-[10px] font-bold text-primary/70 uppercase leading-none">
-                                                {orderDate.toLocaleDateString('vi-VN', { month: 'short' })}
-                                            </span>
-                                            <span className="text-2xl font-display text-primary leading-tight">
-                                                {orderDate.toLocaleDateString('vi-VN', { day: '2-digit' })}
-                                            </span>
-                                        </div>
+                                                {/* Date Block */}
+                                                <div className="shrink-0 w-14 h-14 rounded-xl bg-primary/5 border border-primary/10 flex flex-col items-center justify-center">
+                                                    <span className="text-[10px] font-bold text-primary/70 uppercase leading-none">
+                                                        {orderDate.toLocaleDateString('vi-VN', { month: 'short' })}
+                                                    </span>
+                                                    <span className="text-2xl font-display text-primary leading-tight">
+                                                        {orderDate.toLocaleDateString('vi-VN', { day: '2-digit' })}
+                                                    </span>
+                                                </div>
 
-                                        {/* Order Info */}
-                                        <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-semibold text-gray-900 truncate">
-                                                {orderDate.toLocaleDateString('vi-VN', { weekday: 'long' })}
-                                                <span className="font-normal text-gray-500 ml-1.5">
-                                                    {orderDate.toLocaleDateString('vi-VN', { year: 'numeric' })}
-                                                </span>
-                                            </p>
-                                            <div className="flex items-center gap-1.5 mt-1">
-                                                <PaymentIcon size={12} className={cn(
-                                                    "shrink-0",
-                                                    isCash ? "text-amber-600" : "text-blue-500"
-                                                )} />
-                                                <span className={cn(
-                                                    "text-xs font-medium",
-                                                    isCash ? "text-amber-700" : "text-blue-600"
-                                                )}>
-                                                    {formatPaymentMethod(order.paymentMethod)}
-                                                </span>
+                                                {/* Order Info */}
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="text-sm font-semibold text-gray-900 truncate">
+                                                        {orderDate.toLocaleDateString('vi-VN', { weekday: 'long' })}
+                                                        <span className="font-normal text-gray-500 ml-1.5">
+                                                            {orderDate.toLocaleDateString('vi-VN', { year: 'numeric' })}
+                                                        </span>
+                                                    </p>
+                                                    <div className="flex items-center gap-1.5 mt-1">
+                                                        <PaymentIcon size={12} className={cn(
+                                                            "shrink-0",
+                                                            isCash ? "text-amber-600" : "text-blue-500"
+                                                        )} />
+                                                        <span className={cn(
+                                                            "text-xs font-medium",
+                                                            isCash ? "text-amber-700" : "text-blue-600"
+                                                        )}>
+                                                            {formatPaymentMethod(order.paymentMethod)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Amount */}
+                                                <div className="shrink-0 text-right">
+                                                    <p className="text-lg font-display text-primary font-bold">
+                                                        {order.totalAmount?.toLocaleString('vi-VN')}đ
+                                                    </p>
+                                                </div>
+
+                                                {/* View Button */}
+                                                <div
+                                                    className="shrink-0 size-9 rounded-lg border border-primary/20 bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/30 transition-all"
+                                                    onClick={(e) => { e.stopPropagation(); handleViewDetails(order); }}
+                                                >
+                                                    <Eye size={16} className="text-primary/80" />
+                                                </div>
                                             </div>
                                         </div>
+                                    );
+                                })}
+                            </div>
 
-                                        {/* Amount */}
-                                        <div className="shrink-0 text-right">
-                                            <p className="text-lg font-display text-primary font-bold">
-                                                {order.totalAmount?.toLocaleString('vi-VN')}đ
-                                            </p>
-                                        </div>
-
-                                        {/* View Button */}
-                                        <div
-                                            className="shrink-0 size-9 rounded-lg border border-primary/20 bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 group-hover:border-primary/30 transition-all"
-                                            onClick={(e) => { e.stopPropagation(); handleViewDetails(order); }}
-                                        >
-                                            <Eye size={16} className="text-primary/80" />
-                                        </div>
+                            {/* Pagination Controls */}
+                            {totalPages > 1 && (
+                                <div className="mt-6 pt-4 border-t border-primary/10 flex justify-center items-center gap-2">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 w-9 rounded-xl border border-primary/30 bg-white text-primary hover:bg-primary/5 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center font-bold"
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                    >
+                                        &lt;
+                                    </Button>
+                                    
+                                    <div className="flex items-center gap-1.5">
+                                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                                            const shouldShow = page === 1 || page === totalPages || Math.abs(page - currentPage) <= 1;
+                                            if (!shouldShow) {
+                                                if (page === 2 || page === totalPages - 1) {
+                                                    return <span key={page} className="px-1.5 text-gray-400">...</span>;
+                                                }
+                                                return null;
+                                            }
+                                            
+                                            return (
+                                                <Button
+                                                    key={page}
+                                                    variant={currentPage === page ? "default" : "outline"}
+                                                    size="sm"
+                                                    className={cn(
+                                                        "h-9 w-9 rounded-xl transition-all cursor-pointer text-xs font-bold flex items-center justify-center",
+                                                        currentPage === page
+                                                            ? "bg-primary text-white hover:brightness-115"
+                                                            : "border border-primary/30 bg-white text-primary hover:bg-primary/5"
+                                                    )}
+                                                    onClick={() => setCurrentPage(page)}
+                                                >
+                                                    {page}
+                                                </Button>
+                                            );
+                                        })}
                                     </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                )}
 
-                {/* Summary */}
-                {filteredOrders.length > 0 && (
-                    <div className="mt-6 pt-4 border-t border-primary/20 flex items-center justify-between text-xs text-gray-500">
-                        <span>{filteredOrders.length} đơn hàng</span>
-                        <span className="font-semibold text-gray-900">
-                            Tổng: {filteredOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0).toLocaleString('vi-VN')}đ
-                        </span>
-                    </div>
-                )}
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="h-9 w-9 rounded-xl border border-primary/30 bg-white text-primary hover:bg-primary/5 transition-all cursor-pointer disabled:opacity-50 flex items-center justify-center font-bold"
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                    >
+                                        &gt;
+                                    </Button>
+                                </div>
+                            )}
+                        </>
+                    )}
+
+                    {/* Summary */}
+                    {filteredOrders.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-primary/20 flex items-center justify-between text-xs text-gray-500">
+                            <span>{filteredOrders.length} đơn hàng</span>
+                            <span className="font-semibold text-gray-900">
+                                Tổng: {filteredOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0).toLocaleString('vi-VN')}đ
+                            </span>
+                        </div>
+                    )}
+                </div>
             </main>
 
             <div className="relative z-20 bg-[#2D2D2D]">

@@ -28,12 +28,12 @@ async function handleProxy(request: NextRequest) {
   if (path === '/api/identity/refresh-token' && method === 'POST') {
     const refreshToken = cookieStore.get('refreshToken')?.value;
     
-    if (!refreshToken || !token) {
-        return NextResponse.json({ message: 'No tokens available' }, { status: 401 });
+    if (!refreshToken) {
+        return NextResponse.json({ message: 'No refresh token available' }, { status: 401 });
     }
     
     body = JSON.stringify({
-        accessToken: token,
+        accessToken: token || '',
         refreshToken: refreshToken
     });
     headers.set('Content-Type', 'application/json');

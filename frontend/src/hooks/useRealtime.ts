@@ -7,6 +7,7 @@ import { useOrderNotificationStore, OrderNotification } from '@/store/useOrderNo
 import { useOrderStore } from '@/store/useOrderStore';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
+import axiosInstance from '@/lib/axiosInstance';
 
 const getHubUrl = () => {
     // Priority: 1. ENV VAR, 2. Current origin if accessing through gateway, 3. Localhost:8000
@@ -64,7 +65,7 @@ export const useRealtime = () => {
                     withCredentials: true
                 })
                 .configureLogging(signalR.LogLevel.Information) // Show detailed logs for debugging
-                .withAutomaticReconnect()
+                .withAutomaticReconnect([0, 2000, 5000, 10000, 30000, 60000])
                 .build();
 
             globalConnection.on("JoinedGroup", (groupName: string) => {
@@ -182,12 +183,23 @@ export const useRealtime = () => {
         // Call it immediately
         syncGroups();
 
+        const refreshConnectionTokens = async () => {
+            try {
+                console.log("!!! SIGNALR: Refreshing tokens proactively...");
+                await axiosInstance.post('/api/identity/refresh-token');
+                console.log("!!! SIGNALR: Tokens refreshed successfully.");
+            } catch (err) {
+                console.error("!!! SIGNALR ERROR: Failed to refresh tokens proactively:", err);
+            }
+        };
+
         const startConnection = async () => {
             const currentUser = useAuthStore.getState().user;
             if (!currentUser) return; // Abort if logged out
 
             if (connection.state === signalR.HubConnectionState.Disconnected) {
                 try {
+                    await refreshConnectionTokens();
                     await connection.start();
                     console.log("Connected to SignalR Hub");
                     setConnectionStatus(signalR.HubConnectionState.Connected);
@@ -202,6 +214,7 @@ export const useRealtime = () => {
         connection.onreconnecting(() => {
             console.log("!!! SIGNALR: Attempting to reconnect...");
             setConnectionStatus(signalR.HubConnectionState.Reconnecting);
+            refreshConnectionTokens().catch(() => {});
         });
 
         connection.onreconnected(() => {
@@ -212,13 +225,34 @@ export const useRealtime = () => {
         connection.onclose(() => {
             console.warn("!!! SIGNALR: Connection closed permanently. Attempting to start a fresh connection...");
             setConnectionStatus(signalR.HubConnectionState.Disconnected);
-            if (!isStopped) setTimeout(startConnection, 5000);
+            refreshConnectionTokens().then(() => {
+                if (!isStopped) setTimeout(startConnection, 5000);
+            }).catch(() => {
+                if (!isStopped) setTimeout(startConnection, 5000);
+            });
         });
+
+        // Reconnect when tab becomes active
+        const handleVisibilityChange = async () => {
+            if (document.visibilityState === 'visible') {
+                console.log("!!! SIGNALR: Tab active. Checking connection state:", connection.state);
+                if (connection.state === signalR.HubConnectionState.Disconnected) {
+                    console.log("!!! SIGNALR: Connection is disconnected. Starting reconnection...");
+                    await startConnection();
+                } else if (connection.state === signalR.HubConnectionState.Connected) {
+                    console.log("!!! SIGNALR: Connection is active. Syncing groups...");
+                    await syncGroups();
+                }
+            }
+        };
+
+        document.addEventListener('visibilitychange', handleVisibilityChange);
 
         startConnection();
 
         return () => {
             isStopped = true;
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
             // We DON'T stop the global connection here to avoid churn.
             // It will stay alive for the lifetime of the app.
         };

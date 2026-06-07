@@ -47,6 +47,7 @@ builder.Services.AddSignalR(options => {
     options.EnableDetailedErrors = builder.Environment.IsDevelopment();
     options.KeepAliveInterval = TimeSpan.FromSeconds(10);
     options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+    options.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
 }).AddStackExchangeRedis(redisConnectionString, options => {
     options.Configuration.ChannelPrefix = StackExchange.Redis.RedisChannel.Literal("BunBoSignalR");
 });

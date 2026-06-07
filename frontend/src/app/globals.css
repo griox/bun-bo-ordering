@@ -232,46 +232,48 @@
 
 /* ── Custom scrollbar — dùng trong .custom-scrollbar và .admin-table-scroll ── */
 .custom-scrollbar {
-  scrollbar-width: thin;
-  scrollbar-color: #e5e7eb transparent;
+  scrollbar-width: thin !important;
+  scrollbar-color: #d1d5db transparent !important;
 }
 .custom-scrollbar::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  display: block !important;
+  width: 6px !important;
+  height: 6px !important;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
-  border-radius: 99px;
+  background: #d1d5db !important;
+  border-radius: 99px !important;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #d1d5db;
+  background: #9ca3af !important;
 }
 
 /* ── Admin table scroll container ── */
 /* Áp dụng cho wrapper của <table> để bật scroll dọc + ngang bên trong card */
 .admin-table-scroll {
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow-x: auto !important;
+  overflow-y: auto !important;
   max-height: 480px;          /* ~10 rows @ 48px */
-  scrollbar-width: thin;
-  scrollbar-color: #e5e7eb transparent;
+  scrollbar-width: thin !important;
+  scrollbar-color: #d1d5db transparent !important;
 }
 .admin-table-scroll::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  display: block !important;
+  width: 6px !important;
+  height: 6px !important;
 }
 .admin-table-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  background: transparent !important;
 }
 .admin-table-scroll::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
-  border-radius: 99px;
+  background: #d1d5db !important;
+  border-radius: 99px !important;
 }
 .admin-table-scroll::-webkit-scrollbar-thumb:hover {
-  background: #d1d5db;
+  background: #9ca3af !important;
 }
 /* Sticky header khi scroll dọc */
 .admin-table-scroll thead th {

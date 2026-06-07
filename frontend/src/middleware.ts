@@ -10,13 +10,14 @@ export default function middleware(request: NextRequest) {
 
   // Check auth
   const token = request.cookies.get('accessToken')?.value;
+  const refreshToken = request.cookies.get('refreshToken')?.value;
   const path = request.nextUrl.pathname;
 
   // Protect these routes (ignoring locale prefix via regex or just checking include)
   const protectedPaths = ['/admin', '/history', '/vouchers'];
   const isProtected = protectedPaths.some((p) => path.includes(p));
 
-  if (isProtected && !token) {
+  if (isProtected && !token && !refreshToken) {
     // Redirect to login page, preserving the locale if present
     // next-intl automatically handles redirect to localized path if we use a relative URL or clone NextUrl
     const url = request.nextUrl.clone();
@@ -25,7 +26,7 @@ export default function middleware(request: NextRequest) {
   }
 
   // If going to login page but already logged in, redirect to home
-  if (path.includes('/login') && token) {
+  if (path.includes('/login') && (token || refreshToken)) {
     const url = request.nextUrl.clone();
     url.pathname = '/';
     return NextResponse.redirect(url);
