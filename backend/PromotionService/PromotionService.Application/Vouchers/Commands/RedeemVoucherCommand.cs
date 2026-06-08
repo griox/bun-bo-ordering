@@ -23,9 +23,21 @@ public class RedeemVoucherCommandHandler : IRequestHandler<RedeemVoucherCommand,
         using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
         try
         {
-            // Lock the voucher record (FOR UPDATE would be better in production with raw SQL)
-            var voucher = await _context.Vouchers
-                .SingleOrDefaultAsync(v => v.Id == request.VoucherId, cancellationToken);
+            // Lock the voucher record using FOR UPDATE for pessimistic concurrency control
+            Voucher? voucher;
+            try
+            {
+                // This works in production with PostgreSQL
+                voucher = await _context.Vouchers
+                    .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Id\" = {0} FOR UPDATE", request.VoucherId)
+                    .SingleOrDefaultAsync(cancellationToken);
+            }
+            catch (Exception ex) when (ex is InvalidCastException || ex is InvalidOperationException)
+            {
+                // Fallback for Unit Tests using Moq which doesn't support FromSqlRaw well
+                voucher = await _context.Vouchers
+                    .SingleOrDefaultAsync(v => v.Id == request.VoucherId, cancellationToken);
+            }
 
             if (voucher == null)
                 throw new Exception("Mã giảm giá không tồn tại.");

@@ -44,6 +44,7 @@ public class GetUnreadOrdersQueryHandler : IRequestHandler<GetUnreadOrdersQuery,
                 && !(o.PaymentMethod == "Transfer" && o.Status == OrderStatus.Processing))
             .OrderByDescending(o => o.CreatedAt)
             .AsNoTracking()
+            .Take(50)
             .Select(o => new UnreadOrderDto(
                 o.Id,
                 o.TableSession != null && o.TableSession.Table != null ? o.TableSession.Table.TableCode : "N/A",

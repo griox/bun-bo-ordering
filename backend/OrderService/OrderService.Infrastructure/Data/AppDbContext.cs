@@ -55,6 +55,7 @@ public class AppDbContext : DbContext, IAppDbContext
             entity.HasIndex(e => new { e.CustomerId, e.CreatedAt }).IsDescending(false, true); // Tối ưu phân trang đơn hàng của khách hàng
             entity.HasIndex(e => e.TableSessionId); // Tối ưu truy vấn đơn hàng theo phiên bàn
             entity.HasIndex(e => e.CreatedAt); // Tối ưu sắp xếp danh sách đơn hàng mới nhất
+            entity.HasIndex(e => new { e.IsRead, e.CreatedAt }); // Tối ưu truy vấn lấy đơn chưa đọc
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.DiscountAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.VoucherCode).HasMaxLength(50);

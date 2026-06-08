@@ -19,6 +19,7 @@ public class RedeemVoucherCommandHandlerTests
     {
         _contextMock = new Mock<IAppDbContext>();
         var databaseMock = new Mock<Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade>(Mock.Of<DbContext>());
+        databaseMock.Setup(x => x.ProviderName).Returns("InMemory");
         _contextMock.Setup(x => x.Database).Returns(databaseMock.Object);
         
         databaseMock.Setup(x => x.BeginTransactionAsync(It.IsAny<CancellationToken>()))
