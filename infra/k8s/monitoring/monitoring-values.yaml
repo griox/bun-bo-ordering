@@ -1,0 +1,35 @@
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  config:
+    global:
+      resolve_timeout: 5m
+    route:
+      group_by: ['alertname']
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 4h
+      receiver: 'telegram-notifications'
+    receivers:
+    - name: 'null'
+    - name: 'telegram-notifications'
+      telegram_configs:
+      - bot_token: "8855769497:AAFZ7KAqLrR0kyYos3uTh9dNMxu3eZw12mE" # <--- THAY BẰNG TOKEN TỪ BOTFATHER
+        chat_id: 5295587921               # <--- THAY BẰNG CHAT ID CỦA BẠN (số âm nếu là group)
+        parse_mode: HTML
+        message: |-
+          🚨 <b>CẢNH BÁO HỆ THỐNG BUNBO</b> 🚨
+          {{ range .Alerts }}
+          <b>Tên:</b> {{ .Labels.alertname }}
+          <b>Trạng thái:</b> {{ if eq .Status "firing" }}🔥 ĐANG BỊ LỖI{{ else }}✅ ĐÃ PHỤC HỒI{{ end }}
+          <b>Mức độ:</b> {{ .Labels.severity }}
+          <b>Chi tiết:</b> {{ .Annotations.description }}
+          -------------------------------
+          {{ end }}

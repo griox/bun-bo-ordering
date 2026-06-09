@@ -1,0 +1,50 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: bunbo-alert-rules
+  namespace: monitoring
+  labels:
+    release: prometheus # Must match the Helm release name so Prometheus picks it up
+spec:
+  groups:
+    - name: bunbo-microservices-alerts
+      rules:
+        # 1. Cảnh báo khi CPU của Pod vượt quá 80% trong 3 phút (không tính hệ thống của K8s)
+        - alert: HighCPUUsage
+          expr: sum(rate(container_cpu_usage_seconds_total{namespace!="kube-system", pod!=""}[3m])) by (pod, namespace) > 0.8
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High CPU usage detected on pod {{ $labels.pod }}"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is using more than 80% CPU for the last 3 minutes."
+
+        # 2. Cảnh báo khi Memory của Pod vượt 85% giới hạn (Limit)
+        - alert: HighMemoryUsage
+          expr: (container_memory_working_set_bytes{namespace!="kube-system", pod!=""} / container_spec_memory_limit_bytes{namespace!="kube-system", pod!=""} > 0) > 0.85
+          for: 3m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High Memory usage on pod {{ $labels.pod }}"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is using more than 85% of its Memory limit."
+
+        # 3. Cảnh báo Pod bị kẹt ở trạng thái CrashLoopBackOff
+        - alert: PodCrashLooping
+          expr: rate(kube_pod_container_status_restarts_total{namespace!="kube-system"}[5m]) * 300 > 2
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Pod {{ $labels.pod }} is CrashLooping"
+            description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted multiple times recently."
+
+        # 4. Cảnh báo khi Service / Deployment bị sập (số replica có sẵn nhỏ hơn số replica mong muốn)
+        - alert: DeploymentReplicasMismatch
+          expr: kube_deployment_spec_replicas{namespace!="kube-system"} > kube_deployment_status_replicas_available{namespace!="kube-system"}
+          for: 2m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Deployment {{ $labels.deployment }} is DOWN / Missing replicas"
+            description: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has missing available replicas for more than 2 minutes."
