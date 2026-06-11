@@ -83,6 +83,7 @@ builder.Services.AddBunBoHealthChecks(builder.Configuration);
 builder.Services.AddBunBoPrometheusMetrics();
 var app = builder.Build();
 app.UseBunBoPrometheusMetrics();
+app.MapBunBoHealthChecks();
 
 app.UseResponseCompression();
 app.UseCors(); // Must be before MapReverseProxy
