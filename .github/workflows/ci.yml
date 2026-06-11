@@ -252,7 +252,8 @@ jobs:
           {
             "backend_changed": ${{ needs.changes.outputs.backend }},
             "infra_changed": ${{ needs.changes.outputs.infra }},
-            "frontend_changed": ${{ needs.changes.outputs.frontend }}
+            "frontend_changed": ${{ needs.changes.outputs.frontend }},
+            "built_services": ${{ needs.changes.outputs.services }}
           }
           EOF
       - name: Upload Event Artifact

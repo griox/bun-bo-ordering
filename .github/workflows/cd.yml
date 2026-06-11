@@ -17,6 +17,7 @@ jobs:
       proceed: ${{ steps.check.outputs.proceed }}
       backend_changed: ${{ steps.check.outputs.backend_changed }}
       infra_changed: ${{ steps.check.outputs.infra_changed }}
+      built_services: ${{ steps.check.outputs.built_services }}
     steps:
       - name: Download Event Artifact
         uses: actions/download-artifact@v4
@@ -34,9 +35,11 @@ jobs:
           if [ -f "$EVENT_FILE" ]; then
             BACKEND=$(python3 -c "import json; print(json.load(open('$EVENT_FILE'))['backend_changed'])" | tr '[:upper:]' '[:lower:]')
             INFRA=$(python3 -c "import json; print(json.load(open('$EVENT_FILE'))['infra_changed'])" | tr '[:upper:]' '[:lower:]')
+            BUILT_SERVICES=$(python3 -c "import json; d=json.load(open('$EVENT_FILE')); print(json.dumps(d.get('built_services', [])))")
             
             echo "backend_changed=$BACKEND" >> $GITHUB_OUTPUT
             echo "infra_changed=$INFRA" >> $GITHUB_OUTPUT
+            echo "built_services=$BUILT_SERVICES" >> $GITHUB_OUTPUT
             
             if [ "$BACKEND" = "true" ] || [ "$INFRA" = "true" ]; then
               echo "Changes detected (backend: $BACKEND, infra: $INFRA). Proceeding with deployment."
@@ -98,14 +101,18 @@ jobs:
           DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
           if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
 
-          SERVICES=("order-service"      "identity-service"      "catalog-service"      "promotion-service")
-          DLLS=("OrderService.Api.dll" "IdentityService.Api.dll" "CatalogService.Api.dll" "PromotionService.Api.dll")
-          DBS=("bunbo_order_db"        "bunbo_identity_db"       "bunbo_catalog_db"      "bunbo_promotion_db")
+          SERVICES_JSON='${{ needs.check-event.outputs.built_services }}'
+          declare -A DLLS=( ["order-service"]="OrderService.Api.dll" ["identity-service"]="IdentityService.Api.dll" ["catalog-service"]="CatalogService.Api.dll" ["promotion-service"]="PromotionService.Api.dll" )
+          declare -A DBS=( ["order-service"]="bunbo_order_db" ["identity-service"]="bunbo_identity_db" ["catalog-service"]="bunbo_catalog_db" ["promotion-service"]="bunbo_promotion_db" )
 
-          for i in "${!SERVICES[@]}"; do
-            SVC="${SERVICES[$i]}"
-            DLL="${DLLS[$i]}"
-            DB="${DBS[$i]}"
+          BUILT_SVCS=$(echo "$SERVICES_JSON" | python3 -c "import sys, json; print(' '.join([s['name'] for s in json.load(sys.stdin) if 'name' in s]))" 2>/dev/null || echo "")
+          
+          for SVC in $BUILT_SVCS; do
+            if [[ -z "${DLLS[$SVC]}" ]]; then
+              continue
+            fi
+            DLL="${DLLS[$SVC]}"
+            DB="${DBS[$SVC]}"
             JOB_NAME="${SVC}-migration-$(echo $IMAGE_TAG | cut -c1-7)"
 
             echo ">>> Running migration Job for $SVC (db: $DB)..."
@@ -148,15 +155,11 @@ jobs:
           DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
           if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
 
-          kustomize edit set image griox/bunbo-identity-service=$DOCKER_USER/bunbo-identity-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-catalog-service=$DOCKER_USER/bunbo-catalog-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-cart-service=$DOCKER_USER/bunbo-cart-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-order-service=$DOCKER_USER/bunbo-order-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-payment-service=$DOCKER_USER/bunbo-payment-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-notification-service=$DOCKER_USER/bunbo-notification-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-realtime-service=$DOCKER_USER/bunbo-realtime-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-promotion-service=$DOCKER_USER/bunbo-promotion-service:${IMAGE_TAG}
-          kustomize edit set image griox/bunbo-api-gateway=$DOCKER_USER/bunbo-api-gateway:${IMAGE_TAG}
+          SERVICES_JSON='${{ needs.check-event.outputs.built_services }}'
+          BUILT_SVCS=$(echo "$SERVICES_JSON" | python3 -c "import sys, json; print(' '.join([s['name'] for s in json.load(sys.stdin) if 'name' in s]))" 2>/dev/null || echo "")
+          for SVC in $BUILT_SVCS; do
+            kustomize edit set image griox/bunbo-$SVC=$DOCKER_USER/bunbo-$SVC:${IMAGE_TAG}
+          done
 
       # GitOps: Commit the updated kustomization.yaml back to Git
       - name: Commit Kustomization Changes (GitOps State Sync)
@@ -182,9 +185,15 @@ jobs:
       - name: Verify Rollout Status
         id: verify_rollout
         run: |
-          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
+          SERVICES_JSON='${{ needs.check-event.outputs.built_services }}'
+          BUILT_SVCS=$(echo "$SERVICES_JSON" | python3 -c "import sys, json; print(' '.join([s['name'] for s in json.load(sys.stdin) if 'name' in s]))" 2>/dev/null || echo "")
+          
+          if [ -z "$BUILT_SVCS" ]; then
+            echo "No services to verify."
+            exit 0
+          fi
 
-          for service in "${services[@]}"; do
+          for service in $BUILT_SVCS; do
             echo "Waiting for rollout of deployment/$service..."
             if ! kubectl rollout status deployment/$service --timeout=300s; then
               echo "::error::Rollout failed for $service. Checking logs for clues..."
@@ -228,9 +237,10 @@ jobs:
         if: failure() && (steps.verify_rollout.outcome == 'failure' || steps.health_check.outcome == 'failure')
         run: |
           echo "::warning::Deployment or health check failed, initiating automated rollback..."
-          services=("identity-service" "catalog-service" "cart-service" "order-service" "payment-service" "notification-service" "realtime-service" "promotion-service" "api-gateway")
+          SERVICES_JSON='${{ needs.check-event.outputs.built_services }}'
+          BUILT_SVCS=$(echo "$SERVICES_JSON" | python3 -c "import sys, json; print(' '.join([s['name'] for s in json.load(sys.stdin) if 'name' in s]))" 2>/dev/null || echo "")
 
-          for service in "${services[@]}"; do
+          for service in $BUILT_SVCS; do
             echo "Rolling back deployment/$service..."
             kubectl rollout undo deployment/$service || echo "::warning::No previous rollout history to undo for $service"
             kubectl rollout status deployment/$service --timeout=180s || echo "::error::Rollback confirmation failed for $service"
