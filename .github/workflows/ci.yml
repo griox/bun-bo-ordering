@@ -199,6 +199,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
+        # Retry up to 3 times for transient Docker Hub network errors
+        continue-on-error: false
+        id: docker_login
+      
+      - name: Retry Docker Login if failed
+        if: steps.docker_login.outcome == 'failure'
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
