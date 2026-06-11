@@ -18,7 +18,16 @@ public static class HealthCheckExtensions
         var postgresConn = configuration.GetConnectionString("DefaultConnection");
         if (!string.IsNullOrEmpty(postgresConn))
         {
-            builder.AddNpgSql(postgresConn, name: "postgres", tags: new[] { "db", "postgresql" });
+            var hcConn = postgresConn;
+            if (!hcConn.EndsWith(";")) hcConn += ";";
+            
+            // Clean up any existing Pooling or Timeout settings in the connection string to override them
+            hcConn = System.Text.RegularExpressions.Regex.Replace(hcConn, @"(?i)pooling\s*=\s*[^;]+;?", "");
+            hcConn = System.Text.RegularExpressions.Regex.Replace(hcConn, @"(?i)timeout\s*=\s*[^;]+;?", "");
+            hcConn = System.Text.RegularExpressions.Regex.Replace(hcConn, @"(?i)command\s*timeout\s*=\s*[^;]+;?", "");
+            
+            hcConn += "Pooling=false;Timeout=3;Command Timeout=3;";
+            builder.AddNpgSql(hcConn, name: "postgres", tags: new[] { "db", "postgresql" });
         }
         
         // 2. Check Redis Connection
