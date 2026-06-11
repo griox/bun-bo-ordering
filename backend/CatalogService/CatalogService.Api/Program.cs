@@ -100,7 +100,9 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Catal
 
 builder.Services.AddBunBoHealthChecks(builder.Configuration);
 
+builder.Services.AddBunBoPrometheusMetrics();
 var app = builder.Build();
+app.UseBunBoPrometheusMetrics();
 
 if (app.Environment.IsDevelopment())
 {

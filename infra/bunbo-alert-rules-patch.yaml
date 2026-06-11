@@ -1,0 +1,75 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  annotations:
+    kubectl.kubernetes.io/last-applied-configuration: |
+      {"apiVersion":"monitoring.coreos.com/v1","kind":"PrometheusRule","metadata":{"annotations":{},"labels":{"release":"prometheus"},"name":"bunbo-alert-rules","namespace":"monitoring"},"spec":{"groups":[{"name":"bunbo-microservices-alerts","rules":[{"alert":"HighCPUUsage","annotations":{"description":"Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is using more than 80% CPU for the last 3 minutes.","summary":"High CPU usage detected on pod {{ $labels.pod }}"},"expr":"sum(rate(container_cpu_usage_seconds_total{namespace!=\"kube-system\", pod!=\"\"}[3m])) by (pod, namespace) \u003e 0.8","for":"3m","labels":{"severity":"warning"}},{"alert":"HighMemoryUsage","annotations":{"description":"Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is using more than 85% of its Memory limit.","summary":"High Memory usage on pod {{ $labels.pod }}"},"expr":"(container_memory_working_set_bytes{namespace!=\"kube-system\", pod!=\"\"} / container_spec_memory_limit_bytes{namespace!=\"kube-system\", pod!=\"\"} \u003e 0) \u003e 0.85","for":"3m","labels":{"severity":"warning"}},{"alert":"PodCrashLooping","annotations":{"description":"Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has restarted multiple times recently.","summary":"Pod {{ $labels.pod }} is CrashLooping"},"expr":"rate(kube_pod_container_status_restarts_total{namespace!=\"kube-system\"}[5m]) * 300 \u003e 2","for":"2m","labels":{"severity":"critical"}},{"alert":"DeploymentReplicasMismatch","annotations":{"description":"Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has missing available replicas for more than 2 minutes.","summary":"Deployment {{ $labels.deployment }} is DOWN / Missing replicas"},"expr":"kube_deployment_spec_replicas{namespace!=\"kube-system\"} \u003e kube_deployment_status_replicas_available{namespace!=\"kube-system\"}","for":"2m","labels":{"severity":"critical"}}]}]}}
+    prometheus-operator-validated: "true"
+  creationTimestamp: "2026-06-08T14:14:59Z"
+  generation: 1
+  labels:
+    release: prometheus
+  name: bunbo-alert-rules
+  namespace: monitoring
+  resourceVersion: "7021227"
+  uid: 61f878a7-b3ac-4cdc-898e-11229f1a6cec
+spec:
+  groups:
+  - name: bunbo-microservices-alerts
+    rules:
+    - alert: HighCPUUsage
+      annotations:
+        description: Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is
+          using more than 80% CPU for the last 3 minutes.
+        summary: High CPU usage detected on pod {{ $labels.pod }}
+      expr: sum(rate(container_cpu_usage_seconds_total{namespace!="kube-system", pod!=""}[3m]))
+        by (pod, namespace) > 0.8
+      for: 3m
+      labels:
+        severity: warning
+    - alert: HighMemoryUsage
+      annotations:
+        description: Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is
+          using more than 85% of its Memory limit.
+        summary: High Memory usage on pod {{ $labels.pod }}
+      expr: (container_memory_working_set_bytes{namespace!="kube-system", pod!=""}
+        / container_spec_memory_limit_bytes{namespace!="kube-system", pod!=""} > 0)
+        > 0.85
+      for: 3m
+      labels:
+        severity: warning
+    - alert: PodCrashLooping
+      annotations:
+        description: Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} has
+          restarted multiple times recently.
+        summary: Pod {{ $labels.pod }} is CrashLooping
+      expr: rate(kube_pod_container_status_restarts_total{namespace!="kube-system"}[5m])
+        * 300 > 2
+      for: 2m
+      labels:
+        severity: critical
+    - alert: DeploymentReplicasMismatch
+      annotations:
+        description: Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace
+          }} has missing available replicas for more than 2 minutes.
+        summary: Deployment {{ $labels.deployment }} is DOWN / Missing replicas
+      expr: kube_deployment_spec_replicas{namespace!="kube-system"} > kube_deployment_status_replicas_available{namespace!="kube-system"}
+      for: 2m
+      labels:
+        severity: critical
+    - alert: APIHighErrorRate
+      annotations:
+        description: Tỷ lệ lỗi 5xx trên toàn hệ thống cao (> 5%) trong vòng 2 phút qua. Có thể là do quá tải, sập service, hoặc timeout.
+        summary: Hệ thống đang có hơn 5% request bị lỗi 5xx
+      expr: sum(rate(http_requests_total{status=~"5.."}[2m])) / sum(rate(http_requests_total[2m])) > 0.05
+      for: 1m
+      labels:
+        severity: critical
+    - alert: HighAPILatency
+      annotations:
+        description: Phân vị P95 của response time đã vượt quá 2 giây. Có thể do nghẽn cổ chai DB hoặc Deadlock.
+        summary: P95 Latency của hệ thống đã vượt quá 2 giây
+      expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[2m])) by (le)) > 2.0
+      for: 1m
+      labels:
+        severity: warning

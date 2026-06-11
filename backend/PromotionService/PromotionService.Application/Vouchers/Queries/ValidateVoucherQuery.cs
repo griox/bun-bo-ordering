@@ -22,54 +22,10 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
 
     public async Task<VoucherValidationResult> Handle(ValidateVoucherQuery request, CancellationToken cancellationToken)
     {
-        IExecutionStrategy? strategy = null;
-        try
-        {
-            strategy = _context.Database?.CreateExecutionStrategy();
-        }
-        catch (InvalidOperationException)
-        {
-            // Unit tests with mocks throw this because no database provider is configured
-        }
-
-        if (strategy == null)
-        {
-            return await ExecuteValidationAsync(request, cancellationToken, false);
-        }
-
-        return await strategy.ExecuteAsync(async () =>
-        {
-            using var transaction = await _context.Database!.BeginTransactionAsync(cancellationToken);
-            try
-            {
-                var result = await ExecuteValidationAsync(request, cancellationToken, true);
-                await transaction.CommitAsync(cancellationToken);
-                return result;
-            }
-            catch
-            {
-                await transaction.RollbackAsync(cancellationToken);
-                throw;
-            }
-        });
-    }
-
-    private async Task<VoucherValidationResult> ExecuteValidationAsync(ValidateVoucherQuery request, CancellationToken cancellationToken, bool usePessimisticLock)
-    {
         var upperVoucherCode = request.Code.ToUpper();
-        Voucher? voucher;
-
-        if (usePessimisticLock)
-        {
-            voucher = await _context.Vouchers
-                .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Code\" = {0} FOR UPDATE", upperVoucherCode)
-                .SingleOrDefaultAsync(cancellationToken);
-        }
-        else
-        {
-            voucher = await _context.Vouchers
-                .SingleOrDefaultAsync(v => v.Code == upperVoucherCode, cancellationToken);
-        }
+        
+        var voucher = await _context.Vouchers
+            .SingleOrDefaultAsync(v => v.Code == upperVoucherCode, cancellationToken);
 
         if (voucher == null)
             return new VoucherValidationResult(false, "Mã giảm giá không tồn tại.");

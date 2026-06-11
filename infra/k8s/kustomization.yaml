@@ -16,3 +16,4 @@ resources:
   - gateway/gateway-deployment.yaml
   - monitoring/seq-deployment.yaml
   - monitoring/alert-rules.yaml
+  - monitoring/podmonitor-microservices.yaml

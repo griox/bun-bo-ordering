@@ -121,7 +121,9 @@ builder.Services.AddCors();
 
 builder.Services.AddBunBoHealthChecks(builder.Configuration);
 
+builder.Services.AddBunBoPrometheusMetrics();
 var app = builder.Build();
+app.UseBunBoPrometheusMetrics();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")

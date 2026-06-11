@@ -40,7 +40,8 @@ spec:
           periodSeconds: 10
 
         ports:
-        - containerPort: 5005
+        - name: http
+          containerPort: 5005
         envFrom:
         - configMapRef:
             name: bunbo-config

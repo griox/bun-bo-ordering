@@ -39,7 +39,8 @@ spec:
           initialDelaySeconds: 5
           periodSeconds: 10
         ports:
-        - containerPort: 8080
+        - name: http
+          containerPort: 8080
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
