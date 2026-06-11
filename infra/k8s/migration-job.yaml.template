@@ -28,3 +28,15 @@ spec:
                 secretKeyRef:
                   name: bunbo-secrets
                   key: JWT_SECRET
+            - name: REDIS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: bunbo-config
+                  key: Redis__Host
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bunbo-secrets
+                  key: REDIS_PASSWORD
+            - name: ConnectionStrings__Redis
+              value: "$(REDIS_HOST),password=$(REDIS_PASSWORD),abortConnect=false"
