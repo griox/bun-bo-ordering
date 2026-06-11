@@ -2,18 +2,46 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
-  - config/app-config.yaml
-  - config/rabbitmq-deployment.yaml
-  - cert-manager/cluster-issuer.yaml
-  - identity/identity-deployment.yaml
-  - catalog/catalog-deployment.yaml
-  - cart/cart-deployment.yaml
-  - order/order-deployment.yaml
-  - payment/payment-deployment.yaml
-  - notification/notification-deployment.yaml
-  - realtime/realtime-deployment.yaml
-  - promotion/promotion-deployment.yaml
-  - gateway/gateway-deployment.yaml
-  - monitoring/seq-deployment.yaml
-  - monitoring/alert-rules.yaml
-  - monitoring/podmonitor-microservices.yaml
+- config/app-config.yaml
+- config/rabbitmq-deployment.yaml
+- cert-manager/cluster-issuer.yaml
+- identity/identity-deployment.yaml
+- catalog/catalog-deployment.yaml
+- cart/cart-deployment.yaml
+- order/order-deployment.yaml
+- payment/payment-deployment.yaml
+- notification/notification-deployment.yaml
+- realtime/realtime-deployment.yaml
+- promotion/promotion-deployment.yaml
+- gateway/gateway-deployment.yaml
+- monitoring/seq-deployment.yaml
+- monitoring/alert-rules.yaml
+- monitoring/podmonitor-microservices.yaml
+images:
+- name: griox/bunbo-api-gateway
+  newName: griox/bunbo-api-gateway
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-cart-service
+  newName: griox/bunbo-cart-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-catalog-service
+  newName: griox/bunbo-catalog-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-identity-service
+  newName: griox/bunbo-identity-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-notification-service
+  newName: griox/bunbo-notification-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-order-service
+  newName: griox/bunbo-order-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-payment-service
+  newName: griox/bunbo-payment-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-promotion-service
+  newName: griox/bunbo-promotion-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
+- name: griox/bunbo-realtime-service
+  newName: griox/bunbo-realtime-service
+  newTag: 3e76346db1da8da1ff11cb30b1b891ae649f814f
