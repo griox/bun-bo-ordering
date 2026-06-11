@@ -32,12 +32,14 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /health
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
+          timeoutSeconds: 5
         ports:
         - name: http
           containerPort: 8080

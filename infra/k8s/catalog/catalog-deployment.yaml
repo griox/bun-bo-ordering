@@ -33,12 +33,14 @@ spec:
             port: 5002
           initialDelaySeconds: 15
           periodSeconds: 20
+          timeoutSeconds: 5
         readinessProbe:
           httpGet:
             path: /health
             port: 5002
           initialDelaySeconds: 5
           periodSeconds: 10
+          timeoutSeconds: 5
 
         ports:
         - name: http
