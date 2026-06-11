@@ -46,10 +46,11 @@ spec:
         - configMapRef:
             name: bunbo-config
         env:
-        - name: RabbitMq__Host
-          value: "rabbitmq.default.svc.cluster.local"
-        - name: RabbitMq__Username
-          value: "guest"
+        - name: JwtSettings__Secret
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: JWT_SECRET
         - name: RabbitMq__Password
           valueFrom:
             secretKeyRef:

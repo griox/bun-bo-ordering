@@ -23,7 +23,6 @@ data:
   Serilog__MinimumLevel__Default: "Information"
   Serilog__MinimumLevel__Override__Microsoft: "Warning"
   # JWT Settings for validation
-  JwtSettings__Secret: "SuperSecretKeyForBunBoSystem1234567890"
   JwtSettings__Issuer: "BunBoIdentity"
   JwtSettings__Audience: "BunBoMicroservices"
   CartServiceUrl: "http://cart-service"

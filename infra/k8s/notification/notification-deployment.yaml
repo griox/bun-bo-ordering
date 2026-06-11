@@ -41,18 +41,20 @@ spec:
         ports:
         - name: http
           containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: bunbo-config
         env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Production"
-        - name: RabbitMq__Host
-          value: "rabbitmq.default.svc.cluster.local"
+        - name: JwtSettings__Secret
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: JWT_SECRET
         - name: RabbitMq__Password
           valueFrom:
             secretKeyRef:
               name: bunbo-secrets
               key: RABBITMQ_PASSWORD
-        - name: Serilog__SeqUrl
-          value: "http://seq-service.default.svc.cluster.local:5341"
         - name: SmtpSettings__Host
           value: "smtp-relay.brevo.com"
         - name: SmtpSettings__Port

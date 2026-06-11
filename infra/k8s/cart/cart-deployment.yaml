@@ -47,6 +47,11 @@ spec:
         - configMapRef:
             name: bunbo-config
         env:
+        - name: JwtSettings__Secret
+          valueFrom:
+            secretKeyRef:
+              name: bunbo-secrets
+              key: JWT_SECRET
         - name: REDIS_HOST
           valueFrom:
             configMapKeyRef:
