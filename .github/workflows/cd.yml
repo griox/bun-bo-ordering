@@ -68,6 +68,8 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       # 1. PREPARE Phase
       - name: Set up Kubectl
@@ -169,6 +171,7 @@ jobs:
           else
             git add infra/k8s/kustomization.yaml
             git commit -m "chore(deploy): update image tags to ${IMAGE_TAG} [skip ci]"
+            git pull origin main --rebase || true
             git push origin main
             echo "✅ GitOps state synced — kustomization.yaml committed to main."
           fi

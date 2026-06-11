@@ -85,7 +85,18 @@ jobs:
             {"name":"api-gateway","path":"backend/ApiGateway"}
           ]'
 
-          MATRIX=$(echo "$ALL_SERVICES" | python3 -c "
+          MATRIX=$(echo "$ALL_SERVICES" | \
+            BACKEND_CHANGED="${{ steps.filter.outputs.backend }}" \
+            FILTER_IDENTITY_SERVICE="${{ steps.filter.outputs['identity-service'] }}" \
+            FILTER_CATALOG_SERVICE="${{ steps.filter.outputs['catalog-service'] }}" \
+            FILTER_CART_SERVICE="${{ steps.filter.outputs['cart-service'] }}" \
+            FILTER_ORDER_SERVICE="${{ steps.filter.outputs['order-service'] }}" \
+            FILTER_REALTIME_SERVICE="${{ steps.filter.outputs['realtime-service'] }}" \
+            FILTER_PAYMENT_SERVICE="${{ steps.filter.outputs['payment-service'] }}" \
+            FILTER_NOTIFICATION_SERVICE="${{ steps.filter.outputs['notification-service'] }}" \
+            FILTER_PROMOTION_SERVICE="${{ steps.filter.outputs['promotion-service'] }}" \
+            FILTER_API_GATEWAY="${{ steps.filter.outputs['api-gateway'] }}" \
+            python3 -c "
           import sys, json, os
           services = json.load(sys.stdin)
           changed = [s for s in services if os.environ.get('FILTER_' + s['name'].replace('-','_').upper(), 'false') == 'true']
@@ -93,17 +104,7 @@ jobs:
           if not changed and os.environ.get('BACKEND_CHANGED', 'false') == 'true':
               changed = services
           print(json.dumps(changed))
-          " \
-          BACKEND_CHANGED="${{ steps.filter.outputs.backend }}" \
-          FILTER_IDENTITY_SERVICE="${{ steps.filter.outputs['identity-service'] }}" \
-          FILTER_CATALOG_SERVICE="${{ steps.filter.outputs['catalog-service'] }}" \
-          FILTER_CART_SERVICE="${{ steps.filter.outputs['cart-service'] }}" \
-          FILTER_ORDER_SERVICE="${{ steps.filter.outputs['order-service'] }}" \
-          FILTER_REALTIME_SERVICE="${{ steps.filter.outputs['realtime-service'] }}" \
-          FILTER_PAYMENT_SERVICE="${{ steps.filter.outputs['payment-service'] }}" \
-          FILTER_NOTIFICATION_SERVICE="${{ steps.filter.outputs['notification-service'] }}" \
-          FILTER_PROMOTION_SERVICE="${{ steps.filter.outputs['promotion-service'] }}" \
-          FILTER_API_GATEWAY="${{ steps.filter.outputs['api-gateway'] }}")
+          ")
 
           echo "services=$MATRIX" >> $GITHUB_OUTPUT
           echo "Detected services to build: $MATRIX"
