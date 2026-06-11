@@ -23,3 +23,8 @@ spec:
           env:
             - name: ConnectionStrings__DefaultConnection
               value: "${CONN_STR}"
+            - name: JwtSettings__Secret
+              valueFrom:
+                secretKeyRef:
+                  name: bunbo-secrets
+                  key: JWT_SECRET
