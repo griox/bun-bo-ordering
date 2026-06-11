@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${JOB_NAME}
+  namespace: default
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  template:
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        role: apps
+      containers:
+        - name: migration
+          image: ${IMAGE}
+          command: ["dotnet", "${DLL}", "--migrate"]
+          envFrom:
+            - configMapRef:
+                name: bunbo-config
+            - secretRef:
+                name: bunbo-secrets
+          env:
+            - name: ConnectionStrings__DefaultConnection
+              value: "${CONN_STR}"
