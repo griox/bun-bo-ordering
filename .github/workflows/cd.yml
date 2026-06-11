@@ -98,42 +98,27 @@ jobs:
           DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
           if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
 
-          SERVICES=("order-service" "identity-service" "catalog-service" "promotion-service")
+          SERVICES=("order-service"      "identity-service"      "catalog-service"      "promotion-service")
           DLLS=("OrderService.Api.dll" "IdentityService.Api.dll" "CatalogService.Api.dll" "PromotionService.Api.dll")
+          DBS=("bunbo_order_db"        "bunbo_identity_db"       "bunbo_catalog_db"      "bunbo_promotion_db")
 
           for i in "${!SERVICES[@]}"; do
             SVC="${SERVICES[$i]}"
             DLL="${DLLS[$i]}"
+            DB="${DBS[$i]}"
             JOB_NAME="${SVC}-migration-$(echo $IMAGE_TAG | cut -c1-7)"
 
-            echo ">>> Running migration Job for $SVC..."
+            echo ">>> Running migration Job for $SVC (db: $DB)..."
 
             # Delete old job if exists
             kubectl delete job "$JOB_NAME" --ignore-not-found=true
 
-            # Always inject both bunbo-config and bunbo-secrets into the job.
-            # We do NOT mirror from the Deployment because it may be stale (the
-            # current deploy hasn't run `kubectl apply` yet). Instead we build a
-            # patch that:
-            #   1. Hardcodes envFrom with ConfigMap + Secret (covers ALL shared config)
-            #   2. Merges any deployment-specific `env` entries on top
-
-            # Step 1: Create the bare job (no env yet)
-            kubectl create job "$JOB_NAME" \
-              --image="$DOCKER_USER/bunbo-$SVC:$IMAGE_TAG" \
-              -- dotnet "$DLL" --migrate
-
-            # Step 2: Fetch deployment-specific env vars (if deployment exists)
-            DEPLOY_ENV=$(kubectl get deployment "$SVC" -o json 2>/dev/null | python3 -c \
-              'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["spec"]["template"]["spec"]["containers"][0].get("env", [])))' \
-              2>/dev/null || echo "[]")
-
-            # Step 3: Build patch JSON — all on one line to stay within YAML indentation
-            echo "$DEPLOY_ENV" > /tmp/deploy_env.json
-            PATCH_JSON=$(python3 -c "import json; e=json.loads(open('/tmp/deploy_env.json').read().strip() or '[]'); p=[{'op':'add','path':'/spec/template/spec/containers/0/envFrom','value':[{'configMapRef':{'name':'bunbo-config'}},{'secretRef':{'name':'bunbo-secrets'}}]},{'op':'replace','path':'/spec/backoffLimit','value':3}]; p.append({'op':'add','path':'/spec/template/spec/containers/0/env','value':e}) if e else None; print(json.dumps(p))")
-
-
-            kubectl patch job "$JOB_NAME" --type=json -p="$PATCH_JSON"
+            # Build and apply a complete Job manifest as JSON
+            # - envFrom: injects all shared config + secrets (JWT, RabbitMQ, Redis, etc.)
+            # - env: overrides ConnectionStrings__DefaultConnection with the correct per-service DB + password from K8s secret
+            PGPASS=$(kubectl get secret bunbo-secrets -o jsonpath='{.data.POSTGRES_PASSWORD}' | base64 --decode)
+            CONN_STR="Host=postgresql.postgresql.svc.cluster.local;Port=5432;Database=${DB};Username=postgres;Password=${PGPASS}"
+            python3 -c "import json,os; s=os.environ['CONN_STR']; print(json.dumps({'apiVersion':'batch/v1','kind':'Job','metadata':{'name':'$JOB_NAME','namespace':'default'},'spec':{'backoffLimit':3,'ttlSecondsAfterFinished':300,'template':{'spec':{'restartPolicy':'Never','nodeSelector':{'role':'apps'},'containers':[{'name':'migration','image':'$DOCKER_USER/bunbo-$SVC:$IMAGE_TAG','command':['dotnet','$DLL','--migrate'],'envFrom':[{'configMapRef':{'name':'bunbo-config'}},{'secretRef':{'name':'bunbo-secrets'}}],'env':[{'name':'ConnectionStrings__DefaultConnection','value':s}]}]}}}})}" CONN_STR="$CONN_STR" | kubectl apply -f -
 
             echo "Waiting for migration job $JOB_NAME to complete..."
             if ! kubectl wait --for=condition=complete job/"$JOB_NAME" --timeout=120s; then
