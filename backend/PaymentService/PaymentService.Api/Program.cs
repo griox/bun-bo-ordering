@@ -103,6 +103,7 @@ builder.Services.AddMassTransit(x =>
     {
         o.UsePostgres();
         o.UseBusOutbox();
+        o.IsolationLevel = System.Data.IsolationLevel.ReadCommitted;
     });
 
     x.UsingRabbitMq((context, cfg) =>
