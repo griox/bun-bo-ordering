@@ -129,31 +129,45 @@ jobs:
               2>/dev/null || echo "[]")
 
             # Step 3: Build and apply the full environment patch
-            PATCH_JSON=$(python3 -c "
-import json, sys
-deploy_env = json.loads('''$DEPLOY_ENV''')
+            # Write deploy_env to a temp file to avoid shell quoting issues
+            echo "$DEPLOY_ENV" > /tmp/deploy_env.json
+
+            PATCH_JSON=$(python3 - <<'PYEOF'
+import json
+
+with open("/tmp/deploy_env.json") as f:
+    raw = f.read().strip()
+
+deploy_env = json.loads(raw) if raw and raw != "[]" else []
+
 patch = [
   {
-    \"op\": \"add\",
-    \"path\": \"/spec/template/spec/containers/0/envFrom\",
-    \"value\": [
-      {\"configMapRef\": {\"name\": \"bunbo-config\"}},
-      {\"secretRef\":    {\"name\": \"bunbo-secrets\"}}
+    "op": "add",
+    "path": "/spec/template/spec/containers/0/envFrom",
+    "value": [
+      {"configMapRef": {"name": "bunbo-config"}},
+      {"secretRef":    {"name": "bunbo-secrets"}}
     ]
   },
   {
-    \"op\": \"replace\",
-    \"path\": \"/spec/backoffLimit\",
-    \"value\": 3
+    "op": "replace",
+    "path": "/spec/backoffLimit",
+    "value": 3
   }
 ]
+
 if deploy_env:
-    patch.append({\"op\": \"add\", \"path\": \"/spec/template/spec/containers/0/env\", \"value\": deploy_env})
+    patch.append({
+      "op": "add",
+      "path": "/spec/template/spec/containers/0/env",
+      "value": deploy_env
+    })
+
 print(json.dumps(patch))
-")
+PYEOF
+)
 
             kubectl patch job "$JOB_NAME" --type=json -p="$PATCH_JSON"
-
 
             echo "Waiting for migration job $JOB_NAME to complete..."
             if ! kubectl wait --for=condition=complete job/"$JOB_NAME" --timeout=120s; then
