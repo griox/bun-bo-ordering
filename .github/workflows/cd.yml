@@ -7,44 +7,60 @@ on:
       - completed
     branches:
       - main
-  push:
-    branches:
-      - main
-    paths:
-      - 'infra/k8s/**'
 
 jobs:
   check-event:
     name: Check CI Event
     runs-on: ubuntu-22.04
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     outputs:
       proceed: ${{ steps.check.outputs.proceed }}
+      backend_changed: ${{ steps.check.outputs.backend_changed }}
+      infra_changed: ${{ steps.check.outputs.infra_changed }}
     steps:
       - name: Download Event Artifact
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: deploy-event
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: /tmp/artifact
+
+      - name: Parse Event Metadata
         id: check
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          if [ "${{ github.event_name }}" == "push" ]; then
-            echo "Direct push trigger. Proceeding."
-            echo "proceed=true" >> $GITHUB_OUTPUT
-          elif gh run download ${{ github.event.workflow_run.id }} --name backend-changed --dir /tmp/artifact 2>/dev/null; then
-            echo "Backend changes detected in CI. Proceeding."
-            echo "proceed=true" >> $GITHUB_OUTPUT
+          EVENT_FILE="/tmp/artifact/deploy-event.json"
+          if [ -f "$EVENT_FILE" ]; then
+            BACKEND=$(python3 -c "import json; print(json.load(open('$EVENT_FILE'))['backend_changed'])" | tr '[:upper:]' '[:lower:]')
+            INFRA=$(python3 -c "import json; print(json.load(open('$EVENT_FILE'))['infra_changed'])" | tr '[:upper:]' '[:lower:]')
+            
+            echo "backend_changed=$BACKEND" >> $GITHUB_OUTPUT
+            echo "infra_changed=$INFRA" >> $GITHUB_OUTPUT
+            
+            if [ "$BACKEND" = "true" ] || [ "$INFRA" = "true" ]; then
+              echo "Changes detected (backend: $BACKEND, infra: $INFRA). Proceeding with deployment."
+              echo "proceed=true" >> $GITHUB_OUTPUT
+            else
+              echo "No deployable changes (backend: $BACKEND, infra: $INFRA). Skipping."
+              echo "proceed=false" >> $GITHUB_OUTPUT
+            fi
           else
-            echo "No backend changes detected in CI. Skipping deploy."
+            echo "deploy-event.json not found! Falling back to skipped deployment."
+            echo "backend_changed=false" >> $GITHUB_OUTPUT
+            echo "infra_changed=false" >> $GITHUB_OUTPUT
             echo "proceed=false" >> $GITHUB_OUTPUT
           fi
 
   deploy:
     name: Deploy to DigitalOcean K3s
     needs: check-event
-    if: ${{ github.event_name == 'push' || needs.check-event.outputs.proceed == 'true' }}
+    if: ${{ needs.check-event.outputs.proceed == 'true' }}
     runs-on: ubuntu-22.04
 
     permissions:
       contents: write  # Required for GitOps git push back
+      actions: read    # Required to download artifacts from other runs
 
     env:
       IMAGE_TAG: ${{ github.event.workflow_run.head_sha || github.sha }}
@@ -75,6 +91,7 @@ jobs:
 
       # 2. DATABASE MIGRATION Phase (Safe, before deploy)
       - name: Run Database Migrations via Kubernetes Jobs
+        if: ${{ needs.check-event.outputs.backend_changed == 'true' }}
         run: |
           DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
           if [ -z "$DOCKER_USER" ]; then DOCKER_USER="griox"; fi
@@ -124,6 +141,7 @@ jobs:
           kustomize-version: "5.3.0"
 
       - name: Update Kubernetes Images via Kustomize
+        if: ${{ needs.check-event.outputs.backend_changed == 'true' }}
         run: |
           cd infra/k8s
           DOCKER_USER=${{ secrets.DOCKER_USERNAME }}
@@ -141,6 +159,7 @@ jobs:
 
       # GitOps: Commit the updated kustomization.yaml back to Git
       - name: Commit Kustomization Changes (GitOps State Sync)
+        if: ${{ needs.check-event.outputs.backend_changed == 'true' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"

@@ -18,6 +18,7 @@ jobs:
     outputs:
       backend: ${{ steps.filter.outputs.backend }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      infra: ${{ steps.filter.outputs.infra }}
       services: ${{ steps.detect-services.outputs.services }}
     steps:
       - name: Checkout Code
@@ -38,6 +39,9 @@ jobs:
             frontend:
               - 'frontend/**'
               - '.github/workflows/ci.yml'
+            infra:
+              - 'infra/**'
+              - '.github/workflows/cd.yml'
             identity-service:
               - 'backend/IdentityService/**'
               - 'backend/BunBo.SharedKernel/**'
@@ -221,18 +225,27 @@ jobs:
 
   publish-event:
     name: Publish Deploy Event
-    needs: [changes, build-and-push]
+    needs: [changes, test, frontend-checks, build-and-push]
     runs-on: ubuntu-22.04
     if: |
       always() &&
-      needs.changes.outputs.backend == 'true' &&
+      needs.changes.result == 'success' &&
+      (needs.test.result == 'success' || needs.test.result == 'skipped') &&
+      (needs.frontend-checks.result == 'success' || needs.frontend-checks.result == 'skipped') &&
       (needs.build-and-push.result == 'success' || needs.build-and-push.result == 'skipped')
     steps:
       - name: Create Event File
-        run: echo "true" > backend-changed.txt
+        run: |
+          cat <<EOF > deploy-event.json
+          {
+            "backend_changed": ${{ needs.changes.outputs.backend }},
+            "infra_changed": ${{ needs.changes.outputs.infra }},
+            "frontend_changed": ${{ needs.changes.outputs.frontend }}
+          }
+          EOF
       - name: Upload Event Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: backend-changed
-          path: backend-changed.txt
+          name: deploy-event
+          path: deploy-event.json
           retention-days: 1
