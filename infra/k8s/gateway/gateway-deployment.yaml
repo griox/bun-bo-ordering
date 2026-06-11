@@ -22,11 +22,11 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "80m"
-            memory: "128Mi"
+            cpu: "150m"
+            memory: "192Mi"
           limits:
-            cpu: "400m"
-            memory: "256Mi"
+            cpu: "800m"
+            memory: "384Mi"
         livenessProbe:
           httpGet:
             path: /health/live
