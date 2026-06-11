@@ -44,6 +44,22 @@ public static class HealthCheckExtensions
 
     public static IEndpointRouteBuilder MapBunBoHealthChecks(this IEndpointRouteBuilder endpoints)
     {
+        // 1. Liveness Probe: Chạy siêu nhẹ, KHÔNG check DB, dùng để K8s biết tiến trình chưa sập
+        endpoints.MapHealthChecks("/health/live", new HealthCheckOptions
+        {
+            Predicate = _ => false, // Bỏ qua tất cả external checks
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        // 2. Readiness Probe: Deep Health Check (Postgres, Redis, RMQ)
+        // K8s dùng cái này để biết khi nào thì gửi traffic tới Pod
+        endpoints.MapHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = _ => true, // Chạy tất cả các checks
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        // Giữ lại endpoint /health cũ tạm thời để tương thích ngược nếu cần
         endpoints.MapHealthChecks("/health", new HealthCheckOptions
         {
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
