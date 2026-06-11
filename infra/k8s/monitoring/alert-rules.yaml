@@ -48,3 +48,23 @@ spec:
           annotations:
             summary: "Deployment {{ $labels.deployment }} is DOWN / Missing replicas"
             description: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has missing available replicas for more than 2 minutes."
+
+        # 5. Cảnh báo khi tỷ lệ lỗi HTTP 5xx vượt quá 5% trong 1 phút
+        - alert: HighHttpErrorRate
+          expr: (sum(rate(http_requests_received_total{code=~"5.."}[1m])) by (container, namespace) / sum(rate(http_requests_received_total[1m])) by (container, namespace)) * 100 > 5
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: "High HTTP 5xx error rate on container {{ $labels.container }}"
+            description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} has an HTTP 5xx error rate of {{ printf \"%.2f\" $value }}% over the last 1 minute."
+
+        # 6. Cảnh báo khi p95 response time vượt quá 2 giây trong 1 phút
+        - alert: HighHttpLatency
+          expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[1m])) by (le, container, namespace)) > 2
+          for: 1m
+          labels:
+            severity: warning
+          annotations:
+            summary: "High HTTP latency on container {{ $labels.container }}"
+            description: "Container {{ $labels.container }} in namespace {{ $labels.namespace }} has a p95 HTTP response duration of {{ printf \"%.2f\" $value }}s over the last 1 minute."
