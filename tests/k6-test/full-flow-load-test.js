@@ -41,9 +41,9 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 150 },
-                { duration: '5m', target: 150 },
-                { duration: '1m', target: 0 },
+                { duration: '4m', target: 150 }, // Ramp-up chậm rãi để HPA kịp scale (từ 2 -> 4 pods mất khoảng ~1.5 phút)
+                { duration: '4m', target: 150 }, // Duy trì ở mức tải cao nhất
+                { duration: '1m', target: 0 },   // Scale down
             ],
             exec: 'guestFlow',
             tags: { flow: 'guestFlow' },
@@ -52,8 +52,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 90 },
-                { duration: '5m', target: 90 },
+                { duration: '4m', target: 90 },
+                { duration: '4m', target: 90 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'memberFlow',
@@ -63,8 +63,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '3m', target: 20 }, // Bắt đầu sau khi guest/member đã tạo đơn
-                { duration: '4m', target: 20 },
+                { duration: '4m', target: 20 }, // Bắt đầu sau khi guest/member đã tạo đơn
+                { duration: '3m', target: 20 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'kitchenAdminFlow',
@@ -75,8 +75,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '1m', target: 25 },
-                { duration: '4m', target: 25 },
+                { duration: '2m', target: 25 },
+                { duration: '3m', target: 25 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'voucherRaceFlow',
@@ -86,8 +86,8 @@ export const options = {
             executor: 'ramping-vus',
             startVUs: 0,
             stages: [
-                { duration: '2m', target: 15 },
-                { duration: '5m', target: 15 },
+                { duration: '4m', target: 15 },
+                { duration: '4m', target: 15 },
                 { duration: '1m', target: 0 },
             ],
             exec: 'chaosFlow',
