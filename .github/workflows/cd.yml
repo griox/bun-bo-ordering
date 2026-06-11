@@ -116,11 +116,19 @@ jobs:
               --image="$DOCKER_USER/bunbo-$SVC:$IMAGE_TAG" \
               -- dotnet "$DLL" --migrate
 
-            # Patch the job to use the correct env from secret
-            kubectl patch job "$JOB_NAME" --type=json -p='[
-              {"op":"add","path":"/spec/template/spec/containers/0/envFrom","value":[{"secretRef":{"name":"bunbo-secrets"}}]},
-              {"op":"replace","path":"/spec/backoffLimit","value":3}
-            ]' 2>/dev/null || true
+            # Fetch environment from the existing deployment to mirror it to the job
+            PATCH_JSON=$(kubectl get deployment "$SVC" -o json | python3 -c 'import sys, json; data = json.load(sys.stdin); c = data["spec"]["template"]["spec"]["containers"][0]; ef = c.get("envFrom", []); ef.append({"secretRef": {"name": "bunbo-secrets"}}) if not any("secretRef" in e and e.get("secretRef", {}).get("name") == "bunbo-secrets" for e in ef) else None; e = c.get("env", []); print(json.dumps([{"op": "add", "path": "/spec/template/spec/containers/0/envFrom", "value": ef}, {"op": "add", "path": "/spec/template/spec/containers/0/env", "value": e}, {"op": "replace", "path": "/spec/backoffLimit", "value": 3}]))' 2>/dev/null || echo "[]")
+
+            # Patch the job to use the correct env
+            if [ "$PATCH_JSON" != "[]" ]; then
+              kubectl patch job "$JOB_NAME" --type=json -p="$PATCH_JSON" 2>/dev/null || true
+            else
+              # Fallback if deployment does not exist yet
+              kubectl patch job "$JOB_NAME" --type=json -p='[
+                {"op":"add","path":"/spec/template/spec/containers/0/envFrom","value":[{"configMapRef":{"name":"bunbo-config"}},{"secretRef":{"name":"bunbo-secrets"}}]},
+                {"op":"replace","path":"/spec/backoffLimit","value":3}
+              ]' 2>/dev/null || true
+            fi
 
             echo "Waiting for migration job $JOB_NAME to complete..."
             if ! kubectl wait --for=condition=complete job/"$JOB_NAME" --timeout=120s; then
