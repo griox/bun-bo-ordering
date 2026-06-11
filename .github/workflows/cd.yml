@@ -128,44 +128,10 @@ jobs:
               'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["spec"]["template"]["spec"]["containers"][0].get("env", [])))' \
               2>/dev/null || echo "[]")
 
-            # Step 3: Build and apply the full environment patch
-            # Write deploy_env to a temp file to avoid shell quoting issues
+            # Step 3: Build patch JSON — all on one line to stay within YAML indentation
             echo "$DEPLOY_ENV" > /tmp/deploy_env.json
+            PATCH_JSON=$(python3 -c "import json; e=json.loads(open('/tmp/deploy_env.json').read().strip() or '[]'); p=[{'op':'add','path':'/spec/template/spec/containers/0/envFrom','value':[{'configMapRef':{'name':'bunbo-config'}},{'secretRef':{'name':'bunbo-secrets'}}]},{'op':'replace','path':'/spec/backoffLimit','value':3}]; p.append({'op':'add','path':'/spec/template/spec/containers/0/env','value':e}) if e else None; print(json.dumps(p))")
 
-            PATCH_JSON=$(python3 - <<'PYEOF'
-import json
-
-with open("/tmp/deploy_env.json") as f:
-    raw = f.read().strip()
-
-deploy_env = json.loads(raw) if raw and raw != "[]" else []
-
-patch = [
-  {
-    "op": "add",
-    "path": "/spec/template/spec/containers/0/envFrom",
-    "value": [
-      {"configMapRef": {"name": "bunbo-config"}},
-      {"secretRef":    {"name": "bunbo-secrets"}}
-    ]
-  },
-  {
-    "op": "replace",
-    "path": "/spec/backoffLimit",
-    "value": 3
-  }
-]
-
-if deploy_env:
-    patch.append({
-      "op": "add",
-      "path": "/spec/template/spec/containers/0/env",
-      "value": deploy_env
-    })
-
-print(json.dumps(patch))
-PYEOF
-)
 
             kubectl patch job "$JOB_NAME" --type=json -p="$PATCH_JSON"
 
