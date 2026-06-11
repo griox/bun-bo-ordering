@@ -25,7 +25,8 @@ FROM base AS final
 WORKDIR /app
 
 # Create a non-root user
-RUN addgroup -g 1000 appgroup && \
+RUN apk update && apk upgrade --no-cache && \
+    addgroup -g 1000 appgroup && \
     adduser -u 1000 -G appgroup -S -D appuser && \
     chown -R appuser:appgroup /app
 
