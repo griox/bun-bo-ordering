@@ -5,7 +5,7 @@ metadata:
   labels:
     app: payment-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: payment-service
@@ -24,8 +24,8 @@ spec:
             cpu: "50m"
             memory: "128Mi"
           limits:
-            cpu: "400m"
-            memory: "384Mi"
+            cpu: "200m"
+            memory: "256Mi"
         livenessProbe:
           httpGet:
             path: /health/live

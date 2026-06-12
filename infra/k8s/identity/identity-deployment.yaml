@@ -5,7 +5,7 @@ metadata:
   labels:
     app: identity-service
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: identity-service
@@ -22,10 +22,10 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
-            memory: "192Mi"
+            cpu: "50m"
+            memory: "128Mi"
           limits:
-            cpu: "300m"
+            cpu: "200m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
