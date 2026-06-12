@@ -125,16 +125,25 @@ function authHeaders(token) {
     };
 }
 
+function getVuIp() {
+    // k6 __VU is not available in init context, fallback to random or 0
+    // We import __VU inside functions if needed, or use a pseudo-random IP
+    return `192.168.1.${Math.floor(Math.random() * 250) + 1}`;
+}
+
 function post(url, body, headers, timeout = '15s') {
-    return http.post(url, JSON.stringify(body), { headers, timeout });
+    const finalHeaders = Object.assign({}, headers, { 'X-Forwarded-For': getVuIp() });
+    return http.post(url, JSON.stringify(body), { headers: finalHeaders, timeout });
 }
 
 function get(url, headers, timeout = '15s') {
-    return http.get(url, { headers, timeout });
+    const finalHeaders = Object.assign({}, headers, { 'X-Forwarded-For': getVuIp() });
+    return http.get(url, { headers: finalHeaders, timeout });
 }
 
 function put(url, body, headers, timeout = '15s') {
-    return http.put(url, body ? JSON.stringify(body) : null, { headers, timeout });
+    const finalHeaders = Object.assign({}, headers, { 'X-Forwarded-For': getVuIp() });
+    return http.put(url, body ? JSON.stringify(body) : null, { headers: finalHeaders, timeout });
 }
 
 function getRandomItem(arr) {

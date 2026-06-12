@@ -32,7 +32,7 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
 
         Voucher activeVoucher = voucher!;
 
-        var userVoucher = await _context.UserVouchers
+        var userVoucher = await _context.UserVouchers.AsNoTracking()
             .FirstOrDefaultAsync(uv => uv.UserId == request.UserId && uv.VoucherId == activeVoucher.Id && !uv.IsUsed, cancellationToken);
 
         if (activeVoucher.Type == Domain.Enums.VoucherType.PointRedemption && userVoucher == null)
@@ -41,7 +41,7 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
         if (userVoucher != null && userVoucher.ExpiryDate.HasValue && DateTime.UtcNow > userVoucher.ExpiryDate.Value)
             return new VoucherValidationResult(false, "Mã giảm giá đã hết hạn sử dụng (7 ngày kể từ lúc đổi).");
 
-        var userUsageCount = await _context.UserVouchers.CountAsync(uv => uv.UserId == request.UserId && uv.VoucherId == activeVoucher.Id && uv.IsUsed, cancellationToken);
+        var userUsageCount = await _context.UserVouchers.AsNoTracking().CountAsync(uv => uv.UserId == request.UserId && uv.VoucherId == activeVoucher.Id && uv.IsUsed, cancellationToken);
         if (!activeVoucher.CanBeUsed(request.OrderAmount, request.UserId, userUsageCount))
         {
             if (!activeVoucher.IsActive) return new VoucherValidationResult(false, "Mã giảm giá đã bị tạm ngừng.");

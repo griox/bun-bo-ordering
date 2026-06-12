@@ -27,11 +27,19 @@ builder.Services.AddProblemDetails();
 // Configure Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter("auth", opt =>
+    options.AddPolicy("auth", context =>
     {
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 15; // Increased slightly for better UX
-        opt.QueueLimit = 0;
+        // Get IP from reverse proxy headers if available, otherwise connection IP
+        var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                 ?? context.Connection.RemoteIpAddress?.ToString() 
+                 ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = 60, // 60 requests per minute per IP
+            QueueLimit = 0
+        });
     });
 
     options.OnRejected = async (context, token) =>

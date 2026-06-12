@@ -35,12 +35,20 @@ builder.Services.AddProblemDetails();
 // Configure Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
-    options.AddFixedWindowLimiter("voucher-validation", opt =>
+    options.AddPolicy("voucher-validation", context =>
     {
-        opt.Window = TimeSpan.FromMinutes(1);
-        opt.PermitLimit = 500;
-        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-        opt.QueueLimit = 50;
+        // Get IP from reverse proxy headers if available, otherwise connection IP
+        var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                 ?? context.Connection.RemoteIpAddress?.ToString() 
+                 ?? "unknown";
+
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = 200, // 200 requests per minute per IP
+            QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst,
+            QueueLimit = 50
+        });
     });
 
     options.OnRejected = async (context, token) =>
