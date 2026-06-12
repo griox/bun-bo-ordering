@@ -21,10 +21,10 @@ spec:
         image: griox/bunbo-payment-service:latest
         resources:
           requests:
-            cpu: "50m"
+            cpu: "100m"
             memory: "128Mi"
           limits:
-            cpu: "200m"
+            cpu: "600m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
