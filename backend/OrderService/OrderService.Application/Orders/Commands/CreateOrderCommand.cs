@@ -63,8 +63,6 @@ public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? 
 
         _context.Orders.Add(order);
 
-        await _context.SaveChangesAsync(cancellationToken);
-
         // Publish OrderCreatedEvent via RabbitMQ
         _logger.LogInformation("[ORDER] Publishing OrderCreatedEvent for Order {OrderId}", order.Id);
         await _publishEndpoint.Publish(new OrderCreatedEvent
@@ -81,6 +79,8 @@ public record CreateOrderCommand(Guid TableSessionId, Guid? CustomerId, string? 
             CreatedAt = order.CreatedAt
         }, cancellationToken);
         _logger.LogInformation("[ORDER] OrderCreatedEvent published for Order {OrderId}", order.Id);
+
+        await _context.SaveChangesAsync(cancellationToken);
 
         // Clear the cart after successful order creation.
         // Wrapped in try/catch: if clearing fails, the order is still valid.
