@@ -1,0 +1,2650 @@
+
+         /\      Grafana   /‾‾/  
+    /\  /  \     |\  __   /  /   
+   /  \/    \    | |/ /  /   ‾‾\ 
+  /          \   |   (  |  (‾)  |
+ / __________ \  |_|\_\  \_____/ 
+
+
+     execution: local
+        script: tests/k6-test/quick-test.js
+        output: -
+
+     scenarios: (100.00%) 5 scenarios, 150 max VUs, 1m30s max duration (incl. graceful stop):
+              * chaos_flow: Up to 10 looping VUs for 55s over 3 stages (gracefulRampDown: 30s, exec: chaosFlow, gracefulStop: 30s)
+              * guest_flow: Up to 60 looping VUs for 55s over 3 stages (gracefulRampDown: 30s, exec: guestFlow, gracefulStop: 30s)
+              * member_flow: Up to 50 looping VUs for 55s over 3 stages (gracefulRampDown: 30s, exec: memberFlow, gracefulStop: 30s)
+              * voucher_race: Up to 15 looping VUs for 55s over 3 stages (gracefulRampDown: 30s, exec: voucherRaceFlow, gracefulStop: 30s)
+              * kitchen_flow: Up to 15 looping VUs for 55s over 3 stages (gracefulRampDown: 30s, exec: kitchenAdminFlow, startTime: 5s, gracefulStop: 30s)
+
+time="2026-06-12T09:35:40+07:00" level=info msg="[SETUP] Starting test setup..." source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:35:53+07:00" level=info msg="[SETUP] Admin login OK" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:36:01+07:00" level=info msg="[SETUP] Member k6member001 ready (1/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:36:12+07:00" level=info msg="[SETUP] Member k6member002 ready (2/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:36:22+07:00" level=info msg="[SETUP] Member k6member003 ready (3/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:36:33+07:00" level=info msg="[SETUP] Member k6member004 ready (4/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:36:43+07:00" level=info msg="[SETUP] Member k6member005 ready (5/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:36:53+07:00" level=info msg="[SETUP] Member k6member006 ready (6/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:37:03+07:00" level=info msg="[SETUP] Member k6member007 ready (7/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:37:14+07:00" level=info msg="[SETUP] Member k6member008 ready (8/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:37:24+07:00" level=info msg="[SETUP] Member k6member009 ready (9/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:37:34+07:00" level=info msg="[SETUP] Member k6member010 ready (10/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:37:44+07:00" level=info msg="[SETUP] Member k6member011 ready (11/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:37:54+07:00" level=info msg="[SETUP] Member k6member012 ready (12/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:38:04+07:00" level=info msg="[SETUP] Member k6member013 ready (13/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:38:15+07:00" level=info msg="[SETUP] Member k6member014 ready (14/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:38:25+07:00" level=info msg="[SETUP] Member k6member015 ready (15/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:38:36+07:00" level=info msg="[SETUP] Member k6member016 ready (16/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:38:46+07:00" level=info msg="[SETUP] Member k6member017 ready (17/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:38:56+07:00" level=info msg="[SETUP] Member k6member018 ready (18/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:39:07+07:00" level=info msg="[SETUP] Member k6member019 ready (19/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:39:17+07:00" level=info msg="[SETUP] Member k6member020 ready (20/20)" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:39:21+07:00" level=info msg="[SETUP] Member pool created: 20 accounts" source=console
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+
+Run            [ 100% ] setup()
+chaos_flow     [   0% ]
+guest_flow     [   0% ]
+member_flow    [   0% ]
+voucher_race   [   0% ]
+kitchen_flow   [   0% ]
+time="2026-06-12T09:39:27+07:00" level=info msg="[SETUP] Table pool: 20 tables" source=console
+time="2026-06-12T09:39:27+07:00" level=warning msg="[SETUP] Race voucher creation: 400 — " source=console
+
+running (3m48.0s), 002/150 VUs, 0 complete and 0 interrupted iterations
+chaos_flow     [   1% ] 00/10 VUs  00.3s/55.0s
+guest_flow     [   1% ] 01/60 VUs  00.3s/55.0s
+member_flow    [   1% ] 01/50 VUs  00.3s/55.0s
+voucher_race   [   1% ] 00/15 VUs  00.3s/55.0s
+kitchen_flow • [   0% ] waiting    4.7s
+
+running (3m49.0s), 010/150 VUs, 0 complete and 0 interrupted iterations
+chaos_flow     [   2% ] 00/10 VUs  01.3s/55.0s
+guest_flow     [   2% ] 05/60 VUs  01.3s/55.0s
+member_flow    [   2% ] 04/50 VUs  01.3s/55.0s
+voucher_race   [   2% ] 01/15 VUs  01.3s/55.0s
+kitchen_flow • [   0% ] waiting    3.7s
+
+running (3m50.0s), 019/150 VUs, 0 complete and 0 interrupted iterations
+chaos_flow     [   4% ] 01/10 VUs  02.3s/55.0s
+guest_flow     [   4% ] 09/60 VUs  02.3s/55.0s
+member_flow    [   4% ] 07/50 VUs  02.3s/55.0s
+voucher_race   [   4% ] 02/15 VUs  02.3s/55.0s
+kitchen_flow • [   0% ] waiting    2.7s
+
+running (3m51.0s), 029/150 VUs, 0 complete and 0 interrupted iterations
+chaos_flow     [   6% ] 02/10 VUs  03.3s/55.0s
+guest_flow     [   6% ] 13/60 VUs  03.3s/55.0s
+member_flow    [   6% ] 11/50 VUs  03.3s/55.0s
+voucher_race   [   6% ] 03/15 VUs  03.3s/55.0s
+kitchen_flow • [   0% ] waiting    1.7s
+
+running (3m52.0s), 037/150 VUs, 0 complete and 0 interrupted iterations
+chaos_flow     [   8% ] 02/10 VUs  04.3s/55.0s
+guest_flow     [   8% ] 17/60 VUs  04.3s/55.0s
+member_flow    [   8% ] 14/50 VUs  04.3s/55.0s
+voucher_race   [   8% ] 04/15 VUs  04.3s/55.0s
+kitchen_flow • [   0% ] waiting    0.7s
+
+running (3m53.0s), 046/150 VUs, 2 complete and 0 interrupted iterations
+chaos_flow     [  10% ] 03/10 VUs  05.3s/55.0s
+guest_flow     [  10% ] 21/60 VUs  05.3s/55.0s
+member_flow    [  10% ] 17/50 VUs  05.3s/55.0s
+voucher_race   [  10% ] 05/15 VUs  05.3s/55.0s
+kitchen_flow   [   1% ] 00/15 VUs  00.3s/55.0s
+
+running (3m54.0s), 057/150 VUs, 5 complete and 0 interrupted iterations
+chaos_flow     [  12% ] 04/10 VUs  06.3s/55.0s
+guest_flow     [  12% ] 25/60 VUs  06.3s/55.0s
+member_flow    [  12% ] 21/50 VUs  06.3s/55.0s
+voucher_race   [  12% ] 06/15 VUs  06.3s/55.0s
+kitchen_flow   [   2% ] 01/15 VUs  01.3s/55.0s
+
+running (3m55.0s), 066/150 VUs, 5 complete and 0 interrupted iterations
+chaos_flow     [  13% ] 04/10 VUs  07.3s/55.0s
+guest_flow     [  13% ] 29/60 VUs  07.3s/55.0s
+member_flow    [  13% ] 24/50 VUs  07.3s/55.0s
+voucher_race   [  13% ] 07/15 VUs  07.3s/55.0s
+kitchen_flow   [   4% ] 02/15 VUs  02.3s/55.0s
+
+running (3m56.0s), 076/150 VUs, 9 complete and 0 interrupted iterations
+chaos_flow     [  15% ] 05/10 VUs  08.3s/55.0s
+guest_flow     [  15% ] 33/60 VUs  08.3s/55.0s
+member_flow    [  15% ] 27/50 VUs  08.3s/55.0s
+voucher_race   [  15% ] 08/15 VUs  08.3s/55.0s
+kitchen_flow   [   6% ] 03/15 VUs  03.3s/55.0s
+
+running (3m57.0s), 087/150 VUs, 11 complete and 0 interrupted iterations
+chaos_flow     [  17% ] 06/10 VUs  09.3s/55.0s
+guest_flow     [  17% ] 37/60 VUs  09.3s/55.0s
+member_flow    [  17% ] 31/50 VUs  09.3s/55.0s
+voucher_race   [  17% ] 09/15 VUs  09.3s/55.0s
+kitchen_flow   [   8% ] 04/15 VUs  04.3s/55.0s
+
+running (3m58.0s), 096/150 VUs, 22 complete and 0 interrupted iterations
+chaos_flow     [  19% ] 06/10 VUs  10.3s/55.0s
+guest_flow     [  19% ] 41/60 VUs  10.3s/55.0s
+member_flow    [  19% ] 34/50 VUs  10.3s/55.0s
+voucher_race   [  19% ] 10/15 VUs  10.3s/55.0s
+kitchen_flow   [  10% ] 05/15 VUs  05.3s/55.0s
+
+running (3m59.0s), 106/150 VUs, 38 complete and 0 interrupted iterations
+chaos_flow     [  21% ] 07/10 VUs  11.3s/55.0s
+guest_flow     [  21% ] 45/60 VUs  11.3s/55.0s
+member_flow    [  21% ] 37/50 VUs  11.3s/55.0s
+voucher_race   [  21% ] 11/15 VUs  11.3s/55.0s
+kitchen_flow   [  12% ] 06/15 VUs  06.3s/55.0s
+
+running (4m00.0s), 117/150 VUs, 63 complete and 0 interrupted iterations
+chaos_flow     [  22% ] 08/10 VUs  12.3s/55.0s
+guest_flow     [  22% ] 49/60 VUs  12.3s/55.0s
+member_flow    [  22% ] 41/50 VUs  12.3s/55.0s
+voucher_race   [  22% ] 12/15 VUs  12.3s/55.0s
+kitchen_flow   [  13% ] 07/15 VUs  07.3s/55.0s
+
+running (4m01.0s), 126/150 VUs, 82 complete and 0 interrupted iterations
+chaos_flow     [  24% ] 08/10 VUs  13.3s/55.0s
+guest_flow     [  24% ] 53/60 VUs  13.3s/55.0s
+member_flow    [  24% ] 44/50 VUs  13.3s/55.0s
+voucher_race   [  24% ] 13/15 VUs  13.3s/55.0s
+kitchen_flow   [  15% ] 08/15 VUs  08.3s/55.0s
+
+running (4m02.0s), 136/150 VUs, 112 complete and 0 interrupted iterations
+chaos_flow     [  26% ] 09/10 VUs  14.3s/55.0s
+guest_flow     [  26% ] 57/60 VUs  14.3s/55.0s
+member_flow    [  26% ] 47/50 VUs  14.3s/55.0s
+voucher_race   [  26% ] 14/15 VUs  14.3s/55.0s
+kitchen_flow   [  17% ] 09/15 VUs  09.3s/55.0s
+
+running (4m03.0s), 145/150 VUs, 130 complete and 0 interrupted iterations
+chaos_flow     [  28% ] 10/10 VUs  15.3s/55.0s
+guest_flow     [  28% ] 60/60 VUs  15.3s/55.0s
+member_flow    [  28% ] 50/50 VUs  15.3s/55.0s
+voucher_race   [  28% ] 15/15 VUs  15.3s/55.0s
+kitchen_flow   [  19% ] 10/15 VUs  10.3s/55.0s
+
+running (4m04.0s), 146/150 VUs, 159 complete and 0 interrupted iterations
+chaos_flow     [  30% ] 10/10 VUs  16.3s/55.0s
+guest_flow     [  30% ] 60/60 VUs  16.3s/55.0s
+member_flow    [  30% ] 50/50 VUs  16.3s/55.0s
+voucher_race   [  30% ] 15/15 VUs  16.3s/55.0s
+kitchen_flow   [  21% ] 11/15 VUs  11.3s/55.0s
+
+running (4m05.0s), 147/150 VUs, 195 complete and 0 interrupted iterations
+chaos_flow     [  32% ] 10/10 VUs  17.3s/55.0s
+guest_flow     [  32% ] 60/60 VUs  17.3s/55.0s
+member_flow    [  32% ] 50/50 VUs  17.3s/55.0s
+voucher_race   [  32% ] 15/15 VUs  17.3s/55.0s
+kitchen_flow   [  22% ] 12/15 VUs  12.3s/55.0s
+
+running (4m06.0s), 148/150 VUs, 211 complete and 0 interrupted iterations
+chaos_flow     [  33% ] 10/10 VUs  18.3s/55.0s
+guest_flow     [  33% ] 60/60 VUs  18.3s/55.0s
+member_flow    [  33% ] 50/50 VUs  18.3s/55.0s
+voucher_race   [  33% ] 15/15 VUs  18.3s/55.0s
+kitchen_flow   [  24% ] 13/15 VUs  13.3s/55.0s
+
+running (4m07.0s), 149/150 VUs, 220 complete and 0 interrupted iterations
+chaos_flow     [  35% ] 10/10 VUs  19.3s/55.0s
+guest_flow     [  35% ] 60/60 VUs  19.3s/55.0s
+member_flow    [  35% ] 50/50 VUs  19.3s/55.0s
+voucher_race   [  35% ] 15/15 VUs  19.3s/55.0s
+kitchen_flow   [  26% ] 14/15 VUs  14.3s/55.0s
+
+running (4m08.0s), 150/150 VUs, 225 complete and 0 interrupted iterations
+chaos_flow     [  37% ] 10/10 VUs  20.3s/55.0s
+guest_flow     [  37% ] 60/60 VUs  20.3s/55.0s
+member_flow    [  37% ] 50/50 VUs  20.3s/55.0s
+voucher_race   [  37% ] 15/15 VUs  20.3s/55.0s
+kitchen_flow   [  28% ] 15/15 VUs  15.3s/55.0s
+
+running (4m09.0s), 150/150 VUs, 232 complete and 0 interrupted iterations
+chaos_flow     [  39% ] 10/10 VUs  21.3s/55.0s
+guest_flow     [  39% ] 60/60 VUs  21.3s/55.0s
+member_flow    [  39% ] 50/50 VUs  21.3s/55.0s
+voucher_race   [  39% ] 15/15 VUs  21.3s/55.0s
+kitchen_flow   [  30% ] 15/15 VUs  16.3s/55.0s
+
+running (4m10.0s), 150/150 VUs, 236 complete and 0 interrupted iterations
+chaos_flow     [  41% ] 10/10 VUs  22.3s/55.0s
+guest_flow     [  41% ] 60/60 VUs  22.3s/55.0s
+member_flow    [  41% ] 50/50 VUs  22.3s/55.0s
+voucher_race   [  41% ] 15/15 VUs  22.3s/55.0s
+kitchen_flow   [  32% ] 15/15 VUs  17.3s/55.0s
+
+running (4m11.0s), 150/150 VUs, 255 complete and 0 interrupted iterations
+chaos_flow     [  42% ] 10/10 VUs  23.3s/55.0s
+guest_flow     [  42% ] 60/60 VUs  23.3s/55.0s
+member_flow    [  42% ] 50/50 VUs  23.3s/55.0s
+voucher_race   [  42% ] 15/15 VUs  23.3s/55.0s
+kitchen_flow   [  33% ] 15/15 VUs  18.3s/55.0s
+
+running (4m12.0s), 150/150 VUs, 257 complete and 0 interrupted iterations
+chaos_flow     [  44% ] 10/10 VUs  24.3s/55.0s
+guest_flow     [  44% ] 60/60 VUs  24.3s/55.0s
+member_flow    [  44% ] 50/50 VUs  24.3s/55.0s
+voucher_race   [  44% ] 15/15 VUs  24.3s/55.0s
+kitchen_flow   [  35% ] 15/15 VUs  19.3s/55.0s
+
+running (4m13.0s), 150/150 VUs, 267 complete and 0 interrupted iterations
+chaos_flow     [  46% ] 10/10 VUs  25.3s/55.0s
+guest_flow     [  46% ] 60/60 VUs  25.3s/55.0s
+member_flow    [  46% ] 50/50 VUs  25.3s/55.0s
+voucher_race   [  46% ] 15/15 VUs  25.3s/55.0s
+kitchen_flow   [  37% ] 15/15 VUs  20.3s/55.0s
+time="2026-06-12T09:39:53+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:39:53+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:39:53+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:39:53+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m14.0s), 150/150 VUs, 271 complete and 0 interrupted iterations
+chaos_flow     [  48% ] 10/10 VUs  26.3s/55.0s
+guest_flow     [  48% ] 60/60 VUs  26.3s/55.0s
+member_flow    [  48% ] 50/50 VUs  26.3s/55.0s
+voucher_race   [  48% ] 15/15 VUs  26.3s/55.0s
+kitchen_flow   [  39% ] 15/15 VUs  21.3s/55.0s
+time="2026-06-12T09:39:54+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m15.0s), 150/150 VUs, 280 complete and 0 interrupted iterations
+chaos_flow     [  50% ] 10/10 VUs  27.3s/55.0s
+guest_flow     [  50% ] 60/60 VUs  27.3s/55.0s
+member_flow    [  50% ] 50/50 VUs  27.3s/55.0s
+voucher_race   [  50% ] 15/15 VUs  27.3s/55.0s
+kitchen_flow   [  41% ] 15/15 VUs  22.3s/55.0s
+
+running (4m16.0s), 150/150 VUs, 301 complete and 0 interrupted iterations
+chaos_flow     [  52% ] 10/10 VUs  28.3s/55.0s
+guest_flow     [  52% ] 60/60 VUs  28.3s/55.0s
+member_flow    [  52% ] 50/50 VUs  28.3s/55.0s
+voucher_race   [  52% ] 15/15 VUs  28.3s/55.0s
+kitchen_flow   [  42% ] 15/15 VUs  23.3s/55.0s
+
+running (4m17.0s), 150/150 VUs, 318 complete and 0 interrupted iterations
+chaos_flow     [  53% ] 10/10 VUs  29.3s/55.0s
+guest_flow     [  53% ] 60/60 VUs  29.3s/55.0s
+member_flow    [  53% ] 50/50 VUs  29.3s/55.0s
+voucher_race   [  53% ] 15/15 VUs  29.3s/55.0s
+kitchen_flow   [  44% ] 15/15 VUs  24.3s/55.0s
+
+running (4m18.0s), 150/150 VUs, 326 complete and 0 interrupted iterations
+chaos_flow     [  55% ] 10/10 VUs  30.3s/55.0s
+guest_flow     [  55% ] 60/60 VUs  30.3s/55.0s
+member_flow    [  55% ] 50/50 VUs  30.3s/55.0s
+voucher_race   [  55% ] 15/15 VUs  30.3s/55.0s
+kitchen_flow   [  46% ] 15/15 VUs  25.3s/55.0s
+
+running (4m19.0s), 150/150 VUs, 346 complete and 0 interrupted iterations
+chaos_flow     [  57% ] 10/10 VUs  31.3s/55.0s
+guest_flow     [  57% ] 60/60 VUs  31.3s/55.0s
+member_flow    [  57% ] 50/50 VUs  31.3s/55.0s
+voucher_race   [  57% ] 15/15 VUs  31.3s/55.0s
+kitchen_flow   [  48% ] 15/15 VUs  26.3s/55.0s
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:39:59+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+
+running (4m20.0s), 150/150 VUs, 349 complete and 0 interrupted iterations
+chaos_flow     [  59% ] 10/10 VUs  32.3s/55.0s
+guest_flow     [  59% ] 60/60 VUs  32.3s/55.0s
+member_flow    [  59% ] 50/50 VUs  32.3s/55.0s
+voucher_race   [  59% ] 15/15 VUs  32.3s/55.0s
+kitchen_flow   [  50% ] 15/15 VUs  27.3s/55.0s
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:00+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+
+running (4m21.0s), 150/150 VUs, 400 complete and 0 interrupted iterations
+chaos_flow     [  61% ] 10/10 VUs  33.3s/55.0s
+guest_flow     [  61% ] 60/60 VUs  33.3s/55.0s
+member_flow    [  61% ] 50/50 VUs  33.3s/55.0s
+voucher_race   [  61% ] 15/15 VUs  33.3s/55.0s
+kitchen_flow   [  52% ] 15/15 VUs  28.3s/55.0s
+
+running (4m22.0s), 150/150 VUs, 409 complete and 0 interrupted iterations
+chaos_flow     [  62% ] 10/10 VUs  34.3s/55.0s
+guest_flow     [  62% ] 60/60 VUs  34.3s/55.0s
+member_flow    [  62% ] 50/50 VUs  34.3s/55.0s
+voucher_race   [  62% ] 15/15 VUs  34.3s/55.0s
+kitchen_flow   [  53% ] 15/15 VUs  29.3s/55.0s
+
+running (4m23.0s), 150/150 VUs, 424 complete and 0 interrupted iterations
+chaos_flow     [  64% ] 10/10 VUs  35.3s/55.0s
+guest_flow     [  64% ] 60/60 VUs  35.3s/55.0s
+member_flow    [  64% ] 50/50 VUs  35.3s/55.0s
+voucher_race   [  64% ] 15/15 VUs  35.3s/55.0s
+kitchen_flow   [  55% ] 15/15 VUs  30.3s/55.0s
+
+running (4m24.0s), 150/150 VUs, 442 complete and 0 interrupted iterations
+chaos_flow     [  66% ] 10/10 VUs  36.3s/55.0s
+guest_flow     [  66% ] 60/60 VUs  36.3s/55.0s
+member_flow    [  66% ] 50/50 VUs  36.3s/55.0s
+voucher_race   [  66% ] 15/15 VUs  36.3s/55.0s
+kitchen_flow   [  57% ] 15/15 VUs  31.3s/55.0s
+time="2026-06-12T09:40:04+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/non-existent-chaos-endpoint\": request timeout"
+time="2026-06-12T09:40:04+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m25.0s), 150/150 VUs, 444 complete and 0 interrupted iterations
+chaos_flow     [  68% ] 10/10 VUs  37.3s/55.0s
+guest_flow     [  68% ] 60/60 VUs  37.3s/55.0s
+member_flow    [  68% ] 50/50 VUs  37.3s/55.0s
+voucher_race   [  68% ] 15/15 VUs  37.3s/55.0s
+kitchen_flow   [  59% ] 15/15 VUs  32.3s/55.0s
+time="2026-06-12T09:40:05+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:05+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:05+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:05+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m26.0s), 150/150 VUs, 447 complete and 0 interrupted iterations
+chaos_flow     [  70% ] 10/10 VUs  38.3s/55.0s
+guest_flow     [  70% ] 60/60 VUs  38.3s/55.0s
+member_flow    [  70% ] 50/50 VUs  38.3s/55.0s
+voucher_race   [  70% ] 15/15 VUs  38.3s/55.0s
+kitchen_flow   [  61% ] 15/15 VUs  33.3s/55.0s
+time="2026-06-12T09:40:06+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m27.0s), 150/150 VUs, 451 complete and 0 interrupted iterations
+chaos_flow     [  72% ] 10/10 VUs  39.3s/55.0s
+guest_flow     [  72% ] 60/60 VUs  39.3s/55.0s
+member_flow    [  72% ] 50/50 VUs  39.3s/55.0s
+voucher_race   [  72% ] 15/15 VUs  39.3s/55.0s
+kitchen_flow   [  62% ] 15/15 VUs  34.3s/55.0s
+
+running (4m28.0s), 150/150 VUs, 457 complete and 0 interrupted iterations
+chaos_flow     [  73% ] 10/10 VUs  40.3s/55.0s
+guest_flow     [  73% ] 60/60 VUs  40.3s/55.0s
+member_flow    [  73% ] 50/50 VUs  40.3s/55.0s
+voucher_race   [  73% ] 15/15 VUs  40.3s/55.0s
+kitchen_flow   [  64% ] 15/15 VUs  35.3s/55.0s
+
+running (4m29.0s), 150/150 VUs, 462 complete and 0 interrupted iterations
+chaos_flow     [  75% ] 10/10 VUs  41.3s/55.0s
+guest_flow     [  75% ] 60/60 VUs  41.3s/55.0s
+member_flow    [  75% ] 50/50 VUs  41.3s/55.0s
+voucher_race   [  75% ] 15/15 VUs  41.3s/55.0s
+kitchen_flow   [  66% ] 15/15 VUs  36.3s/55.0s
+time="2026-06-12T09:40:09+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m30.0s), 150/150 VUs, 473 complete and 0 interrupted iterations
+chaos_flow     [  77% ] 10/10 VUs  42.3s/55.0s
+guest_flow     [  77% ] 60/60 VUs  42.3s/55.0s
+member_flow    [  77% ] 50/50 VUs  42.3s/55.0s
+voucher_race   [  77% ] 15/15 VUs  42.3s/55.0s
+kitchen_flow   [  68% ] 15/15 VUs  37.3s/55.0s
+time="2026-06-12T09:40:10+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:10+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:10+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:10+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:10+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+
+running (4m31.0s), 150/150 VUs, 480 complete and 0 interrupted iterations
+chaos_flow     [  79% ] 10/10 VUs  43.3s/55.0s
+guest_flow     [  79% ] 60/60 VUs  43.3s/55.0s
+member_flow    [  79% ] 50/50 VUs  43.3s/55.0s
+voucher_race   [  79% ] 15/15 VUs  43.3s/55.0s
+kitchen_flow   [  70% ] 15/15 VUs  38.3s/55.0s
+time="2026-06-12T09:40:11+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:11+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+
+running (4m32.0s), 150/150 VUs, 492 complete and 0 interrupted iterations
+chaos_flow     [  81% ] 10/10 VUs  44.3s/55.0s
+guest_flow     [  81% ] 60/60 VUs  44.3s/55.0s
+member_flow    [  81% ] 50/50 VUs  44.3s/55.0s
+voucher_race   [  81% ] 15/15 VUs  44.3s/55.0s
+kitchen_flow   [  72% ] 15/15 VUs  39.3s/55.0s
+
+running (4m33.0s), 150/150 VUs, 502 complete and 0 interrupted iterations
+chaos_flow     [  82% ] 10/10 VUs  45.3s/55.0s
+guest_flow     [  82% ] 60/60 VUs  45.3s/55.0s
+member_flow    [  82% ] 50/50 VUs  45.3s/55.0s
+voucher_race   [  82% ] 15/15 VUs  45.3s/55.0s
+kitchen_flow   [  73% ] 15/15 VUs  40.3s/55.0s
+
+running (4m34.0s), 147/150 VUs, 516 complete and 0 interrupted iterations
+chaos_flow     [  84% ] 10/10 VUs  46.3s/55.0s
+guest_flow     [  84% ] 59/60 VUs  46.3s/55.0s
+member_flow    [  84% ] 49/50 VUs  46.3s/55.0s
+voucher_race   [  84% ] 14/15 VUs  46.3s/55.0s
+kitchen_flow   [  75% ] 15/15 VUs  41.3s/55.0s
+time="2026-06-12T09:40:14+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/mark-read-by-table/T3\": request timeout"
+time="2026-06-12T09:40:14+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:14+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (4m35.0s), 144/150 VUs, 524 complete and 0 interrupted iterations
+chaos_flow     [  86% ] 09/10 VUs  47.3s/55.0s
+guest_flow     [  86% ] 59/60 VUs  47.3s/55.0s
+member_flow    [  86% ] 47/50 VUs  47.3s/55.0s
+voucher_race   [  86% ] 14/15 VUs  47.3s/55.0s
+kitchen_flow   [  77% ] 15/15 VUs  42.3s/55.0s
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/mark-read-by-table/T2\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/mark-read-by-table/T2\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/e45bb294-0c2e-4763-b4e3-1e927830dc93/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/6ae1707f-152d-46bf-b580-e0f7737e7e1a/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/6ae1707f-152d-46bf-b580-e0f7737e7e1a/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ab060fbb-9e97-458a-a179-bb367346181e/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ad9e9048-980e-4384-8ca9-0fef6e65ff8f/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02826d55-0b0d-48d3-9ea5-ef270ca2acfa/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/86f2de9f-d260-4517-b52f-28538faf5675/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02826d55-0b0d-48d3-9ea5-ef270ca2acfa/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02a81783-f560-4a36-831b-b7798f999182/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/09a950b9-7265-418d-b32f-8f52a1d1c610/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/6ae1707f-152d-46bf-b580-e0f7737e7e1a/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/57cfd890-bc2a-4225-a032-e411e575e396/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/946e59a1-e460-43a2-a4a2-3dccd12e8d0f/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ad9e9048-980e-4384-8ca9-0fef6e65ff8f/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/09a950b9-7265-418d-b32f-8f52a1d1c610/scan\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/e245440d-5e29-4817-af03-ab706dfc2044/status?status=Completed\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:15+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+
+running (4m36.0s), 144/150 VUs, 535 complete and 0 interrupted iterations
+chaos_flow     [  88% ] 09/10 VUs  48.3s/55.0s
+guest_flow     [  88% ] 59/60 VUs  48.3s/55.0s
+member_flow    [  88% ] 47/50 VUs  48.3s/55.0s
+voucher_race   [  88% ] 14/15 VUs  48.3s/55.0s
+kitchen_flow   [  79% ] 15/15 VUs  43.3s/55.0s
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/mark-read-by-table/T2\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/f2f7e75f-629e-4a35-b187-346634fad087/status?status=Completed\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:16+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+
+running (4m37.0s), 137/150 VUs, 555 complete and 0 interrupted iterations
+chaos_flow     [  90% ] 09/10 VUs  49.3s/55.0s
+guest_flow     [  90% ] 53/60 VUs  49.3s/55.0s
+member_flow    [  90% ] 47/50 VUs  49.3s/55.0s
+voucher_race   [  90% ] 13/15 VUs  49.3s/55.0s
+kitchen_flow   [  81% ] 15/15 VUs  44.3s/55.0s
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/f962d655-e0a5-4d64-b40a-d989921dfaf5/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/dfdab3f3-163d-4535-9f07-321da5991b57/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/6ae1707f-152d-46bf-b580-e0f7737e7e1a/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ab060fbb-9e97-458a-a179-bb367346181e/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/86f2de9f-d260-4517-b52f-28538faf5675/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/09a950b9-7265-418d-b32f-8f52a1d1c610/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/e245440d-5e29-4817-af03-ab706dfc2044/status?status=Paid\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02826d55-0b0d-48d3-9ea5-ef270ca2acfa/scan\": request timeout"
+time="2026-06-12T09:40:17+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/cb718026-4069-4f41-9fd2-1488439f8866/status?status=Paid\": request timeout"
+
+running (4m38.0s), 133/150 VUs, 567 complete and 0 interrupted iterations
+chaos_flow     [  92% ] 09/10 VUs  50.3s/55.0s
+guest_flow     [  92% ] 49/60 VUs  50.3s/55.0s
+member_flow    [  92% ] 47/50 VUs  50.3s/55.0s
+voucher_race   [  92% ] 13/15 VUs  50.3s/55.0s
+kitchen_flow   [  82% ] 15/15 VUs  45.3s/55.0s
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/catalog/foods\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/86f2de9f-d260-4517-b52f-28538faf5675/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02a81783-f560-4a36-831b-b7798f999182/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/7a282ca7-b06b-4b79-8dd4-134f26e0e4b3/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ad9e9048-980e-4384-8ca9-0fef6e65ff8f/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02a81783-f560-4a36-831b-b7798f999182/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/02826d55-0b0d-48d3-9ea5-ef270ca2acfa/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/946e59a1-e460-43a2-a4a2-3dccd12e8d0f/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/425b6a36-298a-4e4c-8553-595353a5f08d/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/6ae1707f-152d-46bf-b580-e0f7737e7e1a/scan\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/aa4ae43d-4524-438b-899c-5421c4e8ac26/status?status=Completed\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:18+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/57cfd890-bc2a-4225-a032-e411e575e396/scan\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ab060fbb-9e97-458a-a179-bb367346181e/scan\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/catalog/foods\": request timeout"
+
+running (4m39.0s), 129/150 VUs, 577 complete and 0 interrupted iterations
+chaos_flow     [  93% ] 09/10 VUs  51.3s/55.0s
+guest_flow     [  93% ] 45/60 VUs  51.3s/55.0s
+member_flow    [  93% ] 47/50 VUs  51.3s/55.0s
+voucher_race   [  93% ] 13/15 VUs  51.3s/55.0s
+kitchen_flow   [  84% ] 15/15 VUs  46.3s/55.0s
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/09a950b9-7265-418d-b32f-8f52a1d1c610/scan\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/b371f549-72a4-488f-8d2e-a592731c1ff6/scan\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/9c5898ed-434e-4a6d-a5ea-942776146cf3/status?status=Paid\": request timeout"
+time="2026-06-12T09:40:19+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (4m40.0s), 118/150 VUs, 594 complete and 0 interrupted iterations
+chaos_flow     [  95% ] 09/10 VUs  52.3s/55.0s
+guest_flow     [  95% ] 37/60 VUs  52.3s/55.0s
+member_flow    [  95% ] 45/50 VUs  52.3s/55.0s
+voucher_race   [  95% ] 13/15 VUs  52.3s/55.0s
+kitchen_flow   [  86% ] 14/15 VUs  47.3s/55.0s
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/non-existent-chaos-endpoint\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:20+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+
+running (4m41.0s), 115/150 VUs, 601 complete and 0 interrupted iterations
+chaos_flow     [  97% ] 09/10 VUs  53.3s/55.0s
+guest_flow     [  97% ] 34/60 VUs  53.3s/55.0s
+member_flow    [  97% ] 45/50 VUs  53.3s/55.0s
+voucher_race   [  97% ] 13/15 VUs  53.3s/55.0s
+kitchen_flow   [  88% ] 14/15 VUs  48.3s/55.0s
+time="2026-06-12T09:40:21+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:21+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:21+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:21+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:21+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (4m42.0s), 108/150 VUs, 608 complete and 0 interrupted iterations
+chaos_flow     [  99% ] 06/10 VUs  54.3s/55.0s
+guest_flow     [  99% ] 32/60 VUs  54.3s/55.0s
+member_flow    [  99% ] 45/50 VUs  54.3s/55.0s
+voucher_race   [  99% ] 11/15 VUs  54.3s/55.0s
+kitchen_flow   [  90% ] 14/15 VUs  49.3s/55.0s
+time="2026-06-12T09:40:22+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:22+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/dfdab3f3-163d-4535-9f07-321da5991b57/scan\": request timeout"
+
+running (4m43.0s), 101/150 VUs, 615 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow   [  92% ] 12/15 VUs  50.3s/55.0s
+
+running (4m44.0s), 097/150 VUs, 619 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow   [  93% ] 12/15 VUs  51.3s/55.0s
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/b371f549-72a4-488f-8d2e-a592731c1ff6/scan\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:24+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+
+running (4m45.0s), 096/150 VUs, 620 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow   [  95% ] 12/15 VUs  52.3s/55.0s
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:25+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (4m46.0s), 094/150 VUs, 622 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow   [  97% ] 12/15 VUs  53.3s/55.0s
+time="2026-06-12T09:40:26+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:26+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:26+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+
+running (4m47.0s), 092/150 VUs, 624 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow   [  99% ] 12/15 VUs  54.3s/55.0s
+
+running (4m48.0s), 090/150 VUs, 626 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:28+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:28+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+
+running (4m49.0s), 090/150 VUs, 626 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:29+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:29+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/946e59a1-e460-43a2-a4a2-3dccd12e8d0f/scan\": request timeout"
+time="2026-06-12T09:40:29+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+
+running (4m50.0s), 089/150 VUs, 627 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/catalog/foods\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/f962d655-e0a5-4d64-b40a-d989921dfaf5/scan\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:30+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/946e59a1-e460-43a2-a4a2-3dccd12e8d0f/scan\": request timeout"
+
+running (4m51.0s), 086/150 VUs, 630 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/425b6a36-298a-4e4c-8553-595353a5f08d/scan\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/cf39f952-53c0-4a6b-ac25-8e64cb816612/scan\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/ab060fbb-9e97-458a-a179-bb367346181e/scan\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/e45bb294-0c2e-4763-b4e3-1e927830dc93/scan\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/7a282ca7-b06b-4b79-8dd4-134f26e0e4b3/scan\": request timeout"
+time="2026-06-12T09:40:31+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/e245440d-5e29-4817-af03-ab706dfc2044/status?status=Paid\": request timeout"
+
+running (4m52.0s), 079/150 VUs, 637 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/catalog/foods\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/7448acee-706b-4a4c-8ad7-fda0d9255fec/scan\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/dfdab3f3-163d-4535-9f07-321da5991b57/scan\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:32+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/f2f7e75f-629e-4a35-b187-346634fad087/status?status=Paid\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/9395339b-f83e-4482-b215-48e9e428a922/scan\": request timeout"
+
+running (4m53.0s), 074/150 VUs, 642 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/orders/unread\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/active\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:33+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments/webhook/sepay\": request timeout"
+
+running (4m54.0s), 063/150 VUs, 653 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/946e59a1-e460-43a2-a4a2-3dccd12e8d0f/scan\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/054f02cd-fde8-4696-8a0e-06fdef087dda/status?status=Paid\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/9bab6bad-ecc7-4af7-a115-21666fd09c36/scan\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:34+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+
+running (4m55.0s), 055/150 VUs, 661 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ↓ [ 100% ] 11/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/aa4ae43d-4524-438b-899c-5421c4e8ac26/status?status=Paid\": request timeout"
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/cf39f952-53c0-4a6b-ac25-8e64cb816612/scan\": request timeout"
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/tables/09a950b9-7265-418d-b32f-8f52a1d1c610/scan\": request timeout"
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/cart\": request timeout"
+time="2026-06-12T09:40:35+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (4m56.0s), 044/150 VUs, 672 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:36+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:36+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/054f02cd-fde8-4696-8a0e-06fdef087dda/status?status=Paid\": request timeout"
+time="2026-06-12T09:40:36+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+time="2026-06-12T09:40:36+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (4m57.0s), 040/150 VUs, 676 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:37+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/73d06f55-6295-4861-a42c-fb503c597421/status?status=Completed\": request timeout"
+time="2026-06-12T09:40:37+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/catalog/foods\": request timeout"
+
+running (4m58.0s), 038/150 VUs, 678 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ↓ [ 100% ] 29/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:38+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/73d06f55-6295-4861-a42c-fb503c597421/status?status=Paid\": request timeout"
+
+running (4m59.0s), 037/150 VUs, 679 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:39+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/catalog/foods\": request timeout"
+
+running (5m00.0s), 037/150 VUs, 679 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:40+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:40+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:40+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:40+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:40+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:41+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (5m01.0s), 037/150 VUs, 679 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:41+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:41+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+time="2026-06-12T09:40:41+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/\": request timeout"
+
+running (5m02.0s), 031/150 VUs, 685 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:42+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+time="2026-06-12T09:40:42+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+
+running (5m03.0s), 028/150 VUs, 688 complete and 0 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:43+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+time="2026-06-12T09:40:43+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/payments\": request timeout"
+
+running (5m04.0s), 023/150 VUs, 691 complete and 2 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m05.0s), 021/150 VUs, 693 complete and 2 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:45+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/promotion/vouchers/validate\": request timeout"
+
+running (5m06.0s), 018/150 VUs, 695 complete and 3 interrupted iterations
+chaos_flow   ↓ [ 100% ] 06/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:47+07:00" level=warning msg="Request Failed" error="Post \"https://api.bun-bo-chung-cu.io.vn/api/orders/mark-read-by-table/T1\": request timeout"
+
+running (5m07.0s), 015/150 VUs, 696 complete and 5 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:47+07:00" level=warning msg="Request Failed" error="Put \"https://api.bun-bo-chung-cu.io.vn/api/orders/1a4ed241-42ad-4479-92e0-d62d8590e571/status?status=Completed\": request timeout"
+
+running (5m08.0s), 013/150 VUs, 696 complete and 7 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m09.0s), 012/150 VUs, 697 complete and 7 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:49+07:00" level=warning msg="Request Failed" error="Get \"https://api.bun-bo-chung-cu.io.vn/api/promotion/points\": request timeout"
+
+running (5m10.0s), 008/150 VUs, 697 complete and 11 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m11.0s), 003/150 VUs, 699 complete and 14 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m12.0s), 003/150 VUs, 699 complete and 14 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ↓ [ 100% ] 45/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m13.0s), 002/150 VUs, 699 complete and 15 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ✓ [ 100% ] 00/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m14.0s), 001/150 VUs, 699 complete and 16 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ✓ [ 100% ] 00/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+
+running (5m15.0s), 001/150 VUs, 699 complete and 16 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ✓ [ 100% ] 00/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ↓ [ 100% ] 12/15 VUs  55s
+time="2026-06-12T09:40:55+07:00" level=info source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="╔══════════════════════════════════════════════════════════╗" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="║         K6 LOAD TEST COMPLETED — TEARDOWN REPORT        ║" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="╚══════════════════════════════════════════════════════════╝" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="[TEARDOWN] Member accounts created : 20" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="[TEARDOWN] Table seats seeded      : 20" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="[TEARDOWN] Race voucher code       : K6_RACE_V1" source=console
+time="2026-06-12T09:40:55+07:00" level=info source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="━━━ CLEANUP OPTION 1 (Recommended): Bash script ━━━━━━━━━" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  cd tests/k6-test && chmod +x k6-cleanup.sh" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  ./k6-cleanup.sh --dry-run   # Preview trước khi xóa" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  ./k6-cleanup.sh             # Xóa có xác nhận từng bước" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  ./k6-cleanup.sh --yes       # Tự động xóa toàn bộ" source=console
+time="2026-06-12T09:40:55+07:00" level=info source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="━━━ CLEANUP OPTION 2: Manual SQL ━━━━━━━━━━━━━━━━━━━━━━━━" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  # OrderDB:" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"OrderItems\" WHERE \"OrderId\" IN (SELECT \"Id\" FROM \"Orders\" WHERE \"Note\" LIKE 'k6-%');" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"Orders\" WHERE \"Note\" LIKE 'k6-%';" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"TableSessions\" WHERE \"TableId\" IN (SELECT \"Id\" FROM \"RestaurantTables\" WHERE \"TableCode\" LIKE 'K6-T%');" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"RestaurantTables\" WHERE \"TableCode\" LIKE 'K6-T%';" source=console
+time="2026-06-12T09:40:55+07:00" level=info source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  # IdentityDB:" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"AspNetUserRoles\"  WHERE \"UserId\" IN (SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE 'k6member%');" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"AspNetUserClaims\" WHERE \"UserId\" IN (SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE 'k6member%');" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"RefreshTokens\"    WHERE \"UserId\" IN (SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE 'k6member%');" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"AspNetUsers\" WHERE \"UserName\" LIKE 'k6member%';" source=console
+time="2026-06-12T09:40:55+07:00" level=info source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  # PromotionDB:" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"UserVouchers\" WHERE \"VoucherId\" IN (SELECT \"Id\" FROM \"Vouchers\" WHERE \"Code\" = 'K6_RACE_V1');" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  DELETE FROM \"Vouchers\" WHERE \"Code\" = 'K6_RACE_V1';" source=console
+time="2026-06-12T09:40:55+07:00" level=info source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  # Redis (cart data):" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  redis-cli --eval - <<'EOF'" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  local keys = redis.call(\"KEYS\",\"cart:*\")" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  for _,k in ipairs(keys) do redis.call(\"DEL\",k) end" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  return #keys" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="  EOF" source=console
+time="2026-06-12T09:40:55+07:00" level=info msg="══════════════════════════════════════════════════════════" source=console
+
+
+  █ THRESHOLDS 
+
+    http_req_duration
+    ✗ 'p(95)<3000' p(95)=15s
+
+    http_req_failed
+    ✗ 'rate<0.1' rate=62.07%
+
+
+  █ TOTAL RESULTS 
+
+    checks_total.......: 2057   6.516673/s
+    checks_succeeded...: 84.05% 1729 out of 2057
+    checks_failed......: 15.94% 328 out of 2057
+
+    ✗ guest: scan 200
+      ↳  69% — ✓ 115 / ✗ 51
+    ✗ chaos: duplicate webhook handled
+      ↳  89% — ✓ 116 / ✗ 14
+    ✗ chaos: malformed json → 400
+      ↳  93% — ✓ 122 / ✗ 8
+    ✗ member: scan 200
+      ↳  83% — ✓ 64 / ✗ 13
+    ✗ chaos: 404 caught
+      ↳  88% — ✓ 115 / ✗ 15
+    ✗ chaos: empty cart order → 400/404
+      ↳  91% — ✓ 119 / ✗ 11
+    ✗ chaos: invalid voucher auth → 401
+      ↳  91% — ✓ 118 / ✗ 11
+    ✗ kitchen: unread 200
+      ↳  80% — ✓ 40 / ✗ 10
+    ✗ race: valid response
+      ↳  93% — ✓ 273 / ✗ 20
+    ✓ race: no server error
+    ✗ kitchen: complete 204
+      ↳  93% — ✓ 75 / ✗ 5
+    ✗ kitchen: cash paid 204
+      ↳  84% — ✓ 49 / ✗ 9
+    ✗ member: cart 200
+      ↳  79% — ✓ 49 / ✗ 13
+    ✗ guest: cart 200
+      ↳  46% — ✓ 54 / ✗ 61
+    ✗ guest: order 201
+      ↳  77% — ✓ 42 / ✗ 12
+    ✗ member: vouchers 200
+      ↳  66% — ✓ 32 / ✗ 16
+    ✗ member: voucher validate
+      ↳  43% — ✓ 14 / ✗ 18
+    ✗ member: order 201
+      ↳  54% — ✓ 26 / ✗ 22
+    ✗ member: payment init 200
+      ↳  36% — ✓ 8 / ✗ 14
+    ✗ member: webhook 200
+      ↳  71% — ✓ 5 / ✗ 2
+    ✗ member: points 200
+      ↳  0% — ✓ 0 / ✗ 3
+
+    CUSTOM
+    orders_created_total...........: 68     0.215427/s
+    orders_paid_total..............: 49     0.155234/s
+    voucher_race_rejected..........: 273    0.864877/s
+
+    HTTP
+    http_req_duration..............: avg=3.09s min=47.35ms  med=165.9ms  max=15s    p(90)=14.99s p(95)=15s   
+      { expected_response:true }...: avg=2.92s min=48.39ms  med=337.02ms max=14.99s p(90)=10.42s p(95)=13.67s
+    http_req_failed................: 62.07% 1367 out of 2202
+    http_reqs......................: 2202   6.97604/s
+
+    EXECUTION
+    iteration_duration.............: avg=10.8s min=554.88ms med=3.21s    max=1m20s  p(90)=28.35s p(95)=35.32s
+    iterations.....................: 699    2.214465/s
+    vus............................: 1      min=0            max=150
+    vus_max........................: 150    min=150          max=150
+
+    NETWORK
+    data_received..................: 1.4 MB 4.6 kB/s
+    data_sent......................: 644 kB 2.0 kB/s
+
+
+
+
+running (5m15.7s), 000/150 VUs, 699 complete and 17 interrupted iterations
+chaos_flow   ✓ [ 100% ] 00/10 VUs  55s
+guest_flow   ✓ [ 100% ] 00/60 VUs  55s
+member_flow  ✓ [ 100% ] 00/50 VUs  55s
+voucher_race ✓ [ 100% ] 00/15 VUs  55s
+kitchen_flow ✓ [ 100% ] 00/15 VUs  55s
+time="2026-06-12T09:40:57+07:00" level=error msg="thresholds on metrics 'http_req_duration, http_req_failed' have been crossed"

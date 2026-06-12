@@ -1,0 +1,231 @@
+--- Capture 1 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           13m          62Mi            
+api-gateway-54f88b57c7-68ncm           13m          63Mi            
+cart-service-7d7f5bb8b5-9f44g          13m          73Mi            
+cart-service-7d7f5bb8b5-q948k          10m          49Mi            
+catalog-service-54ffd9ddf8-jw5ts       167m         43Mi            
+catalog-service-54ffd9ddf8-q27fv       13m          73Mi            
+catalog-service-54ffd9ddf8-tfxwc       182m         43Mi            
+catalog-service-54ffd9ddf8-wcm9c       14m          89Mi            
+identity-service-6d9699465d-l66c2      21m          99Mi            
+notification-service-cb5587788-rklqh   5m           71Mi            
+order-service-7ddb7f4bf9-jjst2         15m          126Mi           
+order-service-7ddb7f4bf9-jr98w         20m          93Mi            
+payment-service-77675b4656-cvxmk       13m          99Mi            
+promotion-service-785979d544-dfb2t     12m          83Mi            
+rabbitmq-86b9c9ff59-mdnlv              7m           120Mi           
+realtime-service-5bdd4dd6f6-dfrcp      10m          67Mi            
+
+--- Capture 2 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           25m          62Mi            
+api-gateway-54f88b57c7-68ncm           65m          65Mi            
+cart-service-7d7f5bb8b5-9f44g          33m          75Mi            
+cart-service-7d7f5bb8b5-q948k          68m          55Mi            
+catalog-service-54ffd9ddf8-jw5ts       167m         43Mi            
+catalog-service-54ffd9ddf8-q27fv       99m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       121m         44Mi            
+catalog-service-54ffd9ddf8-wcm9c       14m          89Mi            
+identity-service-6d9699465d-l66c2      13m          99Mi            
+notification-service-cb5587788-rklqh   2m           69Mi            
+order-service-7ddb7f4bf9-jjst2         138m         131Mi           
+order-service-7ddb7f4bf9-jr98w         101m         99Mi            
+payment-service-77675b4656-cvxmk       13m          99Mi            
+promotion-service-785979d544-dfb2t     62m          86Mi            
+rabbitmq-86b9c9ff59-mdnlv              18m          120Mi           
+realtime-service-5bdd4dd6f6-dfrcp      35m          67Mi            
+
+--- Capture 3 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           25m          62Mi            
+api-gateway-54f88b57c7-68ncm           65m          65Mi            
+cart-service-7d7f5bb8b5-9f44g          33m          75Mi            
+cart-service-7d7f5bb8b5-q948k          68m          55Mi            
+catalog-service-54ffd9ddf8-jw5ts       167m         43Mi            
+catalog-service-54ffd9ddf8-q27fv       99m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       121m         44Mi            
+catalog-service-54ffd9ddf8-wcm9c       14m          89Mi            
+identity-service-6d9699465d-l66c2      13m          99Mi            
+notification-service-cb5587788-rklqh   2m           69Mi            
+order-service-7ddb7f4bf9-jjst2         138m         131Mi           
+order-service-7ddb7f4bf9-jr98w         101m         99Mi            
+payment-service-77675b4656-cvxmk       13m          99Mi            
+promotion-service-785979d544-dfb2t     62m          86Mi            
+rabbitmq-86b9c9ff59-mdnlv              18m          120Mi           
+realtime-service-5bdd4dd6f6-dfrcp      35m          67Mi            
+
+--- Capture 4 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           25m          62Mi            
+api-gateway-54f88b57c7-68ncm           65m          65Mi            
+cart-service-7d7f5bb8b5-9f44g          33m          75Mi            
+cart-service-7d7f5bb8b5-q948k          68m          55Mi            
+catalog-service-54ffd9ddf8-jw5ts       167m         43Mi            
+catalog-service-54ffd9ddf8-q27fv       99m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       121m         44Mi            
+catalog-service-54ffd9ddf8-wcm9c       14m          89Mi            
+identity-service-6d9699465d-l66c2      13m          99Mi            
+notification-service-cb5587788-rklqh   2m           69Mi            
+order-service-7ddb7f4bf9-jjst2         138m         131Mi           
+order-service-7ddb7f4bf9-jr98w         101m         99Mi            
+payment-service-77675b4656-cvxmk       13m          99Mi            
+promotion-service-785979d544-dfb2t     62m          86Mi            
+rabbitmq-86b9c9ff59-mdnlv              18m          120Mi           
+realtime-service-5bdd4dd6f6-dfrcp      35m          67Mi            
+
+--- Capture 5 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           116m         65Mi            
+api-gateway-54f88b57c7-68ncm           76m          66Mi            
+cart-service-7d7f5bb8b5-9f44g          54m          75Mi            
+cart-service-7d7f5bb8b5-q948k          115m         59Mi            
+catalog-service-54ffd9ddf8-jw5ts       90m          51Mi            
+catalog-service-54ffd9ddf8-q27fv       99m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       66m          49Mi            
+catalog-service-54ffd9ddf8-wcm9c       28m          91Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   3m           68Mi            
+order-service-7ddb7f4bf9-jjst2         243m         135Mi           
+order-service-7ddb7f4bf9-jr98w         270m         118Mi           
+payment-service-77675b4656-cvxmk       83m          106Mi           
+promotion-service-785979d544-dfb2t     258m         98Mi            
+rabbitmq-86b9c9ff59-mdnlv              12m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      35m          67Mi            
+
+--- Capture 6 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           116m         65Mi            
+api-gateway-54f88b57c7-68ncm           76m          66Mi            
+cart-service-7d7f5bb8b5-9f44g          54m          75Mi            
+cart-service-7d7f5bb8b5-q948k          115m         59Mi            
+catalog-service-54ffd9ddf8-jw5ts       90m          51Mi            
+catalog-service-54ffd9ddf8-q27fv       99m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       66m          49Mi            
+catalog-service-54ffd9ddf8-wcm9c       28m          91Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   3m           68Mi            
+order-service-7ddb7f4bf9-jjst2         243m         135Mi           
+order-service-7ddb7f4bf9-jr98w         270m         118Mi           
+payment-service-77675b4656-cvxmk       83m          106Mi           
+promotion-service-785979d544-dfb2t     258m         98Mi            
+rabbitmq-86b9c9ff59-mdnlv              12m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      35m          67Mi            
+
+--- Capture 7 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           116m         65Mi            
+api-gateway-54f88b57c7-68ncm           76m          66Mi            
+cart-service-7d7f5bb8b5-9f44g          54m          75Mi            
+cart-service-7d7f5bb8b5-q948k          115m         59Mi            
+catalog-service-54ffd9ddf8-jw5ts       90m          51Mi            
+catalog-service-54ffd9ddf8-q27fv       99m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       66m          49Mi            
+catalog-service-54ffd9ddf8-wcm9c       28m          91Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   3m           68Mi            
+order-service-7ddb7f4bf9-jjst2         243m         135Mi           
+order-service-7ddb7f4bf9-jr98w         270m         118Mi           
+payment-service-77675b4656-cvxmk       83m          106Mi           
+promotion-service-785979d544-dfb2t     258m         98Mi            
+rabbitmq-86b9c9ff59-mdnlv              12m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      35m          67Mi            
+
+--- Capture 8 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           78m          69Mi            
+api-gateway-54f88b57c7-68ncm           83m          74Mi            
+cart-service-7d7f5bb8b5-9f44g          38m          75Mi            
+cart-service-7d7f5bb8b5-q948k          17m          55Mi            
+catalog-service-54ffd9ddf8-jw5ts       110m         53Mi            
+catalog-service-54ffd9ddf8-q27fv       65m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       76m          53Mi            
+catalog-service-54ffd9ddf8-wcm9c       12m          91Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   2m           68Mi            
+order-service-7ddb7f4bf9-jjst2         109m         137Mi           
+order-service-7ddb7f4bf9-jr98w         212m         126Mi           
+payment-service-77675b4656-cvxmk       110m         108Mi           
+promotion-service-785979d544-dfb2t     169m         106Mi           
+rabbitmq-86b9c9ff59-mdnlv              12m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      40m          68Mi            
+
+--- Capture 9 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           78m          69Mi            
+api-gateway-54f88b57c7-68ncm           83m          74Mi            
+cart-service-7d7f5bb8b5-9f44g          38m          75Mi            
+cart-service-7d7f5bb8b5-q948k          17m          55Mi            
+catalog-service-54ffd9ddf8-jw5ts       110m         53Mi            
+catalog-service-54ffd9ddf8-q27fv       65m          88Mi            
+catalog-service-54ffd9ddf8-tfxwc       76m          53Mi            
+catalog-service-54ffd9ddf8-wcm9c       12m          91Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   2m           68Mi            
+order-service-7ddb7f4bf9-jjst2         109m         137Mi           
+order-service-7ddb7f4bf9-jr98w         212m         126Mi           
+payment-service-77675b4656-cvxmk       110m         108Mi           
+promotion-service-785979d544-dfb2t     169m         106Mi           
+rabbitmq-86b9c9ff59-mdnlv              12m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      40m          68Mi            
+
+--- Capture 10 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           20m          69Mi            
+api-gateway-54f88b57c7-68ncm           38m          72Mi            
+cart-service-7d7f5bb8b5-9f44g          41m          76Mi            
+cart-service-7d7f5bb8b5-q948k          84m          59Mi            
+cart-service-7d7f5bb8b5-tvfhn          135m         35Mi            
+catalog-service-54ffd9ddf8-jw5ts       91m          57Mi            
+catalog-service-54ffd9ddf8-q27fv       32m          85Mi            
+catalog-service-54ffd9ddf8-tfxwc       59m          53Mi            
+catalog-service-54ffd9ddf8-wcm9c       32m          90Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   3m           68Mi            
+order-service-7ddb7f4bf9-jjst2         120m         137Mi           
+order-service-7ddb7f4bf9-jr98w         212m         135Mi           
+payment-service-77675b4656-cvxmk       58m          107Mi           
+promotion-service-785979d544-dfb2t     169m         106Mi           
+rabbitmq-86b9c9ff59-mdnlv              19m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      40m          68Mi            
+
+--- Capture 11 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           20m          69Mi            
+api-gateway-54f88b57c7-68ncm           38m          72Mi            
+cart-service-7d7f5bb8b5-9f44g          41m          76Mi            
+cart-service-7d7f5bb8b5-q948k          84m          59Mi            
+cart-service-7d7f5bb8b5-tvfhn          135m         35Mi            
+catalog-service-54ffd9ddf8-jw5ts       91m          57Mi            
+catalog-service-54ffd9ddf8-q27fv       32m          85Mi            
+catalog-service-54ffd9ddf8-tfxwc       59m          53Mi            
+catalog-service-54ffd9ddf8-wcm9c       32m          90Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   3m           68Mi            
+order-service-7ddb7f4bf9-jjst2         120m         137Mi           
+order-service-7ddb7f4bf9-jr98w         212m         135Mi           
+payment-service-77675b4656-cvxmk       58m          107Mi           
+promotion-service-785979d544-dfb2t     169m         106Mi           
+rabbitmq-86b9c9ff59-mdnlv              19m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      40m          68Mi            
+
+--- Capture 12 ---
+NAME                                   CPU(cores)   MEMORY(bytes)   
+api-gateway-54f88b57c7-4kv7c           20m          69Mi            
+api-gateway-54f88b57c7-68ncm           38m          72Mi            
+cart-service-7d7f5bb8b5-9f44g          41m          76Mi            
+cart-service-7d7f5bb8b5-q948k          84m          59Mi            
+cart-service-7d7f5bb8b5-tvfhn          135m         35Mi            
+catalog-service-54ffd9ddf8-jw5ts       91m          57Mi            
+catalog-service-54ffd9ddf8-q27fv       32m          85Mi            
+catalog-service-54ffd9ddf8-tfxwc       59m          53Mi            
+catalog-service-54ffd9ddf8-wcm9c       32m          90Mi            
+identity-service-6d9699465d-l66c2      14m          99Mi            
+notification-service-cb5587788-rklqh   3m           68Mi            
+order-service-7ddb7f4bf9-jjst2         120m         137Mi           
+order-service-7ddb7f4bf9-jr98w         212m         135Mi           
+payment-service-77675b4656-cvxmk       58m          107Mi           
+promotion-service-785979d544-dfb2t     169m         106Mi           
+rabbitmq-86b9c9ff59-mdnlv              19m          122Mi           
+realtime-service-5bdd4dd6f6-dfrcp      40m          68Mi            
+

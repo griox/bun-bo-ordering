@@ -46,15 +46,15 @@ done
 
 # ── Config ──
 NAMESPACE="default"
-PG_POD_SELECTOR="app=postgresql"
+PG_POD_SELECTOR="app.kubernetes.io/name=postgresql"
 PG_NS="postgresql"
 REDIS_POD_SELECTOR="app=redis-master"
 REDIS_NS="redis"
 PG_USER="postgres"
 PG_PASSWORD="bunbopw123!"
-ORDER_DB="bunbo_order_db"
-IDENTITY_DB="BunBoIdentityDb"
-PROMOTION_DB="BunBoPromotionDb"
+ORDER_DB="bunbo_db"
+IDENTITY_DB="bunbo_db"
+PROMOTION_DB="bunbo_db"
 
 # ── K6 test data markers ──
 K6_ORDER_NOTE_PATTERN="k6-%"
@@ -155,7 +155,7 @@ delete_pg() {
 
     log_info "$desc — chuẩn bị xóa $count rows..."
     local result
-    result=$(run_pg_sql "$db" "DELETE FROM \"$table\" WHERE $where; SELECT ROW_COUNT();")
+    result=$(run_pg_sql "$db" "DELETE FROM \"$table\" WHERE $where;")
     log_ok "$desc — đã xóa $count rows ✓"
     TOTAL_DELETED=$((TOTAL_DELETED + count))
 }
@@ -267,34 +267,24 @@ log_section "2. IDENTITY SERVICE (BunBoIdentityDb)"
 if [[ -n "$PG_POD" ]]; then
     log_info "Preview tài khoản K6 trong IdentityDB:"
     run_pg_sql_full "$IDENTITY_DB" "
-        SELECT \"UserName\", \"Email\", \"CreatedAt\"
-        FROM \"AspNetUsers\"
-        WHERE \"UserName\" LIKE '$K6_MEMBER_PATTERN'
-        ORDER BY \"UserName\"
+        SELECT \"Username\", \"Email\", \"CreatedAt\"
+        FROM \"Users\"
+        WHERE \"Username\" LIKE '$K6_MEMBER_PATTERN'
+        ORDER BY \"Username\"
         LIMIT 5;
     " 2>/dev/null || log_warn "Không thể preview IdentityDB"
 fi
 
 if confirm "Xóa tài khoản K6 (k6member001-020) trong IdentityDB?"; then
     # Xóa refresh tokens của K6 users trước
-    delete_pg "$IDENTITY_DB" "RefreshTokens" \
-        "\"UserId\" IN (SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE '$K6_MEMBER_PATTERN')" \
-        "RefreshTokens của K6 accounts"
-
-    # Xóa claims của K6 users
-    delete_pg "$IDENTITY_DB" "AspNetUserClaims" \
-        "\"UserId\" IN (SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE '$K6_MEMBER_PATTERN')" \
-        "Claims của K6 accounts"
-
-    # Xóa roles của K6 users
-    delete_pg "$IDENTITY_DB" "AspNetUserRoles" \
-        "\"UserId\" IN (SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE '$K6_MEMBER_PATTERN')" \
-        "UserRoles của K6 accounts"
+    delete_pg "$IDENTITY_DB" "RefreshToken" \
+        "\"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"Username\" LIKE '$K6_MEMBER_PATTERN')" \
+        "RefreshToken của K6 accounts"
 
     # Xóa K6 users
-    delete_pg "$IDENTITY_DB" "AspNetUsers" \
-        "\"UserName\" LIKE '$K6_MEMBER_PATTERN'" \
-        "AspNetUsers K6 accounts"
+    delete_pg "$IDENTITY_DB" "Users" \
+        "\"Username\" LIKE '$K6_MEMBER_PATTERN'" \
+        "Users K6 accounts"
 fi
 
 # ================================================================
@@ -312,7 +302,17 @@ if [[ -n "$PG_POD" ]]; then
 fi
 
 if confirm "Xóa voucher '$K6_VOUCHER_CODE' và loyalty points K6 trong PromotionDB?"; then
-    # Xóa UserVouchers liên quan đến K6 members
+    # Xóa PointTransactions của K6 members trước
+    delete_pg "$PROMOTION_DB" "PointTransactions" \
+        "\"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"Username\" LIKE '$K6_MEMBER_PATTERN')" \
+        "PointTransactions của K6 accounts"
+
+    # Xóa UserVouchers của K6 members
+    delete_pg "$PROMOTION_DB" "UserVouchers" \
+        "\"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"Username\" LIKE '$K6_MEMBER_PATTERN')" \
+        "UserVouchers của K6 accounts"
+
+    # Xóa UserVouchers liên quan đến K6 voucher (K6_RACE_V1)
     delete_pg "$PROMOTION_DB" "UserVouchers" \
         "\"VoucherId\" IN (SELECT \"Id\" FROM \"Vouchers\" WHERE \"Code\" = '$K6_VOUCHER_CODE')" \
         "UserVouchers của K6_RACE_V1"
@@ -323,16 +323,9 @@ if confirm "Xóa voucher '$K6_VOUCHER_CODE' và loyalty points K6 trong Promotio
         "Voucher K6_RACE_V1"
 
     # Xóa loyalty points của K6 members
-    # (LoyaltyPoints liên kết qua UserId từ IdentityService)
     delete_pg "$PROMOTION_DB" "LoyaltyPoints" \
-        "\"UserId\" IN (
-            SELECT CAST(\"Id\" AS uuid)
-            FROM dblink('host=postgresql.postgresql.svc.cluster.local user=$PG_USER password=$PG_PASSWORD dbname=$IDENTITY_DB',
-                'SELECT \"Id\" FROM \"AspNetUsers\" WHERE \"UserName\" LIKE ''$K6_MEMBER_PATTERN''')
-            AS t(id text)
-        )" \
-        "LoyaltyPoints của K6 accounts" 2>/dev/null || \
-    log_warn "Bỏ qua cross-DB LoyaltyPoints cleanup (cần dblink extension). Xóa thủ công nếu cần."
+        "\"UserId\" IN (SELECT \"Id\" FROM \"Users\" WHERE \"Username\" LIKE '$K6_MEMBER_PATTERN')" \
+        "LoyaltyPoints của K6 accounts"
 fi
 
 # ================================================================
