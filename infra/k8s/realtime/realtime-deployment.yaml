@@ -21,7 +21,7 @@ spec:
         image: griox/bunbo-realtime-service:latest
         resources:
           requests:
-            cpu: "50m"
+            cpu: "40m"
             memory: "128Mi"
           limits:
             cpu: "300m"
