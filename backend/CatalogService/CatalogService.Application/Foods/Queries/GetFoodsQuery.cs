@@ -4,6 +4,7 @@ using CatalogService.Application.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
 using System.Text.Json;
+using System.Collections.Concurrent;
 
 namespace CatalogService.Application.Foods.Queries;
 
@@ -16,7 +17,7 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
     private readonly IAppDbContext _context;
     private readonly string _publicUrl;
     private readonly IDistributedCache _cache;
-    private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
 
     public GetFoodsQueryHandler(IAppDbContext context, IConfiguration configuration, IDistributedCache cache)
     {
@@ -35,7 +36,8 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
             return JsonSerializer.Deserialize<PagedResult<FoodDto>>(cachedData)!;
         }
 
-        await _semaphore.WaitAsync(cancellationToken);
+        var keyLock = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken);
         try
         {
             // Re-check cache inside lock (Double-check locking pattern)
@@ -80,7 +82,7 @@ public class GetFoodsQueryHandler : IRequestHandler<GetFoodsQuery, PagedResult<F
         }
         finally
         {
-            _semaphore.Release();
+            keyLock.Release();
         }
     }
 

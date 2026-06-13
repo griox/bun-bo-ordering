@@ -112,6 +112,76 @@ public class GetFoodsQueryHandlerTests
         result.Items.First().ImageUrl.Should().Be("http://localhost:9000/bucket/test.jpg");
     }
 
+    [Fact]
+    public async Task Handle_ConcurrentRequests_SameKey_ShouldQueryDbOnce()
+    {
+        // Arrange (AAA Pattern)
+        var cacheStorage = new System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>();
+        _cacheMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string key, CancellationToken ct) => 
+            {
+                cacheStorage.TryGetValue(key, out var val);
+                return val;
+            });
+
+        _cacheMock.Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
+            .Callback((string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken ct) => 
+            {
+                cacheStorage[key] = value;
+            })
+            .Returns(Task.CompletedTask);
+
+        var foods = new List<Food>();
+        _contextMock.Setup(x => x.Foods).ReturnsDbSet(foods);
+
+        var query = new GetFoodsQuery(0, 50);
+
+        // Act (Simulate 10 concurrent requests for the SAME page)
+        var tasks = Enumerable.Range(0, 10).Select(_ => Task.Run(() => _handler.Handle(query, CancellationToken.None)));
+        await Task.WhenAll(tasks);
+
+        // Assert (Only 1 request should populate the cache, the rest should wait and read from cache)
+        _cacheMock.Verify(x => x.SetAsync(
+            It.Is<string>(k => k == "foods_skip_0_take_50"),
+            It.IsAny<byte[]>(),
+            It.IsAny<DistributedCacheEntryOptions>(),
+            It.IsAny<CancellationToken>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task Handle_ConcurrentRequests_DifferentKeys_ShouldQueryDbConcurrently()
+    {
+        // Arrange
+        var cacheStorage = new System.Collections.Concurrent.ConcurrentDictionary<string, byte[]>();
+        _cacheMock.Setup(x => x.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync((string key, CancellationToken ct) => 
+            {
+                cacheStorage.TryGetValue(key, out var val);
+                return val;
+            });
+
+        _cacheMock.Setup(x => x.SetAsync(It.IsAny<string>(), It.IsAny<byte[]>(), It.IsAny<DistributedCacheEntryOptions>(), It.IsAny<CancellationToken>()))
+            .Callback((string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken ct) => 
+            {
+                cacheStorage[key] = value;
+            })
+            .Returns(Task.CompletedTask);
+
+        var foods = new List<Food>();
+        _contextMock.Setup(x => x.Foods).ReturnsDbSet(foods);
+
+        // Act (Simulate 10 concurrent requests for DIFFERENT pages)
+        var tasks = Enumerable.Range(0, 10).Select(i => Task.Run(() => _handler.Handle(new GetFoodsQuery(i * 10, 10), CancellationToken.None)));
+        await Task.WhenAll(tasks);
+
+        // Assert (Lock contention should not happen, all 10 unique requests should query DB and cache results)
+        _cacheMock.Verify(x => x.SetAsync(
+            It.IsAny<string>(),
+            It.IsAny<byte[]>(),
+            It.IsAny<DistributedCacheEntryOptions>(),
+            It.IsAny<CancellationToken>()), Times.Exactly(10));
+    }
+
     private void SetId<TId>(object entity, TId id)
     {
         var property = entity.GetType().GetProperty("Id");

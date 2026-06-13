@@ -4,6 +4,7 @@ using OrderService.Application.Dtos;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Enums;
 using System.Globalization;
+using System.Collections.Concurrent;
 
 namespace OrderService.Application.Orders.Queries;
 
@@ -15,7 +16,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
     private readonly ICacheService _cache;
     private const string CacheKey = "dashboard_stats";
     // Mutex: chỉ 1 request rebuild cache tại một thời điểm (chống thundering herd)
-    private static readonly SemaphoreSlim _semaphore = new(1, 1);
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> _locks = new();
 
     public GetDashboardStatsQueryHandler(IAppDbContext context, ICacheService cache)
     {
@@ -38,7 +39,8 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         }
 
         // Slow path: acquire lock, double-check, then rebuild
-        await _semaphore.WaitAsync(cancellationToken);
+        var keyLock = _locks.GetOrAdd(cacheKey, _ => new SemaphoreSlim(1, 1));
+        await keyLock.WaitAsync(cancellationToken);
         try
         {
             if (!request.ForceRefresh)
@@ -190,7 +192,7 @@ public class GetDashboardStatsQueryHandler : IRequestHandler<GetDashboardStatsQu
         }
         finally
         {
-            _semaphore.Release();
+            keyLock.Release();
         }
     }
 

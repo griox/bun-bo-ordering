@@ -3,6 +3,7 @@ using CatalogService.Api.Protos;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using System.Collections.Concurrent;
 
 namespace CartService.Infrastructure.SyncDataServices.Grpc;
 
@@ -15,6 +16,9 @@ public class CatalogDataClient : ISyncCatalogClient
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     // Timeout cứng cho mỗi gRPC call — tránh block request khi CatalogService bận
     private static readonly TimeSpan GrpcDeadline = TimeSpan.FromSeconds(15);
+
+    // Lock dictionary to prevent concurrent duplicate gRPC calls for the same food items
+    private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
 
     public CatalogDataClient(CatalogGrpc.CatalogGrpcClient client, IMemoryCache cache, ILogger<CatalogDataClient> logger)
     {
@@ -31,9 +35,18 @@ public class CatalogDataClient : ISyncCatalogClient
             return cachedItem!;
         }
 
-        _logger.LogInformation("--> Calling gRPC CatalogService for Food ID: {FoodId}", foodId);
+        var sem = _locks.GetOrAdd(foodId, _ => new SemaphoreSlim(1, 1));
+        await sem.WaitAsync();
+
         try
         {
+            // Double-check cache
+            if (_cache.TryGetValue(cacheKey, out cachedItem))
+            {
+                return cachedItem!;
+            }
+
+            _logger.LogInformation("--> Calling gRPC CatalogService for Food ID: {FoodId}", foodId);
             var request = new GetFoodPriceRequest { FoodId = foodId.ToString() };
             var response = await _client.GetFoodPriceAsync(
                 request,
@@ -53,19 +66,25 @@ public class CatalogDataClient : ISyncCatalogClient
             _logger.LogError(ex, "--> gRPC call failed for Food ID: {FoodId}", foodId);
             throw;
         }
+        finally
+        {
+            sem.Release();
+        }
     }
 
     /// <summary>
     /// Batch-fetches multiple food items using a single gRPC call.
     /// Replaces the N+1 pattern — significantly more efficient under load.
     /// Uses IMemoryCache to reduce network calls.
+    /// Prevents Cache Stampede by locking per-food-item using a sorted keys strategy.
     /// </summary>
     public async Task<Dictionary<Guid, FoodItemInfo>> GetFoodPricesManyAsync(IEnumerable<Guid> foodIds)
     {
         var ids = foodIds.Distinct().ToList();
         var result = new Dictionary<Guid, FoodItemInfo>();
-        var missingIds = new List<Guid>();
+        var initialMissingIds = new List<Guid>();
 
+        // 1. Check cache first (fast path)
         foreach (var id in ids)
         {
             if (_cache.TryGetValue($"FoodItem_{id}", out FoodItemInfo? cachedItem))
@@ -74,18 +93,47 @@ public class CatalogDataClient : ISyncCatalogClient
             }
             else
             {
-                missingIds.Add(id);
+                initialMissingIds.Add(id);
             }
         }
 
-        if (!missingIds.Any()) return result;
+        if (!initialMissingIds.Any()) return result;
 
-        _logger.LogInformation("--> Batch-fetching {Count} missing food items from CatalogService via gRPC.", missingIds.Count);
+        // 2. Sort keys to prevent Deadlocks (lock order inversion)
+        var sortedMissingIds = initialMissingIds.OrderBy(id => id).ToList();
+        var acquiredLocks = new List<SemaphoreSlim>();
 
         try
         {
+            // Acquire locks in sorted order
+            foreach (var id in sortedMissingIds)
+            {
+                var sem = _locks.GetOrAdd(id, _ => new SemaphoreSlim(1, 1));
+                await sem.WaitAsync();
+                acquiredLocks.Add(sem);
+            }
+
+            // 3. Double-check cache inside locks
+            var finalMissingIds = new List<Guid>();
+            foreach (var id in sortedMissingIds)
+            {
+                if (_cache.TryGetValue($"FoodItem_{id}", out FoodItemInfo? cachedItem))
+                {
+                    result[id] = cachedItem!;
+                }
+                else
+                {
+                    finalMissingIds.Add(id);
+                }
+            }
+
+            if (!finalMissingIds.Any()) return result;
+
+            // 4. Batch-fetch from gRPC
+            _logger.LogInformation("--> Batch-fetching {Count} missing food items from CatalogService via gRPC.", finalMissingIds.Count);
+
             var request = new GetFoodPricesRequest();
-            request.FoodIds.AddRange(missingIds.Select(id => id.ToString()));
+            request.FoodIds.AddRange(finalMissingIds.Select(id => id.ToString()));
 
             var response = await _client.GetFoodPricesAsync(
                 request,
@@ -104,13 +152,21 @@ public class CatalogDataClient : ISyncCatalogClient
         }
         catch (RpcException ex) when (ex.StatusCode == StatusCode.DeadlineExceeded)
         {
-            _logger.LogWarning("--> gRPC batch timeout after {Timeout}s for {Count} IDs", GrpcDeadline.TotalSeconds, missingIds.Count);
+            _logger.LogWarning("--> gRPC batch timeout after {Timeout}s for {Count} IDs", GrpcDeadline.TotalSeconds, sortedMissingIds.Count);
             throw;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "--> Batch gRPC call failed for {Count} IDs", missingIds.Count);
+            _logger.LogError(ex, "--> Batch gRPC call failed for {Count} IDs", sortedMissingIds.Count);
             throw;
+        }
+        finally
+        {
+            // Release locks in reverse order
+            for (int i = acquiredLocks.Count - 1; i >= 0; i--)
+            {
+                acquiredLocks[i].Release();
+            }
         }
     }
 }
