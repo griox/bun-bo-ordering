@@ -3,30 +3,40 @@ using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Interfaces;
 using OrderService.Domain.Entities;
 using BunBo.SharedKernel;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OrderService.Application.TableSessions.Commands;
 
 public class OpenSessionCommandHandler : IRequestHandler<OpenSessionCommand, OpenSessionResponse>
 {
     private readonly IAppDbContext _context;
+    private readonly IMemoryCache _cache;
 
-    public OpenSessionCommandHandler(IAppDbContext context)
+    public OpenSessionCommandHandler(IAppDbContext context, IMemoryCache cache)
     {
         _context = context;
+        _cache = cache;
     }
 
     public async Task<OpenSessionResponse> Handle(OpenSessionCommand request, CancellationToken cancellationToken)
     {
-        var table = await _context.RestaurantTables
-            .FirstOrDefaultAsync(t => t.Id == request.TableId, cancellationToken);
+        var cacheKey = $"table_exists_{request.TableId}";
+        if (!_cache.TryGetValue(cacheKey, out bool exists))
+        {
+            var tableExists = await _context.RestaurantTables
+                .AnyAsync(t => t.Id == request.TableId, cancellationToken);
 
-        if (table == null)
-            throw new DomainException("Bàn không tồn tại.");
+            if (!tableExists)
+                throw new DomainException("Bàn không tồn tại.");
+
+            exists = true;
+            _cache.Set(cacheKey, exists, TimeSpan.FromMinutes(30));
+        }
 
         // Yêu cầu mới: Mỗi lần quét mã đều tạo một phiên (Session) riêng biệt
         // Không sử dụng chung giỏ hàng nữa để tiện tính tiền riêng.
-        string newGroupCode = new Random().Next(1000, 9999).ToString();
-        var newSession = new TableSession(table.Id, newGroupCode);
+        string newGroupCode = Random.Shared.Next(1000, 9999).ToString();
+        var newSession = new TableSession(request.TableId, newGroupCode);
         
         _context.TableSessions.Add(newSession);
         

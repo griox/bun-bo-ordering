@@ -93,6 +93,8 @@ builder.Services.AddDbContextPool<AppDbContext>(options =>
                 errorCodesToAdd: null);
         }));
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddScoped<IAppDbContext>(provider => provider.GetRequiredService<AppDbContext>());
 
 // Configure Redis

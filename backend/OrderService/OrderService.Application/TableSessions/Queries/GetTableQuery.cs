@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace OrderService.Application.TableSessions.Queries;
 
@@ -19,24 +20,34 @@ public class GetTableResponse
 public class GetTableQueryHandler : IRequestHandler<GetTableQuery, GetTableResponse>
 {
     private readonly IAppDbContext _context;
+    private readonly IMemoryCache _cache;
 
-    public GetTableQueryHandler(IAppDbContext context)
+    public GetTableQueryHandler(IAppDbContext context, IMemoryCache cache)
     {
         _context = context;
+        _cache = cache;
     }
 
     public async Task<GetTableResponse> Handle(GetTableQuery request, CancellationToken cancellationToken)
     {
-        var table = await _context.RestaurantTables
-            .FirstOrDefaultAsync(t => t.Id == request.TableId, cancellationToken);
-            
-        if (table == null) return null!;
-
-        return new GetTableResponse
+        var cacheKey = $"table_data_{request.TableId}";
+        if (!_cache.TryGetValue(cacheKey, out GetTableResponse? tableData))
         {
-            Id = table.Id,
-            TableCode = table.TableCode,
-            Name = table.Name
-        };
+            var table = await _context.RestaurantTables
+                .FirstOrDefaultAsync(t => t.Id == request.TableId, cancellationToken);
+                
+            if (table == null) return null!;
+
+            tableData = new GetTableResponse
+            {
+                Id = table.Id,
+                TableCode = table.TableCode,
+                Name = table.Name
+            };
+
+            _cache.Set(cacheKey, tableData, TimeSpan.FromMinutes(30));
+        }
+
+        return tableData!;
     }
 }
