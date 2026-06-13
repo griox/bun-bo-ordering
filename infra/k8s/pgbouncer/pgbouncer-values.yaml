@@ -1,0 +1,12 @@
+pgbouncer:
+  poolMode: transaction
+  maxClientConn: 10000
+  defaultPoolSize: 100
+  ignoreStartupParameters: extra_float_digits
+  adminUsers: postgres
+
+postgresql:
+  host: postgresql.postgresql.svc.cluster.local
+  database: bunbo_db
+  username: postgres
+  password: bunbopw123!
