@@ -82,7 +82,7 @@ spec:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);Maximum Pool Size=100"
+          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=$(POSTGRES_DB);Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);Maximum Pool Size=20"
         - name: S3Settings__ServiceUrl
           valueFrom:
             configMapKeyRef:

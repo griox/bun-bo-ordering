@@ -33,7 +33,7 @@ spec:
             - name: MAX_CLIENT_CONN
               value: "10000"
             - name: DEFAULT_POOL_SIZE
-              value: "100"
+              value: "120"
             - name: IGNORE_STARTUP_PARAMETERS
               value: "extra_float_digits"
             - name: AUTH_TYPE
@@ -42,11 +42,11 @@ spec:
             - containerPort: 5432
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 100m
+              memory: 128Mi
             limits:
               cpu: 200m
-              memory: 128Mi
+              memory: 256Mi
 ---
 apiVersion: v1
 kind: Service

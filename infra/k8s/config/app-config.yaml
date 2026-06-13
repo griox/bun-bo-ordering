@@ -26,3 +26,7 @@ data:
   JwtSettings__Issuer: "BunBoIdentity"
   JwtSettings__Audience: "BunBoMicroservices"
   CartServiceUrl: "http://cart-service"
+  # Rate limiting configurations for Load Testing (highly relaxed to allow performance profiling)
+  RateLimiting__PermitLimit: "50000"
+  RateLimiting__QueueLimit: "1000"
+

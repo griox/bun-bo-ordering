@@ -74,7 +74,7 @@ spec:
               name: bunbo-secrets
               key: POSTGRES_PASSWORD
         - name: ConnectionStrings__DefaultConnection
-          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=payment_db;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);Maximum Pool Size=25"
+          value: "Host=$(POSTGRES_HOST);Port=$(POSTGRES_PORT);Database=payment_db;Username=$(POSTGRES_USER);Password=$(POSTGRES_PASSWORD);Maximum Pool Size=25;No Reset On Close=true"
         - name: SePay__SecretKey
           valueFrom:
             secretKeyRef:
