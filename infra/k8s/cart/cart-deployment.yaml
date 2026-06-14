@@ -95,7 +95,7 @@ spec:
     kind: Deployment
     name: cart-service
   minReplicas: 2
-  maxReplicas: 3
+  maxReplicas: 4
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120

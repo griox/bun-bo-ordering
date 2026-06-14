@@ -127,7 +127,7 @@ spec:
     kind: Deployment
     name: payment-service
   minReplicas: 1
-  maxReplicas: 2
+  maxReplicas: 3
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120
