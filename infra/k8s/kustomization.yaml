@@ -20,28 +20,28 @@ resources:
 images:
 - name: griox/bunbo-api-gateway
   newName: griox/bunbo-api-gateway
-  newTag: 6f0864228da6c5b2f0cb8795974f428a90908652
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-cart-service
   newName: griox/bunbo-cart-service
-  newTag: cad384aa9aff2d76ca26012ee1a9eeb220cf22cd
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-catalog-service
   newName: griox/bunbo-catalog-service
-  newTag: cad384aa9aff2d76ca26012ee1a9eeb220cf22cd
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-identity-service
   newName: griox/bunbo-identity-service
-  newTag: 12688af7a9acc782386dbf3597828277a08f268c
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-notification-service
   newName: griox/bunbo-notification-service
-  newTag: 6f0864228da6c5b2f0cb8795974f428a90908652
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-order-service
   newName: griox/bunbo-order-service
-  newTag: e4cfef834250d20fd7ca251c01b5cdb9ddb6e613
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-payment-service
   newName: griox/bunbo-payment-service
-  newTag: 6f0864228da6c5b2f0cb8795974f428a90908652
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-promotion-service
   newName: griox/bunbo-promotion-service
-  newTag: 6f0864228da6c5b2f0cb8795974f428a90908652
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
 - name: griox/bunbo-realtime-service
   newName: griox/bunbo-realtime-service
-  newTag: 6f0864228da6c5b2f0cb8795974f428a90908652
+  newTag: 9e46695c9c56bf21e6f78c3bd4c8ed51164aa870
