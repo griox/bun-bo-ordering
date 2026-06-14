@@ -21,10 +21,10 @@ spec:
         image: griox/bunbo-realtime-service:latest
         resources:
           requests:
-            cpu: "60m"
+            cpu: "50m"
             memory: "128Mi"
           limits:
-            cpu: "250m"
+            cpu: "200m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
@@ -98,7 +98,7 @@ spec:
     kind: Deployment
     name: realtime-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 2
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120

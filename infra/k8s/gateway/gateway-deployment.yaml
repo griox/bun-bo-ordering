@@ -14,15 +14,23 @@ spec:
       labels:
         app: api-gateway
     spec:
-      nodeSelector:
-        role: apps
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - apps
       containers:
       - name: api-gateway
         image: griox/bunbo-api-gateway:latest # Example image tag, will be updated by CI/CD
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "100m"
+            cpu: "150m"
             memory: "64Mi"
           limits:
             cpu: "500m"
@@ -113,7 +121,7 @@ spec:
     kind: Deployment
     name: api-gateway
   minReplicas: 2
-  maxReplicas: 3
+  maxReplicas: 4
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120

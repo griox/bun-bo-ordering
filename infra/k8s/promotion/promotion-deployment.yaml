@@ -119,7 +119,7 @@ spec:
     kind: Deployment
     name: promotion-service
   minReplicas: 1
-  maxReplicas: 3
+  maxReplicas: 2
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120

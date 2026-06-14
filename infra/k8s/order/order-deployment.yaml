@@ -14,15 +14,23 @@ spec:
       labels:
         app: order-service
     spec:
-      nodeSelector:
-        role: apps
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            preference:
+              matchExpressions:
+              - key: role
+                operator: In
+                values:
+                - apps
       containers:
       - name: order-service
         image: griox/bunbo-order-service:latest
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "150m"
+            cpu: "200m"
             memory: "128Mi"
           limits:
             cpu: "800m"

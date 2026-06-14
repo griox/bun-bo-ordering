@@ -2,6 +2,7 @@ using BunBo.SharedKernel;
 using IdentityService.Application.Auth.Commands;
 using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
+using Microsoft.Extensions.Caching.Distributed;
 using Moq;
 using Moq.EntityFrameworkCore;
 using FluentAssertions;
@@ -12,13 +13,15 @@ public class RefreshTokenCommandHandlerTests
 {
     private readonly Mock<IAppDbContext> _dbContextMock;
     private readonly Mock<ITokenService> _tokenServiceMock;
+    private readonly Mock<IDistributedCache> _cacheMock;
     private readonly RefreshTokenCommandHandler _handler;
 
     public RefreshTokenCommandHandlerTests()
     {
         _dbContextMock = new Mock<IAppDbContext>();
         _tokenServiceMock = new Mock<ITokenService>();
-        _handler = new RefreshTokenCommandHandler(_dbContextMock.Object, _tokenServiceMock.Object);
+        _cacheMock = new Mock<IDistributedCache>();
+        _handler = new RefreshTokenCommandHandler(_dbContextMock.Object, _tokenServiceMock.Object, _cacheMock.Object);
     }
 
     [Fact]
@@ -77,5 +80,26 @@ public class RefreshTokenCommandHandlerTests
         var act = () => _handler.Handle(command, CancellationToken.None);
         await act.Should().ThrowAsync<DomainException>()
             .WithMessage("*khóa*");
+    }
+
+    [Fact]
+    public async Task Handle_ShouldReturnCachedResult_WhenTokenIsRecentlyUsed()
+    {
+        // Arrange
+        var command = new RefreshTokenCommand("fake-at", "recently-used-rt");
+        var cachedResult = new LoginResult("cached-at", "cached-rt", "user-id", "testuser", "test@test.com", "Client");
+        var serializedResult = System.Text.Json.JsonSerializer.Serialize(cachedResult);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(serializedResult);
+
+        _cacheMock.Setup(x => x.GetAsync("used-refresh-token:recently-used-rt", It.IsAny<CancellationToken>()))
+            .ReturnsAsync(bytes);
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.token.Should().Be("cached-at");
+        result.refreshToken.Should().Be("cached-rt");
+        _dbContextMock.Verify(x => x.Users, Times.Never); // Should not look up database
     }
 }

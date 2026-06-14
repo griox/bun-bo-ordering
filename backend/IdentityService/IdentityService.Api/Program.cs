@@ -34,11 +34,14 @@ builder.Services.AddRateLimiter(options =>
                  ?? context.Connection.RemoteIpAddress?.ToString() 
                  ?? "unknown";
 
+        var permitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 60);
+        var queueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit", 0);
+
         return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
         {
             Window = TimeSpan.FromMinutes(1),
-            PermitLimit = 60, // 60 requests per minute per IP
-            QueueLimit = 0
+            PermitLimit = permitLimit,
+            QueueLimit = queueLimit
         });
     });
 
