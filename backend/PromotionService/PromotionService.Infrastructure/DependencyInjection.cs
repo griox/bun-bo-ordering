@@ -10,7 +10,9 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection") + ";MaxPoolSize=15;MinPoolSize=2;Connection Lifetime=300;";
+        // Connection string đã được cấu hình đầy đủ từ K8s (Maximum Pool Size=50, No Reset On Close=true)
+        // KHÔNG override MaxPoolSize ở đây để tránh giảm pool size xuống 15
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(connectionString,
                 npgsqlOptionsAction: sqlOptions =>

@@ -385,8 +385,9 @@ log_section "5. OUTBOX MESSAGES — Dọn K6 outbox entries"
 
 # MassTransit Outbox trong OrderService
 if [[ -n "$PG_POD" ]] && confirm "Xóa outbox messages của K6 orders?"; then
+    # MassTransit OutboxMessage schema dùng "SentTime" (không phải "SentAt")
     delete_pg "$ORDER_DB" "OutboxMessage" \
-        "\"MessageType\" LIKE '%OrderCreated%' AND \"SentAt\" IS NOT NULL AND \"EnqueueTime\" > NOW() - INTERVAL '24 hours'" \
+        "\"MessageType\" LIKE '%OrderCreated%' AND \"SentTime\" IS NOT NULL AND \"EnqueueTime\" > NOW() - INTERVAL '24 hours'" \
         "Outbox messages (24h gần nhất — đã gửi)" 2>/dev/null || \
     log_warn "Table OutboxMessage không tồn tại hoặc tên khác — bỏ qua"
 
