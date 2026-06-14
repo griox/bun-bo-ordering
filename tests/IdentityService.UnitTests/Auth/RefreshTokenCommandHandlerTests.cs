@@ -3,6 +3,7 @@ using IdentityService.Application.Auth.Commands;
 using IdentityService.Application.Interfaces;
 using IdentityService.Domain.Entities;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.EntityFrameworkCore;
 using Moq;
 using Moq.EntityFrameworkCore;
 using FluentAssertions;
@@ -101,5 +102,48 @@ public class RefreshTokenCommandHandlerTests
         result.token.Should().Be("cached-at");
         result.refreshToken.Should().Be("cached-rt");
         _dbContextMock.Verify(x => x.Users, Times.Never); // Should not look up database
+    }
+
+    [Fact]
+    public async Task Handle_ShouldRetryAndReturnCachedResult_WhenDbUpdateConcurrencyExceptionOccurs()
+    {
+        // Arrange
+        var user = new User("test", "test@test.com", "hash", "Client");
+        user.AddRefreshToken("valid-rt", DateTime.UtcNow.AddDays(1));
+
+        _dbContextMock.Setup(x => x.Users).ReturnsDbSet(new List<User> { user });
+        _tokenServiceMock.Setup(x => x.GenerateToken(It.IsAny<User>())).Returns("new-at");
+        _tokenServiceMock.Setup(x => x.GenerateRefreshToken()).Returns("new-rt");
+
+        // Set up SaveChangesAsync to throw DbUpdateConcurrencyException
+        _dbContextMock.Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new DbUpdateConcurrencyException());
+
+        var command = new RefreshTokenCommand("fake-at", "valid-rt");
+
+        // Set up cache to return null at first, then return the cached result on subsequent calls
+        var cachedResult = new LoginResult("cached-at", "cached-rt", "user-id", "testuser", "test@test.com", "Client");
+        var serializedResult = System.Text.Json.JsonSerializer.Serialize(cachedResult);
+        var bytes = System.Text.Encoding.UTF8.GetBytes(serializedResult);
+
+        int cacheCallCount = 0;
+        _cacheMock.Setup(x => x.GetAsync("used-refresh-token:valid-rt", It.IsAny<CancellationToken>()))
+            .Returns(() =>
+            {
+                cacheCallCount++;
+                if (cacheCallCount == 1)
+                {
+                    return Task.FromResult<byte[]?>(null); // first check at handle start
+                }
+                return Task.FromResult<byte[]?>(bytes); // subsequent checks (retry)
+            });
+
+        // Act
+        var result = await _handler.Handle(command, CancellationToken.None);
+
+        // Assert
+        result.token.Should().Be("cached-at");
+        result.refreshToken.Should().Be("cached-rt");
+        _cacheMock.Verify(x => x.GetAsync("used-refresh-token:valid-rt", It.IsAny<CancellationToken>()), Times.AtLeast(2));
     }
 }

@@ -14,16 +14,8 @@ spec:
       labels:
         app: api-gateway
     spec:
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-              - key: role
-                operator: In
-                values:
-                - apps
+      nodeSelector:
+        role: apps
       containers:
       - name: api-gateway
         image: griox/bunbo-api-gateway:latest # Example image tag, will be updated by CI/CD
@@ -33,7 +25,7 @@ spec:
             cpu: "150m"
             memory: "64Mi"
           limits:
-            cpu: "500m"
+            cpu: "600m"
             memory: "128Mi"
         livenessProbe:
           httpGet:

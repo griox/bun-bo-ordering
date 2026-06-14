@@ -77,7 +77,38 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, L
         var newRefreshToken = _tokenService.GenerateRefreshToken();
 
         user.AddRefreshToken(newRefreshToken, DateTime.UtcNow.AddDays(7));
-        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            // Concurrency exception occurs if another parallel request already rotated this token.
+            // Check Redis cache for the result created by that request, retrying up to 5 times.
+            for (int i = 0; i < 5; i++)
+            {
+                var doubleCheck = await _cache.GetStringAsync(cacheKey, cancellationToken);
+                if (!string.IsNullOrEmpty(doubleCheck))
+                {
+                    try
+                    {
+                        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                        var cachedResult = JsonSerializer.Deserialize<LoginResult>(doubleCheck, options);
+                        if (cachedResult != null)
+                        {
+                            return cachedResult;
+                        }
+                    }
+                    catch
+                    {
+                        // Fallback to next retry / throwing if deserialization fails
+                    }
+                }
+                await Task.Delay(100, cancellationToken);
+            }
+            throw;
+        }
 
         var result = new LoginResult(newAccessToken, newRefreshToken, user.Id.ToString(), user.Username, user.Email, user.Role);
 

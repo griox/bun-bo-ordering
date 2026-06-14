@@ -14,16 +14,8 @@ spec:
       labels:
         app: order-service
     spec:
-      affinity:
-        nodeAffinity:
-          preferredDuringSchedulingIgnoredDuringExecution:
-          - weight: 100
-            preference:
-              matchExpressions:
-              - key: role
-                operator: In
-                values:
-                - apps
+      nodeSelector:
+        role: apps
       containers:
       - name: order-service
         image: griox/bunbo-order-service:latest
