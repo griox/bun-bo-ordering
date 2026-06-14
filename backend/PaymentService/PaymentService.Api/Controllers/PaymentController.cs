@@ -56,7 +56,8 @@ public class PaymentController : ControllerBase
     [ServiceFilter(typeof(PaymentService.Api.Filters.SePayWebhookAuthFilter))]
     public async Task<IActionResult> SePayWebhook(
         [FromBody] PaymentService.Application.Models.SePayWebhookPayload payload,
-        [FromServices] PaymentService.Application.Interfaces.IWebhookParserService webhookParserService)
+        [FromServices] PaymentService.Application.Interfaces.IWebhookParserService webhookParserService,
+        [FromServices] MassTransit.IPublishEndpoint publishEndpoint)
     {
         var validOrderId = webhookParserService.ExtractOrderId(payload);
 
@@ -77,16 +78,12 @@ public class PaymentController : ControllerBase
             signature: signature
         );
 
-        _logger.LogInformation("[SEPAY] Processing webhook for Order: {OrderId}, Status: {Status}", validOrderId.Value, command.Status);
-        var result = await _mediator.Send(command);
+        _logger.LogInformation("[SEPAY] Enqueuing webhook processing for Order: {OrderId}, Status: {Status}", validOrderId.Value, command.Status);
+        
+        // Publish command to RabbitMQ queue for asynchronous background processing
+        await publishEndpoint.Publish(command);
 
-        if (!result)
-        {
-            _logger.LogWarning("[SEPAY] Command rejected for Order: {OrderId}", validOrderId.Value);
-            return BadRequest(new { error = "Command rejected. Check server logs." });
-        }
-
-        _logger.LogInformation("[SEPAY] Webhook processed successfully for Order: {OrderId}", validOrderId.Value);
+        _logger.LogInformation("[SEPAY] Webhook received and enqueued successfully for Order: {OrderId}", validOrderId.Value);
         return Ok(new { success = true });
     }
 }

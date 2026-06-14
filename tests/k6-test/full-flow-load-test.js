@@ -169,8 +169,7 @@ export function setup() {
     console.log('[SETUP] Admin login OK');
 
     // 2. [N1] Tạo pool 20 tài khoản member test
-    // [RC-3 FIX] Rate limit Identity = 15 req/phút/IP → tối đa 0.25 req/s
-    // sleep(4.5s) giữa mỗi cặp register+login để đảm bảo không bị 429
+    // Đã nâng Rate limit Identity lên 3000+ req/phút -> Giảm sleep xuống 0.1s để setup chạy nhanh
     const memberTokens = [];
     for (let i = 1; i <= 20; i++) {
         const username = `k6member${String(i).padStart(3, '0')}`;
@@ -182,8 +181,7 @@ export function setup() {
             JSON.stringify({ username, email, password }),
             { headers: defaultHeaders, timeout: '10s' }
         );
-        // Chờ 4.5s: đảm bảo register + login = 2 req trong ~9s < 15 req/phút limit
-        sleep(4.5);
+        sleep(0.1);
 
         // Login để lấy token
         const loginRes = post(`${BASE_URL}/identity/login`,
@@ -200,7 +198,7 @@ export function setup() {
         } else {
             console.warn(`[SETUP] Login failed for ${username}: ${loginRes.status}`);
         }
-        sleep(4.5);
+        sleep(0.1);
     }
     console.log(`[SETUP] Member pool created: ${memberTokens.length} accounts`);
 
@@ -326,8 +324,8 @@ export function memberFlow(data) {
     const memberPool = data.memberTokens || [];
     if (memberPool.length === 0) { sleep(2); return; }
 
-    // Stagger login để tránh rate limit 15 req/phút
-    sleep((__VU % 10) * 0.5);
+    // Stagger login nhẹ để tránh tất cả các VU gọi login cùng một mili-giây
+    sleep((__VU % 10) * 0.05);
 
     const account = memberPool[__VU % memberPool.length];
     const token = account.token;

@@ -34,8 +34,8 @@ builder.Services.AddRateLimiter(options =>
                  ?? context.Connection.RemoteIpAddress?.ToString() 
                  ?? "unknown";
 
-        var permitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 60);
-        var queueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit", 0);
+        var permitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 3000);
+        var queueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit", 100);
 
         return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
         {

@@ -29,13 +29,21 @@ builder.Services.AddProblemDetails();
 // Configure Rate Limiting — chỉ chặn abuse thực sự, không chặn load test
 builder.Services.AddRateLimiter(options =>
 {
-    // 3000 req/phút/IP — đủ cho 200 concurrent users mà vẫn chặn abuse thực sự
-    options.AddFixedWindowLimiter("cart-update", opt =>
+    options.AddPolicy("cart-update", context =>
     {
-        opt.Window = TimeSpan.FromSeconds(60);
-        opt.PermitLimit = 3000;
-        opt.QueueProcessingOrder = System.Threading.RateLimiting.QueueProcessingOrder.OldestFirst;
-        opt.QueueLimit = 100;
+        var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault() 
+                 ?? context.Connection.RemoteIpAddress?.ToString() 
+                 ?? "unknown";
+
+        var permitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 3000);
+        var queueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit", 100);
+
+        return RateLimitPartition.GetFixedWindowLimiter(ip, _ => new FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromSeconds(60),
+            PermitLimit = permitLimit,
+            QueueLimit = queueLimit
+        });
     });
 
     options.OnRejected = async (context, token) =>

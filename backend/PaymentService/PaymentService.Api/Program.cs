@@ -106,6 +106,8 @@ builder.Services.AddMassTransit(x =>
         o.IsolationLevel = System.Data.IsolationLevel.ReadCommitted;
     });
 
+    x.AddConsumer<PaymentService.Infrastructure.Consumers.ProcessPaymentWebhookConsumer>();
+
     x.UsingRabbitMq((context, cfg) =>
     {
         var rabbitMqHost = builder.Configuration["RabbitMq:Host"] ?? "localhost";
@@ -113,6 +115,11 @@ builder.Services.AddMassTransit(x =>
         {
             h.Username(builder.Configuration["RabbitMq:Username"] ?? "guest");
             h.Password(builder.Configuration["RabbitMq:Password"] ?? "guest");
+        });
+
+        cfg.ReceiveEndpoint("payment_webhook_queue", e =>
+        {
+            e.ConfigureConsumer<PaymentService.Infrastructure.Consumers.ProcessPaymentWebhookConsumer>(context);
         });
     });
 });
