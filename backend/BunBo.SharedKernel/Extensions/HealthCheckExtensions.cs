@@ -14,19 +14,19 @@ public static class HealthCheckExtensions
     {
         var builder = services.AddHealthChecks();
         
-        // 1. Check PostgreSQL Connection
+        // 1. Check PostgreSQL Connection — dùng pooled connection qua PgBouncer
         var postgresConn = configuration.GetConnectionString("DefaultConnection");
         if (!string.IsNullOrEmpty(postgresConn))
         {
+            // QUAN TRỌNG: KHÔNG dùng Pooling=false — sẽ tạo raw TCP connection bypass PgBouncer
+            // Khi PostgreSQL bận dưới load, auth handshake timeout → readiness probe fail → pod bị xóa khỏi LB
             var hcConn = postgresConn;
             if (!hcConn.EndsWith(";")) hcConn += ";";
             
-            // Clean up any existing Pooling or Timeout settings in the connection string to override them
-            hcConn = System.Text.RegularExpressions.Regex.Replace(hcConn, @"(?i)pooling\s*=\s*[^;]+;?", "");
+            // Chỉ override timeout, GIỮ pooling mặc định (true)
             hcConn = System.Text.RegularExpressions.Regex.Replace(hcConn, @"(?i)timeout\s*=\s*[^;]+;?", "");
             hcConn = System.Text.RegularExpressions.Regex.Replace(hcConn, @"(?i)command\s*timeout\s*=\s*[^;]+;?", "");
-            
-            hcConn += "Pooling=false;Timeout=3;Command Timeout=3;";
+            hcConn += "Timeout=5;Command Timeout=5;";
             builder.AddNpgSql(hcConn, name: "postgres", tags: new[] { "db", "postgresql" });
         }
         
