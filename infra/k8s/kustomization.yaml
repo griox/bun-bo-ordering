@@ -35,13 +35,13 @@ images:
   newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
 - name: griox/bunbo-order-service
   newName: griox/bunbo-order-service
-  newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
+  newTag: 82a250ee5eb77f8bbc5d1ea627cbd9723a7f27ea
 - name: griox/bunbo-payment-service
   newName: griox/bunbo-payment-service
   newTag: 6b7ede8eb72badc925615377ebca349f099c1f0e
 - name: griox/bunbo-promotion-service
   newName: griox/bunbo-promotion-service
-  newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
+  newTag: 82a250ee5eb77f8bbc5d1ea627cbd9723a7f27ea
 - name: griox/bunbo-realtime-service
   newName: griox/bunbo-realtime-service
   newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
