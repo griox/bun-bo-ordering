@@ -48,10 +48,11 @@ done
 NAMESPACE="default"
 PG_POD_SELECTOR="app.kubernetes.io/name=postgresql"
 PG_NS="postgresql"
-REDIS_POD_SELECTOR="app=redis-master"
+REDIS_POD_SELECTOR="app.kubernetes.io/name=redis,app.kubernetes.io/component=master"
 REDIS_NS="redis"
 PG_USER="postgres"
 PG_PASSWORD="bunbopw123!"
+REDIS_PASSWORD="bunbopw123!"
 ORDER_DB="bunbo_db"
 IDENTITY_DB="bunbo_db"
 PROMOTION_DB="bunbo_db"
@@ -176,7 +177,7 @@ run_redis_cmd() {
         return 1
     fi
 
-    kubectl exec -n "$REDIS_NS" "$redis_pod" -- redis-cli $cmd 2>/dev/null
+    kubectl exec -n "$REDIS_NS" "$redis_pod" -- redis-cli -a "$REDIS_PASSWORD" --no-auth-warning $cmd 2>/dev/null
 }
 
 # ================================================================
@@ -342,7 +343,7 @@ REDIS_POD=$(find_pod "$REDIS_POD_SELECTOR" "$REDIS_NS" 2>/dev/null || echo "")
 if [[ -n "$REDIS_POD" ]]; then
     # Lấy danh sách cart keys (pattern: cart:*)
     K6_CART_KEYS=$(kubectl exec -n "$REDIS_NS" "$REDIS_POD" -- \
-        redis-cli KEYS "cart:*" 2>/dev/null | wc -l || echo 0)
+        redis-cli -a "$REDIS_PASSWORD" --no-auth-warning KEYS "cart:*" 2>/dev/null | wc -l || echo 0)
     log_info "Tổng cart keys hiện tại trong Redis: $K6_CART_KEYS"
 
     if $DRY_RUN; then
@@ -350,10 +351,10 @@ if [[ -n "$REDIS_POD" ]]; then
     elif confirm "Xóa tất cả cart data trong Redis? (Cẩn thận: xóa cả cart của khách hàng thật nếu có)"; then
         # Chỉ xóa cart keys — không flush toàn bộ Redis
         CART_COUNT=$(kubectl exec -n "$REDIS_NS" "$REDIS_POD" -- \
-            redis-cli KEYS "cart:*" 2>/dev/null | wc -l)
+            redis-cli -a "$REDIS_PASSWORD" --no-auth-warning KEYS "cart:*" 2>/dev/null | wc -l)
         if [[ "$CART_COUNT" -gt 0 ]]; then
             kubectl exec -n "$REDIS_NS" "$REDIS_POD" -- \
-                redis-cli --eval <(echo "
+                redis-cli -a "$REDIS_PASSWORD" --no-auth-warning --eval <(echo "
                     local keys = redis.call('KEYS', 'cart:*')
                     local count = 0
                     for _, key in ipairs(keys) do
@@ -364,8 +365,8 @@ if [[ -n "$REDIS_POD" ]]; then
                 ") 2>/dev/null || \
             # Fallback: xóa từng key
             kubectl exec -n "$REDIS_NS" "$REDIS_POD" -- \
-                redis-cli KEYS "cart:*" 2>/dev/null | \
-                xargs -r kubectl exec -n "$REDIS_NS" "$REDIS_POD" -- redis-cli DEL 2>/dev/null
+                redis-cli -a "$REDIS_PASSWORD" --no-auth-warning KEYS "cart:*" 2>/dev/null | \
+                xargs -r kubectl exec -n "$REDIS_NS" "$REDIS_POD" -- redis-cli -a "$REDIS_PASSWORD" --no-auth-warning DEL 2>/dev/null
             log_ok "Đã xóa $CART_COUNT cart keys khỏi Redis ✓"
             TOTAL_DELETED=$((TOTAL_DELETED + CART_COUNT))
         else
