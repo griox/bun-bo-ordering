@@ -16,6 +16,8 @@ public class CatalogDataClient : ISyncCatalogClient
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
     // Timeout cứng cho mỗi gRPC call — tránh block request khi CatalogService bận
     private static readonly TimeSpan GrpcDeadline = TimeSpan.FromSeconds(15);
+    // Timeout cho việc chờ Semaphore lock tránh treo luồng vô thời hạn
+    private static readonly TimeSpan LockTimeout = TimeSpan.FromSeconds(3);
 
     // Lock dictionary to prevent concurrent duplicate gRPC calls for the same food items
     private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
@@ -36,7 +38,11 @@ public class CatalogDataClient : ISyncCatalogClient
         }
 
         var sem = _locks.GetOrAdd(foodId, _ => new SemaphoreSlim(1, 1));
-        await sem.WaitAsync();
+        bool acquired = await sem.WaitAsync(LockTimeout);
+        if (!acquired)
+        {
+            _logger.LogWarning("--> Semaphore lock wait timeout ({Timeout}s) for Food ID: {FoodId}. Calling gRPC directly without lock.", LockTimeout.TotalSeconds, foodId);
+        }
 
         try
         {
@@ -68,7 +74,10 @@ public class CatalogDataClient : ISyncCatalogClient
         }
         finally
         {
-            sem.Release();
+            if (acquired)
+            {
+                sem.Release();
+            }
         }
     }
 
@@ -105,12 +114,19 @@ public class CatalogDataClient : ISyncCatalogClient
 
         try
         {
-            // Acquire locks in sorted order
+            // Acquire locks in sorted order with timeout
             foreach (var id in sortedMissingIds)
             {
                 var sem = _locks.GetOrAdd(id, _ => new SemaphoreSlim(1, 1));
-                await sem.WaitAsync();
-                acquiredLocks.Add(sem);
+                bool acquired = await sem.WaitAsync(LockTimeout);
+                if (acquired)
+                {
+                    acquiredLocks.Add(sem);
+                }
+                else
+                {
+                    _logger.LogWarning("--> Semaphore lock wait timeout ({Timeout}s) for Food ID: {FoodId} in batch fetch. Proceeding without lock.", LockTimeout.TotalSeconds, id);
+                }
             }
 
             // 3. Double-check cache inside locks

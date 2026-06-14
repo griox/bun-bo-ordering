@@ -33,7 +33,7 @@ spec:
             - name: MAX_CLIENT_CONN
               value: "10000"
             - name: DEFAULT_POOL_SIZE
-              value: "120"
+              value: "200"
             - name: IGNORE_STARTUP_PARAMETERS
               value: "extra_float_digits"
             - name: AUTH_TYPE
