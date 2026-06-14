@@ -36,11 +36,14 @@ builder.Services.AddProblemDetails();
 // Configure Rate Limiting
 builder.Services.AddRateLimiter(options =>
 {
+    var permitLimit = builder.Configuration.GetValue<int>("RateLimiting:PermitLimit", 3000);
+    var queueLimit = builder.Configuration.GetValue<int>("RateLimiting:QueueLimit", 100);
+
     options.AddFixedWindowLimiter("order-creation", opt =>
     {
         opt.Window = TimeSpan.FromSeconds(30);
-        opt.PermitLimit = 500; // Tăng lên 500 để phục vụ load test
-        opt.QueueLimit = 100;
+        opt.PermitLimit = permitLimit / 2; // Match the 30s window (permitLimit is per minute)
+        opt.QueueLimit = queueLimit;
     });
 
     options.OnRejected = async (context, token) =>
