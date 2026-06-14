@@ -25,24 +25,24 @@ spec:
             cpu: "40m"
             memory: "128Mi"
           limits:
-            cpu: "200m"
+            cpu: "300m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
             path: /health/live
             port: 8080
-          initialDelaySeconds: 15
+          initialDelaySeconds: 25
           periodSeconds: 20
           timeoutSeconds: 10
-          failureThreshold: 6
+          failureThreshold: 8
         readinessProbe:
           httpGet:
             path: /health/ready
             port: 8080
-          initialDelaySeconds: 5
+          initialDelaySeconds: 15
           periodSeconds: 10
           timeoutSeconds: 10
-          failureThreshold: 6
+          failureThreshold: 8
 
         ports:
         - name: http
