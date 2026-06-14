@@ -23,7 +23,7 @@ images:
   newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
 - name: griox/bunbo-cart-service
   newName: griox/bunbo-cart-service
-  newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
+  newTag: a2c1e82c7ed5a719cdbe85146758b8d22e7e97cb
 - name: griox/bunbo-catalog-service
   newName: griox/bunbo-catalog-service
   newTag: 64d87324bc116aee33cfcbaef47f28ba200ba0c9
