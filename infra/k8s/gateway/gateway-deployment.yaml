@@ -25,7 +25,7 @@ spec:
             cpu: "100m"
             memory: "64Mi"
           limits:
-            cpu: "800m"
+            cpu: "500m"
             memory: "128Mi"
         livenessProbe:
           httpGet:
@@ -33,14 +33,16 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
         readinessProbe:
           httpGet:
             path: /health/ready
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
 
         ports:
         - name: http
@@ -110,8 +112,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: api-gateway
-  minReplicas: 3
-  maxReplicas: 5
+  minReplicas: 2
+  maxReplicas: 3
   behavior:
     scaleDown:
       stabilizationWindowSeconds: 120

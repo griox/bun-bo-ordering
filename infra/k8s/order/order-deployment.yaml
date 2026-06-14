@@ -22,7 +22,7 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            cpu: "60m"
+            cpu: "150m"
             memory: "128Mi"
           limits:
             cpu: "800m"
@@ -33,14 +33,16 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
         readinessProbe:
           httpGet:
             path: /health/ready
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
 
         ports:
         - name: http

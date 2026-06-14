@@ -21,10 +21,10 @@ spec:
         image: griox/bunbo-realtime-service:latest
         resources:
           requests:
-            cpu: "40m"
+            cpu: "60m"
             memory: "128Mi"
           limits:
-            cpu: "300m"
+            cpu: "250m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
@@ -32,14 +32,16 @@ spec:
             port: 5005
           initialDelaySeconds: 15
           periodSeconds: 20
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
         readinessProbe:
           httpGet:
             path: /health/ready
             port: 5005
           initialDelaySeconds: 5
           periodSeconds: 10
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
 
         ports:
         - name: http
@@ -95,7 +97,7 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: realtime-service
-  minReplicas: 2
+  minReplicas: 1
   maxReplicas: 3
   behavior:
     scaleDown:

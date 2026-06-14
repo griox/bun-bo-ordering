@@ -21,10 +21,10 @@ spec:
         image: griox/bunbo-payment-service:latest
         resources:
           requests:
-            cpu: "50m"
+            cpu: "80m"
             memory: "128Mi"
           limits:
-            cpu: "600m"
+            cpu: "400m"
             memory: "256Mi"
         livenessProbe:
           httpGet:
@@ -32,14 +32,16 @@ spec:
             port: 8080
           initialDelaySeconds: 15
           periodSeconds: 20
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
         readinessProbe:
           httpGet:
             path: /health/ready
             port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
-          timeoutSeconds: 5
+          timeoutSeconds: 10
+          failureThreshold: 6
 
         ports:
         - name: http
