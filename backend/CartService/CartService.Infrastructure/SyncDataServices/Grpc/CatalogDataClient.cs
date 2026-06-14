@@ -17,7 +17,7 @@ public class CatalogDataClient : ISyncCatalogClient
     // Timeout cứng cho mỗi gRPC call — tránh block request khi CatalogService bận
     private static readonly TimeSpan GrpcDeadline = TimeSpan.FromSeconds(15);
     // Timeout cho việc chờ Semaphore lock tránh treo luồng vô thời hạn
-    private static readonly TimeSpan LockTimeout = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan LockTimeout = TimeSpan.FromSeconds(15);
 
     // Lock dictionary to prevent concurrent duplicate gRPC calls for the same food items
     private static readonly ConcurrentDictionary<Guid, SemaphoreSlim> _locks = new();
@@ -41,7 +41,12 @@ public class CatalogDataClient : ISyncCatalogClient
         bool acquired = await sem.WaitAsync(LockTimeout);
         if (!acquired)
         {
-            _logger.LogWarning("--> Semaphore lock wait timeout ({Timeout}s) for Food ID: {FoodId}. Calling gRPC directly without lock.", LockTimeout.TotalSeconds, foodId);
+            _logger.LogWarning("--> Semaphore lock wait timeout ({Timeout}s) for Food ID: {FoodId}. Aborting to prevent cache stampede.", LockTimeout.TotalSeconds, foodId);
+            if (_cache.TryGetValue(cacheKey, out cachedItem))
+            {
+                return cachedItem!;
+            }
+            throw new TimeoutException($"Failed to acquire lock for food item {foodId} within {LockTimeout.TotalSeconds}s.");
         }
 
         try
@@ -125,7 +130,15 @@ public class CatalogDataClient : ISyncCatalogClient
                 }
                 else
                 {
-                    _logger.LogWarning("--> Semaphore lock wait timeout ({Timeout}s) for Food ID: {FoodId} in batch fetch. Proceeding without lock.", LockTimeout.TotalSeconds, id);
+                    _logger.LogWarning("--> Semaphore lock wait timeout ({Timeout}s) for Food ID: {FoodId} in batch fetch. Aborting to prevent cache stampede.", LockTimeout.TotalSeconds, id);
+                    if (_cache.TryGetValue($"FoodItem_{id}", out FoodItemInfo? cachedItem))
+                    {
+                        result[id] = cachedItem!;
+                    }
+                    else
+                    {
+                        throw new TimeoutException($"Failed to acquire lock for food item {id} within {LockTimeout.TotalSeconds}s.");
+                    }
                 }
             }
 
