@@ -16,7 +16,7 @@ using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
-ThreadPool.SetMinThreads(500, 500);
+ThreadPool.SetMinThreads(200, 200);
 builder.Host.AddSerilogLogging("PromotionService");
 
 builder.Services.AddEndpointsApiExplorer();
