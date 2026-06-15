@@ -30,7 +30,7 @@ spec:
         startupProbe:
           httpGet:
             path: /health/live
-            port: 8080
+            port: 5002
           failureThreshold: 30
           periodSeconds: 10
         livenessProbe:
