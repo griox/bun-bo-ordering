@@ -13,7 +13,7 @@ public class CatalogDataClient : ISyncCatalogClient
     private readonly IMemoryCache _cache;
     private readonly ILogger<CatalogDataClient> _logger;
 
-    private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
+    private static readonly TimeSpan CacheDuration = TimeSpan.FromHours(1);
     // Timeout cứng cho mỗi gRPC call — tránh block request khi CatalogService bận
     private static readonly TimeSpan GrpcDeadline = TimeSpan.FromSeconds(15);
     // Timeout cho việc chờ Semaphore lock tránh treo luồng vô thời hạn
