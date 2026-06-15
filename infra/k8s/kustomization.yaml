@@ -38,7 +38,7 @@ images:
   newTag: 82a250ee5eb77f8bbc5d1ea627cbd9723a7f27ea
 - name: griox/bunbo-payment-service
   newName: griox/bunbo-payment-service
-  newTag: 6b7ede8eb72badc925615377ebca349f099c1f0e
+  newTag: 7355c8600eb4a83fe74bdea6be3fed4ae47030fd
 - name: griox/bunbo-promotion-service
   newName: griox/bunbo-promotion-service
   newTag: 536d4fc2a74495261eabb3e3ac551b83564b61d4
