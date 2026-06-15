@@ -1,118 +1,135 @@
 BunBo Microservices — Load Test Results (300 VUs)
-Date: 2026-06-14
+Date: 2026-06-15
 
-INFO[0558]                                               source=console
-INFO[0558] ╔══════════════════════════════════════════════════════════╗  source=console
-INFO[0558] ║         K6 LOAD TEST COMPLETED — TEARDOWN REPORT        ║  source=console
-INFO[0558] ╚══════════════════════════════════════════════════════════╝  source=console
-INFO[0558] [TEARDOWN] Member accounts created : 0        source=console
-INFO[0558] [TEARDOWN] Table seats seeded      : 0        source=console
-INFO[0558] [TEARDOWN] Race voucher code       : K6_RACE_V1  source=console
-INFO[0558]                                               source=console
-INFO[0558] ━━━ CLEANUP OPTION 1 (Recommended): Bash script ━━━━━━━━━  source=console
-INFO[0558]   cd tests/k6-test && chmod +x k6-cleanup.sh  source=console
-INFO[0558]   ./k6-cleanup.sh --dry-run   # Preview trước khi xóa  source=console
-INFO[0558]   ./k6-cleanup.sh             # Xóa có xác nhận từng bước  source=console
-INFO[0558]   ./k6-cleanup.sh --yes       # Tự động xóa toàn bộ  source=console
-INFO[0558]                                               source=console
-INFO[0558] ━━━ CLEANUP OPTION 2: Manual SQL ━━━━━━━━━━━━━━━━━━━━━━━━  source=console
-INFO[0558]   # OrderDB:                                  source=console
-INFO[0558]   DELETE FROM "OrderItems" WHERE "OrderId" IN (SELECT "Id" FROM "Orders" WHERE "Note" LIKE 'k6-%');  source=console
-INFO[0558]   DELETE FROM "Orders" WHERE "Note" LIKE 'k6-%';  source=console
-INFO[0558]   DELETE FROM "TableSessions" WHERE "TableId" IN (SELECT "Id" FROM "RestaurantTables" WHERE "TableCode" LIKE 'K6-T%');  source=console
-INFO[0558]   DELETE FROM "RestaurantTables" WHERE "TableCode" LIKE 'K6-T%';  source=console
-INFO[0558]                                               source=console
-INFO[0558]   # IdentityDB:                               source=console
-INFO[0558]   DELETE FROM "AspNetUserRoles"  WHERE "UserId" IN (SELECT "Id" FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%');  source=console
-INFO[0558]   DELETE FROM "AspNetUserClaims" WHERE "UserId" IN (SELECT "Id" FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%');  source=console
-INFO[0558]   DELETE FROM "RefreshTokens"    WHERE "UserId" IN (SELECT "Id" FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%');  source=console
-INFO[0558]   DELETE FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%';  source=console
-INFO[0558]                                               source=console
-INFO[0558]   # PromotionDB:                              source=console
-INFO[0558]   DELETE FROM "UserVouchers" WHERE "VoucherId" IN (SELECT "Id" FROM "Vouchers" WHERE "Code" = 'K6_RACE_V1');  source=console
-INFO[0558]   DELETE FROM "Vouchers" WHERE "Code" = 'K6_RACE_V1';  source=console
-INFO[0558]                                               source=console
-INFO[0558]   # Redis (cart data):                        source=console
-INFO[0558]   redis-cli --eval - <<'EOF'                  source=console
-INFO[0558]   local keys = redis.call("KEYS","cart:*")    source=console
-INFO[0558]   for _,k in ipairs(keys) do redis.call("DEL",k) end  source=console
-INFO[0558]   return #keys                                source=console
-INFO[0558]   EOF                                         source=console
-INFO[0558] ══════════════════════════════════════════════════════════  source=console
+INFO[0580]                                               source=console
+INFO[0580] ╔══════════════════════════════════════════════════════════╗  source=console
+INFO[0580] ║         K6 LOAD TEST COMPLETED — TEARDOWN REPORT        ║  source=console
+INFO[0580] ╚══════════════════════════════════════════════════════════╝  source=console
+INFO[0580] [TEARDOWN] Member accounts created : 20       source=console
+INFO[0580] [TEARDOWN] Table seats seeded      : 20       source=console
+INFO[0580] [TEARDOWN] Race voucher code       : K6_RACE_V1  source=console
+INFO[0580]                                               source=console
+INFO[0580] ━━━ CLEANUP OPTION 1 (Recommended): Bash script ━━━━━━━━━  source=console
+INFO[0580]   cd tests/k6-test && chmod +x k6-cleanup.sh  source=console
+INFO[0580]   ./k6-cleanup.sh --dry-run   # Preview trước khi xóa  source=console
+INFO[0580]   ./k6-cleanup.sh             # Xóa có xác nhận từng bước  source=console
+INFO[0580]   ./k6-cleanup.sh --yes       # Tự động xóa toàn bộ  source=console
+INFO[0580]                                               source=console
+INFO[0580] ━━━ CLEANUP OPTION 2: Manual SQL ━━━━━━━━━━━━━━━━━━━━━━━━  source=console
+INFO[0580]   # OrderDB:                                  source=console
+INFO[0580]   DELETE FROM "OrderItems" WHERE "OrderId" IN (SELECT "Id" FROM "Orders" WHERE "Note" LIKE 'k6-%');  source=console
+INFO[0580]   DELETE FROM "Orders" WHERE "Note" LIKE 'k6-%';  source=console
+INFO[0580]   DELETE FROM "TableSessions" WHERE "TableId" IN (SELECT "Id" FROM "RestaurantTables" WHERE "TableCode" LIKE 'K6-T%');  source=console
+INFO[0580]   DELETE FROM "RestaurantTables" WHERE "TableCode" LIKE 'K6-T%';  source=console
+INFO[0580]                                               source=console
+INFO[0580]   # IdentityDB:                               source=console
+INFO[0580]   DELETE FROM "AspNetUserRoles"  WHERE "UserId" IN (SELECT "Id" FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%');  source=console
+INFO[0580]   DELETE FROM "AspNetUserClaims" WHERE "UserId" IN (SELECT "Id" FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%');  source=console
+INFO[0580]   DELETE FROM "RefreshTokens"    WHERE "UserId" IN (SELECT "Id" FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%');  source=console
+INFO[0580]   DELETE FROM "AspNetUsers" WHERE "UserName" LIKE 'k6member%';  source=console
+INFO[0580]                                               source=console
+INFO[0580]   # PromotionDB:                              source=console
+INFO[0580]   DELETE FROM "UserVouchers" WHERE "VoucherId" IN (SELECT "Id" FROM "Vouchers" WHERE "Code" = 'K6_RACE_V1');  source=console
+INFO[0580]   DELETE FROM "Vouchers" WHERE "Code" = 'K6_RACE_V1';  source=console
+INFO[0580]                                               source=console
+INFO[0580]   # Redis (cart data):                        source=console
+INFO[0580]   redis-cli --eval - <<'EOF'                  source=console
+INFO[0580]   local keys = redis.call("KEYS","cart:*")    source=console
+INFO[0580]   for _,k in ipairs(keys) do redis.call("DEL",k) end  source=console
+INFO[0580]   return #keys                                source=console
+INFO[0580]   EOF                                         source=console
+INFO[0580] ══════════════════════════════════════════════════════════  source=console
 
 
   █ THRESHOLDS 
 
     checks{flow:chaosFlow}
-    ✓ 'rate>0.90' rate=99.70%
+    ✓ 'rate>0.90' rate=99.88%
 
     checks{flow:voucherRaceFlow}
-    ✓ 'rate>0.95' rate=0.00%
+    ✓ 'rate>0.95' rate=99.73%
 
     http_req_duration
-    ✗ 'p(95)<2000' p(95)=2.35s
+    ✗ 'p(95)<2000' p(95)=5.7s
 
       {flow:guestFlow}
-      ✗ 'p(95)<1500' p(95)=2.47s
+      ✗ 'p(95)<1500' p(95)=7.19s
 
       {flow:kitchenAdminFlow}
-      ✓ 'p(95)<1000' p(95)=0s
+      ✗ 'p(95)<1000' p(95)=3.01s
 
       {flow:memberFlow}
-      ✓ 'p(95)<2000' p(95)=0s
+      ✗ 'p(95)<2000' p(95)=5.73s
 
       {flow:voucherRaceFlow}
-      ✓ 'p(95)<800' p(95)=0s
+      ✗ 'p(95)<800' p(95)=4.22s
 
     http_req_failed
-    ✗ 'rate<0.05' rate=24.46%
+    ✗ 'rate<0.05' rate=22.72%
 
 
   █ TOTAL RESULTS 
 
-    checks_total.......: 34507  61.838291/s
-    checks_succeeded...: 99.91% 34479 out of 34507
-    checks_failed......: 0.08%  28 out of 34507
+    checks_total.......: 49432  85.190334/s
+    checks_succeeded...: 99.69% 49281 out of 49432
+    checks_failed......: 0.30%  151 out of 49432
 
     ✓ guest: scan 200
-    ✗ chaos: duplicate webhook handled
-      ↳  99% — ✓ 1812 / ✗ 13
-    ✗ chaos: malformed json → 400
-      ↳  99% — ✓ 1811 / ✗ 14
-    ✓ chaos: 404 caught
-    ✓ chaos: empty cart order → 400/404
-    ✓ chaos: invalid voucher auth → 401
+    ✓ member: scan 200
     ✗ guest: cart 200
-      ↳  99% — ✓ 8460 / ✗ 1
-    ✓ guest: order 201
+      ↳  99% — ✓ 5840 / ✗ 2
+    ✗ guest: order 201
+      ↳  98% — ✓ 5781 / ✗ 59
+    ✗ race: valid response
+      ↳  99% — ✓ 4003 / ✗ 21
+    ✓ race: no server error
+    ✓ member: cart 200
+    ✗ member: vouchers 200
+      ↳  99% — ✓ 2013 / ✗ 9
+    ✗ member: order 201
+      ↳  98% — ✓ 1998 / ✗ 24
+    ✗ member: payment init 200
+      ↳  99% — ✓ 1991 / ✗ 7
+    ✗ member: webhook 200
+      ↳  99% — ✓ 1988 / ✗ 3
+    ✗ member: points 200
+      ↳  99% — ✓ 1981 / ✗ 10
+    ✗ chaos: duplicate webhook handled
+      ↳  99% — ✓ 1386 / ✗ 5
+    ✗ chaos: malformed json → 400
+      ↳  99% — ✓ 1390 / ✗ 1
+    ✓ chaos: 404 caught
+    ✗ chaos: empty cart order → 400/404
+      ↳  99% — ✓ 1389 / ✗ 2
+    ✓ chaos: invalid voucher auth → 401
+    ✗ kitchen: unread 200
+      ↳  99% — ✓ 567 / ✗ 2
+    ✗ kitchen: complete 204
+      ↳  99% — ✓ 1131 / ✗ 3
+    ✗ kitchen: cash paid 204
+      ↳  99% — ✓ 1131 / ✗ 3
 
     CUSTOM
-    orders_created_total...........: 8460   15.160748/s
+    orders_created_total...........: 7779   13.406207/s
+    orders_paid_total..............: 1131   1.949148/s
+    voucher_race_rejected..........: 4003   6.898707/s
 
     HTTP
-    http_req_duration..............: avg=457.32ms min=204µs med=117.95ms max=15s    p(90)=1.19s p(95)=2.35s
-      { expected_response:true }...: avg=484.72ms min=204µs med=129.91ms max=14.84s p(90)=1.28s p(95)=2.46s
-      { flow:guestFlow }...........: avg=488.15ms min=204µs med=129.96ms max=15s    p(90)=1.28s p(95)=2.47s
-      { flow:kitchenAdminFlow }....: avg=0s       min=0s    med=0s       max=0s     p(90)=0s    p(95)=0s   
-      { flow:memberFlow }..........: avg=0s       min=0s    med=0s       max=0s     p(90)=0s    p(95)=0s   
-      { flow:voucherRaceFlow }.....: avg=0s       min=0s    med=0s       max=0s     p(90)=0s    p(95)=0s   
-    http_req_failed................: 24.46% 10959 out of 44794
-    http_reqs......................: 44794  80.273116/s
+    http_req_duration..............: avg=1.08s min=43.88ms  med=223.17ms max=15s    p(90)=3.22s  p(95)=5.7s  
+      { expected_response:true }...: avg=1.14s min=44.93ms  med=231.58ms max=15s    p(90)=3.68s  p(95)=6.27s 
+      { flow:guestFlow }...........: avg=1.27s min=44.93ms  med=160.57ms max=15s    p(90)=4.69s  p(95)=7.19s 
+      { flow:kitchenAdminFlow }....: avg=1.1s  min=57.6ms   med=762.08ms max=15s    p(90)=2.33s  p(95)=3.01s 
+      { flow:memberFlow }..........: avg=1.06s min=47.84ms  med=267.08ms max=15s    p(90)=3.02s  p(95)=5.73s 
+      { flow:voucherRaceFlow }.....: avg=1.17s min=50.7ms   med=614.17ms max=15s    p(90)=3.03s  p(95)=4.22s 
+    http_req_failed................: 22.72% 12564 out of 55289
+    http_reqs......................: 55289  95.284196/s
 
     EXECUTION
-    iteration_duration.............: avg=3.38s    min=1.3s  med=2s       max=41.63s p(90)=6.74s p(95)=8.17s
-    iterations.....................: 33361  59.784601/s
+    iteration_duration.............: avg=8.21s min=551.01ms med=7.36s    max=40.42s p(90)=17.02s p(95)=19.93s
+    iterations.....................: 13848  23.865426/s
     vus............................: 1      min=0              max=300
     vus_max........................: 300    min=300            max=300
 
     NETWORK
-    data_received..................: 19 MB  35 kB/s
-    data_sent......................: 6.7 MB 12 kB/s
-
-running (9m18.0s), 000/300 VUs, 33361 complete and 0 interrupted iterations
-chaos_flow   ✓ [==================================] 00/15 VUs    9m0s
-guest_flow   ✓ [==================================] 000/150 VUs  9m0s
-member_flow  ✓ [==================================] 00/90 VUs    9m0s
-voucher_race ✓ [==================================] 00/25 VUs    6m0s
-kitchen_flow ✓ [==================================] 00/20 VUs    8m0s
-ERRO[0558] thresholds on metrics 'http_req_duration, http_req_duration{flow:guestFlow}, http_req_failed' have been crossed
+    data_received..................: 30 MB  51 kB/s
+    data_sent......................: 9.3 MB 16 kB/s
