@@ -42,8 +42,15 @@ async function handleProxy(request: NextRequest) {
   // Intercept logout request (simulate frontend logout)
   if (path === '/api/identity/logout' && method === 'POST') {
     const nextResponse = NextResponse.json({ message: 'Logged out successfully' });
-    nextResponse.cookies.delete('accessToken');
-    nextResponse.cookies.delete('refreshToken');
+    
+    const hostname = request.nextUrl.hostname;
+    let cookieDomain: string | undefined = undefined;
+    if (hostname && !hostname.includes('localhost') && !hostname.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) {
+        cookieDomain = hostname.startsWith('www.') ? hostname.replace('www.', '.') : '.' + hostname;
+    }
+    
+    nextResponse.cookies.set('accessToken', '', { maxAge: 0, path: '/', domain: cookieDomain });
+    nextResponse.cookies.set('refreshToken', '', { maxAge: 0, path: '/', domain: cookieDomain });
     return nextResponse;
   }
 
@@ -72,12 +79,19 @@ async function handleProxy(request: NextRequest) {
         const newAccessToken = data.token || data.Token;
         const newRefreshToken = data.refreshToken || data.RefreshToken;
 
+        const hostname = request.nextUrl.hostname;
+        let cookieDomain: string | undefined = undefined;
+        if (hostname && !hostname.includes('localhost') && !hostname.match(/^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/)) {
+            cookieDomain = hostname.startsWith('www.') ? hostname.replace('www.', '.') : '.' + hostname;
+        }
+
         if (newAccessToken) {
             nextResponse.cookies.set('accessToken', newAccessToken, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
+                domain: cookieDomain,
                 maxAge: 60 * 60, // 1 hour
             });
         }
@@ -88,6 +102,7 @@ async function handleProxy(request: NextRequest) {
                 secure: process.env.NODE_ENV === 'production',
                 sameSite: 'lax',
                 path: '/',
+                domain: cookieDomain,
                 maxAge: 7 * 24 * 60 * 60, // 7 days
             });
         }
