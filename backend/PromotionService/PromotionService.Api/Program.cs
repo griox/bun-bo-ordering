@@ -102,6 +102,9 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Caching
+builder.Services.AddMemoryCache();
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<PromotionService.Infrastructure.Messaging.Consumers.OrderCreatedEventConsumer>();
