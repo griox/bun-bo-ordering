@@ -1,0 +1,56 @@
+alertmanager:
+  alertmanagerSpec:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+  config:
+    global:
+      resolve_timeout: 5m
+    receivers:
+    - name: "null"
+    - name: telegram-notifications
+      telegram_configs:
+      - bot_token: 8855769497:AAFZ7KAqLrR0kyYos3uTh9dNMxu3eZw12mE
+        chat_id: 5295587921
+        message: "\U0001F6A8 <b>CẢNH BÁO HỆ THỐNG BUNBO</b> \U0001F6A8\n{{ range .Alerts
+          }}\n<b>Tên:</b> {{ .Labels.alertname }}\n<b>Trạng thái:</b> {{ if eq .Status
+          \"firing\" }}\U0001F525 ĐANG BỊ LỖI{{ else }}✅ ĐÃ PHỤC HỒI{{ end }}\n<b>Mức
+          độ:</b> {{ .Labels.severity }}\n<b>Chi tiết:</b> {{ .Annotations.description
+          }}\n-------------------------------\n{{ end }}"
+        parse_mode: HTML
+    route:
+      group_by:
+      - alertname
+      group_interval: 5m
+      group_wait: 30s
+      receiver: telegram-notifications
+      repeat_interval: 4h
+  enabled: true
+grafana:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 50m
+      memory: 128Mi
+kubeControllerManager:
+  enabled: false
+kubeEtcd:
+  enabled: false
+kubeScheduler:
+  enabled: false
+prometheus:
+  prometheusSpec:
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+    retention: 24h

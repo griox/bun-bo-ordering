@@ -81,6 +81,7 @@ metadata:
   name: realtime-service
 spec:
   type: ClusterIP
+  sessionAffinity: ClientIP
   selector:
     app: realtime-service
   ports:
@@ -119,3 +120,35 @@ spec:
       target:
         type: Utilization
         averageUtilization: 75
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bunbo-realtime-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # Required for SignalR with multiple replicas
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "signalr-route"
+    nginx.ingress.kubernetes.io/session-cookie-expires: "172800"
+    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
+spec:
+  tls:
+  - hosts:
+    - api.bun-bo-chung-cu.io.vn
+    secretName: bunbo-api-tls
+  rules:
+  - host: api.bun-bo-chung-cu.io.vn
+    http:
+      paths:
+      - path: /hub
+        pathType: Prefix
+        backend:
+          service:
+            name: realtime-service
+            port:
+              number: 80

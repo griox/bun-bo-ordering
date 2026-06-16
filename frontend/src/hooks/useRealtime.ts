@@ -184,6 +184,9 @@ export const useRealtime = () => {
         syncGroups();
 
         const refreshConnectionTokens = async () => {
+            const currentUser = useAuthStore.getState().user;
+            if (!currentUser) return; // Prevent refresh if logged out
+            
             try {
                 console.log("!!! SIGNALR: Refreshing tokens proactively...");
                 await axiosInstance.post('/api/identity/refresh-token');
@@ -222,9 +225,16 @@ export const useRealtime = () => {
             setConnectionStatus(signalR.HubConnectionState.Connected);
         });
 
-        connection.onclose(() => {
-            console.warn("!!! SIGNALR: Connection closed permanently. Attempting to start a fresh connection...");
+        connection.onclose((error) => {
+            console.warn("!!! SIGNALR: Connection closed. Error:", error);
             setConnectionStatus(signalR.HubConnectionState.Disconnected);
+            
+            const currentUser = useAuthStore.getState().user;
+            if (!currentUser || isStopped) {
+                console.log("!!! SIGNALR: User logged out or component stopped. Not reconnecting.");
+                return;
+            }
+
             refreshConnectionTokens().then(() => {
                 if (!isStopped) setTimeout(startConnection, 5000);
             }).catch(() => {

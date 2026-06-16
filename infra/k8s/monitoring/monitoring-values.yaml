@@ -1,3 +1,5 @@
+kubeProxy:
+  enabled: false
 alertmanager:
   enabled: true
   alertmanagerSpec:
