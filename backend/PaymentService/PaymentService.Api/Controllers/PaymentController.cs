@@ -57,7 +57,8 @@ public class PaymentController : ControllerBase
     public async Task<IActionResult> SePayWebhook(
         [FromBody] PaymentService.Application.Models.SePayWebhookPayload payload,
         [FromServices] PaymentService.Application.Interfaces.IWebhookParserService webhookParserService,
-        [FromServices] MassTransit.IPublishEndpoint publishEndpoint)
+        [FromServices] MassTransit.IPublishEndpoint publishEndpoint,
+        [FromServices] PaymentService.Application.Interfaces.IPaymentTransactionRepository repository)
     {
         var validOrderId = webhookParserService.ExtractOrderId(payload);
 
@@ -82,6 +83,12 @@ public class PaymentController : ControllerBase
         
         // Publish command to RabbitMQ queue for asynchronous background processing
         await publishEndpoint.Publish(command);
+        
+        // IMPORTANT: Because MassTransit is configured with Entity Framework Outbox,
+        // the published message is stored in the EF ChangeTracker and is NOT sent directly to RabbitMQ.
+        // We MUST call SaveChangesAsync here to persist the outbox message to the database.
+        // Without this, the message is lost at the end of the HTTP request.
+        await repository.SaveChangesAsync();
 
         _logger.LogInformation("[SEPAY] Webhook received and enqueued successfully for Order: {OrderId}", validOrderId.Value);
         return Ok(new { success = true });
