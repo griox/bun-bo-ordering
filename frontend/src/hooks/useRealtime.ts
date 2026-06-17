@@ -202,14 +202,30 @@ export const useRealtime = () => {
 
             if (connection.state === signalR.HubConnectionState.Disconnected) {
                 try {
-                    await refreshConnectionTokens();
                     await connection.start();
                     console.log("Connected to SignalR Hub");
                     setConnectionStatus(signalR.HubConnectionState.Connected);
                 } catch (err: unknown) {
-                    console.warn("SignalR Connection Error (will retry):", err);
-                    setConnectionStatus(signalR.HubConnectionState.Disconnected);
-                    if (!isStopped) setTimeout(startConnection, 5000);
+                    console.warn("SignalR Connection Error:", err);
+                    const errorMessage = err instanceof Error ? err.message : String(err);
+                    
+                    // If Unauthorized, token might be expired. Try to refresh once, then reconnect.
+                    if (errorMessage.includes("401") || errorMessage.includes("Unauthorized")) {
+                        console.log("Token expired during SignalR connect. Refreshing...");
+                        try {
+                            await refreshConnectionTokens();
+                            await connection.start();
+                            console.log("Connected to SignalR Hub after refresh");
+                            setConnectionStatus(signalR.HubConnectionState.Connected);
+                        } catch (refreshErr) {
+                            console.error("Failed to connect even after refresh:", refreshErr);
+                            setConnectionStatus(signalR.HubConnectionState.Disconnected);
+                            if (!isStopped) setTimeout(startConnection, 5000);
+                        }
+                    } else {
+                        setConnectionStatus(signalR.HubConnectionState.Disconnected);
+                        if (!isStopped) setTimeout(startConnection, 5000);
+                    }
                 }
             }
         };
@@ -217,7 +233,6 @@ export const useRealtime = () => {
         connection.onreconnecting(() => {
             console.log("!!! SIGNALR: Attempting to reconnect...");
             setConnectionStatus(signalR.HubConnectionState.Reconnecting);
-            refreshConnectionTokens().catch(() => {});
         });
 
         connection.onreconnected(() => {
@@ -235,11 +250,8 @@ export const useRealtime = () => {
                 return;
             }
 
-            refreshConnectionTokens().then(() => {
-                if (!isStopped) setTimeout(startConnection, 5000);
-            }).catch(() => {
-                if (!isStopped) setTimeout(startConnection, 5000);
-            });
+            // Just retry starting. startConnection will handle refreshing if it gets a 401.
+            if (!isStopped) setTimeout(startConnection, 5000);
         });
 
         // Reconnect when tab becomes active
