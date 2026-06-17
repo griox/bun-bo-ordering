@@ -40,6 +40,25 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
+        // Bắt lỗi 400/401 nếu bản thân request đó là '/api/identity/refresh-token'
+        if (originalRequest.url?.includes('/api/identity/refresh-token') && 
+            (error.response?.status === 400 || error.response?.status === 401)) {
+            
+            processQueue(error);
+            toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+            
+            // Xóa cookies HttpOnly thông qua proxy route
+            try {
+                await axios.post(`${axiosInstance.defaults.baseURL}/api/identity/logout`);
+            } catch (e) {
+                console.error("Failed to clear cookies on logout", e);
+            }
+            
+            useAuthStore.getState().logout();
+            isRefreshing = false;
+            return Promise.reject(error);
+        }
+
         if (error.response?.status === 401 && !originalRequest._retry) {
             if (isRefreshing) {
                 return new Promise<void>(function(resolve, reject) {
@@ -62,8 +81,16 @@ axiosInstance.interceptors.response.use(
                 processQueue(null);
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
+                // Bất kỳ lỗi nào (như 400, 401, 500) từ refresh-token
                 processQueue(refreshError);
                 toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
+                
+                try {
+                    await axios.post(`${axiosInstance.defaults.baseURL}/api/identity/logout`);
+                } catch (e) {
+                    console.error("Failed to clear cookies on logout", e);
+                }
+
                 useAuthStore.getState().logout();
                 return Promise.reject(refreshError);
             } finally {
