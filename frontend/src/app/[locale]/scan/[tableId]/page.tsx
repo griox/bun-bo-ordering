@@ -25,42 +25,52 @@ export default function ScanPage() {
     const scanMutation = useScanTableMutation();
 
     const isLoggedIn = !!user?.userId;
-    const { data: pagedData } = useCustomerOrders(isLoggedIn ? user?.userId : undefined);
+    const { data: pagedData, isLoading: ordersLoading } = useCustomerOrders(isLoggedIn ? user?.userId : undefined);
     const orders = pagedData?.items;
     const { preferredOrderId, savePreference } = useReorderPreference();
 
+    const [scanDone, setScanDone] = useState(false);
+
     useEffect(() => {
-        if (tableId) handleScan(tableId as string);
+        const doScan = async (id: string) => {
+            try {
+                const result = await scanMutation.mutateAsync(id);
+
+                if (result.sessionId) {
+                    clearCart();
+                    setSession({
+                        id: result.sessionId,
+                        tableId: id,
+                        startTime: new Date().toISOString(),
+                        isActive: true,
+                    });
+                    setTable({ id, tableCode: '', name: 'Bàn vừa quét' });
+                    toast.success('Quét mã thành công! Chào mừng bạn đến với BunBo.');
+                    setScanDone(true);
+                }
+            } catch {
+                toast.error('Mã QR không hợp lệ hoặc đã hết hạn.');
+                router.push('/menu');
+            }
+        };
+
+        if (tableId) doScan(tableId as string);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [tableId]);
 
-    const handleScan = async (id: string) => {
-        try {
-            const result = await scanMutation.mutateAsync(id);
+    useEffect(() => {
+        if (!scanDone) return;
 
-            if (result.sessionId) {
-                clearCart();
-                setSession({
-                    id: result.sessionId,
-                    tableId: id,
-                    startTime: new Date().toISOString(),
-                    isActive: true,
-                });
-                setTable({ id, tableCode: '', name: 'Bàn vừa quét' });
-                toast.success('Quét mã thành công! Chào mừng bạn đến với BunBo.');
+        // If user is logged in, wait for orders to finish loading
+        if (isLoggedIn && ordersLoading) return;
 
-                if (isLoggedIn && orders && orders.length > 0) {
-                    setPhase('reorder_prompt');
-                } else {
-                    setPhase('redirecting');
-                    router.push('/menu');
-                }
-            }
-        } catch {
-            toast.error('Mã QR không hợp lệ hoặc đã hết hạn.');
+        if (isLoggedIn && orders && orders.length > 0) {
+            setPhase('reorder_prompt');
+        } else {
+            setPhase('redirecting');
             router.push('/menu');
         }
-    };
+    }, [scanDone, isLoggedIn, ordersLoading, orders, router]);
 
     const handleReorderConfirm = async (selectedId: string, saveAsDefault: boolean) => {
         if (selectedId === TOP_ITEMS_ID) {
