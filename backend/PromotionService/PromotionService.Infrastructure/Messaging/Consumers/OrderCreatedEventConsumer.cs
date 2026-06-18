@@ -48,22 +48,28 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
                     @event.VoucherCode, @event.OrderId);
                 
                 var upperVoucherCode = @event.VoucherCode.ToUpperInvariant();
-                // Lock voucher for update to prevent race conditions in IncrementUsage
-                var voucher = await _context.Vouchers
-                    .FromSqlRaw("SELECT * FROM \"Vouchers\" WHERE \"Code\" = {0} FOR UPDATE", upperVoucherCode)
-                    .SingleOrDefaultAsync();
+                
+                // Use Atomic Update to increment usage count without locking the row for the entire transaction
+                var rowsAffected = await _context.Vouchers
+                    .Where(v => v.Code == upperVoucherCode && v.UsageCount < v.TotalUsageLimit)
+                    .ExecuteUpdateAsync(s => s.SetProperty(v => v.UsageCount, v => v.UsageCount + 1));
 
-                if (voucher != null)
+                if (rowsAffected > 0)
                 {
-                    voucher.IncrementUsage();
                     _logger.LogInformation("Incremented usage for Voucher {VoucherCode}", @event.VoucherCode);
                     
+                    // We need the voucher ID to create UserVoucher record
+                    var voucherId = await _context.Vouchers
+                        .Where(v => v.Code == upperVoucherCode)
+                        .Select(v => v.Id)
+                        .SingleOrDefaultAsync();
+
                     // Record user voucher mapping if customer is logged in
-                    if (@event.CustomerId.HasValue)
+                    if (@event.CustomerId.HasValue && voucherId != Guid.Empty)
                     {
                         var userId = @event.CustomerId.Value;
                         var existingUserVoucher = await _context.UserVouchers
-                            .SingleOrDefaultAsync(uv => uv.UserId == userId && uv.VoucherId == voucher.Id);
+                            .SingleOrDefaultAsync(uv => uv.UserId == userId && uv.VoucherId == voucherId);
                         
                         if (existingUserVoucher != null)
                         {
@@ -74,14 +80,14 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
                         }
                         else
                         {
-                            var userVoucher = new UserVoucher(userId, voucher.Id, @event.OrderId);
+                            var userVoucher = new UserVoucher(userId, voucherId, @event.OrderId);
                             _context.UserVouchers.Add(userVoucher);
                         }
                     }
                 }
                 else
                 {
-                    _logger.LogWarning("Voucher {VoucherCode} not found in database.", @event.VoucherCode);
+                    _logger.LogWarning("Voucher {VoucherCode} not found in database or already reached max usage.", @event.VoucherCode);
                 }
 
                 await _context.SaveChangesAsync();
