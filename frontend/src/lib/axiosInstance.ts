@@ -60,21 +60,23 @@ axiosInstance.interceptors.response.use(
 
                 processQueue(null);
                 return axiosInstance(originalRequest);
-            } catch (refreshError: any) {
+            } catch (refreshError) {
                 // Có thể lỗi 400/401 này là do Race Condition đa tab (một tab khác đã làm mới token thành công).
                 // Thử gọi lại request gốc thêm 1 lần nữa để xem token mới (nếu có) đã hoạt động chưa.
-                if ((refreshError.response?.status === 400 || refreshError.response?.status === 401) && !originalRequest._secondRetry) {
-                    try {
-                        originalRequest._secondRetry = true;
-                        // Dùng axios global để tránh lặp vô hạn interceptor
-                        const retryRes = await axios.request({
-                            ...originalRequest,
-                            baseURL: axiosInstance.defaults.baseURL
-                        });
-                        processQueue(null);
-                        return retryRes;
-                    } catch (secondErr) {
-                        // Thực sự hết hạn
+                if (axios.isAxiosError(refreshError)) {
+                    if ((refreshError.response?.status === 400 || refreshError.response?.status === 401) && !originalRequest._secondRetry) {
+                        try {
+                            originalRequest._secondRetry = true;
+                            // Dùng axios global để tránh lặp vô hạn interceptor
+                            const retryRes = await axios.request({
+                                ...originalRequest,
+                                baseURL: axiosInstance.defaults.baseURL
+                            });
+                            processQueue(null);
+                            return retryRes;
+                        } catch {
+                            // Thực sự hết hạn
+                        }
                     }
                 }
 
