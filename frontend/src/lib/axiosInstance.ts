@@ -40,25 +40,6 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // Bắt lỗi 400/401 nếu bản thân request đó là '/api/identity/refresh-token'
-        if (originalRequest.url?.includes('/api/identity/refresh-token') && 
-            (error.response?.status === 400 || error.response?.status === 401)) {
-            
-            processQueue(error);
-            toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
-            
-            // Xóa cookies HttpOnly thông qua proxy route
-            try {
-                await axios.post(`${axiosInstance.defaults.baseURL}/api/identity/logout`);
-            } catch (e) {
-                console.error("Failed to clear cookies on logout", e);
-            }
-            
-            useAuthStore.getState().logout();
-            isRefreshing = false;
-            return Promise.reject(error);
-        }
-
         if (error.response?.status === 401 && !originalRequest._retry) {
             if (isRefreshing) {
                 return new Promise<void>(function(resolve, reject) {
@@ -74,14 +55,30 @@ axiosInstance.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                // Gọi API refresh token. Proxy sẽ tự lấy refreshToken từ Cookie và gửi đi, 
-                // sau đó tự set lại Cookie mới.
+                // Gọi API refresh token. Proxy sẽ tự lấy refreshToken từ Cookie và gửi đi.
                 await axios.post(`${axiosInstance.defaults.baseURL}/api/identity/refresh-token`);
 
                 processQueue(null);
                 return axiosInstance(originalRequest);
-            } catch (refreshError) {
-                // Bất kỳ lỗi nào (như 400, 401, 500) từ refresh-token
+            } catch (refreshError: any) {
+                // Có thể lỗi 400/401 này là do Race Condition đa tab (một tab khác đã làm mới token thành công).
+                // Thử gọi lại request gốc thêm 1 lần nữa để xem token mới (nếu có) đã hoạt động chưa.
+                if ((refreshError.response?.status === 400 || refreshError.response?.status === 401) && !originalRequest._secondRetry) {
+                    try {
+                        originalRequest._secondRetry = true;
+                        // Dùng axios global để tránh lặp vô hạn interceptor
+                        const retryRes = await axios.request({
+                            ...originalRequest,
+                            baseURL: axiosInstance.defaults.baseURL
+                        });
+                        processQueue(null);
+                        return retryRes;
+                    } catch (secondErr) {
+                        // Thực sự hết hạn
+                    }
+                }
+
+                // Bất kỳ lỗi nào (như 400, 401, 500) từ refresh-token và retry thất bại
                 processQueue(refreshError);
                 toast.error('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại!');
                 

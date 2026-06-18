@@ -198,6 +198,8 @@ authGroup.MapPost("/logout", async (MediatR.IMediator mediator, System.Security.
     return Results.Ok(new { Message = "Đăng xuất thành công và token đã bị hủy." });
 }).RequireAuthorization();
 
+authGroup.MapGet("/ping", () => Results.Ok(new { Message = "Pong" })).RequireAuthorization();
+
 authGroup.MapGet("/users", async (int? pageNumber, int? pageSize, string? searchTerm, MediatR.IMediator mediator) =>
 {
     var users = await mediator.Send(new IdentityService.Application.Users.Queries.GetAllUsersQuery(pageNumber ?? 1, pageSize ?? 10, searchTerm));

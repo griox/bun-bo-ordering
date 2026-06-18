@@ -188,11 +188,12 @@ export const useRealtime = () => {
             if (!currentUser) return; // Prevent refresh if logged out
             
             try {
-                console.log("!!! SIGNALR: Refreshing tokens proactively...");
-                await axiosInstance.post('/api/identity/refresh-token');
-                console.log("!!! SIGNALR: Tokens refreshed successfully.");
+                console.log("!!! SIGNALR: Ping to wake up Axios interceptor...");
+                await axiosInstance.get('/api/identity/ping');
+                console.log("!!! SIGNALR: Ping successful, tokens should be valid now.");
             } catch (err) {
-                console.error("!!! SIGNALR ERROR: Failed to refresh tokens proactively:", err);
+                console.error("!!! SIGNALR ERROR: Failed to ping/refresh tokens:", err);
+                throw err;
             }
         };
 
