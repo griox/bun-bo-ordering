@@ -30,42 +30,45 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
         var strategy = _context.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
         {
+            // 1. Đọc ở ngoài Transaction
+            var exists = await _context.UserVouchers.AsNoTracking()
+                .AnyAsync(uv => uv.OrderId == @event.OrderId);
+
+            if (exists)
+            {
+                _logger.LogInformation("Voucher for Order {OrderId} already processed.", @event.OrderId);
+                return;
+            }
+
+            _logger.LogInformation("Processing voucher usage for Code {VoucherCode} for Order {OrderId}", 
+                @event.VoucherCode, @event.OrderId);
+            
+            var upperVoucherCode = @event.VoucherCode.ToUpperInvariant();
+            
+            var voucherId = await _context.Vouchers.AsNoTracking()
+                .Where(v => v.Code == upperVoucherCode)
+                .Select(v => v.Id)
+                .SingleOrDefaultAsync();
+
+            if (voucherId == Guid.Empty)
+            {
+                _logger.LogWarning("Voucher {VoucherCode} not found in database.", @event.VoucherCode);
+                return;
+            }
+
+            // 2. Mở Transaction để ghi dữ liệu
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Anti-cheat: Check if this voucher has already been processed for this order
-                var exists = await _context.UserVouchers
-                    .AnyAsync(uv => uv.OrderId == @event.OrderId);
-
-                if (exists)
-                {
-                    _logger.LogInformation("Voucher for Order {OrderId} already processed.", @event.OrderId);
-                    await transaction.RollbackAsync();
-                    return;
-                }
-
-                _logger.LogInformation("Processing voucher usage for Code {VoucherCode} for Order {OrderId}", 
-                    @event.VoucherCode, @event.OrderId);
-                
-                var upperVoucherCode = @event.VoucherCode.ToUpperInvariant();
-                
-                // Use Atomic Update to increment usage count without locking the row for the entire transaction
                 var rowsAffected = await _context.Vouchers
-                    .Where(v => v.Code == upperVoucherCode && v.UsageCount < v.TotalUsageLimit)
+                    .Where(v => v.Id == voucherId && v.UsageCount < v.TotalUsageLimit)
                     .ExecuteUpdateAsync(s => s.SetProperty(v => v.UsageCount, v => v.UsageCount + 1));
 
                 if (rowsAffected > 0)
                 {
                     _logger.LogInformation("Incremented usage for Voucher {VoucherCode}", @event.VoucherCode);
-                    
-                    // We need the voucher ID to create UserVoucher record
-                    var voucherId = await _context.Vouchers
-                        .Where(v => v.Code == upperVoucherCode)
-                        .Select(v => v.Id)
-                        .SingleOrDefaultAsync();
 
-                    // Record user voucher mapping if customer is logged in
-                    if (@event.CustomerId.HasValue && voucherId != Guid.Empty)
+                    if (@event.CustomerId.HasValue)
                     {
                         var userId = @event.CustomerId.Value;
                         var existingUserVoucher = await _context.UserVouchers
@@ -84,16 +87,17 @@ public class OrderCreatedEventConsumer : IConsumer<OrderCreatedEvent>
                             _context.UserVouchers.Add(userVoucher);
                         }
                     }
+
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    
+                    _logger.LogInformation("Successfully processed voucher usage for Order {OrderId}", @event.OrderId);
                 }
                 else
                 {
-                    _logger.LogWarning("Voucher {VoucherCode} not found in database or already reached max usage.", @event.VoucherCode);
+                    await transaction.RollbackAsync();
+                    _logger.LogWarning("Voucher {VoucherCode} already reached max usage or concurrency conflict.", @event.VoucherCode);
                 }
-
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-                
-                _logger.LogInformation("Successfully processed voucher usage for Order {OrderId}", @event.OrderId);
             }
             catch (Exception ex)
             {

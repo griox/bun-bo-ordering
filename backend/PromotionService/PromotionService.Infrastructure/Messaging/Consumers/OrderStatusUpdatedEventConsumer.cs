@@ -34,28 +34,27 @@ public class OrderStatusUpdatedEventConsumer : IConsumer<OrderStatusUpdatedEvent
         var strategy = _context.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
         {
-            using var transaction = await _context.Database.BeginTransactionAsync();
-            try
+            // 1. Lệnh đọc: Không mở transaction, dùng AsNoTracking để tối ưu tốc độ
+            var exists = await _context.PointTransactions.AsNoTracking()
+                .AnyAsync(t => t.OrderId == @event.OrderId && t.Type == TransactionType.Earn);
+            
+            if (exists)
             {
-                // Anti-cheat: Check if this transaction has already been processed (idempotency)
-                var exists = await _context.PointTransactions
-                    .AnyAsync(t => t.OrderId == @event.OrderId && t.Type == TransactionType.Earn);
-                
-                if (exists)
-                {
-                    _logger.LogInformation("Points for Order {OrderId} already awarded.", @event.OrderId);
-                    await transaction.RollbackAsync();
-                    return;
-                }
+                _logger.LogInformation("Points for Order {OrderId} already awarded.", @event.OrderId);
+                return;
+            }
 
-                // Calculate Points: 1 point per 10,000 VND
-                int pointsToEarn = (int)(@event.TotalAmount / 10000);
-                if (pointsToEarn > 0)
+            int pointsToEarn = (int)(@event.TotalAmount / 10000);
+            if (pointsToEarn > 0)
+            {
+                // 2. Mở Transaction khi thực sự chuẩn bị Ghi dữ liệu
+                using var transaction = await _context.Database.BeginTransactionAsync();
+                try
                 {
                     _logger.LogInformation("Awarding {Points} points to User {UserId} for Order {OrderId}", 
                         pointsToEarn, userId, @event.OrderId);
 
-                    // Get or Create LoyaltyPoint record for user
+                    // Ở đây cần đọc LoyaltyPoint ra để update, bắt buộc phải Tracking
                     var loyaltyPoint = await _context.LoyaltyPoints
                         .SingleOrDefaultAsync(lp => lp.UserId == userId);
 
@@ -65,7 +64,6 @@ public class OrderStatusUpdatedEventConsumer : IConsumer<OrderStatusUpdatedEvent
                         _context.LoyaltyPoints.Add(loyaltyPoint);
                     }
 
-                    // Append to Ledger
                     var pt = new PointTransaction(
                         userId,
                         pointsToEarn,
@@ -76,19 +74,19 @@ public class OrderStatusUpdatedEventConsumer : IConsumer<OrderStatusUpdatedEvent
 
                     loyaltyPoint.AddPoints(pointsToEarn);
                     _context.PointTransactions.Add(pt);
-                }
 
-                await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
-                
-                _logger.LogInformation("Successfully awarded points for User {UserId} (Order {OrderId})", 
-                    userId, @event.OrderId);
-            }
-            catch (Exception ex)
-            {
-                await transaction.RollbackAsync();
-                _logger.LogError(ex, "Error processing OrderStatusUpdatedEvent for Order {OrderId}", @event.OrderId);
-                throw; // Re-throw for MassTransit retry
+                    await _context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                    
+                    _logger.LogInformation("Successfully awarded points for User {UserId} (Order {OrderId})", 
+                        userId, @event.OrderId);
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError(ex, "Error processing OrderStatusUpdatedEvent for Order {OrderId}", @event.OrderId);
+                    throw; // Re-throw for MassTransit retry
+                }
             }
         });
     }

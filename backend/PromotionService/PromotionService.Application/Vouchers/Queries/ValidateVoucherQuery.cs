@@ -24,7 +24,7 @@ public class ValidateVoucherQueryHandler : IRequestHandler<ValidateVoucherQuery,
     {
         var upperVoucherCode = request.Code.ToUpper();
         
-        var voucher = await _context.Vouchers
+        var voucher = await _context.Vouchers.AsNoTracking()
             .SingleOrDefaultAsync(v => v.Code == upperVoucherCode, cancellationToken);
 
         if (voucher == null)
