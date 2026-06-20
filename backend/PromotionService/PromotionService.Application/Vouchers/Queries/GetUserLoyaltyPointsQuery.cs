@@ -18,12 +18,12 @@ public class GetUserLoyaltyPointsQueryHandler : IRequestHandler<GetUserLoyaltyPo
 
     public async Task<LoyaltyPointDto?> Handle(GetUserLoyaltyPointsQuery request, CancellationToken cancellationToken)
     {
-        var loyalty = await _context.LoyaltyPoints
+        var loyalty = await _context.LoyaltyPoints.AsNoTracking()
             .SingleOrDefaultAsync(lp => lp.UserId == request.UserId, cancellationToken);
 
         if (loyalty == null) return new LoyaltyPointDto(request.UserId, 0, new List<PointTransactionDto>());
 
-        var transactions = await _context.PointTransactions
+        var transactions = await _context.PointTransactions.AsNoTracking()
             .Where(t => t.UserId == request.UserId)
             .OrderByDescending(t => t.CreatedAt)
             .Take(10)

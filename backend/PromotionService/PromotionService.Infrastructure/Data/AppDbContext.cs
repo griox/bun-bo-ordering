@@ -38,6 +38,7 @@ public class AppDbContext : DbContext, IAppDbContext
         modelBuilder.Entity<PointTransaction>(entity =>
         {
             entity.HasKey(e => e.Id);
+            entity.HasIndex(e => new { e.UserId, e.CreatedAt });
         });
     }
 }

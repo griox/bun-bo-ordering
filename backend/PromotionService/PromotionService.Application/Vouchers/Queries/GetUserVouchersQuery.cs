@@ -27,9 +27,9 @@ public class GetUserVouchersQueryHandler : IRequestHandler<GetUserVouchersQuery,
 
     public async Task<List<UserVoucherDto>> Handle(GetUserVouchersQuery request, CancellationToken cancellationToken)
     {
-        var userVouchers = await _context.UserVouchers
+        var userVouchers = await _context.UserVouchers.AsNoTracking()
             .Where(uv => uv.UserId == request.UserId)
-            .Join(_context.Vouchers, 
+            .Join(_context.Vouchers.AsNoTracking(), 
                 uv => uv.VoucherId, 
                 v => v.Id, 
                 (uv, v) => new { uv, v })
