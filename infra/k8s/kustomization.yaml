@@ -41,7 +41,7 @@ images:
   newTag: c9b0e06854d76fa49ac9ddef3799a973e9c972e2
 - name: griox/bunbo-promotion-service
   newName: griox/bunbo-promotion-service
-  newTag: 4a848ce051b78af182c94246dd310362d066f95f
+  newTag: 9902931f937129aa296e736ccdfd09f15aa0d601
 - name: griox/bunbo-realtime-service
   newName: griox/bunbo-realtime-service
   newTag: 6e10b7054cf93bdfa67e4cb14197126d230cf02e
